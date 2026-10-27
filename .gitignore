@@ -15,3 +15,13 @@ tas/*.inputs.state
 *.savestate
 build-win/
 .worktrees/
+
+# Local macOS port: build products and private runtime data.
+/build*/
+/dist/
+/artifacts/
+/logs/
+/.venv*/
+*.sav
+*.dmg
+*.app/
