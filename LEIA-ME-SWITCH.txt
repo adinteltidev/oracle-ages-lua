@@ -2,8 +2,8 @@ ORACLE OF AGES NATIVE - NINTENDO SWITCH (EXPERIMENTAL)
 
 Este pacote e para o Nintendo Switch original (ARM64), em um ambiente
 ja capaz de executar aplicativos homebrew. O arquivo .nro nao e um
-instalador para consoles de fabrica. O usuario confirmou que funcionou
-no Switch; os testes detalhados de hardware continuam pendentes.
+instalador para consoles de fabrica. A build anterior executou no Switch,
+mas o usuario relatou falha no ZL. Esta correcao requer novo teste no console.
 
 INSTALACAO
 1. Extraia a pasta switch/ na raiz do cartao SD.
@@ -28,11 +28,17 @@ A / B: botoes do Game Boy
 +: Start   -: Select
 ZL: solicitar quicksave   ZR: solicitar quickload
 L + R + +: sair do jogo salvando SRAM
-Quicksave/quickload aguardam um ponto seguro das fibras.
+ZL mostra SALVANDO... e depois ESTADO SALVO ou uma mensagem de erro.
+O quicksave aguarda um ponto seguro e libera a entrada do jogo brevemente.
+Se nao houver ponto seguro em 600 frames, mostra que nao pode salvar ali.
+ZR mostra ESTADO CARREGADO, SAVE NAO ENCONTRADO ou ERRO AO CARREGAR.
+O quickload e feito no limite de frame, descartando as fibras antigas.
 
 ARQUIVOS LOCAIS
 sram.sav: save de bateria, gravado periodicamente e na saida normal
 quick.state: quicksave deste build
+quick.state.bak / sram.sav.bak: copia anterior para recuperacao
+Nao apague os backups se ocorrer um erro. Consulte runtime.log.
 runtime.log: log da ultima execucao
 replay-result.txt / replay-observed.txt: resultado e hashes do ultimo teste
 replay-reload.state: temporario do teste, separado do quicksave

@@ -40,3 +40,7 @@ build-win/
 *.nacp
 *.elf
 /sdcard/
+*.state.bak
+*.sav.bak
+*.state.tmp
+*.sav.tmp

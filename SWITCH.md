@@ -20,12 +20,12 @@ O formato de estado mantém suas checagens de versão/tamanho; assertions no
 build verificam tamanho de GB/APU e offsets selecionados contra a base desktop.
 A compatibilidade funcional ARM64 ainda precisa dos replays no aparelho.
 
-**O usuário confirmou que a build funcionou no Nintendo Switch.** Esse relato
+**O usuário confirmou que a build anterior à correção de quicksave funcionou no Nintendo Switch.** Esse relato
 confirma a execução no console, mas não detalha os replays, desempenho, áudio,
 controles, HOME/suspensão ou persistência. Os testes específicos abaixo
 continuam pendentes de resultados e logs.
 A interface ainda não tem seletor arbitrário de ROM, configuração visual,
-remapeamento de controles ou mensagens sobrepostas de quicksave. Ela aceita
+remapeamento de controles. O quicksave/quickload agora mostram mensagens na tela. Ela aceita
 `sdmc:/switch/oracle-ages-native/ages.gbc`; mensagens de erro ficam no console/log.
 Mods Lua, sincronização HTTP, atualizações, widescreen e xBRZ ficam fora do alvo.
 O primeiro teste deve usar memória completa de aplicação; modo Album não foi
@@ -133,3 +133,25 @@ Licenças: projeto GPLv3; SDL2 zlib; libnx ISC; Mesa/libdrm com avisos permissiv
 newlib com avisos próprios; runtime GCC/libstdc++ com GCC Runtime Library
 Exception. Veja `platform/switch/licenses/` e as receitas/fontes upstream.
 O ícone geométrico e seu SVG foram criados para este port e não usam arte do jogo.
+
+## Correção do quicksave no SD
+
+O usuário relatou que o ZL não salvava. A versão corrigida remove a dependência
+de `rename` substituir um destino existente: grava e sincroniza um temporário,
+move a versão anterior para `.bak` e instala a nova. Uma falha tenta restaurar
+a anterior; se necessário, a próxima carga/inicialização recupera o backup
+quando o arquivo principal estiver ausente. A mesma rotina protege a SRAM.
+Esta sequência é recuperável, mas não é uma operação atômica contra perda de energia.
+
+ZL mostra `SALVANDO...`, libera momentaneamente a entrada do jogo e aguarda
+um frame seguro. Ao terminar mostra `ESTADO SALVO` ou `ERRO AO SALVAR`.
+A espera termina após 600 frames se o jogo não chegar a um ponto seguro.
+ZR mostra o resultado da carga e não aguarda que a cena atual estacione suas
+fibras; a carga é feita no limite de frame do host, descartando as fibras antigas.
+Os erros ficam em `runtime.log`, com errno e descrição.
+
+A regressão `switch_storage` usa arquivos reais com rename sem sobrescrita
+e falhas injetadas: primeiro save, saves repetidos, rollback, recuperação e
+falha ao abrir temporário. `switch_quicksave` exercita um estado real de Ages,
+sobrescreve o slot e verifica 120 frames idênticos após a carga, além da recuperação.
+Esses testes são de host; a nova build ainda precisa de teste de ZL/ZR no console.

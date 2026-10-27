@@ -8,6 +8,7 @@
 #include "rt/fibers.h"
 #include "platform/setup.h"
 #include "platform/tas.h"
+#include "platform/switch_storage.h"
 #include "game/game.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -15,6 +16,8 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <stddef.h>
+#include <errno.h>
+#include "platform/switch_status.h"
 
 #define DATA "sdmc:/switch/oracle-ages-native/"
 #define ROM DATA "ages.gbc"
@@ -41,21 +44,18 @@ static bool reset_clock;
 static uint8_t input_live(void *ctx, uint64_t frame) { (void)ctx; (void)frame; return live_joy; }
 static uint8_t input_tas(void *ctx, uint64_t frame) { return tas_input_at(ctx, frame); }
 
-static bool replace_file(const char *path, const void *data, size_t size) {
-  char tmp[512];
-  if (snprintf(tmp, sizeof tmp, "%s.tmp", path) >= (int)sizeof tmp) return false;
-  FILE *f = fopen(tmp, "wb");
-  if (!f) return false;
-  bool ok = fwrite(data, 1, size, f) == size;
-  if (fflush(f)) ok = false;
-  if (fsync(fileno(f))) ok = false;
-  if (fclose(f)) ok = false;
-  // Do not remove the previous save if replacement fails.
-  if (ok && rename(tmp, path)) ok = false;
-  if (!ok) remove(tmp);
-  return ok;
+static char status_text[64];
+static bool status_error;
+static uint64_t status_until;
+static void show_status(const char *text, bool error, int saved_errno) {
+  snprintf(status_text, sizeof status_text, "%s", text);
+  status_error = error;
+  status_until = SDL_GetTicks64() + 4000;
+  fprintf(stderr, "%s%s%s (errno=%d)\n", text, saved_errno ? ": " : "",
+          saved_errno ? strerror(saved_errno) : "", saved_errno);
+  fflush(stderr);
 }
-static bool save_sram(void) { return replace_file(SRAM, game->eram, game->eram_size); }
+static bool save_sram(void) { return switch_storage_write(SRAM, game->eram, game->eram_size); }
 // libnx dispatches these hooks from appletMainLoop, outside a game fiber.
 static void lifecycle(AppletHookType type, void *param) {
   (void)param;
@@ -70,20 +70,18 @@ static void lifecycle(AppletHookType type, void *param) {
   }
 }
 static bool save_state(const char *path) {
-  if (!threads_parked(game)) return false;
+  if (!threads_parked(game)) { errno = EBUSY; return false; }
   char tmp[512];
   snprintf(tmp, sizeof tmp, "%s.tmp", path);
-  if (!oracles_save_boot_state(game, tmp)) { remove(tmp); return false; }
-  FILE *f = fopen(tmp, "r+b");
-  if (!f) return false;
-  bool ok = fsync(fileno(f)) == 0;
-  if (fclose(f)) ok = false;
-  if (ok && rename(tmp, path)) ok = false;
-  if (!ok) remove(tmp);
+  if (!oracles_save_boot_state(game, tmp)) { int error = errno ? errno : EIO; remove(tmp); errno = error; return false; }
+  bool ok = switch_storage_sync(tmp) && switch_storage_commit(tmp, path);
+  if (!ok) { int error = errno; remove(tmp); errno = error; }
   return ok;
 }
 static bool load_state(const char *path) {
-  if (!oracles_load_boot_state(game, path)) return false;
+  if (!switch_storage_recover(path)) return false;
+  errno = 0;
+  if (!oracles_load_boot_state(game, path)) { if (!errno) errno = EINVAL; return false; }
   fibers_reset(game);
   return true;
 }
@@ -105,6 +103,7 @@ static bool prepare_game(bool replay) {
   printf("Code bytes removed: %zu\n", assets_zero_code(rom, n));
   gb_reset(game);
   if (replay) return load_state(DATA "tests/ages-boot.state");
+  if (!switch_storage_recover(SRAM)) { printf("Cannot recover SRAM; preserved on SD.\n"); return false; }
   struct stat st;
   if (!stat(SRAM, &st)) {
     uint8_t *s = oracles_read_file(SRAM, &n);
@@ -244,7 +243,7 @@ static int play(void) {
   SDL_PauseAudioDevice(audio, 0);
   static uint32_t pixels[FB_W * FB_H];
   static int16_t pcm[4096 * 2];
-  uint64_t frames = 0, late = 0, underruns = 0;
+  uint64_t frames = 0, late = 0, underruns = 0, save_from = 0;
   uint64_t frequency = SDL_GetPerformanceFrequency();
   uint64_t due = SDL_GetPerformanceCounter();
   // Fractional clock accumulator; never replace the GB cadence with 60 Hz.
@@ -257,13 +256,33 @@ static int play(void) {
     if (quit || ((held & (HidNpadButton_L | HidNpadButton_R | HidNpadButton_Plus)) ==
                          (HidNpadButton_L | HidNpadButton_R | HidNpadButton_Plus))) break;
     live_joy = joy_from_pad(held);
-    if (down & HidNpadButton_ZL) save_pending = true;
-    if (down & HidNpadButton_ZR) load_pending = true;
-    if (threads_parked(game)) {
-      if (save_pending) { if (!save_state(STATE)) fprintf(stderr, "Quicksave failed\n"); save_pending = false; }
-      if (load_pending) { if (!load_state(STATE)) fprintf(stderr, "Quickload failed\n"); SDL_ClearQueuedAudio(audio); load_pending = false; }
+    if (down & HidNpadButton_ZL) {
+      save_pending = true; load_pending = false; save_from = frames;
+      show_status("SALVANDO...", false, 0);
+    } else if (down & HidNpadButton_ZR) {
+      load_pending = true; save_pending = false;
+      show_status("CARREGANDO...", false, 0);
     }
+    // Loading discards old fibers at the host frame boundary; only the saved
+    // state needs parked threads. Do not wait for the current scene to park.
+    if (load_pending) {
+      bool ok = load_state(STATE); int error = ok ? 0 : errno;
+      show_status(ok ? "ESTADO CARREGADO" : error == ENOENT ? "SAVE NAO ENCONTRADO" : "ERRO AO CARREGAR", !ok, error);
+      if (ok) { SDL_ClearQueuedAudio(audio); due = SDL_GetPerformanceCounter(); remainder = 0; }
+      load_pending = false;
+    }
+    // Release game input briefly while seeking a serializable frame, as for
+    // a pause, and report a timeout instead of silently waiting forever.
+    if (save_pending) live_joy = 0;
     gb_run_frame(game);
+    if (save_pending && threads_parked(game)) {
+      bool ok = save_state(STATE); int error = ok ? 0 : errno;
+      show_status(ok ? "ESTADO SALVO" : "ERRO AO SALVAR", !ok, error);
+      save_pending = false;
+    } else if (save_pending && frames - save_from >= 600) {
+      show_status("NAO FOI POSSIVEL SALVAR AQUI", true, 0);
+      save_pending = false;
+    }
     uint32_t count;
     if (frames > 10 && !SDL_GetQueuedAudioSize(audio)) underruns++;
     while ((count = apu_read_samples(&game->apu, pcm, 4096))) {
@@ -282,7 +301,9 @@ static int play(void) {
     if (scale < 1) scale = 1;
     SDL_Rect dst = {(w - FB_W * scale) / 2, (h - FB_H * scale) / 2, FB_W * scale, FB_H * scale};
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); SDL_RenderClear(renderer);
-    SDL_RenderCopy(renderer, texture, NULL, &dst); SDL_RenderPresent(renderer);
+    SDL_RenderCopy(renderer, texture, NULL, &dst);
+    if (status_text[0] && (save_pending || SDL_GetTicks64() < status_until)) switch_draw_status(renderer, w, h, status_text, status_error);
+    SDL_RenderPresent(renderer);
     if (++frames % 600 == 0 && !save_sram()) fprintf(stderr, "SRAM save failed\n");
     remainder += frequency * FRAME_CYCLES;
     due += remainder / 4194304; remainder %= 4194304;

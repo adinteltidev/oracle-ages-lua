@@ -5,7 +5,7 @@ endif()
 set(SWITCH_SDK "$ENV{DEVKITPRO}")
 set(SWITCH_PORTLIBS "${SWITCH_SDK}/portlibs/switch")
 set(ORACLES_SWITCH_BUILD "local" CACHE STRING "Build identifier")
-add_executable(oracles-switch src/platform/switch_main.c)
+add_executable(oracles-switch src/platform/switch_main.c src/platform/switch_storage.c)
 target_include_directories(oracles-switch PRIVATE
   "${SWITCH_PORTLIBS}/include" "${SWITCH_PORTLIBS}/include/SDL2")
 target_compile_definitions(oracles-switch PRIVATE

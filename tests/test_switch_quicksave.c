@@ -1,0 +1,56 @@
+#include "unit.h"
+#include "core/gb.h"
+#include "assets/assets.h"
+#include "platform/setup.h"
+#include "platform/switch_storage.h"
+#include "platform/tas.h"
+#include "rt/fibers.h"
+#include "game/game.h"
+#include <unistd.h>
+static uint8_t input(void *ctx, uint64_t frame) { return tas_input_at(ctx, frame); }
+static void advance(GB *gb, unsigned frames) {
+  for (unsigned i = 0; i < frames; ++i) { gb_run_frame(gb); ASSERT(!gb->hung); gb->apu.ring_r = gb->apu.ring_w; }
+}
+static void park(GB *gb) {
+  for (unsigned i = 0; i < 600 && !threads_parked(gb); ++i) advance(gb, 1);
+  ASSERT(threads_parked(gb));
+}
+static void save(GB *gb, const char *tmp, const char *path) {
+  park(gb); ASSERT(oracles_save_boot_state(gb, tmp));
+  ASSERT(switch_storage_sync(tmp)); ASSERT(switch_storage_commit(tmp, path));
+}
+int main(void) {
+  size_t n;
+  uint8_t *rom = oracles_read_file(GAME_ROM_DIR "/Legend of Zelda, The - Oracle of Ages (USA, Australia).gbc", &n);
+  if (!rom) SKIP("Ages ROM missing");
+  Tas tas; ASSERT(tas_load(&tas, TAS_DIR "/ages-consoleverified.inputs"));
+  GB *gb = calloc(1, sizeof *gb); ASSERT(gb); gb_init(gb); ASSERT(gb_load_rom(gb, rom, n));
+  gb->cyctab = cyctab_alloc(rom, n); gb->code_bits = assets_code_bits(rom, n); assets_zero_code(rom, n);
+  gb_reset(gb); ASSERT(oracles_load_boot_state(gb, TAS_DIR "/ages-boot.state"));
+  gb->input_at = input; gb->input_ctx = &tas;
+  advance(gb, 20000);
+  char dir[] = "/tmp/oracles-switch-quicksave-XXXXXX"; ASSERT(mkdtemp(dir));
+  char path[512], tmp[512], backup[512];
+  snprintf(path, sizeof path, "%s/quick.state", dir); snprintf(tmp, sizeof tmp, "%s.tmp", path);
+  snprintf(backup, sizeof backup, "%s.bak", path);
+  save(gb, tmp, path); advance(gb, 12); save(gb, tmp, path);
+  GB *saved = malloc(sizeof *saved); ASSERT(saved); *saved = *gb;
+  advance(gb, 120); uint64_t continued_hash = gb_state_hash(gb);
+  ASSERT(oracles_load_boot_state(gb, path)); fibers_reset(gb);
+  // gb_state_hash reads the rendered sample ring, deliberately reset by load.
+  // Verify saved machine memory/clock now and rendered trajectory after stepping.
+  ASSERT(!memcmp(gb->wram, saved->wram, sizeof gb->wram));
+  ASSERT(!memcmp(gb->eram, saved->eram, sizeof gb->eram));
+  ASSERT(!memcmp(gb->vram, saved->vram, sizeof gb->vram));
+  ASSERT(!memcmp(gb->hram, saved->hram, sizeof gb->hram));
+  ASSERT_EQ(gb->pc, saved->pc); ASSERT_EQ(gb->sp, saved->sp);
+  ASSERT_EQ(gb->cycles, saved->cycles); ASSERT_EQ(gb->mcycles, saved->mcycles);
+  free(saved);
+  advance(gb, 120); ASSERT_EQ(gb_state_hash(gb), continued_hash);
+  // Restore the previous generation after an interrupted installation.
+  ASSERT_EQ(remove(path), 0); ASSERT(switch_storage_recover(path));
+  ASSERT(oracles_load_boot_state(gb, path)); fibers_reset(gb); advance(gb, 120);
+  ASSERT_EQ(remove(path), 0); ASSERT_EQ(rmdir(dir), 0);
+  printf("ok switch_quicksave: repeated GB save, state restored, identical 120-frame continuation, backup reload\n");
+  return 0;
+}
