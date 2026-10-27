@@ -4,6 +4,7 @@
 #include "hw/render.h"
 #include "platform/tas.h"
 #include "platform/setup.h"
+#include "platform/tempfile.h"
 #include "game/game.h"
 #include "game/features.h"
 #include "assets/assets.h"
@@ -217,6 +218,8 @@ int main(int argc, char **argv) {
   uint64_t reload_at = (p = arg_value(argc, argv, "--reload-at")) ? strtoull(p, NULL, 10) : 0;
   uint64_t reload_every = (p = arg_value(argc, argv, "--reload-every")) ? strtoull(p, NULL, 10) : 0;     // at the first frame after each multiple whose threads are parked (as the app saves)
   bool reload_pending = false;
+  char reload_path[4096];
+  if ((reload_at || reload_every) && !oracles_temp_path(reload_path, sizeof reload_path)) { fprintf(stderr, "cannot reserve reload state file\n"); return 2; }
   if ((p = arg_value(argc, argv, "--boot-state-out")) && !oracles_save_boot_state(gb, p)) { fprintf(stderr, "cannot write %s\n", p); return 2; }
   if ((p = arg_value(argc, argv, "--boot-ly"))) {
     int ly = atoi(p);
@@ -339,7 +342,7 @@ int main(int argc, char **argv) {
     if ((reload_at && frame == reload_at) || (reload_pending && threads_parked(gb))) {
       reload_pending = false;
       // a save state round trip: every thread fiber is dropped, as when the app loads a state
-      if (!oracles_save_boot_state(gb, "/tmp/oracles-reload.state") || !oracles_load_boot_state(gb, "/tmp/oracles-reload.state")) return 2;
+      if (!oracles_save_boot_state(gb, reload_path) || !oracles_load_boot_state(gb, reload_path)) return 2;
       fibers_reset(gb);
     }
     if (getenv("POKE")) {
@@ -359,6 +362,7 @@ int main(int argc, char **argv) {
 
     if (fc.fail) return 1;
   }
+  if ((reload_at || reload_every) && remove(reload_path) != 0) { perror("remove reload state"); return 2; }
   if (probe) printf("distinct rooms: %d\n", fc.nseen);
   if (ref_out) fclose(ref_out);
   if (fh_out) fclose(fh_out);

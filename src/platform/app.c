@@ -5,7 +5,7 @@
 // result to the per-platform cache; later launches load the cache and never see the ROM again.
 // Each ROM keeps its own folder there (ages, ages-eu, seasons, seasons-eu), saves and states
 // included, and the one added last is the one its game's tab starts (active.txt). Saves are the game's own SRAM image in that
-// cache; Cmd+S / Cmd+R save and load one state slot there.
+// cache; Ctrl+S / Ctrl+R (Cmd on macOS) save and load one state slot there.
 //
 // usage: oracles-native [ROM] [--game ages|seasons [--file 1-3]] [--cache DIR] [--frames N]
 //   --file N boots straight into save file N, as choosing it in the launcher does.
@@ -13,6 +13,7 @@
 //   row rather than putting a file dialog on screen before anything is drawn.
 //   --frames N exits after N frames (tests run the app under SDL_VIDEO_DRIVER=dummy).
 #include <SDL3/SDL.h>
+#include "platform/keys.h"
 #include <SDL3/SDL_main.h>
 #include "core/gb.h"
 #include "core/sha1.h"
@@ -732,6 +733,7 @@ static bool poll_event(SDL_Event *ev) {
 #define MAX_FILTER_SCALE 12
 
 static uint64_t test_tick;
+static bool test_headless;
 
 // Test hook: ORACLES_SHOT="tick:path.png[,tick:path.png]" saves the window's pixels at the first frame
 // drawn at or after each loop tick.
@@ -1098,7 +1100,10 @@ static void test_keys(void) {
     else if (at == test_tick || at + 1 == test_tick) {
       SDL_Event ev = {0};
       ev.type = at == test_tick ? SDL_EVENT_KEY_DOWN : SDL_EVENT_KEY_UP;
-      ev.key.scancode = SDL_GetScancodeFromName(name);
+      const char *scancode_name = name;
+      if (!strncmp(name, "Ctrl+", 5)) { ev.key.mod = SDL_KMOD_CTRL; scancode_name += 5; }
+      else if (!strncmp(name, "Cmd+", 4)) { ev.key.mod = SDL_KMOD_GUI; scancode_name += 4; }
+      ev.key.scancode = SDL_GetScancodeFromName(scancode_name);
       ev.key.down = at == test_tick;
       SDL_PushEvent(&ev);
     }
@@ -2010,8 +2015,8 @@ static GameEnd run_game(SDL_Window *win, SDL_Renderer *ren, SDL_Texture *tex, co
       case SDL_EVENT_KEY_DOWN:
         if (ev.key.repeat) break;
         if (ev.key.scancode == SDL_SCANCODE_AC_BACK) press |= 1u << ACT_PAUSE;
-        else if ((ev.key.mod & SDL_KMOD_GUI) && ev.key.scancode == SDL_SCANCODE_S) save_from = frames;
-        else if ((ev.key.mod & SDL_KMOD_GUI) && ev.key.scancode == SDL_SCANCODE_R) {
+        else if (oracles_command_modifier(ev.key.mod) && ev.key.scancode == SDL_SCANCODE_S) save_from = frames;
+        else if (oracles_command_modifier(ev.key.mod) && ev.key.scancode == SDL_SCANCODE_R) {
           bool ok = slot_load(gb, dir, 0);
           if (ok) { live_joy = 0; save_from = NO_SAVE; }
           show_status(ok ? "Loaded slot 1" : "Slot 1 is empty");
@@ -2135,7 +2140,7 @@ static GameEnd run_game(SDL_Window *win, SDL_Renderer *ren, SDL_Texture *tex, co
       save_from = NO_SAVE;
     }
     uint32_t n = apu_read_samples(&gb->apu, samples, APU_RING);
-    if (audio && mode == MODE_PLAY) SDL_PutAudioStreamData(audio, samples, n * 4);
+    if (audio && mode == MODE_PLAY && !test_headless) SDL_PutAudioStreamData(audio, samples, n * 4);
     framebuffer_to_rgb(gb->sample->framebuffer, rgb);
     present_game(ren, gb->sample, rgb, !ages, rom, rom_size);
     apply_mod_writes(gb);
@@ -2215,6 +2220,14 @@ int main(int argc, char **argv) {
 #endif
   // ORACLES_TOUCH=1 shows the overlay on desktop, with the mouse as a finger
   if (getenv("ORACLES_TOUCH")) { touch_on = touch_mouse = true; SDL_SetHint(SDL_HINT_MOUSE_TOUCH_EVENTS, "1"); }
+  // Wine removes host SDL video/audio driver environment variables. Keep scripted tests
+  // deterministic through explicit in-process hints, without focus or device pacing.
+  test_headless = getenv("ORACLES_TEST_HEADLESS") != NULL;
+  if (test_headless) {
+    SDL_SetHint(SDL_HINT_VIDEO_DRIVER, "dummy");
+    SDL_SetHint(SDL_HINT_AUDIO_DRIVER, "dummy");
+    SDL_SetHint(SDL_HINT_RENDER_DRIVER, "software");
+  }
   if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMEPAD)) { fprintf(stderr, "%s\n", SDL_GetError()); return 2; }
   SDL_AddEventWatch(on_app_event, NULL);
   char cache[1024];

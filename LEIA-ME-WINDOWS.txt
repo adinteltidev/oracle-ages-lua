@@ -1,0 +1,37 @@
+ORACLES — WINDOWS x64 — PORT EM C
+
+Destino: Windows 11 de 64 bits. Build local, sem assinatura Authenticode.
+Esta entrega foi compilada no Mac e testada sob Wine. A validação em Windows
+real/VM, incluindo Explorer, DPI, drivers de vídeo/áudio e controle, permanece pendente.
+
+COMO ABRIR
+1. Extraia a pasta inteira do ZIP para uma pasta gravável.
+2. Abra Oracles.exe. Não é necessário instalar compilador, Python, .NET ou SDL.
+3. No launcher, use ADD ROM para importar sua cópia USA/Australia de Oracle of Ages.
+   A ROM não acompanha este pacote. A revisão usada nos testes tem SHA-256:
+   0b56b78a9e45452e98c33edd111234931f1e034dc097f6f23082eb8db6055474
+
+CONTROLES PADRÃO
+Setas: movimento. X: botão A. Z: botão B. Enter: Start.
+Backspace/Shift direito: Select. Esc: pausa/menu. F11: tela cheia. M: silenciar.
+Ctrl+S: salvar no slot 1. Ctrl+R: carregar o slot 1.
+Os controles podem ser alterados em Settings > CONTROLS.
+
+PROGRESSO E ARQUIVOS
+O diretório padrão é %APPDATA%\oracles-decomp\oracles\.
+O estado automático retoma a sessão; os slots de estado e a SRAM são arquivos distintos.
+Preserve essa pasta ao atualizar. Não substitua seus saves originais por arquivos de teste.
+Para dados portáteis, execute de uma pasta gravável:
+  Oracles.exe --cache .\dados
+
+VERIFICAÇÃO E FONTES
+SHA256SUMS.txt permite conferir o executável e os avisos de licença deste pacote.
+A auditoria de imports do build encontrou apenas DLLs de sistema do Windows;
+a SDL e as bibliotecas de runtime utilizadas estão ligadas estaticamente.
+Os testes locais sob Wine não substituem os testes no computador Windows de destino.
+Não foi atestada toda a campanha manual, Seasons, sincronização externa ou mods de terceiros.
+
+As fontes correspondentes acompanham a entrega como oracle-ages-port-windows-fontes.tar.gz.
+O guia WINDOWS.md nas fontes contém compilação, testes e limitações.
+LICENSE e Licenses/ preservam os avisos do projeto e de suas dependências.
+Oracle of Ages e seus personagens e recursos pertencem aos titulares originais.

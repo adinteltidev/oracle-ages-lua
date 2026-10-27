@@ -1,0 +1,306 @@
+{
+  "schema": 1,
+  "date_local": "2026-10-27T15:27:18.980670-03:00",
+  "status": "compiled and validated under Wine; real Windows acceptance pending",
+  "language": "C (existing xBRZ scaler uses C++)",
+  "base_commit": "b670ec74a325d58d2d41abed12719a8bd710423c",
+  "branch": "port/windows-x64",
+  "target": "Windows 11 x86_64",
+  "host": {
+    "os": "macOS-15.8.1-x86_64-i386-64bit",
+    "machine": "x86_64"
+  },
+  "toolchain": {
+    "project": "mstorsjo/llvm-mingw",
+    "version": "20261020",
+    "host": "macOS universal",
+    "target": "x86_64-w64-windows-gnu",
+    "crt": "UCRT",
+    "url": "https://github.com/mstorsjo/llvm-mingw/releases/download/20261020/llvm-mingw-20261020-ucrt-macos-universal.tar.xz",
+    "sha256": "e9c13e4ede38e715003ffc674d4d00a1088df8235439d1f0c16188ff0704c17e",
+    "bytes": 124415944
+  },
+  "wine_package": {
+    "project": "Gcenx/macOS_Wine_builds",
+    "version": "11.0_1",
+    "url": "https://github.com/Gcenx/macOS_Wine_builds/releases/download/11.0_1/wine-stable-11.0_1-osx64.tar.xz",
+    "sha256": "b50dc50ec7f41d58b115a6b685d4d1315ba3c797bd3aa0f49213f2703cb82388",
+    "bytes": 185303032
+  },
+  "cmake": "cmake version 3.31.6",
+  "ninja": "1.11.1.git.kitware.jobserver-1",
+  "sdl": {
+    "version": "3.4.16",
+    "static": true,
+    "source_archive_sha256": "7322236cd12090c3eb40b9728be4d49c76f66ad17d04369584d4ecad5cf77c68"
+  },
+  "pe": {
+    "file": "work/oracle-windows/source/build-win-x64/Oracles.exe",
+    "sha256": "8776d53577d2d84d59c08b4642b07a078183d76a230cfdfd5a119077f4702d6b",
+    "bytes": 25572352,
+    "format": "PE32+ x86-64",
+    "subsystem": "Windows GUI",
+    "clr_header": false,
+    "icon_and_manifest": true,
+    "utf8_manifest": true,
+    "imports": [
+      "ADVAPI32.dll",
+      "api-ms-win-crt-convert-l1-1-0.dll",
+      "api-ms-win-crt-environment-l1-1-0.dll",
+      "api-ms-win-crt-filesystem-l1-1-0.dll",
+      "api-ms-win-crt-heap-l1-1-0.dll",
+      "api-ms-win-crt-locale-l1-1-0.dll",
+      "api-ms-win-crt-math-l1-1-0.dll",
+      "api-ms-win-crt-private-l1-1-0.dll",
+      "api-ms-win-crt-runtime-l1-1-0.dll",
+      "api-ms-win-crt-stdio-l1-1-0.dll",
+      "api-ms-win-crt-string-l1-1-0.dll",
+      "api-ms-win-crt-time-l1-1-0.dll",
+      "api-ms-win-crt-utility-l1-1-0.dll",
+      "GDI32.dll",
+      "IMM32.dll",
+      "KERNEL32.dll",
+      "ole32.dll",
+      "OLEAUT32.dll",
+      "SETUPAPI.dll",
+      "SHELL32.dll",
+      "USER32.dll",
+      "VERSION.dll",
+      "WINHTTP.dll",
+      "WINMM.dll"
+    ],
+    "private_dlls_required": []
+  },
+  "native_library": {
+    "interpreter_object": false,
+    "archive_members": 878
+  },
+  "rom_sha256": "0b56b78a9e45452e98c33edd111234931f1e034dc097f6f23082eb8db6055474",
+  "state_layout": {
+    "mac": {
+      "GB": 194656,
+      "Apu": 65788,
+      "pointer": 8,
+      "rom": 24,
+      "wram": 49233,
+      "hram": 82161,
+      "vram": 32849,
+      "io": 82288,
+      "framebuffer": 82568,
+      "apu": 128696,
+      "cycles": 194488,
+      "mcycles": 194496
+    },
+    "windows_under_wine": {
+      "GB": 194656,
+      "Apu": 65788,
+      "pointer": 8,
+      "rom": 24,
+      "wram": 49233,
+      "hram": 82161,
+      "vram": 32849,
+      "io": 82288,
+      "framebuffer": 82568,
+      "apu": 128696,
+      "cycles": 194488,
+      "mcycles": 194496
+    },
+    "selected_layouts_match": true,
+    "boot_header_version": 1,
+    "boot_header_size": 194656
+  },
+  "core_tests_under_wine": {
+    "status": "passed",
+    "execution_environment": "Wine on Darwin",
+    "windows_real_or_vm_tested": false,
+    "tests": [
+      {
+        "name": "platform-keys",
+        "exit_code": 0,
+        "seconds": 0.25
+      },
+      {
+        "name": "ui",
+        "exit_code": 0,
+        "seconds": 0.558
+      },
+      {
+        "name": "native-ages",
+        "exit_code": 0,
+        "seconds": 100.476
+      },
+      {
+        "name": "movement",
+        "exit_code": 0,
+        "seconds": 4.527
+      },
+      {
+        "name": "replay",
+        "exit_code": 0,
+        "seconds": 66.056
+      }
+    ],
+    "prefix_checkpoints": 333,
+    "reload_checkpoints": 333,
+    "movement": {
+      "room": "00:8a",
+      "start_x": 72,
+      "free_x": 91,
+      "wall_x": 124,
+      "y": 56,
+      "health": 12
+    },
+    "full_replay": false,
+    "reference_checkpoints_matched": 333,
+    "observed_checkpoints": 333,
+    "additional_observed_checkpoints": 0,
+    "temporary_files_cleaned": true
+  },
+  "full_replay_under_wine": {
+    "exit_code": 0,
+    "seconds": 796.001,
+    "runner_sha256": "a348d8cdebb3a72900e1380c41454811ac3b9fb5be6fcb64d94769a6915a8ea2",
+    "requested_samples": 289518,
+    "environment": "Wine 11.0 on macOS Intel",
+    "native_windows_real_or_vm": false,
+    "status": "passed",
+    "reference_checkpoints": 4825,
+    "observed_checkpoints": 4829,
+    "additional_observed_frames_beyond_reference": 4,
+    "all_reference_checkpoints_matched": true
+  },
+  "headless_reload_under_wine": {
+    "status": "passed",
+    "samples": 20000,
+    "checkpoints": 333,
+    "reload_every": 1013,
+    "exit_code": 0,
+    "seconds": 48.189,
+    "runner_sha256": "a348d8cdebb3a72900e1380c41454811ac3b9fb5be6fcb64d94769a6915a8ea2"
+  },
+  "packaged_app_resume_under_wine": {
+    "status": "passed",
+    "launches": [
+      {
+        "launch": 1,
+        "group": 0,
+        "room": 138,
+        "x": 124,
+        "y": 56,
+        "health": 12,
+        "sram_checksum_valid": true,
+        "auto_state_sha256": "cb07caa06d46db4692d186191c10a1ab706fe112ec3f250c98a9a0e1915acf96"
+      },
+      {
+        "launch": 2,
+        "group": 0,
+        "room": 138,
+        "x": 124,
+        "y": 56,
+        "health": 12,
+        "sram_checksum_valid": true,
+        "auto_state_sha256": "bde055713180c99a4e35dfcca8df63c1dca8a5b52643d8daa3f0cf299598bd91"
+      }
+    ],
+    "executor": "/Users/adrianogomespimentel/Documents/Codex/2026-10-26/pes/work/oracle-windows/wine/Wine Stable.app/Contents/Resources/wine/bin/wine",
+    "shortcut_test": true,
+    "wine_paths": true,
+    "headless_drivers": true,
+    "audio_output_tested": false
+  },
+  "unicode_import_under_wine": {
+    "status": "passed",
+    "exit_code": 0,
+    "unicode_executable_path": true,
+    "unicode_rom_filename_and_path": true,
+    "unicode_cache_path": true,
+    "compiler_outside_path": true,
+    "rom_sha256": "0b56b78a9e45452e98c33edd111234931f1e034dc097f6f23082eb8db6055474"
+  },
+  "mac_regression": {
+    "pinned_library_commit": "b670ec74a325d58d2d41abed12719a8bd710423c",
+    "rebuilt_tests_with_unchanged_pinned_engine": true,
+    "prefix_checkpoints": 333,
+    "reload_checkpoints": 333,
+    "movement_passed": true,
+    "modifiers_and_temporary_files_passed": true,
+    "original_mac_checkout_and_deliverables_unchanged": true
+  },
+  "package": {
+    "zip": "outputs/Oracles-Windows-x64.zip",
+    "bytes": 8463758,
+    "sha256": "944fca9a67c14ceecbdd0a486e9cd70cbf73cc7d52b6147d0182491de84ede80",
+    "executable_sha256": "8776d53577d2d84d59c08b4642b07a078183d76a230cfdfd5a119077f4702d6b",
+    "files": 23,
+    "rom_or_saves_included": false
+  },
+  "windows_real_or_vm_tested": false,
+  "limits": [
+    "Windows real/VM Explorer, ROM dialog, DPI, focus/fullscreen, real video/audio drivers and controllers remain untested.",
+    "Headless GUI checks use dummy drivers, software renderer and discarded output PCM; they do not certify audio output.",
+    "Default GUI initialization under Wine on this Iris 6000 hit a MoltenVK/D3D12 placement-heap assertion.",
+    "Full manual campaign, Seasons, external synchronization and third-party mods are not attested.",
+    "Wine ignores SDL video/audio environment variables from the Unix host; the explicit test hook selects dummy drivers inside the application.",
+    "Inherited GCC static-runtime linker flags produce harmless unused-argument warnings on the LLVM C link; imports were independently audited."
+  ],
+  "evidence_sha256": {
+    "logs/app-resume-final.log": "abc9a2bb5509b951cf58d557f582a24a407ca9d23731cf427fc933764c1a234d",
+    "logs/app-resume-headless.log": "4c762c10775a018cb93ab6f847289a072f756a51ac6b6a2001ae07649d870b94",
+    "logs/app-resume-software.log": "1b47768b64f889e2f5868f7aa6d4153c87d79a648e85f4647e02bee114686eb6",
+    "logs/app-resume.log": "278cab5e3a8a1a2e7e514e068b86df453c19b4306057ec63262a963fc719dcb0",
+    "logs/build-win-initial.log": "5f7be5c5319ef30bc4694af05c07d8083f57d3acc141c39421621c23a47f8625",
+    "logs/build-win.log": "7ff60302012c4854c0497c3ab1c2fad6706476d956c71a637752daa6c58ecb51",
+    "logs/configure-win.log": "d37fdd87938862e71044f65d89152dd0d56a0c7ee306078dd478bda5fa6c2d85",
+    "logs/mac-regression-build.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "logs/mac-test_native_ages.log": "571c2a70029f2ab3882ad5d9368a2a9e885e033c890f804800f4c474e0763113",
+    "logs/mac-test_native_movement.log": "4267fc16d35e9232663d877eda0f7a85aca2acf5d40e69c5498b4426521559de",
+    "logs/mac-test_platform_keys.log": "cfd9189f10f4ecdee7b8376c5050dcc9916250b27a2b563dc4044ba136ee4b56",
+    "logs/native-binary-final.log": "3a92c692be6c5018fcbd8d591522e770de75356eb705f828d33478fab9f68e99",
+    "logs/negative-binary-audit.log": "e635c3355a46cd63d62b723c3e19b3010dd68b4362d06db3aec7f60eca178a2f",
+    "logs/package-extracted-resume.log": "abc9a2bb5509b951cf58d557f582a24a407ca9d23731cf427fc933764c1a234d",
+    "logs/package-final.log": "c270bb6df897228527bcebcf2a99c62225e77a97729dd80c07895ad5faf550ee",
+    "logs/package.log": "70f09b93db61c03e4557d73ec5b0a2b3fa125ccb74a4afc0dd419806ec6f5bde",
+    "logs/pe-audit.json": "790fd8bafe16df1ad8f3c93104f059886596a8902aa9eef558c2bdb4b2bbdc65",
+    "logs/pe-audit.log": "790fd8bafe16df1ad8f3c93104f059886596a8902aa9eef558c2bdb4b2bbdc65",
+    "logs/rebuild-app-headless.log": "25622d5145bb4d7753f73860bc5a2d37e9ad55016466c65eb069aa09961180b0",
+    "logs/state-layout.json": "7b03930bb649d088801c702f5041d0bd7f69705868c1dd94a9a303f79faa6f78",
+    "logs/toolchain-probe-build.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "logs/toolchain-probe-run.log": "9dba84d822141b0e98ea3fd762bc59ce847cff68b9a35090393b11871d8d5a3f",
+    "logs/toolchain-versions.txt": "7752ff4c0d3c6c161ac219b67c0f0684c620dfc8a7a4281e8d39817e08034272",
+    "logs/unicode-rom-import.json": "8c4caefd18b8dbe907be0dca47c8140307920a46da559056d72ce13ac1c1f1b5",
+    "logs/unicode-rom-import.log": "1abcf15f77394d855c5c2886c6452d27a2465dcc5dd9cc69cf508e0e0a6e2d74",
+    "logs/utf8-probe-build.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "logs/utf8-probe-run.log": "66383265382379d7d7a84d65d2ce7815557c37dca8e185415abb52b3e11e23a5",
+    "logs/validate-core.log": "76057b92c5b424217bbc7de9ee5985aea03156de7aff16e82bb5bc03cbbb5322",
+    "validação João/core/ui.log": "c3fe8b687a736f0a3943a092a930404340f04e163259d21a9fa9c77cf02dc063",
+    "validação João/core/result.json": "2c95cb0edafb6ff160f1e84b69888d729e212b81d7c1624c86ae54e9ad4b66bb",
+    "validação João/core/platform-keys.log": "36061c0d64a02683c3beaedba3e0ac999647a4d31213b164c4cec515ba083f6c",
+    "validação João/core/movement.log": "acd8309cc0bff7acfa39b10a078ada51c0ebe30f642cc36cb33a9858a3e13b0c",
+    "validação João/core/native-ages.log": "5ec84dd30dad2218cb1be9604c84348485f5dff6cba728835f58fe16cf210fed",
+    "validação João/core/replay.log": "c2aee8e0d5d9d637388b1a880f867a3adb78a9562ad2bc28b6afc3a7ff5f0fd8",
+    "validação João/core/observed.ref": "3d853fbe12a63e550aef107fffe96348d7c84321871b171c0ca227a71342d2e7",
+    "validação João/core/movement/native-wall.png": "5c57b4591f660a8886fa9c17647eea49f5440962d6821ac2e7c6a0f75eb7c022",
+    "validação João/core/movement/native-walk.png": "d27c20dfe924c44e1cf1cd49b426d35f86d3a7ed3c31d2ec1b8f33e61d7009c8",
+    "validação João/core/movement/native-start.png": "9c3fad9dea6a4166c0ff65d52f3bca41a4130cea2a15352a4bacd9c7a388c02b",
+    "validação João/full-ages/result.json": "b3d1b7a0184e497af454472b37097b1b7071caa4a3488a81220e970cd99b2d18",
+    "validação João/full-ages/run.log": "99eb1e7e8634bb10419426dd4656a901dfdc97d96b7c3df851bca03327321a1c",
+    "validação João/full-ages/observed.ref": "7b627463bb1a9e92b1a0745c4bb78ac6b26fb7020e3da70a7b959c1095672610",
+    "validação João/full-ages/execution.json": "9c94e456b41134ebfa588037ad035deac5a8b6ea397619265e865bceb91096c7",
+    "validação João/headless reload/result.json": "4eb1334c6249d480df0bc4dde34cbde4e411021e9316aa573e9883126664e3be",
+    "validação João/headless reload/run.log": "cd7bfa2ea46b8451cf89817d4920180a7e0ff99d976c6fdaa412a8a83b88ba83",
+    "validação João/headless reload/observed.ref": "3d853fbe12a63e550aef107fffe96348d7c84321871b171c0ca227a71342d2e7",
+    "validação João/pacote final retomada/result.json": "d397c59ee5838414002332828a41412ffc254d873172cbd1917ef2694a2fb9c8",
+    "validação João/pacote final retomada/resume-2.log": "87737a86473d1528995fc42f9b0592376ecef641089fd96ea1f9072a7cb4ee55",
+    "validação João/pacote final retomada/resume-1.log": "87737a86473d1528995fc42f9b0592376ecef641089fd96ea1f9072a7cb4ee55",
+    "validação João/pacote final retomada/resume-2.png": "225bd73ed2780c0bae107981a8b68e2359dea5d3b5ea974ce74f38931a4ef1a9",
+    "validação João/pacote final retomada/resume-1.png": "9a161ca8d50cd6199d1c63757abd48f41e69b8e50f52fd9eb01b1586dbb06782",
+    "validação João/pacote final retomada/import.log": "3252cb238d632e5c33301e22982566bb534805f8c05d1aa2b336fe18e2c79b5d"
+  },
+  "historical_diagnostic_logs": {
+    "logs/build-win-initial.log": "Intentionally interrupted after configuration to increase parallelism and set Wine test paths; superseded by build-win.log.",
+    "logs/app-resume.log": "Default Wine GUI GPU initialization failed on the host Iris 6000; native Windows GPU acceptance remains pending.",
+    "logs/app-resume-software.log": "Earlier scripted timing/focus attempt; superseded by the explicit in-process headless driver mode.",
+    "logs/app-resume-headless.log": "Earlier controlled write fixture omitted changes_game=yes; corrected in the final fixture and passed.",
+    "logs/package.log": "Earlier package before final test-mode and runtime-notice changes; superseded by package-final.log."
+  }
+}

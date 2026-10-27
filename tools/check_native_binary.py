@@ -8,20 +8,25 @@ The library's member list must not contain cpu.c's object; each executable must 
 Nintendo logo (the 48 bytes every Game Boy ROM carries at $104, the one ROM content that is
 the same in both games and cannot be game data the engine keeps on purpose).
 """
-import subprocess, sys
+import argparse, subprocess
 
 LOGO = bytes.fromhex('CEED6666CC0D000B03730083000C000D0008111F8889000EDCCC6EE6DDDDD999BBBB67636E0EECCCDDDC999FBBB9333E')
 
-lib, exes = sys.argv[1], sys.argv[2:]
+parser = argparse.ArgumentParser()
+parser.add_argument('--ar', default='ar', help='Archive tool from the target toolchain')
+parser.add_argument('library')
+parser.add_argument('executables', nargs='+')
+args = parser.parse_args()
+lib, exes = args.library, args.executables
 bad = 0
-members = subprocess.run(['ar', 't', lib], capture_output=True, text=True, check=True).stdout.split()
+members = subprocess.run([args.ar, 't', lib], capture_output=True, text=True, check=True).stdout.split()
 if not members:
     raise SystemExit(f'{lib}: empty archive; cannot verify native code')
-interp = [m for m in members if m.endswith('cpu.c.o') or m.endswith('cpu.o')]
+interp = [m for m in members if m.endswith(('cpu.c.o', 'cpu.o', 'cpu.c.obj', 'cpu.obj'))]
 if interp: print(f'{lib}: contains the interpreter: {interp}'); bad += 1
 else: print(f'{lib}: no interpreter object ({len(members)} members)')
 for exe in exes:
     data = open(exe, 'rb').read()
     if LOGO in data: print(f'{exe}: contains the Nintendo logo bytes (ROM content)'); bad += 1
     else: print(f'{exe}: no ROM header content ({len(data)} bytes)')
-sys.exit(1 if bad else 0)
+raise SystemExit(1 if bad else 0)

@@ -1,4 +1,5 @@
 #include "unit.h"
+#include "platform/tempfile.h"
 #include "core/gb.h"
 #include "platform/tas.h"
 #include "platform/setup.h"
@@ -56,11 +57,13 @@ static void native_run_reloading(const char *rom_path, const char *inputs, const
   gb->input_at = tas_cb; gb->input_ctx = &t;
   gb->frame_cb = ref_cb; gb->frame_ctx = &rc;
   bool pending = false;
+  char reload_path[4096];
+  if (reload_every) ASSERT(oracles_temp_path(reload_path, sizeof reload_path));
   for (uint64_t i = 0; i < limit && !rc.mismatch && !gb->hung; i++) {
     if (reload_every && i && i % reload_every == 0) pending = true;
     if (pending && threads_parked(gb)) {
-      ASSERT(oracles_save_boot_state(gb, "/tmp/oracles-native-reload.state"));
-      ASSERT(oracles_load_boot_state(gb, "/tmp/oracles-native-reload.state"));
+      ASSERT(oracles_save_boot_state(gb, reload_path));
+      ASSERT(oracles_load_boot_state(gb, reload_path));
       fibers_reset(gb);
       pending = false;
     }
@@ -73,6 +76,7 @@ static void native_run_reloading(const char *rom_path, const char *inputs, const
          (unsigned long long)rc.checked, (unsigned long long)limit,
          reload_every ? " with state reloads" : "");
   fclose(ref); free(gb); free(rom); tas_free(&t);
+  if (reload_every) ASSERT(remove(reload_path) == 0);
 }
 
 static void native_full_tas_matches_reference(void) {

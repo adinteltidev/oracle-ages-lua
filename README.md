@@ -94,8 +94,8 @@ keyboard, a controller, the mouse, or by tapping its rows.
 | Quick swap | `C` | LB / L1 |
 | Item X / Item Y | `A` / `S` | Y / Triangle, B / Circle |
 | Mute | `M` | |
-| Fullscreen | F11 or Cmd+F | |
-| Save / load state slot 1 | Cmd+S / Cmd+R | |
+| Fullscreen | F11 (also Cmd+F on macOS) | |
+| Save / load state slot 1 | Ctrl+S / Ctrl+R (Cmd on macOS) | |
 
 Every button, including Pause, Fast-forward, Swap and the item buttons, can be remapped in
 Settings > CONTROLS: pick a row, then press the key or controller button (triggers included) you
@@ -129,7 +129,7 @@ There are also quality-of-life toggles, **all off by default**:
 
 Esc pauses the game: Resume, Save state, Load state (4 slots, each with a thumbnail and the time
 it was saved, to the second) and Quit to menu, which saves a Resume state and returns to the main
-menu. Cmd+S and Cmd+R are shortcuts for slot 1. Messages like *Saved to slot 2* or *Sound off*
+menu. Ctrl+S and Ctrl+R (Cmd on macOS) are shortcuts for slot 1. Messages like *Saved to slot 2* or *Sound off*
 appear at the bottom of the picture; after a save the message offers **Undo**, which puts back what
 the slot held before.
 
@@ -241,3 +241,8 @@ Behaviour is checked against the original ROM by replaying full playthroughs and
 routine with the original code it replaces.
 
 To build it yourself, or work on it, see [DEVELOPMENT.md](DEVELOPMENT.md).
+
+## Windows x64 local port
+
+See [WINDOWS.md](WINDOWS.md) for the pinned LLVM-MinGW build, PE/dependency audit,
+Wine tests and the remaining acceptance checks on a real Windows machine.

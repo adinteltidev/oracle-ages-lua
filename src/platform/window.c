@@ -1,4 +1,5 @@
 #include "platform/window.h"
+#include "platform/keys.h"
 #include "core/gb.h"
 #include <stdio.h>
 
@@ -57,7 +58,7 @@ void oracles_frame_wait(void) {
 }
 
 bool oracles_window_key(SDL_Window *win, const SDL_KeyboardEvent *key) {
-  bool toggle = key->scancode == SDL_SCANCODE_F11 || ((key->mod & SDL_KMOD_GUI) && key->scancode == SDL_SCANCODE_F);
+  bool toggle = oracles_fullscreen_key(key);
   if (!toggle) return false;
   if (!key->repeat) SDL_SetWindowFullscreen(win, !(SDL_GetWindowFlags(win) & SDL_WINDOW_FULLSCREEN));
   return true;

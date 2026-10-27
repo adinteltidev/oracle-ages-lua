@@ -25,3 +25,12 @@ build-win/
 *.sav
 *.dmg
 *.app/
+
+# Local Windows packaging, cross-compilers and private runtime state.
+/packages/
+/toolchains/
+/.wine-prefix/
+*.state
+# Existing TAS boot fixtures remain versioned.
+!/tas/*-boot.state
+/.tools/
