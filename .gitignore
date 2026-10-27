@@ -44,3 +44,8 @@ build-win/
 *.sav.bak
 *.state.tmp
 *.sav.tmp
+
+# CI reports and downloaded artifacts.
+/reports/
+/smoke/
+/release-assets/

@@ -16,8 +16,12 @@ target_link_libraries(oracles-switch PRIVATE oraclesnative SDL2 EGL glapi drm_no
 set_target_properties(oracles-switch PROPERTIES SUFFIX ".elf")
 find_program(ORACLES_ELF2NRO elf2nro HINTS "$ENV{ORACLES_SWITCH_TOOLS}" REQUIRED NO_CMAKE_FIND_ROOT_PATH)
 find_program(ORACLES_NACPTOOL nacptool HINTS "$ENV{ORACLES_SWITCH_TOOLS}" REQUIRED NO_CMAKE_FIND_ROOT_PATH)
+set(SWITCH_NACP_VERSION "${ORACLES_VERSION_NUMBER}")
+if(NOT SWITCH_NACP_VERSION)
+  set(SWITCH_NACP_VERSION "0.1.0")
+endif()
 add_custom_command(OUTPUT "${CMAKE_BINARY_DIR}/oracles-switch.nro"
-  COMMAND "${ORACLES_NACPTOOL}" --create "Oracle of Ages Native" "Native port contributors" "0.1.0" "${CMAKE_BINARY_DIR}/oracles-switch.nacp"
+  COMMAND "${ORACLES_NACPTOOL}" --create "Oracle of Ages Native" "Native port contributors" "${SWITCH_NACP_VERSION}" "${CMAKE_BINARY_DIR}/oracles-switch.nacp"
   COMMAND "${ORACLES_ELF2NRO}" "$<TARGET_FILE:oracles-switch>" "${CMAKE_BINARY_DIR}/oracles-switch.nro"
     --nacp=${CMAKE_BINARY_DIR}/oracles-switch.nacp
     --icon=${CMAKE_SOURCE_DIR}/platform/switch/icon.jpg

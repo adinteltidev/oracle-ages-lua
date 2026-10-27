@@ -12,6 +12,7 @@ parser.add_argument('output', type=Path)
 parser.add_argument('--audit', type=Path, required=True)
 parser.add_argument('--sdl-source', type=Path, required=True)
 parser.add_argument('--llvm-root', type=Path, required=True, help='LLVM-MinGW runtime license notices')
+parser.add_argument('--verification', type=Path)
 args = parser.parse_args()
 root = Path(__file__).resolve().parents[1]
 data = args.executable.read_bytes()
@@ -21,6 +22,10 @@ assert audit['format'] == 'PE32+ x86-64' and audit['subsystem'] == 'Windows GUI'
 assert audit['private_dlls_required'] == [] and audit['utf8_manifest']
 files = {'Oracles.exe': data, 'LEIA-ME.txt': (root / 'LEIA-ME-WINDOWS.txt').read_bytes(),
          'LICENSE': (root / 'LICENSE').read_bytes(), 'Licenses/SDL3.txt': (args.sdl_source / 'LICENSE.txt').read_bytes()}
+if args.verification:
+    manifest = json.loads(args.verification.read_text())
+    assert manifest['binary']['sha256'] == audit['sha256'], 'Manifest does not match this EXE'
+    files['BUILD.json'] = args.verification.read_bytes()
 files['Licenses/LLVM-LICENSE.TXT'] = (args.llvm_root / 'LICENSE.TXT').read_bytes()
 for notice in sorted((args.llvm_root / 'x86_64-w64-mingw32/share/mingw32').glob('COPYING*')):
     files['Licenses/MinGW/' + notice.name] = notice.read_bytes()

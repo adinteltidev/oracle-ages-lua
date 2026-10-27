@@ -1,0 +1,60 @@
+#!/bin/bash
+set -euo pipefail
+platform=${1:?Usage: build.sh windows|macos|switch}
+export ORACLES_VERSION=${ORACLES_VERSION:-}
+export ORACLES_RELEASES=adinteltidev/oracle-ages-native
+export ORACLES_SWITCH_BUILD=${GITHUB_SHA:-$(git rev-parse HEAD)}
+mkdir -p "dist/$platform" reports
+case "$platform" in
+  windows)
+    export ORACLES_LLVM_MINGW
+    ORACLES_LLVM_MINGW=$(python3 tools/fetch_windows_toolchain.py .tools/llvm)
+    export ORACLES_JOBS=3
+    sh tools/build_windows_llvm.sh build-win-ci
+    python3 tools/audit_windows_binary.py build-win-ci/Oracles.exe --llvm-bin "$ORACLES_LLVM_MINGW/bin" --output reports/windows-audit.json
+    python3 tools/ci/manifest.py --platform windows-x64 --binary build-win-ci/Oracles.exe \
+      --audit reports/windows-audit.json --toolchain .tools/llvm/llvm-mingw.json \
+      --compiler "$("$ORACLES_LLVM_MINGW/bin/x86_64-w64-mingw32-clang" --version | head -1)" --output dist/windows/windows-BUILD.json
+    python3 tools/package_windows.py build-win-ci/Oracles.exe dist/windows/Oracles-Windows-x64.zip \
+      --audit reports/windows-audit.json --verification dist/windows/windows-BUILD.json \
+      --sdl-source build-win-ci/_deps/sdl3-src --llvm-root "$ORACLES_LLVM_MINGW"
+    python3 - <<'PY'
+import zipfile
+with zipfile.ZipFile('reports/smoke-input.zip','w',zipfile.ZIP_DEFLATED) as z:
+    for name in ['Oracles.exe','oracles-native-run.exe','test_ui.exe','test_platform_keys.exe']:
+        z.write('build-win-ci/'+name,name)
+PY
+    ;;
+  macos)
+    cmake -S . -B build-macos-ci -G Ninja -DCMAKE_BUILD_TYPE=Release \
+      -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0 \
+      -DORACLES_SDL=ON -DORACLES_SDL_VENDORED=ON -DORACLES_VERSION="$ORACLES_VERSION" -DORACLES_RELEASES="$ORACLES_RELEASES"
+    cmake --build build-macos-ci --target oracles-native-app oracles-native-run test_ui test_platform_keys test_native_ages test_switch_storage --parallel 3
+    ctest --test-dir build-macos-ci --output-on-failure --output-junit "$PWD/reports/macos.xml" -R '^(ui|platform_keys|native_ages|switch_storage)$'
+    python3 tools/check_native_binary.py build-macos-ci/liboraclesnative.a build-macos-ci/Oracles.app/Contents/MacOS/Oracles build-macos-ci/oracles-native-run
+    sh tools/make_dmg.sh build-macos-ci dist/macos/Oracles-macOS-Intel.dmg
+    python3 tools/ci/macos_audit.py build-macos-ci/Oracles.app --output reports/macos-audit.json
+    python3 tools/ci/manifest.py --platform macos-intel --binary build-macos-ci/Oracles.app/Contents/MacOS/Oracles \
+      --audit reports/macos-audit.json --junit reports/macos.xml --compiler "$(clang --version | head -1)" --output dist/macos/macos-BUILD.json
+    ;;
+  switch)
+    llvm_root=$(python3 tools/fetch_windows_toolchain.py .tools/llvm)
+    export ORACLES_LLVM="$llvm_root/bin"
+    python3 tools/fetch_switch_sdk.py --destination .tools/switch-sdk --downloads .tools/switch-downloads
+    python3 tools/fetch_switch_host_tools.py --destination .tools/switch-host-tools
+    export DEVKITPRO="$PWD/.tools/switch-sdk/opt/devkitpro"
+    export ORACLES_SWITCH_TOOLS="$PWD/.tools/switch-host-tools"
+    export JOBS=3
+    sh tools/build_switch_llvm.sh
+    python3 tools/audit_switch_binary.py build-switch-llvm --llvm-bin "$ORACLES_LLVM" --output reports/switch-audit.json
+    python3 tools/ci/manifest.py --platform switch-arm64 --binary build-switch-llvm/oracles-switch.nro \
+      --audit reports/switch-audit.json --toolchain platform/switch/sdk-lock.json \
+      --compiler "$("$ORACLES_LLVM/clang" --version | head -1)" --output dist/switch/switch-BUILD.json
+    python3 tools/package_switch.py build-switch-llvm dist/switch/Oracles-Switch.zip \
+      --audit reports/switch-audit.json --verification dist/switch/switch-BUILD.json
+    cp build-switch-llvm/oracles-switch.nro dist/switch/
+    ;;
+  *) echo "Unknown platform: $platform" >&2; exit 2 ;;
+esac
+
+python3 tools/ci/finalize.py "dist/$platform/$platform-BUILD.json"
