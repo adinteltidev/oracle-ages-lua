@@ -68,6 +68,14 @@ set(ORACLES_SHARED_SRC ${ORACLES_GAME_SRC}
   src/assets/assets.c
   src/assets/codemap.c
 )
+option(ORACLES_SWITCH "Build the libnx/SDL2 Nintendo Switch frontend" OFF)
+if(ORACLES_SWITCH OR CMAKE_SYSTEM_NAME STREQUAL "NintendoSwitch")
+  add_library(oraclesnative STATIC ${ORACLES_SHARED_SRC} src/rt/native.c)
+  target_include_directories(oraclesnative PUBLIC src)
+  target_compile_definitions(oraclesnative PRIVATE ORACLES_SWITCH_FIBERS=1)
+  include(platform/switch/targets.cmake)
+  return()
+endif()
 add_library(oraclescore STATIC ${ORACLES_SHARED_SRC} src/core/cpu.c)
 target_include_directories(oraclescore PUBLIC src)
 add_library(oraclesnative STATIC ${ORACLES_SHARED_SRC} src/rt/native.c)

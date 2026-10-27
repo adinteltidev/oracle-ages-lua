@@ -34,3 +34,9 @@ build-win/
 # Existing TAS boot fixtures remain versioned.
 !/tas/*-boot.state
 /.tools/
+
+# Switch build and private SD contents.
+*.nro
+*.nacp
+*.elf
+/sdcard/

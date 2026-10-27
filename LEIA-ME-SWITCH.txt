@@ -1,0 +1,51 @@
+ORACLE OF AGES NATIVE - NINTENDO SWITCH (EXPERIMENTAL)
+
+Este pacote e para o Nintendo Switch original (ARM64), em um ambiente
+ja capaz de executar aplicativos homebrew. O arquivo .nro nao e um
+instalador para consoles de fabrica. O usuario confirmou que funcionou
+no Switch; os testes detalhados de hardware continuam pendentes.
+
+INSTALACAO
+1. Extraia a pasta switch/ na raiz do cartao SD.
+2. Copie sua ROM de Ages USA/Australia, com o nome ages.gbc, para:
+   /switch/oracle-ages-native/ages.gbc
+   SHA1 esperado: 880374fb978b18af4aa529e2e32f7ffb4d7dd2f4
+3. Execute oracles-switch.nro no ambiente homebrew.
+   Prefira execucao com memoria de aplicacao completa, nao modo Album.
+   O modo Album/memoria reduzida nao foi validado.
+
+A ROM NAO ESTA INCLUIDA. Nao copie ROMs, saves ou caches para o GitHub.
+
+MENU INICIAL
+A: jogar
+X: replay curto (20.000 frames / 333 checkpoints) com reloads
+Y: replay completo (289.518 frames / 4.825 checkpoints) com reloads
++: sair / cancelar replay
+
+CONTROLES DO JOGO
+Direcional ou analogico esquerdo: mover
+A / B: botoes do Game Boy
++: Start   -: Select
+ZL: solicitar quicksave   ZR: solicitar quickload
+L + R + +: sair do jogo salvando SRAM
+Quicksave/quickload aguardam um ponto seguro das fibras.
+
+ARQUIVOS LOCAIS
+sram.sav: save de bateria, gravado periodicamente e na saida normal
+quick.state: quicksave deste build
+runtime.log: log da ultima execucao
+replay-result.txt / replay-observed.txt: resultado e hashes do ultimo teste
+replay-reload.state: temporario do teste, separado do quicksave
+Os testes nao carregam nem sobrescrevem o SRAM/quick.state do jogador.
+
+VALIDACAO NECESSARIA
+O build foi gerado com LLVM para ARM64 e bibliotecas do SDK devkitPro.
+Isso ainda exige teste real de video, audio, controles, suspensao/HOME,
+portatil/dock, persistencia e replays. Consulte SWITCH.md e o manifesto.
+Um PASS no replay curto nao substitui o teste completo ou de desempenho.
+Guarde seus saves antes de experimentar um build novo.
+
+CODIGO-FONTE E LICENCAS
+O pacote acompanha o codigo do projeto em Sources/oracle-ages-switch-source.tar.gz.
+As bibliotecas externas e as receitas de reproducao estao documentadas
+em SWITCH.md, platform/switch/sdk-lock.json e Licenses/.

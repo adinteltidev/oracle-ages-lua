@@ -1,0 +1,40 @@
+{
+  "image": "devkitpro/devkita64@sha256:82575ea78651b530b2e232bb3799cfd1fe331514e053d5f724bb4b28191fb79d",
+  "packages": {
+    "switch-libdrm_nouveau": "1.0.1-2",
+    "switch-tools": "1.13.1-1",
+    "switch-mesa": "20.1.0-5",
+    "libnx": "4.12.0-1",
+    "switch-sdl2": "2.28.5-4",
+    "switch-cmake": "1.5.2-1",
+    "devkitA64": "r29.2-1"
+  },
+  "layers": [
+    {
+      "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+      "digest": "sha256:59e22667830bf04fb35e15ed9c70023e9d121719bb87f0db7f3159ee7c7e0b8d",
+      "size": 28230270
+    },
+    {
+      "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+      "digest": "sha256:74701f26999d7854982cfa51dafd83beeaf644031b943c4cbd0a245139a742a4",
+      "size": 265076006
+    },
+    {
+      "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+      "digest": "sha256:ea5d3216df1fb580c54c016ee13ff58eb965c0a0b0ef08afd8dfd5a1c03e95a8",
+      "size": 28381973
+    },
+    {
+      "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+      "digest": "sha256:da5be4661c9ac4e389f9e5f939e58bff7d32bc60569fa7c14e849d5246881691",
+      "size": 382982909
+    }
+  ],
+  "native_packagers_commit": "22756068dd0ed6ff9734c59cb4f99ebd3f62555b",
+  "target_library_sha256": {
+    "libnx/lib/libnx.a": "12a59cdfdceab83e39ee129b0275dd803e393e83f19de3922a3b6cc95c767edd",
+    "portlibs/switch/lib/libSDL2.a": "c9b56659800a8fd5304f3ddf1e7647e707ffc4b7d60b3073286ce5ae2b233429",
+    "libnx/switch.ld": "253e3ea34d4d5df97a4a26c9e8f35f598060095365ce078c219e17cb28a95f7f"
+  }
+}

@@ -12,7 +12,7 @@
 #include <string.h>
 #ifdef _WIN32
 #include <windows.h>
-#else
+#elif !defined(ORACLES_SWITCH_FIBERS)
 #include <sys/mman.h>
 #include <unistd.h>
 #endif
@@ -125,14 +125,29 @@ static void *fiber_init_frame(uint8_t *top, void (*fn)(void *), void *arg) {
 static void fiber_prepare(struct Fibers *F, Fiber *f, GB *gb) {
   (void)F;
   if (!f->stack) {
+#ifdef ORACLES_SWITCH_FIBERS
+    // Horizon does not provide the desktop mmap/guard-page contract. Keep SP
+    // 16-byte aligned and reserve a checked low-end sentinel. This detects
+    // overwrites at context boundaries; it is not a protected guard page.
+    f->stack = aligned_alloc(16, STACK_SIZE);
+    if (!f->stack) { perror("fiber: aligned_alloc"); abort(); }
+    memset(f->stack, 0xa5, 64);
+#else
     size_t page = (size_t)sysconf(_SC_PAGESIZE);
     f->stack = mmap(NULL, STACK_SIZE, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
     if (f->stack == MAP_FAILED) { perror("fiber: mmap"); abort(); }
     mprotect(f->stack, page, PROT_NONE);
+#endif
   }
   f->sp = fiber_init_frame(f->stack + STACK_SIZE, fiber_main, gb);
 }
-static void fiber_enter(struct Fibers *F, Fiber *f) { oracles_fiber_swap(&F->kernel_sp, f->sp); }
+static void fiber_enter(struct Fibers *F, Fiber *f) {
+  oracles_fiber_swap(&F->kernel_sp, f->sp);
+#ifdef ORACLES_SWITCH_FIBERS
+  for (int i = 0; i < 64; ++i)
+    if (f->stack[i] != 0xa5) { fprintf(stderr, "fiber: stack sentinel overwritten\n"); abort(); }
+#endif
+}
 static void fiber_leave(struct Fibers *F, Fiber *f) { oracles_fiber_swap(&f->sp, F->kernel_sp); }
 #endif
 
