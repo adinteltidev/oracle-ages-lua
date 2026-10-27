@@ -51,7 +51,7 @@ Quando o workflow estiver na branch padrão, a execução manual aceita candidat
 com sufixo, por exemplo `v1.0.2-rc.1` se `VERSION` for `1.0.2`:
 
 ```sh
-gh workflow run release.yml --ref main -f tag=v1.0.2-rc.1
+gh workflow run release.yml --repo adinteltidev/oracle-ages-native --ref main -f tag=v1.0.2-rc.1
 ```
 
 Após os builds e o smoke test Windows, a publicação baixa os mesmos artifacts da
@@ -73,7 +73,7 @@ que o arquivo antigo na `main` publique automaticamente. Após o merge, habilite
 `release.yml` na aba Actions ou com:
 
 ```sh
-gh workflow enable release.yml
+gh workflow enable release.yml --repo adinteltidev/oracle-ages-native
 ```
 
 Os jobs de build recebem apenas `contents: read`. Só o job que cria o draft

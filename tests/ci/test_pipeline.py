@@ -83,7 +83,7 @@ pathlib.Path(os.environ['RECORD']).write_text(json.dumps(args))
             fake.chmod(0o755)
             env=dict(os.environ,PATH=str(root/'bin')+os.pathsep+os.environ['PATH'],
                      RUNNER_TEMP=str(root),GITHUB_SHA='a'*40,RELEASE_TAG='v1.0.2-rc.1',
-                     EVENT_NAME='workflow_dispatch',PRERELEASE='true',RECORD=str(root/'record.json'))
+                     EVENT_NAME='workflow_dispatch',PRERELEASE='true',GITHUB_REPOSITORY='owner/repository',RECORD=str(root/'record.json'))
             subprocess.run(['bash',str(ROOT/'tools/ci/create_draft.sh')],cwd=root,env=env,check=True)
             args=json.loads((root/'record.json').read_text())
             self.assertIn('--prerelease',args)
