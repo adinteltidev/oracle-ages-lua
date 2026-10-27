@@ -14,7 +14,9 @@ LOGO = bytes.fromhex('CEED6666CC0D000B03730083000C000D0008111F8889000EDCCC6EE6DD
 
 lib, exes = sys.argv[1], sys.argv[2:]
 bad = 0
-members = subprocess.run(['ar', 't', lib], capture_output=True, text=True).stdout.split()
+members = subprocess.run(['ar', 't', lib], capture_output=True, text=True, check=True).stdout.split()
+if not members:
+    raise SystemExit(f'{lib}: empty archive; cannot verify native code')
 interp = [m for m in members if m.endswith('cpu.c.o') or m.endswith('cpu.o')]
 if interp: print(f'{lib}: contains the interpreter: {interp}'); bad += 1
 else: print(f'{lib}: no interpreter object ({len(members)} members)')

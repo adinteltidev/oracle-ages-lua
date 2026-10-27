@@ -252,6 +252,19 @@ add_executable(test_native_tas tests/test_native_tas.c)
 target_link_libraries(test_native_tas oraclesnative)
 target_compile_definitions(test_native_tas PRIVATE GAME_ROM_DIR="${GAME_ROM_DIR}" TAS_DIR="${CMAKE_SOURCE_DIR}/tas")
 add_test(NAME native_tas COMMAND test_native_tas)
+# Run the supplied Ages ROM independently of the optional Seasons fixtures.
+add_executable(test_native_ages tests/test_native_tas.c)
+target_link_libraries(test_native_ages oraclesnative)
+target_compile_definitions(test_native_ages PRIVATE ORACLES_TEST_AGES_ONLY=1
+  GAME_ROM_DIR="${GAME_ROM_DIR}" TAS_DIR="${CMAKE_SOURCE_DIR}/tas")
+add_test(NAME native_ages COMMAND test_native_ages)
+set_tests_properties(native_ages PROPERTIES SKIP_RETURN_CODE 77 LABELS "rom")
+add_executable(test_native_movement tests/test_native_movement.c)
+target_link_libraries(test_native_movement oraclesnative)
+target_compile_definitions(test_native_movement PRIVATE
+  GAME_ROM_DIR="${GAME_ROM_DIR}" TAS_DIR="${CMAKE_SOURCE_DIR}/tas")
+add_test(NAME native_movement COMMAND test_native_movement)
+set_tests_properties(native_movement PROPERTIES SKIP_RETURN_CODE 77 LABELS "rom")
 add_executable(test_treasure_swap tests/test_treasure_swap.c)
 target_link_libraries(test_treasure_swap oraclesnative oraclesmods)
 target_compile_definitions(test_treasure_swap PRIVATE GAME_ROM_DIR="${GAME_ROM_DIR}" TAS_DIR="${CMAKE_SOURCE_DIR}/tas")
@@ -288,6 +301,9 @@ if(ORACLES_SDL)
   add_test(NAME app_menus COMMAND python3 ${CMAKE_SOURCE_DIR}/tests/test_app_menus.py $<TARGET_FILE:oracles-native>
     "${GAME_ROM_DIR}/Legend of Zelda, The - Oracle of Seasons (USA, Australia).gbc")
   set_tests_properties(app_menus PROPERTIES SKIP_RETURN_CODE 77 LABELS "rom")
+  add_test(NAME app_menus_ages COMMAND python3 ${CMAKE_SOURCE_DIR}/tests/test_app_menus.py $<TARGET_FILE:oracles-native>
+    "${GAME_ROM_DIR}/Legend of Zelda, The - Oracle of Ages (USA, Australia).gbc" ages)
+  set_tests_properties(app_menus_ages PROPERTIES SKIP_RETURN_CODE 77 LABELS "rom")
   add_test(NAME app_eu COMMAND python3 ${CMAKE_SOURCE_DIR}/tests/test_app_eu.py $<TARGET_FILE:oracles-native>
     "${GAME_ROM_DIR}/Legend of Zelda, The - Oracle of Seasons (USA, Australia).gbc"
     "${GAME_ROM_DIR}/Legend of Zelda, The - Oracle of Seasons (Europe) (En,Fr,De,Es,It).gbc")

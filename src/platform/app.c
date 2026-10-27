@@ -1900,6 +1900,10 @@ static GameEnd run_game(SDL_Window *win, SDL_Renderer *ren, SDL_Texture *tex, co
   SDL_AudioSpec spec = {SDL_AUDIO_S16, 2, APU_SAMPLE_RATE};
   SDL_AudioStream *audio = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &spec, NULL, NULL);
   if (audio) { SDL_SetAudioStreamGain(audio, volume_gain(false)); SDL_ResumeAudioStreamDevice(audio); }
+  if (getenv("ORACLES_DIAGNOSTICS")) {
+    fprintf(stderr, "audio: driver=%s, stream=%s, rate=%d\n",
+            SDL_GetCurrentAudioDriver(), audio ? "active" : SDL_GetError(), APU_SAMPLE_RATE);
+  }
 
   static uint8_t rgb[FB_W * FB_H * 3], paused_rgb[FB_W * FB_H * 3];
   static int16_t samples[APU_RING * 2];
@@ -2224,6 +2228,10 @@ int main(int argc, char **argv) {
   char window_size[1100];
   snprintf(window_size, sizeof window_size, "%swindow.txt", cache);
   if (!oracles_open_window("Oracles", window_size, &win, &ren, &tex)) { fprintf(stderr, "%s\n", SDL_GetError()); return 2; }
+  if (getenv("ORACLES_DIAGNOSTICS")) {
+    fprintf(stderr, "video: driver=%s, renderer=%s\n",
+            SDL_GetCurrentVideoDriver(), SDL_GetRendererName(ren));
+  }
   if (!gui_init(ren)) { fprintf(stderr, "could not load the menu font\n"); return 2; }
   gui_button_event = SDL_RegisterEvents(1);
   gui_theme(&gui_t, false);
