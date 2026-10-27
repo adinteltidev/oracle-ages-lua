@@ -88,3 +88,26 @@ pathlib.Path(os.environ['RECORD']).write_text(json.dumps(args))
             args=json.loads((root/'record.json').read_text())
             self.assertIn('--prerelease',args)
             self.assertNotIn('--verify-tag',args)
+
+class SourceArchiveTests(unittest.TestCase):
+    def test_gitlinks_rom_exclusion_and_exact_committed_bytes(self):
+        import subprocess,tarfile
+        source=module('source_archive')
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp)/'repo';root.mkdir()
+            def git(*args):return subprocess.check_output(['git','-C',str(root),*args],stderr=subprocess.DEVNULL,text=True).strip()
+            git('init');git('config','user.name','CI test');git('config','user.email','ci@example.invalid')
+            (root/'native.c').write_text('committed source')
+            (root/'roms').mkdir();(root/'roms/private.gbc').write_bytes(b'not for distribution')
+            git('add','.');git('commit','-m','fixture')
+            ref=git('rev-parse','HEAD')
+            git('update-index','--add','--cacheinfo','160000,'+ref+',ref/disassembly')
+            git('commit','-m','reference gitlink')
+            (root/'ref/disassembly').mkdir(parents=True)
+            (root/'native.c').write_text('uncommitted mutation')
+            archive=Path(tmp)/'source.tar.gz';source.create(archive,root)
+            with tarfile.open(archive) as tar:
+                self.assertEqual(tar.extractfile('oracle-ages-native/native.c').read(),b'committed source')
+                self.assertFalse(any(n.endswith('.gbc') for n in tar.getnames()))
+                refs=json.load(tar.extractfile('oracle-ages-native/REFERENCE-SUBMODULES.json'))
+                self.assertEqual(refs,{'ref/disassembly':ref})

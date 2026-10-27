@@ -20,7 +20,8 @@ Os artifacts `package-*` contêm os pacotes e manifestos `*-BUILD.json` do próp
 commit executado. Os artifacts de testes contêm apenas relatórios e executáveis
 necessários ao smoke test; nenhum contém ROM comercial, cache de jogo ou SRAM.
 Builds de CI ficam retidos por 7 dias; candidatos de release, por 30 dias.
-Somente downloads do LLVM-MinGW são cacheados inicialmente.
+Downloads do LLVM-MinGW e até 300 MB de objetos do núcleo Linux (ccache) são cacheados.
+O SDK Switch completo não é mantido em cache.
 
 Os manifestos históricos `SWITCH-VERIFICATION.json`/`WINDOWS-VERIFICATION.json`
 na raiz não são usados como prova de uma nova build CI. Cada execução cria sua
@@ -89,6 +90,10 @@ python3 tools/lint_game.py
 actionlint .github/workflows/*.yml
 bash -n tools/ci/build.sh tools/ci/create_draft.sh
 ```
+
+O arquivo de fontes usa os blobs do commit, omite ROMs compiladas e registra
+os commits dos submódulos de referência em `REFERENCE-SUBMODULES.json`, sem
+exigir seu checkout. Esses submódulos não são necessários ao build nativo.
 
 Os scripts de build também podem ser usados localmente, com CMake/Ninja e
 compiladores apropriados no PATH: `bash tools/ci/build.sh switch|windows|macos`.
