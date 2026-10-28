@@ -1,4 +1,7 @@
 #include "unit.h"
+#ifdef ORACLES_LUA_GAMEPLAY
+#include "script/gameplay.h"
+#endif
 #include "platform/tempfile.h"
 #include "core/gb.h"
 #include "platform/tas.h"
@@ -105,5 +108,8 @@ int main(void) {
   RUN(native_seasons_tas_matches_reference);
 #endif
   RUN(native_ages_survives_save_states);
+#ifdef ORACLES_LUA_GAMEPLAY
+  printf("Lua coverage: changed=%llu alternate=%llu\n",(unsigned long long)gameplay_calls(0),(unsigned long long)gameplay_calls(1));
+#endif
   return 0;
 }

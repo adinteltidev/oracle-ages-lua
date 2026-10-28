@@ -13,6 +13,9 @@
 #include "platform/switch_menu_boot.h"
 #include "ui/savefile.h"
 #include "game/game.h"
+#ifdef ORACLES_LUA_GAMEPLAY
+#include "script/gameplay.h"
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -22,7 +25,11 @@
 #include <errno.h>
 #include "platform/switch_status.h"
 
+#ifdef ORACLES_LUA_GAMEPLAY
+#define DATA "sdmc:/switch/oracle-ages-lua/"
+#else
 #define DATA "sdmc:/switch/oracle-ages-native/"
+#endif
 #define ROM DATA "ages.gbc"
 #define SRAM DATA "sram.sav"
 #define STATE DATA "quick.state"
@@ -202,6 +209,9 @@ static int replay(bool full) {
     fprintf(result, "build=%s\nstatus=%s\nframes=%llu\ncheckpoints=%llu\nexpected=%llu\nreloads=%u\nseconds=%.3f\nsizeof_GB=%zu\nsizeof_Apu=%zu\nreason=%s\n",
       ORACLES_SWITCH_BUILD, ok ? "PASS" : cancelled ? "CANCELLED" : "FAIL", (unsigned long long)frames,
       (unsigned long long)r.checked, (unsigned long long)expected, reloads, seconds, sizeof(GB), sizeof(Apu), gb_stop_reason);
+#ifdef ORACLES_LUA_GAMEPLAY
+    fprintf(result,"lua_changed=%llu\nlua_alternate=%llu\nlua_heap=%zu\n",(unsigned long long)gameplay_calls(0),(unsigned long long)gameplay_calls(1),gameplay_memory());
+#endif
     fclose(result);
   }
   printf("\n%s: %llu/%llu checkpoints, %.2fs\n", ok ? "PASS" : "FAIL / CANCELLED",
@@ -404,6 +414,9 @@ static int play(void) {
   result = game->hung ? 1 : 0;
   fprintf(stderr, "frames=%llu late=%llu underruns=%llu reason=%s\n", (unsigned long long)frames,
           (unsigned long long)late, (unsigned long long)underruns, gb_stop_reason);
+#ifdef ORACLES_LUA_GAMEPLAY
+  fprintf(stderr,"Lua changed=%llu alternate=%llu heap=%zu\n",(unsigned long long)gameplay_calls(0),(unsigned long long)gameplay_calls(1),gameplay_memory());
+#endif
   if (!save_sram()) { fprintf(stderr, "Final SRAM save failed\n"); result = 1; }
  done:
   if (result) fprintf(stderr, "SDL: %s; engine: %s\n", SDL_GetError(), gb_stop_reason);

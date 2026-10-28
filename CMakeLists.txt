@@ -53,6 +53,8 @@ macro(oracles_fetch_sdl)
   set(ORACLES_SDL_TARGET SDL3::SDL3-static)
 endmacro()
 
+include(cmake/LuaGameplay.cmake)
+
 file(GLOB_RECURSE ORACLES_GAME_SRC CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/src/game/*.c")
 set(ORACLES_SHARED_SRC ${ORACLES_GAME_SRC}
   src/core/gb.c
@@ -80,6 +82,12 @@ if(ORACLES_SWITCH OR CMAKE_SYSTEM_NAME STREQUAL "NintendoSwitch")
   add_library(oraclesnative STATIC ${ORACLES_SHARED_SRC} src/rt/native.c)
   target_include_directories(oraclesnative PUBLIC src)
   target_compile_definitions(oraclesnative PRIVATE ORACLES_SWITCH_FIBERS=1)
+  if(ORACLES_LUA_GAMEPLAY)
+    set_source_files_properties(src/game/common/interactions/switchTileToggler.c
+      PROPERTIES COMPILE_DEFINITIONS ORACLES_LUA_GAMEPLAY=1)
+    target_compile_definitions(oraclesnative INTERFACE ORACLES_LUA_GAMEPLAY=1)
+    target_link_libraries(oraclesnative PUBLIC oraclesgameplay)
+  endif()
   include(platform/switch/targets.cmake)
   return()
 endif()
@@ -87,6 +95,10 @@ add_library(oraclescore STATIC ${ORACLES_SHARED_SRC} src/core/cpu.c)
 target_include_directories(oraclescore PUBLIC src)
 add_library(oraclesnative STATIC ${ORACLES_SHARED_SRC} src/rt/native.c)
 target_include_directories(oraclesnative PUBLIC src)
+if(ORACLES_LUA_GAMEPLAY)
+  target_compile_definitions(oraclesnative PUBLIC ORACLES_LUA_GAMEPLAY=1)
+  target_link_libraries(oraclesnative PUBLIC oraclesgameplay)
+endif()
 
 add_executable(oracles-run src/platform/headless.c)
 target_link_libraries(oracles-run oraclescore)
@@ -191,18 +203,9 @@ if(ORACLES_SDL OR ANDROID)
   endif()
 endif()
 
-add_library(oraclesmods STATIC src/mods/overlay.c src/mods/mods.c src/mods/api.c src/mods/sandbox.c src/mods/treasures.c
-  third_party/lua/lapi.c third_party/lua/lauxlib.c third_party/lua/lbaselib.c
-  third_party/lua/lcode.c third_party/lua/lcorolib.c third_party/lua/lctype.c third_party/lua/ldblib.c
-  third_party/lua/ldebug.c third_party/lua/ldo.c third_party/lua/ldump.c third_party/lua/lfunc.c
-  third_party/lua/lgc.c third_party/lua/linit.c third_party/lua/liolib.c third_party/lua/llex.c
-  third_party/lua/lmathlib.c third_party/lua/lmem.c third_party/lua/loadlib.c third_party/lua/lobject.c
-  third_party/lua/lopcodes.c third_party/lua/loslib.c third_party/lua/lparser.c third_party/lua/lstate.c
-  third_party/lua/lstring.c third_party/lua/lstrlib.c third_party/lua/ltable.c third_party/lua/ltablib.c
-  third_party/lua/ltm.c third_party/lua/lundump.c third_party/lua/lutf8lib.c third_party/lua/lvm.c
-  third_party/lua/lzio.c)
+add_library(oraclesmods STATIC src/mods/overlay.c src/mods/mods.c src/mods/api.c src/mods/sandbox.c src/mods/treasures.c)
 target_include_directories(oraclesmods PUBLIC src PRIVATE third_party/lua)
-target_link_libraries(oraclesmods PUBLIC oraclesui oraclesitem)
+target_link_libraries(oraclesmods PUBLIC oraclesui oraclesitem oracleslua)
 if(NOT WIN32)
   target_compile_definitions(oraclesmods PRIVATE LUA_USE_POSIX)
 endif()
@@ -221,6 +224,18 @@ if(ANDROID)
 endif()
 
 enable_testing()
+if(ORACLES_LUA_GAMEPLAY)
+  add_executable(test_lua_gameplay tests/test_lua_gameplay.c)
+  target_include_directories(test_lua_gameplay PRIVATE tests)
+  target_link_libraries(test_lua_gameplay PRIVATE oraclesgameplay)
+  add_test(NAME lua_gameplay COMMAND test_lua_gameplay)
+  add_executable(test_lua_gameplay_rom tests/test_lua_gameplay_rom.c)
+  target_include_directories(test_lua_gameplay_rom PRIVATE tests)
+  target_link_libraries(test_lua_gameplay_rom PRIVATE oraclesnative)
+  target_compile_definitions(test_lua_gameplay_rom PRIVATE GAME_ROM_DIR="${CMAKE_SOURCE_DIR}/roms")
+  add_test(NAME lua_gameplay_rom COMMAND test_lua_gameplay_rom)
+  set_tests_properties(lua_gameplay_rom PROPERTIES SKIP_RETURN_CODE 77 LABELS "rom" TIMEOUT 120)
+endif()
 set(TEST_ROM_DIR ${CMAKE_SOURCE_DIR}/tests/roms)
 set(GAME_ROM_DIR "${CMAKE_SOURCE_DIR}/roms" CACHE PATH "Game ROM directory used by tests")
 set(ORACLES_TAS_DIR "${CMAKE_SOURCE_DIR}/tas" CACHE PATH "TAS data directory used by native tests")

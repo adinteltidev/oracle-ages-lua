@@ -24,8 +24,12 @@ set(SWITCH_NACP_VERSION "${ORACLES_SWITCH_VERSION}")
 if(NOT SWITCH_NACP_VERSION)
   set(SWITCH_NACP_VERSION "0.1.0")
 endif()
+set(ORACLES_SWITCH_TITLE "Oracle of Ages Native")
+if(ORACLES_LUA_GAMEPLAY)
+  set(ORACLES_SWITCH_TITLE "Oracle of Ages - Lua pilot")
+endif()
 add_custom_command(OUTPUT "${CMAKE_BINARY_DIR}/oracles-switch.nro"
-  COMMAND "${ORACLES_NACPTOOL}" --create "Oracle of Ages Native" "Native port contributors" "${SWITCH_NACP_VERSION}" "${CMAKE_BINARY_DIR}/oracles-switch.nacp"
+  COMMAND "${ORACLES_NACPTOOL}" --create "${ORACLES_SWITCH_TITLE}" "Native port contributors" "${SWITCH_NACP_VERSION}" "${CMAKE_BINARY_DIR}/oracles-switch.nacp"
   COMMAND "${ORACLES_ELF2NRO}" "$<TARGET_FILE:oracles-switch>" "${CMAKE_BINARY_DIR}/oracles-switch.nro"
     --nacp=${CMAKE_BINARY_DIR}/oracles-switch.nacp
     --icon=${CMAKE_SOURCE_DIR}/platform/switch/icon.jpg

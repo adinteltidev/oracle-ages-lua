@@ -1,0 +1,31 @@
+name: Experimental Lua gameplay
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'CMakeLists.txt'
+      - 'gameplay/**'
+      - 'src/script/**'
+      - 'src/game/common/interactions/switchTileToggler.c'
+      - 'cmake/LuaGameplay.cmake'
+      - 'tests/test_lua_gameplay*'
+      - '.github/workflows/lua-gameplay.yml'
+permissions:
+  contents: read
+jobs:
+  decisions:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-15-intel, windows-2022]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - name: Configure standalone bounded runtime
+        run: cmake -S . -B build-lua-ci -DORACLES_SDL=OFF -DORACLES_LUA_GAMEPLAY=ON
+      - name: Compile
+        run: cmake --build build-lua-ci --config Release --target test_lua_gameplay --parallel 3
+      - name: Test (no commercial ROM)
+        run: ctest --test-dir build-lua-ci -C Release -R "^lua_gameplay$" --output-on-failure

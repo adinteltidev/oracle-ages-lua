@@ -5,7 +5,7 @@ build_dir=${1:-"$source_dir/build-native-x64"}
 mkdir -p "$build_dir"
 build_dir=$(CDPATH= cd -- "$build_dir" && pwd)
 set -- cmake -S "$source_dir" -B "$build_dir" -G Ninja \
-  -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_OSX_ARCHITECTURES=x86_64 \
+  -DCMAKE_BUILD_TYPE=RelWithDebInfo -DORACLES_LUA_GAMEPLAY="${ORACLES_LUA_GAMEPLAY:-OFF}" -DCMAKE_OSX_ARCHITECTURES=x86_64 \
   -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0 -DORACLES_SDL=ON -DORACLES_SDL_VENDORED=ON
 if [ -n "${ORACLES_SDL_SOURCE_DIR:-}" ]; then
   set -- "$@" "-DFETCHCONTENT_SOURCE_DIR_SDL3=$ORACLES_SDL_SOURCE_DIR"
