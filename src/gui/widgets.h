@@ -78,6 +78,8 @@ bool header(const GuiTheme *t, const char *title, const char *hint);
 // Underlined tabs; returns the one tapped, or GUI_NONE. focus tints the selected tab (the tab row,
 // not the list under it, has the keys).
 int tab_bar(const GuiTheme *t, const char *id, const char *const *labels, int n, int selected, bool focus);
+// Home header shared by desktop and Switch: tabs and the current build version.
+int version_tabs(const GuiTheme *t, const char *id, const char *const *labels, int n, int selected, bool focus, const char *version);
 // The keyboard hint under a page, on keyboard screens only.
 void hint_line(const GuiTheme *t, const GuiFrame *f, const char *s);
 // What the hints call accept and back: the frame's names, or the keyboard's.

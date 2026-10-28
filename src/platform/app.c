@@ -1276,7 +1276,7 @@ static void update_start(void) {
 
 // The Version row's values, and the notice once the thread has found a release.
 static void update_show(void) {
-  snprintf(settings.version, sizeof settings.version, "%s", ORACLES_VERSION[0] ? ORACLES_VERSION : "dev");
+  snprintf(settings.version, sizeof settings.version, "%s", ORACLES_DISPLAY_VERSION[0] ? ORACLES_DISPLAY_VERSION : "dev");
   if (SDL_GetAtomicInt(&update_found)) snprintf(settings.update, sizeof settings.update, "%.15s", update_rel.tag + (update_rel.tag[0] == 'v'));
 }
 

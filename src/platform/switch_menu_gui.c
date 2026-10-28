@@ -10,17 +10,7 @@ void switch_menu_draw(SwitchMenu *m, int w, int h) {
   int selected = m->files_page ? m->file : m->tab == 2 ? m->setting : m->row;
   keep_visible(CLAY_ID("SwitchList"), CLAY_IDI("SwitchRow", selected));
   PAGE(t, &f) {
-    CLAY({.layout={.sizing={CLAY_SIZING_GROW(0),CLAY_SIZING_FIXED(gui_px(52))},
-                    .childGap=gui_px(8)},
-          .border={.color=gui_rgb(t->line),.width={.bottom=1}}}) {
-      tab_bar(t, "SwitchTab", tabs, 3, m->tab, false);
-      CLAY({.id=CLAY_ID("SwitchVersion"),
-            .layout={.sizing={CLAY_SIZING_FIT(0),CLAY_SIZING_GROW(0)},
-                     .padding={0,gui_px(14),0,gui_px(4)},
-                     .childAlignment={.y=CLAY_ALIGN_Y_CENTER}}}) {
-        label("v" ORACLES_SWITCH_VERSION,TAG,t->muted);
-      }
-    }
+    version_tabs(t,"SwitchTab",tabs,3,m->tab,false,ORACLES_SWITCH_VERSION);
     LIST("SwitchList") {
       if (m->tab == 1) {
         section(t, "Not available");
