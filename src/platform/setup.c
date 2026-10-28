@@ -61,8 +61,10 @@ bool oracles_save_boot_state(const GB *gb, const char *path) {
   BootStateHeader h = {{0}, BOOT_STATE_VERSION, (uint32_t)sizeof *gb};
   memcpy(h.magic, BOOT_STATE_MAGIC, sizeof h.magic);
   size_t n = fwrite(&h, 1, sizeof h, f) + fwrite(gb, 1, sizeof *gb, f);
-  fclose(f);
-  return n == sizeof h + sizeof *gb;
+  bool ok = n == sizeof h + sizeof *gb && !ferror(f);
+  if (fflush(f)) ok = false;
+  if (fclose(f)) ok = false;
+  return ok;
 }
 
 void oracles_copy_state(GB *gb, const GB *src) {

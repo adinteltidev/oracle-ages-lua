@@ -7,7 +7,9 @@ cmake_bin=${ORACLES_CMAKE:-cmake}
 set -- -S "$root" -B "$build" -G Ninja \
   -DCMAKE_TOOLCHAIN_FILE="$root/cmake/llvm-mingw-x86_64.cmake" \
   -DORACLES_LLVM_MINGW="$ORACLES_LLVM_MINGW" \
-  -DCMAKE_BUILD_TYPE=Release -DORACLES_SDL=ON -DORACLES_SDL_VENDORED=ON
+  -DCMAKE_BUILD_TYPE=Release -DORACLES_SDL=ON -DORACLES_SDL_VENDORED=ON \
+  -DORACLES_VERSION="${ORACLES_VERSION:-}" \
+  -DORACLES_RELEASES="${ORACLES_RELEASES:-adinteltidev/oracle-ages-native}"
 if [ -n "${ORACLES_NINJA:-}" ]; then set -- "$@" -DCMAKE_MAKE_PROGRAM="$ORACLES_NINJA"; fi
 if [ -n "${ORACLES_SDL_SOURCE:-}" ]; then set -- "$@" -DFETCHCONTENT_SOURCE_DIR_SDL3="$ORACLES_SDL_SOURCE"; fi
 if [ -n "${ORACLES_WINDOWS_SOURCE_ROOT:-}" ]; then

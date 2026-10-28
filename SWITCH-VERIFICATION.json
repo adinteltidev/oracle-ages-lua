@@ -1,0 +1,152 @@
+{
+  "date": "2026-10-27",
+  "status": "quicksave_fix_cross_compiled_pending_console_test",
+  "branch": "port/switch",
+  "base_commit": "3f7ed23",
+  "build_id": "3f7ed23-quicksave-fix1",
+  "compiler": "LLVM 23.1.4 native macOS, aarch64-none-elf",
+  "sdk": {
+    "image": "devkitpro/devkita64@sha256:82575ea78651b530b2e232bb3799cfd1fe331514e053d5f724bb4b28191fb79d",
+    "packages": {
+      "switch-libdrm_nouveau": "1.0.1-2",
+      "switch-tools": "1.13.1-1",
+      "switch-mesa": "20.1.0-5",
+      "libnx": "4.12.0-1",
+      "switch-sdl2": "2.28.5-4",
+      "switch-cmake": "1.5.2-1",
+      "devkitA64": "r29.2-1"
+    },
+    "layers": [
+      {
+        "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+        "digest": "sha256:59e22667830bf04fb35e15ed9c70023e9d121719bb87f0db7f3159ee7c7e0b8d",
+        "size": 28230270
+      },
+      {
+        "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+        "digest": "sha256:74701f26999d7854982cfa51dafd83beeaf644031b943c4cbd0a245139a742a4",
+        "size": 265076006
+      },
+      {
+        "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+        "digest": "sha256:ea5d3216df1fb580c54c016ee13ff58eb965c0a0b0ef08afd8dfd5a1c03e95a8",
+        "size": 28381973
+      },
+      {
+        "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+        "digest": "sha256:da5be4661c9ac4e389f9e5f939e58bff7d32bc60569fa7c14e849d5246881691",
+        "size": 382982909
+      }
+    ],
+    "native_packagers_commit": "22756068dd0ed6ff9734c59cb4f99ebd3f62555b",
+    "target_library_sha256": {
+      "libnx/lib/libnx.a": "12a59cdfdceab83e39ee129b0275dd803e393e83f19de3922a3b6cc95c767edd",
+      "portlibs/switch/lib/libSDL2.a": "c9b56659800a8fd5304f3ddf1e7647e707ffc4b7d60b3073286ce5ae2b233429",
+      "libnx/switch.ld": "253e3ea34d4d5df97a4a26c9e8f35f598060095365ce078c219e17cb28a95f7f"
+    }
+  },
+  "audit": {
+    "format": "NRO / ELF64 AArch64 PIE",
+    "nro_bytes": 30633360,
+    "nro_sha256": "5d9899605d32668949082611453dc9087f72f855130cab14962b7bc8646f7712",
+    "elf_sha256": "982900b6769ca9e00fc4bdf99965654f467a20e4ef06e4d7019a71ebdad2f051",
+    "entry": 0,
+    "segments": [
+      [
+        0,
+        22421504
+      ],
+      [
+        22421504,
+        3821568
+      ],
+      [
+        26243072,
+        4362240
+      ]
+    ],
+    "dynamic_relative_relocations": 69628,
+    "native_objects": 878,
+    "interpreter_object": false,
+    "rom_header_embedded": false,
+    "romfs_bytes": 0,
+    "icon_bytes": 11608,
+    "nacp_bytes": 16384,
+    "undefined_weak_symbols": [
+      "w __cxa_pure_virtual",
+      "                 w __libnx_exception_handler",
+      "                 w __syscall_abort",
+      "                 w __syscall_assert_func",
+      "                 w userAppExit",
+      "                 w userAppInit"
+    ],
+    "hardware_tested": false
+  },
+  "host_validation": {
+    "platform": "macOS Intel x86_64",
+    "storage_test_passed": true,
+    "storage_test_log": "ok switch_storage: first save, repeated overwrite, rollback, backup recovery, write failure\n",
+    "native_game_quicksave_passed": true,
+    "native_game_quicksave_log": "ok switch_quicksave: repeated GB save, state restored, identical 120-frame continuation, backup reload\n",
+    "deterministic_continuation_frames": 120,
+    "arm64_runtime_executed": false
+  },
+  "code_sha256": {
+    "CMakeLists.txt": "54495c104a0502346124a3ef67381ff34772ffc9e8f98492edfe2481731abb1d",
+    "platform/switch/targets.cmake": "aa632f092a6e863355e2b1f5aa168d5bc7ebcf4f2129382b328db6dc1507ceef",
+    "platform/switch/llvm.cmake": "38619d6a9ed0d30cf9eefeaf4fa1de27bce9b27cfe7730a2180a5e44fdfbca0e",
+    "src/platform/switch_main.c": "505cf1f958a0510f88dd188507fc53b84a46a82a17a22f4066aa996a65a2cf34",
+    "src/platform/switch_storage.c": "d1a2ae732966e96b16b1af8a6841bad5ae2ff64e042fc0d10051198f9e93a6ad",
+    "src/platform/switch_storage.h": "6d2fa6387121dd87d85f4221b7ad1c0c8826fb4b67cbc80cfa416ba65ed5341c",
+    "src/platform/switch_status.h": "d68d4d822d2fe1518319137250608dd0d6398b125dfb4136c8d8b26b29ec77c5",
+    "src/rt/fibers.c": "755b0d21df3116b9ed308d7d9ddba5795fb2edebcb024df66f8dfe4493feb1fb",
+    "src/platform/setup.c": "4a227163def1ba9af9ce7018da41703d9c00a3d7eccc5474d4d3fa27d4d22b3f",
+    "tests/test_switch_storage.c": "20a542002ea940b6ade3de04b20c57d2c2bd00c3065aa30b4d6aaf8a9823e38a",
+    "tests/test_switch_quicksave.c": "71d22c8e2397004003648bc1cb36e97c2ac9f95bc1499238d7c380f306859d65"
+  },
+  "pending_hardware": [
+    "ZL first save and repeated saves with on-screen confirmation",
+    "ZR restores the latest state after movement",
+    "SD backup/recovery and save failure feedback",
+    "333-checkpoint replay with reloads",
+    "4825-checkpoint replay with reloads",
+    "video/audio speed and latency",
+    "Joy-Con/Pro Controller and reconnect",
+    "SRAM across processes and quicksave/load",
+    "HOME/suspend/resume and exit",
+    "handheld/docked 30-minute session",
+    "SD full and file replacement failure"
+  ],
+  "rom_included": false,
+  "gcc_build_tested": false,
+  "prior_build": {
+    "build_id": "a828c76-switch-d82910a47f5d",
+    "nro_sha256": "048e7648feeefe3ea30f7607b9994e9ab628d4b33ca9b05c7a676c7d204460ca",
+    "host_validation": {
+      "platform": "macOS Intel x86_64",
+      "fiber_allocator": "ORACLES_SWITCH_FIBERS=1 aligned_alloc + sentinel",
+      "normal_replay": {
+        "frames": 20000,
+        "checkpoints_matched": 333,
+        "passed": true
+      },
+      "replay_with_periodic_state_reload": {
+        "frames": 20000,
+        "checkpoints_matched": 333,
+        "passed": true
+      },
+      "log": "verified 333 checkpoints over 20000 frames\nok native_full_tas_matches_reference\nverified 333 checkpoints over 20000 frames with state reloads\nok native_ages_survives_save_states\n",
+      "native_packagers_rebuild_passed": true,
+      "arm64_assembly_executed": false
+    },
+    "user_hardware_report": {
+      "source": "user report in this conversation",
+      "statement": "funcionou no nintendo switch",
+      "execution_reported_successful": true,
+      "console_model_provided": false,
+      "replay_logs_provided": false,
+      "audio_controls_saves_individually_confirmed": false
+    },
+    "user_quicksave_report": "O quicksave nao esta funcionando no zl"
+  }
+}

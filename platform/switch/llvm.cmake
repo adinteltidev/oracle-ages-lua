@@ -1,0 +1,30 @@
+# Experimental cross-build using a native host LLVM and the devkitPro target SDK.
+# Stock LLVM uses emulated TLS; libnx's GCC libraries retain their soft-TP ABI.
+# Validate the resulting binary on hardware before distributing it as tested.
+set(CMAKE_SYSTEM_NAME Generic)
+set(CMAKE_SYSTEM_PROCESSOR aarch64)
+set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
+set(CMAKE_C_COMPILER "$ENV{ORACLES_LLVM}/clang")
+set(CMAKE_CXX_COMPILER "$ENV{ORACLES_LLVM}/clang++")
+set(CMAKE_AR "$ENV{ORACLES_LLVM}/llvm-ar")
+set(CMAKE_RANLIB "$ENV{ORACLES_LLVM}/llvm-ranlib")
+set(CMAKE_C_COMPILER_TARGET aarch64-none-elf)
+set(CMAKE_CXX_COMPILER_TARGET aarch64-none-elf)
+set(SDK "$ENV{DEVKITPRO}")
+set(NEWLIB "${SDK}/devkitA64/aarch64-none-elf")
+file(GLOB GCC_VERSIONS "${SDK}/devkitA64/lib/gcc/aarch64-none-elf/*")
+list(SORT GCC_VERSIONS COMPARE NATURAL ORDER DESCENDING)
+list(GET GCC_VERSIONS 0 GCC_LIB)
+set(CMAKE_SYSROOT "${NEWLIB}")
+set(COMMON "--no-default-config -march=armv8-a+crc+crypto -mtune=cortex-a57 -fPIE -femulated-tls -ffunction-sections -fdata-sections -D__SWITCH__ -isystem ${SDK}/libnx/include")
+set(CMAKE_C_FLAGS_INIT "${COMMON}")
+set(CMAKE_CXX_FLAGS_INIT "${COMMON}")
+# GNU ld accepts the SDK script without a PT_TLS header; LLD requires one.
+# This header is ELF build metadata; NRO startup still uses the libnx symbols.
+file(READ "${SDK}/libnx/switch.ld" SWITCH_LINK_SCRIPT)
+string(REPLACE "dyn    PT_DYNAMIC;" "dyn    PT_DYNAMIC;\n\ttls    PT_TLS;" SWITCH_LINK_SCRIPT "${SWITCH_LINK_SCRIPT}")
+string(REPLACE "} :data\n\n\tPROVIDE_HIDDEN( __tdata_lma" "} :data :tls\n\n\tPROVIDE_HIDDEN( __tdata_lma" SWITCH_LINK_SCRIPT "${SWITCH_LINK_SCRIPT}")
+string(REPLACE "} :data\n\n\t.bss :" "} :data :tls\n\n\t.bss :" SWITCH_LINK_SCRIPT "${SWITCH_LINK_SCRIPT}")
+file(WRITE "${CMAKE_BINARY_DIR}/switch-llvm.ld" "${SWITCH_LINK_SCRIPT}")
+set(CMAKE_EXE_LINKER_FLAGS_INIT "--no-default-config -fuse-ld=lld -nostdlib -L${NEWLIB}/lib/pic -L${GCC_LIB}/pic -L${SDK}/libnx/lib -Wl,-T,${CMAKE_BINARY_DIR}/switch-llvm.ld,-pie,--no-dynamic-linker,--gc-sections,-z,text,-z,now,--build-id=sha1,-u,_start ${GCC_LIB}/pic/crti.o ${GCC_LIB}/pic/crtbegin.o")
+set(CMAKE_C_STANDARD_LIBRARIES_INIT "-Wl,--start-group -lnx -lsysbase -lc -lm -lgcc -lstdc++ -lpthread -Wl,--end-group ${GCC_LIB}/pic/crtend.o ${GCC_LIB}/pic/crtn.o")

@@ -34,3 +34,18 @@ build-win/
 # Existing TAS boot fixtures remain versioned.
 !/tas/*-boot.state
 /.tools/
+
+# Switch build and private SD contents.
+*.nro
+*.nacp
+*.elf
+/sdcard/
+*.state.bak
+*.sav.bak
+*.state.tmp
+*.sav.tmp
+
+# CI reports and downloaded artifacts.
+/reports/
+/smoke/
+/release-assets/
