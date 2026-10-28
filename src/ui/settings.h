@@ -29,7 +29,7 @@ typedef struct {
   Bindings bindings;
   char sync_label[12];          // the SYNC row's value, kept by the app (sync.ini, not settings.ini)
   bool portable;                // portable.txt beside the app, kept by the app (not settings.ini)
-  char version[16];             // this build's release, "dev" for a local build; kept by the app
+  char version[16];             // this build's display version (release override or VERSION); kept by the app
   char update[16];              // a newer release to download, or empty; kept by the app
 } Settings;
 

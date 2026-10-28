@@ -168,6 +168,22 @@ int tab_bar(const GuiTheme *t, const char *id, const char *const *labels, int n,
   return tapped;
 }
 
+int version_tabs(const GuiTheme *t, const char *id, const char *const *labels, int n, int selected, bool focus, const char *version) {
+  int tab = GUI_NONE;
+  CLAY({.layout={.sizing={CLAY_SIZING_GROW(0),CLAY_SIZING_FIXED(gui_px(52))},
+                  .childGap=gui_px(8)},
+        .border={.color=gui_rgb(t->line),.width={.bottom=1}}}) {
+    tab = tab_bar(t, id, labels, n, selected, focus);
+    CLAY({.id=CLAY_ID("MenuVersion"),
+          .layout={.sizing={CLAY_SIZING_FIT(0),CLAY_SIZING_GROW(0)},
+                   .padding={0,gui_px(14),0,gui_px(4)},
+                   .childAlignment={.y=CLAY_ALIGN_Y_CENTER}}}) {
+      label(gui_str("v%s", version && version[0] ? version : "dev").chars,TAG,t->muted);
+    }
+  }
+  return tab;
+}
+
 void hint_line(const GuiTheme *t, const GuiFrame *f, const char *s) {
   if (!f->hints) return;
   CLAY({.layout = {.sizing = {CLAY_SIZING_GROW(0)}, .padding = {0, 0, gui_px(8), 0}, .childAlignment = {.x = CLAY_ALIGN_X_CENTER}}}) {

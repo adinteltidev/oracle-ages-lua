@@ -90,7 +90,7 @@ int gui_home(Home *h, const GuiTheme *t, const GuiFrame *f, SettingsMenu *sm, co
   else if (h->files_page) keep_visible(CLAY_ID("HomeList"), CLAY_IDI("File", h->file));
   else keep_visible(CLAY_ID("HomeList"), CLAY_IDI("Home", h->row));
   PAGE(t, f) {
-    int tab = tab_bar(t, "Tab", tab_labels, UI_GAMES + 1, h->l.settings_tab ? UI_GAMES : (int)h->l.game, h->l.settings_tab && !h->l.settings_list);
+    int tab = version_tabs(t, "Tab", tab_labels, UI_GAMES + 1, h->l.settings_tab ? UI_GAMES : (int)h->l.game, h->l.settings_tab && !h->l.settings_list, s->version);
     if (tab != GUI_NONE) home_tap_tab(h, tab);
     LIST("HomeList") {
       if (h->l.settings_tab) {

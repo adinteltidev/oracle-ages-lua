@@ -49,6 +49,9 @@ Get the build for your system from the
 
 Each desktop download is a single self-contained file; nothing else needs installing.
 
+The current version appears at the top right of the main menu on Windows, macOS and Switch,
+including the Settings tab. Release builds use `ORACLES_VERSION`; local builds read `VERSION`.
+
 When a newer version is out, the main menu shows it with a **Download** link to your system's file,
 and **Settings → Version** has the same link. The version you have is on that row too. On Linux the
 AppImage updates itself: Download fetches the new one, checks it against the release's SHA-256,
