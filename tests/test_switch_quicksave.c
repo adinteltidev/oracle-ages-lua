@@ -3,11 +3,13 @@
 #include "assets/assets.h"
 #include "platform/setup.h"
 #include "platform/switch_storage.h"
+#include "platform/switch_menu_boot.h"
 #include "platform/tas.h"
 #include "rt/fibers.h"
 #include "game/game.h"
 #include <unistd.h>
 static uint8_t input(void *ctx, uint64_t frame) { return tas_input_at(ctx, frame); }
+static uint8_t live_input(void *ctx, uint64_t frame) { (void)frame; return *(uint8_t *)ctx; }
 static void advance(GB *gb, unsigned frames) {
   for (unsigned i = 0; i < frames; ++i) { gb_run_frame(gb); ASSERT(!gb->hung); gb->apu.ring_r = gb->apu.ring_w; }
 }
@@ -50,7 +52,40 @@ int main(void) {
   // Restore the previous generation after an interrupted installation.
   ASSERT_EQ(remove(path), 0); ASSERT(switch_storage_recover(path));
   ASSERT(oracles_load_boot_state(gb, path)); fibers_reset(gb); advance(gb, 120);
-  ASSERT_EQ(remove(path), 0); ASSERT_EQ(rmdir(dir), 0);
-  printf("ok switch_quicksave: repeated GB save, state restored, identical 120-frame continuation, backup reload\n");
+  ASSERT_EQ(remove(path), 0);
+  for (int slot=1;slot<=4;++slot) {
+    snprintf(path,sizeof path,"%s/slot%d.state",dir,slot);
+    snprintf(tmp,sizeof tmp,"%s.tmp",path);
+    save(gb,tmp,path); advance(gb,60);
+    uint64_t expected_hash=gb_state_hash(gb);
+    ASSERT(oracles_load_boot_state(gb,path)); fibers_reset(gb);
+    advance(gb,60); ASSERT_EQ(gb_state_hash(gb),expected_hash);
+    ASSERT_EQ(remove(path),0);
+  }
+  ASSERT_EQ(rmdir(dir), 0);
+  // Restart from a running game preserves battery saves and selects all three
+  // original file entries without carrying a suspended fiber into reset.
+  uint8_t eram[sizeof gb->eram]; memcpy(eram,gb->eram,sizeof eram);
+  SwitchMenuBoot boot={.file=-1};
+  uint8_t live=0; gb->input_at=live_input; gb->input_ctx=&live;
+  for (int file=0;file<3;++file) {
+    memcpy(eram,gb->eram,sizeof eram);
+    switch_menu_restart(gb,&boot,file);
+    ASSERT(gb->input_at==live_input && gb->input_ctx==&live);
+    ASSERT(!gb->init_ram_loaded);
+    ASSERT(!memcmp(eram,gb->eram,sizeof eram));
+    while (boot.file>=0 && boot.ticks<=3600) {
+      live=switch_menu_boot_input(gb,&boot,0);
+      advance(gb,1);
+    }
+    ASSERT(boot.ticks<=3600); ASSERT(!gb->hung);
+    ASSERT_EQ(gb->wram[0][wFileSelect_mode&0xfff],1);
+    ASSERT_EQ(gb->wram[0][wFileSelect_mode2&0xfff],1);
+    ASSERT_EQ(gb->wram[0][wFileSelect_cursorPos&0xfff],file);
+  }
+  memcpy(eram,gb->eram,sizeof eram);
+  switch_menu_restart(gb,&boot,-1); ASSERT_EQ(boot.file,-1);
+  ASSERT(!memcmp(eram,gb->eram,sizeof eram));
+  printf("ok switch_quicksave: repeated GB save, state restored, identical 120-frame continuation, backup reload, four independent slots, file-screen restart\n");
   return 0;
 }

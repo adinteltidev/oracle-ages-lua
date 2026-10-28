@@ -5,7 +5,11 @@ endif()
 set(SWITCH_SDK "$ENV{DEVKITPRO}")
 set(SWITCH_PORTLIBS "${SWITCH_SDK}/portlibs/switch")
 set(ORACLES_SWITCH_BUILD "local" CACHE STRING "Build identifier")
-add_executable(oracles-switch src/platform/switch_main.c src/platform/switch_storage.c)
+# Compile the existing desktop widgets against a scoped SDL2 adapter.
+include(${CMAKE_SOURCE_DIR}/platform/switch/menu.cmake)
+add_executable(oracles-switch src/platform/switch_main.c src/platform/switch_storage.c
+  src/platform/switch_menu_state.c src/platform/switch_menu_boot.c src/platform/switch_menu.c src/ui/savefile.c)
+target_link_libraries(oracles-switch PRIVATE oraclesswitchgui)
 target_include_directories(oracles-switch PRIVATE
   "${SWITCH_PORTLIBS}/include" "${SWITCH_PORTLIBS}/include/SDL2")
 target_compile_definitions(oracles-switch PRIVATE
@@ -16,7 +20,7 @@ target_link_libraries(oracles-switch PRIVATE oraclesnative SDL2 EGL glapi drm_no
 set_target_properties(oracles-switch PROPERTIES SUFFIX ".elf")
 find_program(ORACLES_ELF2NRO elf2nro HINTS "$ENV{ORACLES_SWITCH_TOOLS}" REQUIRED NO_CMAKE_FIND_ROOT_PATH)
 find_program(ORACLES_NACPTOOL nacptool HINTS "$ENV{ORACLES_SWITCH_TOOLS}" REQUIRED NO_CMAKE_FIND_ROOT_PATH)
-set(SWITCH_NACP_VERSION "${ORACLES_VERSION_NUMBER}")
+set(SWITCH_NACP_VERSION "${ORACLES_SWITCH_VERSION}")
 if(NOT SWITCH_NACP_VERSION)
   set(SWITCH_NACP_VERSION "0.1.0")
 endif()
