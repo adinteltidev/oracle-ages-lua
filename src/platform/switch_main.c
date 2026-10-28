@@ -9,6 +9,9 @@
 #include "platform/setup.h"
 #include "platform/tas.h"
 #include "platform/switch_storage.h"
+#include "platform/switch_menu_state.h"
+#include "platform/switch_menu_boot.h"
+#include "ui/savefile.h"
 #include "game/game.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -40,7 +43,10 @@ static uint8_t *rom;
 static uint8_t live_joy;
 static bool save_pending, load_pending;
 static SDL_AudioDeviceID active_audio;
-static bool reset_clock;
+static bool reset_clock, menu_active;
+static SwitchMenu menu = {.volume=10, .integer_scale=true};
+// GUI implementation is compiled separately with the SDL2 adapter.
+extern bool gui_init(SDL_Renderer *renderer);
 static uint8_t input_live(void *ctx, uint64_t frame) { (void)ctx; (void)frame; return live_joy; }
 static uint8_t input_tas(void *ctx, uint64_t frame) { return tas_input_at(ctx, frame); }
 
@@ -63,7 +69,7 @@ static void lifecycle(AppletHookType type, void *param) {
     reset_clock = true;
     if (active_audio) {
       SDL_ClearQueuedAudio(active_audio);
-      SDL_PauseAudioDevice(active_audio, appletGetFocusState() != AppletFocusState_InFocus);
+      SDL_PauseAudioDevice(active_audio, menu_active || appletGetFocusState() != AppletFocusState_InFocus);
     }
     if (type == AppletHookType_OnFocusState && appletGetFocusState() != AppletFocusState_InFocus)
       if (!save_sram()) fprintf(stderr, "SRAM save on focus loss failed\n");
@@ -215,6 +221,22 @@ static uint8_t joy_from_pad(u64 b) {
   if (b & (HidNpadButton_Down | HidNpadButton_StickLDown)) j |= JOY_DOWN;
   return j;
 }
+
+static const char *slot_path(int slot) {
+  static const char *const paths[]={NULL,STATE,DATA "slot2.state",DATA "slot3.state",DATA "slot4.state"};
+  return paths[slot];
+}
+static void refresh_menu(void) {
+  switch_menu_preview(game,&menu.states[0]);
+  for (int i=1;i<=4;++i) {
+    if (switch_storage_recover(slot_path(i))) switch_menu_read_state(slot_path(i),&menu.states[i]);
+    else memset(&menu.states[i],0,sizeof menu.states[i]);
+  }
+  ui_read_files(game->eram,game->eram_size,true,menu.files);
+  ++menu.stamp;
+}
+static SwitchMenuBoot menu_boot = {.file=-1};
+
 static int play(void) {
   if (!prepare_game(false)) return 1;
   consoleExit(NULL);
@@ -231,7 +253,7 @@ static int play(void) {
   if (!renderer) goto done;
   SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0");
   texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ABGR8888, SDL_TEXTUREACCESS_STREAMING, FB_W, FB_H);
-  if (!texture) goto done;
+  if (!texture || !gui_init(renderer)) goto done;
   SDL_AudioSpec spec = {0}; spec.freq = APU_SAMPLE_RATE; spec.format = AUDIO_S16SYS;
   spec.channels = 2; spec.samples = 1024;
   audio = SDL_OpenAudioDevice(NULL, 0, &spec, NULL, 0);
@@ -244,6 +266,7 @@ static int play(void) {
   static uint32_t pixels[FB_W * FB_H];
   static int16_t pcm[4096 * 2];
   uint64_t frames = 0, late = 0, underruns = 0, save_from = 0;
+  bool menu_requested=false, chord_previous=false, release_input=false;
   uint64_t frequency = SDL_GetPerformanceFrequency();
   uint64_t due = SDL_GetPerformanceCounter();
   // Fractional clock accumulator; never replace the GB cadence with 60 Hz.
@@ -255,11 +278,73 @@ static int play(void) {
     padUpdate(&pad); u64 held = padGetButtons(&pad), down = padGetButtonsDown(&pad);
     if (quit || ((held & (HidNpadButton_L | HidNpadButton_R | HidNpadButton_Plus)) ==
                          (HidNpadButton_L | HidNpadButton_R | HidNpadButton_Plus))) break;
-    live_joy = joy_from_pad(held);
-    if (down & HidNpadButton_ZL) {
+    bool chord=switch_menu_chord((held&(HidNpadButton_L|HidNpadButton_R))==(HidNpadButton_L|HidNpadButton_R),&chord_previous);
+    if (chord) {
+      if (menu_active) {
+        menu_active=false; release_input=true; reset_clock=true;
+        SDL_ClearQueuedAudio(audio); SDL_PauseAudioDevice(audio,0);
+        continue;
+      } else if (!menu_requested) {
+        menu_requested=true; save_pending=load_pending=false; save_from=frames;
+        show_status("ABRINDO MENU...",false,0);
+      }
+    }
+    if (menu_requested && (threads_parked(game) || frames-save_from>=600)) {
+      menu_requested=false; menu_active=true; live_joy=0;
+      SDL_PauseAudioDevice(audio,1); SDL_ClearQueuedAudio(audio);
+      status_until=0;
+      switch_menu_open(&menu,threads_parked(game)); refresh_menu();
+      if (!save_sram()) show_status("ERRO AO SALVAR SRAM",true,errno);
+
+      down=0; // The opening chord must not activate any menu item.
+    }
+    if (menu_active) {
+      SwitchMenuAction action=SWITCH_MENU_NONE;
+      if (down&HidNpadButton_Minus) { menu.tab=0; menu.files_page=false; }
+      else if (down&HidNpadButton_X) {
+        action=switch_menu_press(&menu,UI_ACCEPT,true);
+        if (!menu.can_save && menu.tab==0 && !menu.files_page && menu.row>=1 && menu.row<=4)
+          show_status("NAO FOI POSSIVEL SALVAR AQUI",true,0);
+      }
+      else {
+        const u64 buttons[]={HidNpadButton_Up|HidNpadButton_StickLUp,HidNpadButton_Down|HidNpadButton_StickLDown,
+          HidNpadButton_Left|HidNpadButton_StickLLeft,HidNpadButton_Right|HidNpadButton_StickLRight,HidNpadButton_A,HidNpadButton_B};
+        const UiButton choices[]={UI_UP,UI_DOWN,UI_LEFT,UI_RIGHT,UI_ACCEPT,UI_BACK};
+        for (int i=0;i<6;++i) if (down&buttons[i]) { action=switch_menu_press(&menu,choices[i],false); break; }
+      }
+      bool resume=action==SWITCH_MENU_RESUME;
+      if (action==SWITCH_MENU_EXIT) break;
+      if (action==SWITCH_MENU_SAVE) {
+        bool ok=save_state(slot_path(menu.row)); int error=ok ? 0 : errno;
+        show_status(ok ? "ESTADO SALVO" : "ERRO AO SALVAR",!ok,error); refresh_menu();
+      } else if (action==SWITCH_MENU_LOAD) {
+        // Validate before touching the live game, including truncation/trailing data.
+        bool ok=switch_menu_read_state(slot_path(menu.row),&menu.states[menu.row]) && load_state(slot_path(menu.row));
+        int error=ok ? 0 : (errno ? errno : EINVAL);
+        show_status(ok ? "ESTADO CARREGADO" : "ERRO AO CARREGAR",!ok,error);
+        if (ok) { menu_boot.file=-1; resume=true; }
+      } else if (action==SWITCH_MENU_TITLE || action==SWITCH_MENU_FILE) {
+        switch_menu_restart(game,&menu_boot,action==SWITCH_MENU_FILE ? menu.file : -1); resume=true;
+      }
+      if (resume) {
+        menu_active=false; release_input=true; live_joy=0; reset_clock=true;
+        SDL_ClearQueuedAudio(audio); SDL_PauseAudioDevice(audio,0); continue;
+      }
+      int mw,mh; SDL_GetRendererOutputSize(renderer,&mw,&mh);
+      switch_menu_draw(&menu,mw,mh);
+      if (SDL_GetTicks64()<status_until) switch_draw_status(renderer,mw,mh,status_text,status_error);
+      SDL_RenderPresent(renderer); SDL_Delay(16); continue;
+    }
+    if (release_input) {
+      // Require all game buttons to be released after A/B closed the menu.
+      live_joy=0;
+      if (!joy_from_pad(held)) release_input=false;
+    } else live_joy=joy_from_pad(held);
+    live_joy=switch_menu_boot_input(game,&menu_boot,live_joy);
+    if (!menu_requested && !release_input && (down & HidNpadButton_ZL)) {
       save_pending = true; load_pending = false; save_from = frames;
       show_status("SALVANDO...", false, 0);
-    } else if (down & HidNpadButton_ZR) {
+    } else if (!menu_requested && !release_input && (down & HidNpadButton_ZR)) {
       load_pending = true; save_pending = false;
       show_status("CARREGANDO...", false, 0);
     }
@@ -268,12 +353,12 @@ static int play(void) {
     if (load_pending) {
       bool ok = load_state(STATE); int error = ok ? 0 : errno;
       show_status(ok ? "ESTADO CARREGADO" : error == ENOENT ? "SAVE NAO ENCONTRADO" : "ERRO AO CARREGAR", !ok, error);
-      if (ok) { SDL_ClearQueuedAudio(audio); due = SDL_GetPerformanceCounter(); remainder = 0; }
+      if (ok) { menu_boot.file=-1; SDL_ClearQueuedAudio(audio); due = SDL_GetPerformanceCounter(); remainder = 0; }
       load_pending = false;
     }
     // Release game input briefly while seeking a serializable frame, as for
     // a pause, and report a timeout instead of silently waiting forever.
-    if (save_pending) live_joy = 0;
+    if (save_pending || menu_requested) live_joy = 0;
     gb_run_frame(game);
     if (save_pending && threads_parked(game)) {
       bool ok = save_state(STATE); int error = ok ? 0 : errno;
@@ -286,6 +371,7 @@ static int play(void) {
     uint32_t count;
     if (frames > 10 && !SDL_GetQueuedAudioSize(audio)) underruns++;
     while ((count = apu_read_samples(&game->apu, pcm, 4096))) {
+      if (menu.volume != 10) for (uint32_t i=0;i<count*2;++i) pcm[i]=(int32_t)pcm[i]*menu.volume/10;
       if (SDL_QueueAudio(audio, pcm, count * 4)) goto done;
     }
     // Bound latency, including after suspend or a slow SD write.
@@ -300,9 +386,13 @@ static int play(void) {
     int scale = w / FB_W < h / FB_H ? w / FB_W : h / FB_H;
     if (scale < 1) scale = 1;
     SDL_Rect dst = {(w - FB_W * scale) / 2, (h - FB_H * scale) / 2, FB_W * scale, FB_H * scale};
+    if (!menu.integer_scale) {
+      float fit=(float)w/FB_W < (float)h/FB_H ? (float)w/FB_W : (float)h/FB_H;
+      dst.w=(int)(FB_W*fit); dst.h=(int)(FB_H*fit); dst.x=(w-dst.w)/2; dst.y=(h-dst.h)/2;
+    }
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); SDL_RenderClear(renderer);
     SDL_RenderCopy(renderer, texture, NULL, &dst);
-    if (status_text[0] && (save_pending || SDL_GetTicks64() < status_until)) switch_draw_status(renderer, w, h, status_text, status_error);
+    if (status_text[0] && (save_pending || menu_requested || SDL_GetTicks64() < status_until)) switch_draw_status(renderer, w, h, status_text, status_error);
     SDL_RenderPresent(renderer);
     if (++frames % 600 == 0 && !save_sram()) fprintf(stderr, "SRAM save failed\n");
     remainder += frequency * FRAME_CYCLES;

@@ -24,8 +24,7 @@ A compatibilidade funcional ARM64 ainda precisa dos replays no aparelho.
 confirma a execução no console, mas não detalha os replays, desempenho, áudio,
 controles, HOME/suspensão ou persistência. Os testes específicos abaixo
 continuam pendentes de resultados e logs.
-A interface ainda não tem seletor arbitrário de ROM, configuração visual,
-remapeamento de controles. O quicksave/quickload agora mostram mensagens na tela. Ela aceita
+A interface ainda não tem seletor arbitrário de ROM nem remapeamento de controles. O quicksave/quickload agora mostram mensagens na tela. Ela aceita
 `sdmc:/switch/oracle-ages-native/ages.gbc`; mensagens de erro ficam no console/log.
 Mods Lua, sincronização HTTP, atualizações, widescreen e xBRZ ficam fora do alvo.
 O primeiro teste deve usar memória completa de aplicação; modo Album não foi
@@ -155,3 +154,47 @@ e falhas injetadas: primeiro save, saves repetidos, rollback, recuperação e
 falha ao abrir temporário. `switch_quicksave` exercita um estado real de Ages,
 sobrescreve o slot e verifica 120 frames idênticos após a carga, além da recuperação.
 Esses testes são de host; a nova build ainda precisa de teste de ZL/ZR no console.
+
+## Menu gráfico durante o jogo
+
+**L + R** abre/fecha o menu externo. O alvo Switch reutiliza a fonte VT323,
+as cores e os widgets Clay da interface Windows/macOS, com um adaptador SDL2
+restrito a essa biblioteca. As opções disponíveis são Resume, quatro slots
+com miniaturas/horários, Save files, Title screen e Settings. A versão aparece
+no cabeçalho em todas as abas; usa `ORACLES_VERSION` nas releases e `VERSION`
+nos builds locais, inclusive para a versão dos metadados NACP.
+
+- Direcional/analógico: navegar; esquerda/direita: abas.
+- A: continuar/carregar/selecionar; X sobre um slot: salvar; B: voltar/continuar.
+- Minus: voltar à aba Ages; L + R: continuar; L + R + Plus: encerrar a partida.
+- Settings: volume (0..10), escala inteira e saída. As opções valem na sessão.
+- Slot 1 usa o `quick.state` existente, inclusive ZL/ZR; slots 2..4 usam
+  `slot2.state`, `slot3.state`, `slot4.state`. O protocolo `.tmp`/`.bak` é o mesmo.
+- Resume continua a partida em memória. Save files reinicia preservando a SRAM
+  e navega à seleção original no arquivo escolhido; Title screen reinicia no título.
+- Seasons informa a indisponibilidade: esta build continua aceitando somente Ages.
+
+A abertura busca fibras estacionadas por no máximo 600 frames, com entrada
+neutra. Se atingir o limite, abre com save desabilitado. Enquanto o menu está
+aberto não executa frames do jogo; áudio fica pausado inclusive ao retornar do
+HOME. A retomada limpa a fila de áudio, reinicia o relógio e exige soltar os
+botões do jogo, evitando que A/B do menu acionem o personagem.
+
+`switch_menu` testa os estados de navegação e a validação de arquivos truncados
+ou incompatíveis; `switch_quicksave` verifica quatro slots reais e continuação
+determinística. O build ARM64 e a renderização local não substituem o teste
+no aparelho desta nova interface. Licenças VT323, Clay e stb acompanham o pacote.
+
+Para conferir o mesmo desenho no host, com SDL2 >= 2.28 instalado (biblioteca
+estática e pacote CMake), use uma pasta de build sem SDL3:
+
+```sh
+cmake -S . -B build-switch-menu-preview -DORACLES_SDL=OFF \
+  -DORACLES_SWITCH_MENU_PREVIEW=ON -DSDL2_DIR=/caminho/para/SDL2/cmake
+cmake --build build-switch-menu-preview --target test_switch_menu_gui
+ctest --test-dir build-switch-menu-preview -R '^switch_menu_gui$' --output-on-failure
+```
+
+O teste usa o driver de vídeo dummy, grava prévias BMP em `switch-menu-preview/`
+e verifica a seleção visível depois da rolagem. Esse alvo é opcional; o build
+normal do Switch continua usando somente o SDL2 do SDK.
