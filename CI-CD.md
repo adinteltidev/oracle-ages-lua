@@ -2,8 +2,10 @@
 
 O workflow `CI` compila Windows x64, macOS Intel e Nintendo Switch, executa os
 testes disponíveis sem ROM comercial e disponibiliza pacotes na seção Artifacts
-da execução. Há disparos em pull requests, pushes em `main`, `port/**`, `ci/**`
-e execução manual. CI antiga da mesma branch é cancelada quando há outra execução.
+da execução. Há disparos em pull requests, pushes em `main` e execução manual.
+Branches de trabalho são verificadas pelo PR ou por execução manual; assim o
+mesmo commit não dispara builds duplicados por push e PR. CI antiga do mesmo
+PR é cancelada quando chega um commit novo.
 
 ## Jobs e downloads
 
