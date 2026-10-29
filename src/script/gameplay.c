@@ -14,6 +14,8 @@ static const char *const rule_names[RULE_COUNT] = {
 };
 static lua_State *vm;
 static size_t used;
+static size_t peak;
+static uint64_t allocations;
 static bool enabled = true, attempted;
 static int refs[RULE_COUNT], budget;
 static uint64_t calls[RULE_COUNT], block_calls[4];
@@ -25,7 +27,11 @@ static void *allocate(void *ctx, void *ptr, size_t old, size_t size) {
   if (!size) { free(ptr); used -= old; return NULL; }
   if (size > old && size - old > CAP - used) return NULL;
   void *p = realloc(ptr, size);
-  if (p) used = used - old + size;
+  if (p) {
+    used = used - old + size;
+    if (used > peak) peak = used;
+    ++allocations;
+  }
   return p;
 }
 
@@ -48,7 +54,7 @@ static bool failed(const char *rule) {
 
 void gameplay_close(void) {
   if (vm) lua_close(vm);
-  vm = NULL; used = 0; attempted = false;
+  vm = NULL; used = 0; peak = 0; allocations = 0; attempted = false;
   memset(calls, 0, sizeof calls); memset(block_calls, 0, sizeof block_calls);
   error[0] = 0;
 }
@@ -168,3 +174,6 @@ const char *gameplay_revision(void) { return ORACLES_GAMEPLAY_REVISION; }
 uint64_t gameplay_calls(int rule) { return rule >= 0 && rule < RULE_COUNT ? calls[rule] : 0; }
 uint64_t gameplay_block_calls(GameplayBlockState state) { return state >= 0 && state < 4 ? block_calls[state] : 0; }
 size_t gameplay_memory(void) { return used; }
+GameplayMemoryStats gameplay_memory_stats(void) {
+  return (GameplayMemoryStats){.current = used, .peak = peak, .allocations = allocations};
+}

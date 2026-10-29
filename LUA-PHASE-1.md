@@ -4,6 +4,10 @@ Data: 29/10/2026. Branch: `port/lua-gameplay`.
 Referência inicial: `ed4b912` (antes desta rodada; o plano de sete fases estava
 como alteração local). Estado: em implementação, fase ainda não concluída.
 
+Continuação a partir de `b04e0d2`: [validação de cobertura e desempenho](LUA-PHASE-1-VALIDATION.md).
+Os resultados abaixo descrevem o primeiro lote; a continuação registra as novas
+evidências sem atribuí-las retrospectivamente aos testes anteriores.
+
 ## Escopo e inventário inicial
 
 | Rotina/grupo | Regras e dependências | Estado |

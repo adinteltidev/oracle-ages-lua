@@ -14,11 +14,20 @@
 
 static uint8_t tas_cb(void *ctx, uint64_t frame) { return tas_input_at((const Tas *)ctx, frame); }
 
-typedef struct { FILE *ref; unsigned long long f, want; bool have; uint64_t mismatch, checked; } RefCheck;
+typedef struct {
+  FILE *ref; unsigned long long f, want; bool have;
+  uint64_t mismatch, checked, skipped, first_sample, last_sample, samples;
+} RefCheck;
 static void ref_cb(GB *gb, const GBSample *sm, void *ctx) {
   RefCheck *r = ctx;
+  if (!r->samples) r->first_sample = sm->frame;
+  r->last_sample = sm->frame; ++r->samples;
   if (r->mismatch) return;
-  while (r->have && r->f < sm->frame) r->have = fscanf(r->ref, "%llu %llx", &r->f, &r->want) == 2;
+  while (r->have && r->f < sm->frame) {
+    ++r->skipped;
+    fprintf(stderr, "checkpoint skipped: reference=%llu sample=%llu\n", r->f, (unsigned long long)sm->frame);
+    r->have = fscanf(r->ref, "%llu %llx", &r->f, &r->want) == 2;
+  }
   if (r->have && r->f == sm->frame) {
     r->checked++;
     if (r->want != gb_state_hash(gb)) r->mismatch = sm->frame;
@@ -55,29 +64,51 @@ static void native_run_reloading(const char *rom_path, const char *inputs, const
   const char *limit_env = getenv("TAS_FRAMES");     // lifts the Ages default; a whole-movie value must not outrun the Seasons reference
   uint64_t limit = frames;
   if (limit_env && frames == 20000) limit = strtoull(limit_env, NULL, 10);
-  RefCheck rc = {ref, 0, 0, false, 0, 0};
+  RefCheck rc = {.ref = ref};
   rc.have = fscanf(ref, "%llu %llx", &rc.f, &rc.want) == 2;
   gb->input_at = tas_cb; gb->input_ctx = &t;
   gb->frame_cb = ref_cb; gb->frame_ctx = &rc;
   bool pending = false;
+  unsigned reloads = 0;
   char reload_path[4096];
   if (reload_every) ASSERT(oracles_temp_path(reload_path, sizeof reload_path));
   for (uint64_t i = 0; i < limit && !rc.mismatch && !gb->hung; i++) {
     if (reload_every && i && i % reload_every == 0) pending = true;
-    if (pending && threads_parked(gb)) {
+    // Load resets the host sample ring. Consume queued samples before saving,
+    // otherwise a checkpoint in that queue is silently lost by the test itself.
+    if (pending && !gb->sample_count && threads_parked(gb)) {
       ASSERT(oracles_save_boot_state(gb, reload_path));
       ASSERT(oracles_load_boot_state(gb, reload_path));
       fibers_reset(gb);
+      ++reloads;
       pending = false;
     }
     gb_run_frame(gb);
+    if ((i + 1) % 25000 == 0) {
+      fprintf(stderr, "replay%s: %llu/%llu frames, checked=%llu skipped=%llu reloads=%u\n",
+        reload_every ? " reload" : " normal", (unsigned long long)(i + 1),
+        (unsigned long long)limit, (unsigned long long)rc.checked,
+        (unsigned long long)rc.skipped, reloads);
+      fflush(stderr);
+    }
   }
   if (gb->hung) { fprintf(stderr, "native build stopped at frame %llu\n", (unsigned long long)GRID_FRAME(gb->cycles)); ASSERT(0); }
   if (rc.mismatch) { fprintf(stderr, "state mismatch at frame %llu\n", rc.mismatch); ASSERT(0); }
   ASSERT(rc.checked > 0);
+  if (frames == 20000) ASSERT_EQ(rc.skipped, 0); // Ages: never silently pass a dropped checkpoint.
   printf("verified %llu checkpoints over %llu frames%s\n",
          (unsigned long long)rc.checked, (unsigned long long)limit,
          reload_every ? " with state reloads" : "");
+  printf("checkpoint diagnostics: skipped=%llu reloads=%u\n", (unsigned long long)rc.skipped, reloads);
+  printf("sample interval: first=%llu last=%llu samples=%llu\n",
+    (unsigned long long)rc.first_sample, (unsigned long long)rc.last_sample, (unsigned long long)rc.samples);
+  fflush(stdout);
+#ifdef ORACLES_LUA_GAMEPLAY
+  printf("Lua cumulative block coverage: %llu/%llu/%llu/%llu\n",
+    (unsigned long long)gameplay_block_calls(0), (unsigned long long)gameplay_block_calls(1),
+    (unsigned long long)gameplay_block_calls(2), (unsigned long long)gameplay_block_calls(3));
+  fflush(stdout);
+#endif
   fclose(ref); free(gb); free(rom); tas_free(&t);
   if (reload_every) ASSERT(remove(reload_path) == 0);
 }
@@ -102,12 +133,22 @@ static void native_ages_survives_save_states(void) {
 }
 
 int main(void) {
-  RUN(native_full_tas_matches_reference);
-#ifndef ORACLES_TEST_AGES_ONLY
-  RUN(native_seasons_play_matches_reference);
-  RUN(native_seasons_tas_matches_reference);
+  const char *run = getenv("TAS_RUN");
+  ASSERT(!run || !strcmp(run, "both") || !strcmp(run, "normal") || !strcmp(run, "reload"));
+#ifdef ORACLES_LUA_GAMEPLAY
+  const char *mode = getenv("TAS_GAMEPLAY");
+  ASSERT(!mode || !strcmp(mode, "c") || !strcmp(mode, "lua"));
+  gameplay_enable(!mode || strcmp(mode, "c"));
+  printf("Replay gameplay mode: %s\n", mode ? mode : "lua"); fflush(stdout);
 #endif
-  RUN(native_ages_survives_save_states);
+  if (!run || strcmp(run, "reload")) {
+    RUN(native_full_tas_matches_reference);
+#ifndef ORACLES_TEST_AGES_ONLY
+    RUN(native_seasons_play_matches_reference);
+    RUN(native_seasons_tas_matches_reference);
+#endif
+  }
+  if (!run || strcmp(run, "normal")) RUN(native_ages_survives_save_states);
 #ifdef ORACLES_LUA_GAMEPLAY
   printf("Lua coverage: changed=%llu alternate=%llu\n",(unsigned long long)gameplay_calls(0),(unsigned long long)gameplay_calls(1));
   printf("Lua scripts SHA256: %s; block states=%llu/%llu/%llu/%llu\n", gameplay_revision(),

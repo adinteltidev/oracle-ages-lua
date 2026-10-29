@@ -29,6 +29,8 @@ const char *gameplay_error(void);
 const char *gameplay_revision(void);
 uint64_t gameplay_calls(int rule);
 size_t gameplay_memory(void);
+typedef struct { size_t current, peak; uint64_t allocations; } GameplayMemoryStats;
+GameplayMemoryStats gameplay_memory_stats(void);
 void gameplay_close(void);
 // Used for bounded-runtime regression tests; production always loads embedded source.
 bool gameplay_load(const char *source, size_t length);

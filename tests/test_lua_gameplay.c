@@ -31,7 +31,12 @@ static void exhaustive_decisions(void) {
   ASSERT_EQ(gameplay_block_calls(2), 65536); ASSERT_EQ(gameplay_block_calls(3), 2);
   printf("Lua: 262147 decisions, CPU %.6fs, heap %zu bytes\n", now()-start, gameplay_memory());
   ASSERT(gameplay_memory() < 256*1024);
+  GameplayMemoryStats stats = gameplay_memory_stats();
+  ASSERT_EQ(stats.current, gameplay_memory());
+  ASSERT(stats.allocations > 0 && stats.peak >= stats.current && stats.peak <= 256*1024);
   gameplay_close();
+  stats = gameplay_memory_stats();
+  ASSERT_EQ(stats.current, 0); ASSERT_EQ(stats.peak, 0); ASSERT_EQ(stats.allocations, 0);
 }
 
 static void invalid_block_results(void) {
