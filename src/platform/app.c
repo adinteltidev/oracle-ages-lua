@@ -38,6 +38,9 @@
 #include "platform/haptic.h"
 #include "sync/http.h"
 #include "sync/update.h"
+#ifdef ORACLES_LUA_GAMEPLAY
+#include "script/gameplay.h"
+#endif
 
 #ifdef __ANDROID__
 #define ON_PHONE true           // the settings show Vibration and leave out Fullscreen
@@ -2201,6 +2204,9 @@ static void stderr_to_logcat(void) {
 #endif
 
 int main(int argc, char **argv) {
+#ifdef ORACLES_LUA_GAMEPLAY
+  fprintf(stderr, "Lua scripts SHA256: %s\n", gameplay_revision());
+#endif
   const char *rom_arg = NULL, *game_arg = NULL, *cache_arg = NULL;
   int file_arg = -1;
   uint64_t max_frames = 0;

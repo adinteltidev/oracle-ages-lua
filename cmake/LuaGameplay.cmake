@@ -1,4 +1,8 @@
 option(ORACLES_LUA_GAMEPLAY "Experimental Ages gameplay decisions in Lua" OFF)
+option(ORACLES_LUA_BLOCK_PUZZLES "Opt-in block puzzle integration; platform validation pending" OFF)
+if(ORACLES_LUA_BLOCK_PUZZLES AND NOT ORACLES_LUA_GAMEPLAY)
+  message(FATAL_ERROR "ORACLES_LUA_BLOCK_PUZZLES requires ORACLES_LUA_GAMEPLAY=ON")
+endif()
 file(GLOB ORACLES_LUA_SRC CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/third_party/lua/*.c")
 list(FILTER ORACLES_LUA_SRC EXCLUDE REGEX "/lua(c)?[.]c$")
 add_library(oracleslua STATIC ${ORACLES_LUA_SRC})
@@ -8,12 +12,23 @@ if(NOT WIN32 AND NOT ORACLES_SWITCH AND NOT CMAKE_SYSTEM_NAME STREQUAL "Nintendo
   target_link_libraries(oracleslua PUBLIC m)
 endif()
 if(ORACLES_LUA_GAMEPLAY)
-  add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/ages_switch_lua.c
-    COMMAND ${CMAKE_COMMAND} -DIN=${CMAKE_SOURCE_DIR}/gameplay/ages/switch_tiles.lua
-      -DOUT=${CMAKE_BINARY_DIR}/ages_switch_lua.c -DNAME=ages_switch_lua
-      -P ${CMAKE_SOURCE_DIR}/cmake/embed.cmake
-    DEPENDS gameplay/ages/switch_tiles.lua cmake/embed.cmake VERBATIM)
-  add_library(oraclesgameplay STATIC src/script/gameplay.c ${CMAKE_BINARY_DIR}/ages_switch_lua.c)
+  set(gameplay_embedded)
+  set(gameplay_hashes)
+  foreach(module IN ITEMS switch_tiles block_puzzles)
+    set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/gameplay/ages/${module}.lua")
+    file(SHA256 "${CMAKE_SOURCE_DIR}/gameplay/ages/${module}.lua" module_hash)
+    string(APPEND gameplay_hashes "${module}:${module_hash};")
+    set(embedded "${CMAKE_BINARY_DIR}/ages_${module}_lua.c")
+    add_custom_command(OUTPUT "${embedded}"
+      COMMAND ${CMAKE_COMMAND} -DIN=${CMAKE_SOURCE_DIR}/gameplay/ages/${module}.lua
+        -DOUT=${embedded} -DNAME=ages_${module}_lua
+        -P ${CMAKE_SOURCE_DIR}/cmake/embed.cmake
+      DEPENDS gameplay/ages/${module}.lua cmake/embed.cmake VERBATIM)
+    list(APPEND gameplay_embedded "${embedded}")
+  endforeach()
+  add_library(oraclesgameplay STATIC src/script/gameplay.c ${gameplay_embedded})
   target_include_directories(oraclesgameplay PUBLIC src)
+  string(SHA256 gameplay_revision "${gameplay_hashes}")
+  target_compile_definitions(oraclesgameplay PRIVATE ORACLES_GAMEPLAY_REVISION="${gameplay_revision}")
   target_link_libraries(oraclesgameplay PUBLIC oracleslua)
 endif()

@@ -211,6 +211,9 @@ static int replay(bool full) {
       (unsigned long long)r.checked, (unsigned long long)expected, reloads, seconds, sizeof(GB), sizeof(Apu), gb_stop_reason);
 #ifdef ORACLES_LUA_GAMEPLAY
     fprintf(result,"lua_changed=%llu\nlua_alternate=%llu\nlua_heap=%zu\n",(unsigned long long)gameplay_calls(0),(unsigned long long)gameplay_calls(1),gameplay_memory());
+    fprintf(result,"lua_scripts_sha256=%s\nlua_blocks=%llu/%llu/%llu/%llu\n", gameplay_revision(),
+      (unsigned long long)gameplay_block_calls(0), (unsigned long long)gameplay_block_calls(1),
+      (unsigned long long)gameplay_block_calls(2), (unsigned long long)gameplay_block_calls(3));
 #endif
     fclose(result);
   }
@@ -416,6 +419,9 @@ static int play(void) {
           (unsigned long long)late, (unsigned long long)underruns, gb_stop_reason);
 #ifdef ORACLES_LUA_GAMEPLAY
   fprintf(stderr,"Lua changed=%llu alternate=%llu heap=%zu\n",(unsigned long long)gameplay_calls(0),(unsigned long long)gameplay_calls(1),gameplay_memory());
+  fprintf(stderr,"Lua scripts SHA256: %s; blocks=%llu/%llu/%llu/%llu\n", gameplay_revision(),
+    (unsigned long long)gameplay_block_calls(0), (unsigned long long)gameplay_block_calls(1),
+    (unsigned long long)gameplay_block_calls(2), (unsigned long long)gameplay_block_calls(3));
 #endif
   if (!save_sram()) { fprintf(stderr, "Final SRAM save failed\n"); result = 1; }
  done:

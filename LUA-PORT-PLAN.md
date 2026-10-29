@@ -2,6 +2,10 @@
 
 Data: 28/10/2026.
 
+Complemento de 29/10/2026: [migração de gameplay em sete fases](LUA-MIGRATION-PHASES.md).
+Esse documento detalha a expansão para blocos, cubo colorido, alavancas/lava,
+portas, itens/lojas, NPCs/eventos e inimigos, preservando os critérios deste plano.
+
 ## Objetivo e isolamento
 
 Migrar progressivamente regras do jogo para Lua, conservando em C a infraestrutura

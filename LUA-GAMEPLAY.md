@@ -2,6 +2,13 @@
 
 Branch: `port/lua-gameplay`. Implementação experimental; desativada por padrão.
 
+Expansão iniciada: [fase 1 — puzzles com blocos](LUA-PHASE-1.md).
+A integração de `interactionCode13` é optativa, com
+`ORACLES_LUA_GAMEPLAY=ON` e `ORACLES_LUA_BLOCK_PUZZLES=ON`; a segunda opção
+continua OFF por padrão, aguardando a validação da fase. O host agora incorpora
+dois módulos em ambientes separados e aceita também transições inteiras validadas.
+As evidências do piloto original abaixo não comprovam a migração dos novos puzzles.
+
 ## O que foi migrado
 
 `gameplay/ages/switch_tiles.lua` decide se o estado do interruptor mudou e qual
@@ -42,8 +49,9 @@ binário; não é um interruptor de gameplay exposto ao jogador.
 Lua 5.4.9 já vendorizado é compilado em uma biblioteca compartilhada pelos dois
 hosts: o de mods existente e o novo host de gameplay. As APIs dos mods não foram
 substituídas. O host experimental não abre bibliotecas padrão nem oferece acesso
-a arquivos, rede ou funções C que modifiquem o jogo. Aceita apenas retornos
-booleanos. Tem teto de heap de 256 KiB e limite aproximado de 10.000 instruções
+a arquivos, rede ou funções C que modifiquem o jogo. Aceita retornos booleanos
+nas decisões de interruptores e transições inteiras nas de blocos.
+Tem teto de heap de 256 KiB e limite aproximado de 10.000 instruções
 por chamada; esses são limites do piloto, não uma promessa de orçamento para um
 port completo. Falhas param a execução do jogo com diagnóstico, sem refazer a
 rotina em C depois de efeitos já aplicados. A VM é única e usada pelo thread do

@@ -110,6 +110,9 @@ int main(void) {
   RUN(native_ages_survives_save_states);
 #ifdef ORACLES_LUA_GAMEPLAY
   printf("Lua coverage: changed=%llu alternate=%llu\n",(unsigned long long)gameplay_calls(0),(unsigned long long)gameplay_calls(1));
+  printf("Lua scripts SHA256: %s; block states=%llu/%llu/%llu/%llu\n", gameplay_revision(),
+    (unsigned long long)gameplay_block_calls(0), (unsigned long long)gameplay_block_calls(1),
+    (unsigned long long)gameplay_block_calls(2), (unsigned long long)gameplay_block_calls(3));
 #endif
   return 0;
 }
