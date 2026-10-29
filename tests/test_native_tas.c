@@ -4,6 +4,7 @@
 #endif
 #include "platform/tempfile.h"
 #include "core/gb.h"
+#include "core/sha1.h"
 #include "platform/tas.h"
 #include "platform/setup.h"
 #include "hooks/hooks.h"
@@ -13,6 +14,9 @@
 #include <stdlib.h>
 
 static uint8_t tas_cb(void *ctx, uint64_t frame) { return tas_input_at((const Tas *)ctx, frame); }
+static const char *ages_rom = GAME_ROM_DIR "/Legend of Zelda, The - Oracle of Ages (USA, Australia).gbc";
+static char ages_inputs[4096], ages_reference[4096], ages_boot[4096];
+static uint64_t ages_frames_override;
 
 typedef struct {
   FILE *ref; unsigned long long f, want; bool have;
@@ -49,6 +53,10 @@ static void native_run_reloading(const char *rom_path, const char *inputs, const
   size_t n;
   uint8_t *rom = oracles_read_file(rom_path, &n);
   if (!rom) SKIP("ROM not present");
+  if (frames == 20000) {
+    char sha1[41]; sha1_hex(rom, n, sha1);
+    ASSERT(n == 1048576 && !strcmp(sha1, "880374fb978b18af4aa529e2e32f7ffb4d7dd2f4"));
+  }
   Tas t;
   if (!tas_load(&t, inputs)) SKIP("inputs missing");
   FILE *ref = fopen(ref_path, "r");
@@ -64,6 +72,7 @@ static void native_run_reloading(const char *rom_path, const char *inputs, const
   const char *limit_env = getenv("TAS_FRAMES");     // lifts the Ages default; a whole-movie value must not outrun the Seasons reference
   uint64_t limit = frames;
   if (limit_env && frames == 20000) limit = strtoull(limit_env, NULL, 10);
+  if (ages_frames_override && frames == 20000) limit = ages_frames_override;
   RefCheck rc = {.ref = ref};
   rc.have = fscanf(ref, "%llu %llx", &rc.f, &rc.want) == 2;
   gb->input_at = tas_cb; gb->input_ctx = &t;
@@ -114,7 +123,7 @@ static void native_run_reloading(const char *rom_path, const char *inputs, const
 }
 
 static void native_full_tas_matches_reference(void) {
-  native_run(GAME_ROM_DIR "/Legend of Zelda, The - Oracle of Ages (USA, Australia).gbc", TAS_DIR "/ages-consoleverified.inputs", TAS_DIR "/ages.ref", TAS_DIR "/ages-boot.state", 20000);
+  native_run(ages_rom, ages_inputs, ages_reference, ages_boot, 20000);
 }
 
 // Seasons: the recorded playthrough, whole (33,337 frames), on the same binary
@@ -129,12 +138,31 @@ static void native_seasons_play_matches_reference(void) {
 
 // Ages with a save state loaded about every 1000 frames: the native build resumes every thread
 static void native_ages_survives_save_states(void) {
-  native_run_reloading(GAME_ROM_DIR "/Legend of Zelda, The - Oracle of Ages (USA, Australia).gbc", TAS_DIR "/ages-consoleverified.inputs", TAS_DIR "/ages.ref", TAS_DIR "/ages-boot.state", 20000, 1013);
+  native_run_reloading(ages_rom, ages_inputs, ages_reference, ages_boot, 20000, 1013);
 }
 
-int main(void) {
+int main(int argc, char **argv) {
   const char *run = getenv("TAS_RUN");
+  const char *tas_dir = TAS_DIR;
+  const char *usage = "usage: test_native_ages [--rom FILE] [--tas-dir DIR] [--frames N] [--run normal|reload|both]\n";
+  for (int i = 1; i < argc; ++i) {
+    if (!strcmp(argv[i], "--help")) { fputs(usage, stdout); return 0; }
+    if (i + 1 >= argc) { fputs(usage, stderr); return 2; }
+    if (!strcmp(argv[i], "--rom")) ages_rom = argv[++i];
+    else if (!strcmp(argv[i], "--tas-dir")) tas_dir = argv[++i];
+    else if (!strcmp(argv[i], "--run")) run = argv[++i];
+    else if (!strcmp(argv[i], "--frames")) {
+      char *end; const char *value = argv[++i];
+      ages_frames_override = strtoull(value, &end, 10);
+      if (!*value || *value == '-' || *end || !ages_frames_override || ages_frames_override > 1000000) {
+        fputs("frames must be between 1 and 1000000\n", stderr); return 2;
+      }
+    } else { fputs(usage, stderr); return 2; }
+  }
   ASSERT(!run || !strcmp(run, "both") || !strcmp(run, "normal") || !strcmp(run, "reload"));
+  ASSERT(snprintf(ages_inputs, sizeof ages_inputs, "%s/ages-consoleverified.inputs", tas_dir) < (int)sizeof ages_inputs);
+  ASSERT(snprintf(ages_reference, sizeof ages_reference, "%s/ages.ref", tas_dir) < (int)sizeof ages_reference);
+  ASSERT(snprintf(ages_boot, sizeof ages_boot, "%s/ages-boot.state", tas_dir) < (int)sizeof ages_boot);
 #ifdef ORACLES_LUA_GAMEPLAY
   const char *mode = getenv("TAS_GAMEPLAY");
   ASSERT(!mode || !strcmp(mode, "c") || !strcmp(mode, "lua"));

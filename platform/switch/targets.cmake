@@ -28,6 +28,9 @@ set(ORACLES_SWITCH_TITLE "Oracle of Ages Native")
 if(ORACLES_LUA_GAMEPLAY)
   set(ORACLES_SWITCH_TITLE "Oracle of Ages - Lua pilot")
 endif()
+if(ORACLES_LUA_BLOCK_PUZZLES)
+  set(ORACLES_SWITCH_TITLE "Oracle of Ages - Lua phase 1")
+endif()
 add_custom_command(OUTPUT "${CMAKE_BINARY_DIR}/oracles-switch.nro"
   COMMAND "${ORACLES_NACPTOOL}" --create "${ORACLES_SWITCH_TITLE}" "Native port contributors" "${SWITCH_NACP_VERSION}" "${CMAKE_BINARY_DIR}/oracles-switch.nacp"
   COMMAND "${ORACLES_ELF2NRO}" "$<TARGET_FILE:oracles-switch>" "${CMAKE_BINARY_DIR}/oracles-switch.nro"

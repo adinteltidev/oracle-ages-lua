@@ -5,6 +5,7 @@ Referência inicial: `ed4b912` (antes desta rodada; o plano de sete fases estava
 como alteração local). Estado: em implementação, fase ainda não concluída.
 
 Continuação a partir de `b04e0d2`: [validação de cobertura e desempenho](LUA-PHASE-1-VALIDATION.md).
+Continuação a partir de `f8eb6b2`: [pacotes de teste Windows/Switch](LUA-PHASE-1-BUILDS.md).
 Os resultados abaixo descrevem o primeiro lote; a continuação registra as novas
 evidências sem atribuí-las retrospectivamente aos testes anteriores.
 

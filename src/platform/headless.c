@@ -11,6 +11,9 @@
 #include "hooks/hooks.h"
 #include "rt/fibers.h"
 #include "core/hash.h"
+#ifdef ORACLES_LUA_GAMEPLAY
+#include "script/gameplay.h"
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -161,6 +164,9 @@ static void on_frame(GB *gb, const GBSample *sm, void *ctx) {
 }
 
 int main(int argc, char **argv) {
+#ifdef ORACLES_LUA_GAMEPLAY
+  fprintf(stderr, "Lua scripts SHA256: %s\n", gameplay_revision());
+#endif
   const char *rom_path = arg_value(argc, argv, "--rom");
   if (!rom_path) { fprintf(stderr, "usage: oracles-run --rom FILE [options]\n"); return 2; }
   size_t rom_size, boot_size = 0;
@@ -339,7 +345,7 @@ int main(int argc, char **argv) {
     }
     if (getenv("INTLOG")) dbg_log_ints = (frame >= il_a && frame <= il_b);
     if (reload_every && frame && frame % reload_every == 0) reload_pending = true;
-    if ((reload_at && frame == reload_at) || (reload_pending && threads_parked(gb))) {
+    if ((reload_at && frame == reload_at) || (reload_pending && !gb->sample_count && threads_parked(gb))) {
       reload_pending = false;
       // a save state round trip: every thread fiber is dropped, as when the app loads a state
       if (!oracles_save_boot_state(gb, reload_path) || !oracles_load_boot_state(gb, reload_path)) return 2;
@@ -373,5 +379,11 @@ int main(int argc, char **argv) {
   if ((p = arg_value(argc, argv, "--state-out")) && !oracles_save_boot_state(gb, p)) { fprintf(stderr, "cannot write %s\n", p); return 2; }
   printf("done: %llu frames, state %016llx\n", (unsigned long long)GRID_FRAME(gb->cycles),
          (unsigned long long)gb_state_hash(gb));
+#ifdef ORACLES_LUA_GAMEPLAY
+  GameplayMemoryStats lua_stats = gameplay_memory_stats();
+  fprintf(stderr, "Lua blocks=%llu/%llu/%llu/%llu; heap=%zu; peak=%zu\n",
+    (unsigned long long)gameplay_block_calls(0), (unsigned long long)gameplay_block_calls(1),
+    (unsigned long long)gameplay_block_calls(2), (unsigned long long)gameplay_block_calls(3), lua_stats.current, lua_stats.peak);
+#endif
   return 0;
 }

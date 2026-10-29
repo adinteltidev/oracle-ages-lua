@@ -2237,9 +2237,17 @@ int main(int argc, char **argv) {
   if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMEPAD)) { fprintf(stderr, "%s\n", SDL_GetError()); return 2; }
   SDL_AddEventWatch(on_app_event, NULL);
   char cache[1024];
+#ifdef ORACLES_LUA_BLOCK_PUZZLES
+  const char *cache_profile = "oracles-lua-phase1";
+#else
+  const char *cache_profile = "oracles";
+#endif
   if (cache_arg) snprintf(cache, sizeof cache, "%s%s", cache_arg, cache_arg[strlen(cache_arg) - 1] == '/' ? "" : "/");
-  else { char *p = SDL_GetPrefPath("oracles-decomp", "oracles"); if (!p) { fprintf(stderr, "%s\n", SDL_GetError()); return 2; } data_folder(cache, sizeof cache, p); SDL_free(p); }
+  else { char *p = SDL_GetPrefPath("oracles-decomp", cache_profile); if (!p) { fprintf(stderr, "%s\n", SDL_GetError()); return 2; } data_folder(cache, sizeof cache, p); SDL_free(p); }
   SDL_CreateDirectory(cache);
+#ifdef ORACLES_LUA_BLOCK_PUZZLES
+  fprintf(stderr, "Experimental C + Lua phase 1; cache=%s\n", cache);
+#endif
 
   SDL_Window *win;
   SDL_Renderer *ren;
@@ -2319,5 +2327,11 @@ int main(int argc, char **argv) {
   if (update_restart && update_test()) fprintf(stderr, "restart %s\n", argv[0]);
   else if ((restart_tapped || update_restart) && !SDL_CreateProcess((const char *const *)argv, false)) fprintf(stderr, "could not restart: %s\n", SDL_GetError());
   SDL_Quit();
+#ifdef ORACLES_LUA_GAMEPLAY
+  GameplayMemoryStats lua_stats = gameplay_memory_stats();
+  fprintf(stderr, "Lua scripts SHA256: %s; blocks=%llu/%llu/%llu/%llu; heap=%zu; peak=%zu\n", gameplay_revision(),
+    (unsigned long long)gameplay_block_calls(0), (unsigned long long)gameplay_block_calls(1),
+    (unsigned long long)gameplay_block_calls(2), (unsigned long long)gameplay_block_calls(3), lua_stats.current, lua_stats.peak);
+#endif
   return status;
 }

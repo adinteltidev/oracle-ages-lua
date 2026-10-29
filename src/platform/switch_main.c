@@ -25,7 +25,9 @@
 #include <errno.h>
 #include "platform/switch_status.h"
 
-#ifdef ORACLES_LUA_GAMEPLAY
+#ifdef ORACLES_LUA_BLOCK_PUZZLES
+#define DATA "sdmc:/switch/oracle-ages-lua-phase1/"
+#elif defined(ORACLES_LUA_GAMEPLAY)
 #define DATA "sdmc:/switch/oracle-ages-lua/"
 #else
 #define DATA "sdmc:/switch/oracle-ages-native/"
@@ -183,7 +185,8 @@ static int replay(bool full) {
   uint64_t start = armGetSystemTick(), frames = 0;
   for (; frames < limit && !r.fail && !game->hung; ++frames) {
     if (frames && frames % 1013 == 0) reload_pending = true;
-    if (reload_pending && threads_parked(game)) {
+    // load_state resets the host sample ring: compare pending samples first.
+    if (reload_pending && !game->sample_count && threads_parked(game)) {
       if (!save_state(DATA "replay-reload.state") || !load_state(DATA "replay-reload.state")) { r.fail = true; break; }
       reload_pending = false; reloads++;
     }
@@ -443,6 +446,12 @@ int main(int argc, char **argv) {
   freopen(DATA "runtime.log", "w", stderr);
   hooks_init(); hook_mode = HOOK_MODE_REPLACE;
   printf("Oracle of Ages - Switch\nBuild: %s\nNative C / SDL2 / libnx\n\nA: Play\nX: Short replay + reload\nY: Full replay + reload\nPlus: Exit\n\nROM: %s\n", ORACLES_SWITCH_BUILD, ROM);
+#ifdef ORACLES_LUA_BLOCK_PUZZLES
+  printf("Experimental C + Lua phase 1: block puzzles enabled\n");
+#endif
+#ifdef ORACLES_LUA_GAMEPLAY
+  fprintf(stderr, "Build: %s\nLua scripts SHA256: %s\nData: %s\n", ORACLES_SWITCH_BUILD, gameplay_revision(), DATA);
+#endif
   int mode = -1;
   while (appletMainLoop()) {
     padUpdate(&pad); u64 down = padGetButtonsDown(&pad);
