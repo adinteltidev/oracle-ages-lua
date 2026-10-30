@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/doors.h"
 
 #undef CYC
 #undef CYCT
@@ -39,7 +40,9 @@ void doorController_updateLinkRespawn_hook(GB *gb) {
   CYC(b_+15, b_+17); alu_swap_a(gb);
   CYC(b_+17, b_+18); alu_or(gb, B);
   CYC(b_+18, b_+19); alu_cp(gb, C);
-  if (!(F & FZ)) {
+  bool same_ = (F & FZ) != 0;
+  DOOR_DECIDE2(same_, same_position, A, C);
+  if (!same_) {
     RET_TAKEN(b_+19); return;
   }
   CYC(b_+19, b_+20);
@@ -76,7 +79,11 @@ static void doorController_checkTileIsShutterDoor(GB *gb, uint16_t sp0_) {
   CYC(b_+46, b_+47); C = A;
   CYC(b_+47, b_+49); B = 0xcf;
   CYC(b_+49, b_+50); A = mem_rd(gb, BC);
-  CYC(b_+50, b_+51); alu_cp(gb, mem_rd(gb, HL));
+  CYC(b_+50, b_+51); uint8_t expected_ = mem_rd(gb, HL); alu_cp(gb, expected_);
+  bool match_ = (F & FZ) != 0;
+  (void)match_; // Snapshot is unused when the optional bridge is compiled out.
+  DOOR_DECIDE2(match_, tile_matches, A, expected_);
+  DOOR_SET_ZERO(match_);
   RET(b_+51);
 }
 
@@ -88,6 +95,10 @@ static void doorController_checkTileCollision(GB *gb, uint16_t sp0_) {
   CYC(b_+60, b_+62); B = 0xce;
   CYC(b_+62, b_+63); A = mem_rd(gb, BC);
   CYC(b_+63, b_+64); alu_or(gb, A);
+  bool clear_ = (F & FZ) != 0;
+  (void)clear_; // Snapshot is unused when the optional bridge is compiled out.
+  DOOR_DECIDE(clear_, collision_clear, A);
+  DOOR_SET_ZERO(clear_);
   RET(b_+64);
 }
 
@@ -99,12 +110,15 @@ void doorController_decideActionBasedOnTriggers_hook(GB *gb) {
   CYC(b_+3, b_+4); B = A;
   CYC(b_+4, b_+7); A = mem_rd(gb, wActiveTriggers);
   CYC(b_+7, b_+8); alu_and(gb, B);
-  if (F & FZ) {
+  bool active_ = (F & FZ) == 0;
+  DOOR_DECIDE(active_, trigger_active, A);
+  if (!active_) {
     CYCT(b_+8, b_+10);
     goto triggerInactive;
   }
   CYC(b_+8, b_+10);
   CYC(b_+10, b_+13); push_effect(gb, b_+13); doorController_checkTileIsShutterDoor(gb, sp0_);
+  DOOR_FAILED_RETURN();
   CYC(b_+13, b_+15); A = 0x01;
   if (F & FZ) {
     CYCT(b_+15, b_+17);
@@ -117,6 +131,7 @@ void doorController_decideActionBasedOnTriggers_hook(GB *gb) {
 
 triggerInactive:
   CYC(b_+20, b_+23); push_effect(gb, b_+23); doorController_checkTileCollision(gb, sp0_);
+  DOOR_FAILED_RETURN();
   CYC(b_+23, b_+25); A = 0x02;
   if (F & FZ) {
     CYCT(b_+25, b_+27);
@@ -137,12 +152,16 @@ void doorController_checkMinecartCollidedWithDoor_hook(GB *gb) {
   CYC(b_+1, b_+4); mem_wr(gb, wTmpcfc0_normal_doorControllerState, A);
   CYC(b_+4, b_+7); A = mem_rd(gb, wLinkObjectIndex);
   CYC(b_+7, b_+8); alu_rrca(gb);
-  if (!(F & FC)) {
+  bool riding_ = (F & FC) != 0;
+  DOOR_DECIDE(riding_, minecart_riding, (F & FC) != 0);
+  if (!riding_) {
     RET_TAKEN(b_+8); return;
   }
   CYC(b_+8, b_+9);
   CALL_C(b_+9, objectCheckCollidedWithLink_ignoreZ_hook, SYM(objectCheckCollidedWithLink_ignoreZ), b_+12);
-  if (!(F & FC)) {
+  bool collided_ = (F & FC) != 0;
+  DOOR_DECIDE(collided_, minecart_collided, (F & FC) != 0);
+  if (!collided_) {
     RET_TAKEN(b_+12); return;
   }
   CYC(b_+12, b_+13);
@@ -160,13 +179,17 @@ void doorController_checkTileIsMinecartTrack_hook(GB *gb) {
   CYC(b_+6, b_+7); A = mem_rd(gb, BC);
   CYC(b_+7, b_+9); alu_cp(gb, 0x5d);
   CYC(b_+9, b_+11); B = 0x01;
-  if (F & FZ) {
+  bool first_ = (F & FZ) != 0;
+  DOOR_DECIDE2(first_, tile_matches, A, 0x5d);
+  if (first_) {
     CYCT(b_+11, b_+13);
     goto done;
   }
   CYC(b_+11, b_+13);
   CYC(b_+13, b_+15); alu_cp(gb, 0x5e);
-  if (F & FZ) {
+  bool second_ = (F & FZ) != 0;
+  DOOR_DECIDE2(second_, tile_matches, A, 0x5e);
+  if (second_) {
     CYCT(b_+15, b_+17);
     goto done;
   }
@@ -186,8 +209,12 @@ void doorController_checkEnoughTorchesLit_hook(GB *gb) {
   CYC(b_+4, b_+6); E = INTERACTION_BASE + OBJ_SPEED;
   CYC(b_+6, b_+7); A = mem_rd(gb, DE);
   CYC(b_+7, b_+8); alu_cp(gb, B);
+  uint8_t required_ = A;
+  (void)required_; // Snapshot is unused when the optional bridge is compiled out.
   CYC(b_+8, b_+10); A = 0x01;
-  if (F & FZ) {
+  bool ready_ = (F & FZ) != 0;
+  DOOR_DECIDE2(ready_, torches_ready, required_, B);
+  if (ready_) {
     CYCT(b_+10, b_+12);
     goto done;
   }

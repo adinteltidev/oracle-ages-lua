@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/doors.h"
 
 #undef CYC
 #undef CYCT
@@ -274,6 +275,7 @@ void scriptFunc_setState_hook(GB *gb) {
   CYC(b_+1, b_+3); alu_cp(gb, 0xff);
   if (F & FZ) { CYCT(b_+3, b_+5); goto increment_state; }
   CYC(b_+3, b_+5);
+  DOOR_SCRIPT_STATE(A);
   CYC(b_+5, b_+6); mem_wr(gb, DE, A);
   CYC(b_+6, b_+7); alu_xor(gb, A);
   CYC(b_+7, b_+8); ret_effect(gb);
@@ -281,6 +283,7 @@ void scriptFunc_setState_hook(GB *gb) {
 increment_state:
   CYC(b_+8, b_+9); A = mem_rd(gb, DE);
   CYC(b_+9, b_+10); A = alu_inc8(gb, A);
+  DOOR_SCRIPT_STATE(A);
   CYC(b_+10, b_+11); mem_wr(gb, DE, A);
   CYC(b_+11, b_+12); alu_xor(gb, A);
   CYC(b_+12, b_+13); ret_effect(gb);
@@ -852,7 +855,10 @@ void scriptCmd_jumpIfNoEnemies_hook(GB *gb) {
   CYC(b_+0, b_+1); SET_HL(pop_effect(gb));
   CYC(b_+1, b_+4); A = W8(wNumEnemies);
   CYC(b_+4, b_+5); alu_or(gb, A);
-  if (!(F & FZ)) {
+  bool empty_ = (F & FZ) != 0;
+  DOOR_SCRIPT_DECIDE(empty_, no_enemies, A);
+  DOOR_SET_ZERO(empty_);
+  if (!empty_) {
     CYCT(b_+5, b_+8);
     TAIL(scriptFunc_add3ToHl);
   }
@@ -1391,7 +1397,10 @@ void scriptCmd_checkNoEnemies_hook(GB *gb) {
   CYC(b_+0, b_+1); SET_HL(pop_effect(gb));
   CYC(b_+1, b_+4); A = mem_rd(gb, wNumEnemies);
   CYC(b_+4, b_+5); alu_or(gb, A);
-  if (!(F & FZ)) {
+  bool empty_ = (F & FZ) != 0;
+  DOOR_SCRIPT_DECIDE(empty_, no_enemies, A);
+  DOOR_SET_ZERO(empty_);
+  if (!empty_) {
     CYCT(b_+5, b_+6); ret_effect(gb);
     return;
   }
@@ -1525,7 +1534,10 @@ void scriptCmd_checkNotCollidedWithLink_ignoreZ_hook(GB *gb) {
   uint16_t sp0_ = gb->sp; (void)sp0_;
   CALL_C(b_+0, objectCheckCollidedWithLink_ignoreZ_hook, SYM(objectCheckCollidedWithLink_ignoreZ), b_+3);
   CYC(b_+3, b_+4); SET_HL(pop_effect(gb));
-  if (F & FC) {
+  bool clear_ = (F & FC) == 0;
+  DOOR_SCRIPT_DECIDE(clear_, link_clear, (F & FC) != 0);
+  DOOR_SET_CARRY(!clear_);
+  if (!clear_) {
     CYCT(b_+4, b_+6);
     goto collided;
   }

@@ -2,6 +2,7 @@
 #include "script/block_rules.h"
 #include "script/colored_cube.h"
 #include "script/levers_lava.h"
+#include "script/doors.h"
 #include "lua.h"
 #include "lauxlib.h"
 #include <stdio.h>
@@ -16,11 +17,14 @@ extern const unsigned char ages_colored_cube_lua[];
 extern const unsigned int ages_colored_cube_lua_size;
 extern const unsigned char ages_levers_lava_lua[];
 extern const unsigned int ages_levers_lava_lua_size;
+extern const unsigned char ages_doors_lua[];
+extern const unsigned int ages_doors_lua_size;
 #define CAP (256u * 1024u)
 enum { SWITCH_CHANGED, SWITCH_ALTERNATE, BLOCK_NEXT_STATE, BLOCK_RULE_FIRST,
        COLORED_CUBE_FIRST = BLOCK_RULE_FIRST + GAMEPLAY_BLOCK_RULE_COUNT,
        LAVA_FIRST = COLORED_CUBE_FIRST + GAMEPLAY_COLORED_CUBE_RULE_COUNT,
-       RULE_COUNT = LAVA_FIRST + GAMEPLAY_LAVA_RULE_COUNT };
+       DOOR_FIRST = LAVA_FIRST + GAMEPLAY_LAVA_RULE_COUNT,
+       RULE_COUNT = DOOR_FIRST + GAMEPLAY_DOOR_RULE_COUNT };
 static const char *const rule_names[RULE_COUNT] = {
   "ages/switch_tiles.changed", "ages/switch_tiles.alternate", "ages/block_puzzles.next_state",
 #define BLOCK_RULE1(name, a) "ages/block_rules." #name,
@@ -35,6 +39,15 @@ static const char *const rule_names[RULE_COUNT] = {
   "ages/levers_lava.fully_pulled", "ages/levers_lava.released", "ages/levers_lava.timer_elapsed",
   "ages/levers_lava.has_tile", "ages/levers_lava.source_found", "ages/levers_lava.source_segment",
   "ages/levers_lava.source_delta", "ages/levers_lava.next_state", "ages/levers_lava.floor_tile",
+#define DOOR_RULE1(name, a) "ages/doors." #name,
+#define DOOR_RULE2(name, a, b) "ages/doors." #name,
+#define DOOR_RULE_FLAG(name, a) "ages/doors." #name,
+#define DOOR_BYTE(name, a, low, high) "ages/doors." #name,
+#include "script/doors.def"
+#undef DOOR_RULE1
+#undef DOOR_RULE2
+#undef DOOR_RULE_FLAG
+#undef DOOR_BYTE
 };
 static lua_State *vm;
 static size_t used;
@@ -118,6 +131,9 @@ static int initialize(lua_State *L) {
   load_module(L, sources && sources->levers_lava ? sources->levers_lava : (const char *)ages_levers_lava_lua,
     sources && sources->levers_lava ? sources->levers_lava_size : ages_levers_lava_lua_size,
     "ages/levers_lava.lua", LAVA_FIRST, GAMEPLAY_LAVA_RULE_COUNT);
+  load_module(L, sources && sources->doors ? sources->doors : (const char *)ages_doors_lua,
+    sources && sources->doors ? sources->doors_size : ages_doors_lua_size,
+    "ages/doors.lua", DOOR_FIRST, GAMEPLAY_DOOR_RULE_COUNT);
   if (used > CAP - 16384) luaL_error(L, "gameplay initialization memory limit");
   if (!lua_checkstack(L, 16)) luaL_error(L, "gameplay stack limit");
   return 0;
@@ -320,6 +336,50 @@ bool gameplay_lava_floor_tile(uint8_t state,uint8_t random_byte,uint8_t *out) {
 }
 uint64_t gameplay_lava_calls(GameplayLavaRule rule) { return rule>=0 && rule<GAMEPLAY_LAVA_RULE_COUNT?calls[LAVA_FIRST+rule]:0; }
 const char *gameplay_lava_rule_name(GameplayLavaRule rule) { return rule>=0 && rule<GAMEPLAY_LAVA_RULE_COUNT?rule_names[LAVA_FIRST+rule]:"invalid"; }
+bool gameplay_doors_enabled(void) {
+#ifdef ORACLES_LUA_DOORS
+  return enabled;
+#else
+  return false;
+#endif
+}
+static bool door_boolean(GameplayDoorRule rule, const uint8_t *args, int count, bool *out) {
+  int index = DOOR_FIRST + rule;
+  if (!out) return reject(rule_names[index], "invalid output argument");
+  if (!call_rule(index, args, count)) return false;
+  if (!lua_isboolean(vm, -1)) return reject(rule_names[index], "expected boolean result");
+  *out = lua_toboolean(vm, -1); lua_pop(vm, 1); ++calls[index]; return true;
+}
+static bool door_integer(GameplayDoorRule rule, uint8_t arg, int low, int high, uint8_t *out) {
+  int index = DOOR_FIRST + rule;
+  if (!out) return reject(rule_names[index], "invalid output argument");
+  if (rule == GAMEPLAY_DOOR_script_state && arg > 3)
+    return reject(rule_names[index], "invalid state argument");
+  if (!call_rule(index, &arg, 1)) return false;
+  if (!lua_isinteger(vm, -1)) return reject(rule_names[index], "expected integer result");
+  lua_Integer value = lua_tointeger(vm, -1);
+  if (value < low || value > high) return reject(rule_names[index], "invalid result domain");
+  *out = (uint8_t)value; lua_pop(vm, 1); ++calls[index]; return true;
+}
+#define DOOR_RULE1(name, a) bool gameplay_door_##name(uint8_t a, bool *out) { \
+  uint8_t args[] = {a}; return door_boolean(GAMEPLAY_DOOR_##name, args, 1, out); }
+#define DOOR_RULE2(name, a, b) bool gameplay_door_##name(uint8_t a, uint8_t b, bool *out) { \
+  uint8_t args[] = {a, b}; return door_boolean(GAMEPLAY_DOOR_##name, args, 2, out); }
+#define DOOR_RULE_FLAG(name, a) bool gameplay_door_##name(bool a, bool *out) { \
+  uint8_t args[] = {a ? 1 : 0}; return door_boolean(GAMEPLAY_DOOR_##name, args, 1, out); }
+#define DOOR_BYTE(name, a, low, high) bool gameplay_door_##name(uint8_t a, uint8_t *out) { \
+  return door_integer(GAMEPLAY_DOOR_##name, a, low, high, out); }
+#include "script/doors.def"
+#undef DOOR_RULE1
+#undef DOOR_RULE2
+#undef DOOR_RULE_FLAG
+#undef DOOR_BYTE
+uint64_t gameplay_door_calls(GameplayDoorRule rule) {
+  return rule >= 0 && rule < GAMEPLAY_DOOR_RULE_COUNT ? calls[DOOR_FIRST + rule] : 0;
+}
+const char *gameplay_door_rule_name(GameplayDoorRule rule) {
+  return rule >= 0 && rule < GAMEPLAY_DOOR_RULE_COUNT ? rule_names[DOOR_FIRST + rule] : "invalid";
+}
 const char *gameplay_error(void) { return error; }
 const char *gameplay_revision(void) { return ORACLES_GAMEPLAY_REVISION; }
 uint64_t gameplay_calls(int rule) { return rule >= 0 && rule < RULE_COUNT ? calls[rule] : 0; }

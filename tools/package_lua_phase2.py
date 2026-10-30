@@ -18,7 +18,7 @@ def main():
         p.add_argument('--'+name,type=Path,required=True)
     p.add_argument('--macos-build',type=Path)
     a=p.parse_args(); root=Path(__file__).resolve().parents[1]
-    modules=['switch_tiles','block_puzzles','block_rules','colored_cube','levers_lava']
+    modules=['switch_tiles','block_puzzles','block_rules','colored_cube','levers_lava','doors']
     revision=sha(''.join(f'{m}:{sha((root/"gameplay/ages"/(m+".lua")).read_bytes())};' for m in modules).encode())
     exe=(a.windows_build/'Oracles.exe').read_bytes(); nro=(a.switch_build/'oracles-switch.nro').read_bytes()
     win=json.loads(a.windows_audit.read_text()); switch=json.loads(a.switch_audit.read_text())
@@ -29,6 +29,7 @@ def main():
         config=cache(build/'CMakeCache.txt')
         assert all(config.get(flag)=='ON' for flag in ['ORACLES_LUA_GAMEPLAY','ORACLES_LUA_BLOCK_PUZZLES','ORACLES_LUA_COLORED_CUBE'])
         assert config.get('ORACLES_LUA_LEVERS_LAVA', 'OFF') != 'ON', 'Use the phase-3 packager'
+        assert config.get('ORACLES_LUA_DOORS', 'OFF') != 'ON', 'Use the phase-4 packager'
         assert not config.get('ORACLES_VERSION'), 'Experimental builds cannot enable stable release updates'
     assert b'oracles-lua-phase2' in exe and b'sdmc:/switch/oracle-ages-lua-phase2/' in nro
     assert revision.encode() in exe and revision.encode() in nro

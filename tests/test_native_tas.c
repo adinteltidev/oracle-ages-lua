@@ -4,6 +4,7 @@
 #include "script/block_rules.h"
 #include "script/colored_cube.h"
 #include "script/levers_lava.h"
+#include "script/doors.h"
 #endif
 #include "platform/tempfile.h"
 #include "core/gb.h"
@@ -56,6 +57,8 @@ static void native_run_reloading(const char *rom_path, const char *inputs, const
 #ifdef ORACLES_LUA_GAMEPLAY
   uint64_t rules_before[GAMEPLAY_BLOCK_RULE_COUNT];
   uint64_t colors_before[GAMEPLAY_COLORED_CUBE_RULE_COUNT];
+  uint64_t doors_before[GAMEPLAY_DOOR_RULE_COUNT];
+  for(int i=0;i<GAMEPLAY_DOOR_RULE_COUNT;++i) doors_before[i]=gameplay_door_calls(i);
   uint64_t lava_before[GAMEPLAY_LAVA_RULE_COUNT];
   for(int i=0;i<GAMEPLAY_LAVA_RULE_COUNT;++i) lava_before[i]=gameplay_lava_calls(i);
   for(int i=0;i<GAMEPLAY_COLORED_CUBE_RULE_COUNT;++i) colors_before[i]=gameplay_colored_cube_calls(i);
@@ -122,6 +125,8 @@ static void native_run_reloading(const char *rom_path, const char *inputs, const
   printf("checkpoint diagnostics: skipped=%llu reloads=%u\n", (unsigned long long)rc.skipped, reloads);
   printf("sample interval: first=%llu last=%llu samples=%llu\n",
     (unsigned long long)rc.first_sample, (unsigned long long)rc.last_sample, (unsigned long long)rc.samples);
+  for(int i=0;i<GAMEPLAY_DOOR_RULE_COUNT;++i)
+    printf("Lua rule %s: %llu\n",gameplay_door_rule_name(i),(unsigned long long)(gameplay_door_calls(i)-doors_before[i]));
   fflush(stdout);
 #ifdef ORACLES_LUA_GAMEPLAY
   printf("Lua cumulative block coverage: %llu/%llu/%llu/%llu\n",

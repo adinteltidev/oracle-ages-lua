@@ -91,3 +91,16 @@ sem concluir essas verificações.
 - Runtime compilado para Windows x64; NRO ARM64 gerado. Ainda sem execução desta
   build no Windows real ou no console, sem benchmark completo de frames e sem
   replay completo de 289.518 frames. A migração não deve avançar de escala ainda.
+
+## Atualização de 30/10/2026 — fase 4
+
+As decisões de portas foram incorporadas ao experimento, mediante
+`ORACLES_LUA_DOORS=ON` e as opções das fases anteriores. Veja o
+[inventário e evidências](LUA-PHASE-4.md) e os
+[testes dos pacotes](LUA-PHASE-4-PLATFORM-TESTS.md). O perfil novo é
+`oracles-lua-phase4` no desktop e `oracle-ages-lua-phase4` no Switch.
+
+Validação posterior do jogador, em 30/10/2026: as versões Windows e Switch foram
+relatadas como funcionando e estáveis. A pendência manual dessas plataformas
+está atendida; falta a regressão completa de Seasons. Veja o
+[registro da confirmação](LUA-PHASE-4-PLAYER-VALIDATION.md).

@@ -1,18 +1,21 @@
 # Migração de gameplay para Lua: sete fases
 
-Atualização: 30/10/2026. Estado: implementação experimental da fase 1 concluída;
-aceitação em aberto. Implementação experimental da fase 2 concluída, aceitação
-também pendente. Implementação experimental da fase 3 concluída, aceitação
-física em aberto. Fases 4–7 ainda não iniciadas.
+Atualização: 30/10/2026. Implementação experimental das fases 1–4 concluída.
+O jogador validou as versões cumulativas da fase 4 no Windows e Switch e
+confirmou funcionamento e estabilidade. A pendência de validação manual dessas
+plataformas está atendida. Fases 5–7 ainda não iniciadas.
 
-[Evidências e limites atuais da fase 1](LUA-PHASE-1-IMPLEMENTATION.md).
-Windows/Switch ainda não foram testados pelo jogador; falta também a regressão
-completa de Seasons com ROM própria. Esses resultados bloqueiam a conclusão da
-validação e a promoção do build experimental a padrão.
+[Fase 4: inventário, implementação e evidências](LUA-PHASE-4.md).
+[Confirmação de Windows/Switch pelo jogador](LUA-PHASE-4-PLAYER-VALIDATION.md).
 
-Execução iniciada: [fase 1, primeiro lote e inventário](LUA-PHASE-1.md).
-A fase continua em andamento; esse relatório não representa aprovação de todos
-os puzzles nem das plataformas.
+Continua pendente a regressão completa de Seasons com ROM própria. Essa
+verificação mantém a validação comum da migração em aberto; as opções
+experimentais continuam OFF por padrão.
+
+Os relatórios de fases anteriores preservam seus resultados e pendências da
+época. O primeiro lote está em [fase 1, inventário](LUA-PHASE-1.md), e sua
+implementação em [evidências da fase 1](LUA-PHASE-1-IMPLEMENTATION.md).
+A confirmação posterior das plataformas está registrada acima.
 
 ## Objetivo e organização
 

@@ -249,3 +249,13 @@ To build it yourself, or work on it, see [DEVELOPMENT.md](DEVELOPMENT.md).
 
 See [WINDOWS.md](WINDOWS.md) for the pinned LLVM-MinGW build, PE/dependency audit,
 Wine tests and the remaining acceptance checks on a real Windows machine.
+
+## Experimental C + Lua branch
+
+The optional Ages migration now includes door decisions (phase 4), alongside
+block puzzles, the colored cube and lever/lava rules. C still owns the engine
+and effects. See [phase 4](LUA-PHASE-4.md) and its
+[platform test instructions](LUA-PHASE-4-PLATFORM-TESTS.md). All integration
+options remain OFF by default. The player has reported working, stable Windows
+and Switch versions; see the [validation record](LUA-PHASE-4-PLAYER-VALIDATION.md).
+The full Seasons regression remains pending.

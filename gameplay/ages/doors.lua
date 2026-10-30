@@ -1,0 +1,33 @@
+-- Door policy only. Animation, geometry, script execution and key debit stay in C.
+-- Inputs are snapshots at the original branch; this module has no persistent state.
+return {
+  switch_hook_busy = function(value) return value == 2 end,
+  palette_busy = function(value) return value ~= 0 end,
+  open_collision = function(collided) return collided == 1 end,
+  close_collision = function(collided) return collided == 0 end,
+  somaria_tile = function(tile) return tile == 0xda end,
+  same_position = function(a, b) return a == b end,
+  timer_elapsed = function(zero) return zero == 1 end,
+  trigger_active = function(masked) return masked ~= 0 end,
+  tile_matches = function(actual, expected) return actual == expected end,
+  collision_clear = function(collision) return collision == 0 end,
+  minecart_riding = function(riding) return riding == 1 end,
+  minecart_collided = function(collided) return collided == 1 end,
+  torches_ready = function(required, actual) return required == actual end,
+  gate_open = function(masked) return masked == 0 end,
+  gate_switch = function(masked) return masked ~= 0 end,
+  gate_is_open = function(bit_set) return bit_set == 1 end,
+  -- C has already incremented the animation token with byte wraparound.
+  gate_animation_done = function(advanced_parameter) return advanced_parameter == 0 end,
+  gate_state = function(animation) return (animation & 1) + 1 end,
+  script_state = function(requested) return requested end,
+  no_enemies = function(count) return count == 0 end,
+  link_clear = function(collided) return collided == 0 end,
+  valid_dungeon = function(index) return index ~= 0xff end,
+  boss_door = function(tile_parameter) return tile_parameter >= 0x40 end,
+  small_key = function(count) return count ~= 0 end,
+  boss_key = function(owned) return owned == 1 end,
+  reserved_free = function(enabled) return enabled == 0 end,
+  overworld_locked = function(masked) return masked == 0 end,
+  overworld_key = function(owned) return owned == 1 end,
+}

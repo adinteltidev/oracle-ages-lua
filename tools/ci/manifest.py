@@ -51,7 +51,7 @@ def main():
             'run_id': os.getenv('GITHUB_RUN_ID'), 'run_attempt': os.getenv('GITHUB_RUN_ATTEMPT'),
             'repository': os.getenv('GITHUB_REPOSITORY'),
             'features': {key: os.getenv(env, 'OFF') == 'ON' for key, env in
-                         [('lua_gameplay', 'ORACLES_LUA_GAMEPLAY'), ('lua_block_puzzles', 'ORACLES_LUA_BLOCK_PUZZLES'), ('lua_colored_cube', 'ORACLES_LUA_COLORED_CUBE'), ('lua_levers_lava', 'ORACLES_LUA_LEVERS_LAVA')]},
+                         [('lua_gameplay', 'ORACLES_LUA_GAMEPLAY'), ('lua_block_puzzles', 'ORACLES_LUA_BLOCK_PUZZLES'), ('lua_colored_cube', 'ORACLES_LUA_COLORED_CUBE'), ('lua_levers_lava', 'ORACLES_LUA_LEVERS_LAVA'), ('lua_doors', 'ORACLES_LUA_DOORS')]},
             'compiler': a.compiler, 'host': platform.platform(),
             'binary': {'name': a.binary.name, 'bytes': len(binary), 'sha256': digest},
             'audit': audit, 'tests': tests, 'evidence': evidence,

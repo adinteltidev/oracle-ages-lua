@@ -1,6 +1,7 @@
 #include "game/game.h"
 #include "rt/fibers.h"
 #include "game/gen.h"
+#include "script/doors.h"
 #include "game/offscreen.h"
 void s_seasonsFunc_2678_hook(GB *gb);
 
@@ -4274,6 +4275,7 @@ void interactionRunScript_hook(GB *gb) {
   L = A;
   CYC(b_+38, b_+39);
   CALL_ROM(b_+39, ROM__interactionActuallyRunScript);
+  DOOR_FAILED_RETURN();
   if (F & FC) {
     CYCT(b_+42, b_+44);
     CALL_ROM(b_+49, ROM__interactionSaveScriptAddress);
@@ -11915,6 +11917,7 @@ void _interactionActuallyRunScript_hook(GB *gb) {
     }
     CYC(b_+11, b_+14);
     CALL_ROM(b_+14, ROM_b0c_runScriptCommand);
+    DOOR_FAILED_RETURN();
     if (F & FC) { CYCT(b_+17, b_+19); continue; }
     CYC(b_+17, b_+19);
     break;
