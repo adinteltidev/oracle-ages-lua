@@ -1,6 +1,7 @@
 #include "unit.h"
 #ifdef ORACLES_LUA_GAMEPLAY
 #include "script/gameplay.h"
+#include "script/block_rules.h"
 #endif
 #include "platform/tempfile.h"
 #include "core/gb.h"
@@ -50,6 +51,10 @@ static void native_run(const char *rom_path, const char *inputs, const char *ref
 // reload_every: a save state round trip (every thread fiber dropped, as when the app loads a
 // state) at the first frame after each multiple whose threads are parked, as the app saves.
 static void native_run_reloading(const char *rom_path, const char *inputs, const char *ref_path, const char *state_path, uint64_t frames, uint64_t reload_every) {
+#ifdef ORACLES_LUA_GAMEPLAY
+  uint64_t rules_before[GAMEPLAY_BLOCK_RULE_COUNT];
+  for (int i=0;i<GAMEPLAY_BLOCK_RULE_COUNT;++i) rules_before[i]=gameplay_block_rule_calls(i);
+#endif
   size_t n;
   uint8_t *rom = oracles_read_file(rom_path, &n);
   if (!rom) SKIP("ROM not present");
@@ -116,6 +121,9 @@ static void native_run_reloading(const char *rom_path, const char *inputs, const
   printf("Lua cumulative block coverage: %llu/%llu/%llu/%llu\n",
     (unsigned long long)gameplay_block_calls(0), (unsigned long long)gameplay_block_calls(1),
     (unsigned long long)gameplay_block_calls(2), (unsigned long long)gameplay_block_calls(3));
+  for (int i=0;i<GAMEPLAY_BLOCK_RULE_COUNT;++i)
+    printf("Lua rule %s: %llu\n",gameplay_block_rule_name(i),
+      (unsigned long long)(gameplay_block_rule_calls(i)-rules_before[i]));
   fflush(stdout);
 #endif
   fclose(ref); free(gb); free(rom); tas_free(&t);

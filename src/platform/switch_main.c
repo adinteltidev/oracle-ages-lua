@@ -15,6 +15,7 @@
 #include "game/game.h"
 #ifdef ORACLES_LUA_GAMEPLAY
 #include "script/gameplay.h"
+#include "script/block_rules.h"
 #endif
 #include <stdio.h>
 #include <stdlib.h>
@@ -217,6 +218,10 @@ static int replay(bool full) {
     fprintf(result,"lua_scripts_sha256=%s\nlua_blocks=%llu/%llu/%llu/%llu\n", gameplay_revision(),
       (unsigned long long)gameplay_block_calls(0), (unsigned long long)gameplay_block_calls(1),
       (unsigned long long)gameplay_block_calls(2), (unsigned long long)gameplay_block_calls(3));
+#endif
+#ifdef ORACLES_LUA_GAMEPLAY
+    for(int r=0;r<GAMEPLAY_BLOCK_RULE_COUNT;++r)
+      fprintf(result,"lua_rule.%s=%llu\n",gameplay_block_rule_name(r),(unsigned long long)gameplay_block_rule_calls(r));
 #endif
     fclose(result);
   }

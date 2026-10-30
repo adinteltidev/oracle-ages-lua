@@ -5,6 +5,7 @@
 // Stateless pilot; no VM pointer or new persistent data is added to GB.
 bool gameplay_init(void);
 void gameplay_enable(bool enabled);
+bool gameplay_is_enabled(void);
 bool gameplay_decide(int rule, uint8_t a, uint8_t b, bool *out);
 typedef enum {
   GAMEPLAY_BLOCK_INITIALIZE,
@@ -37,6 +38,7 @@ bool gameplay_load(const char *source, size_t length);
 typedef struct {
   const char *switch_tiles; size_t switch_tiles_size;
   const char *block_puzzles; size_t block_puzzles_size;
+  const char *block_rules; size_t block_rules_size;
 } GameplaySources;
 // Test seam: reset the runtime, replacing selected modules; NULL uses embedded source.
 bool gameplay_load_sources(const GameplaySources *sources);

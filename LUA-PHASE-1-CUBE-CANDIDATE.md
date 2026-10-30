@@ -1,7 +1,12 @@
 # Fase 1: preparação da permissão de blocos ligada ao cubo
 
 Data: 29/10/2026. Branch: `port/lua-gameplay`. Commit-base: `73c4fd7`.
-Estado: **candidato testado, ainda sem integração ao jogo**.
+Registro histórico: candidato testado antes da integração.
+
+**Atualização 30/10/2026:** as regras foram promovidas para
+`gameplay/ages/block_rules.lua` e integradas ao hook real, junto ao assentamento.
+Veja [implementação atual](LUA-PHASE-1-IMPLEMENTATION.md). O candidato abaixo
+permanece como referência de testes; não é o módulo carregado pelo jogo.
 
 O plano permite preparar contratos e testes enquanto a execução do lote anterior
 no Windows e no Switch continua pendente. Esta rodada não amplia o gameplay

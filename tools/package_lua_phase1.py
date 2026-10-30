@@ -95,7 +95,7 @@ def main():
         assert all(config.get(key) == 'ON' for key in ('ORACLES_LUA_GAMEPLAY', 'ORACLES_LUA_BLOCK_PUZZLES'))
         assert not config.get('ORACLES_VERSION'), 'Test packages must not enable release updates'
     revision = sha(''.join(f'{module}:{sha((root / ("gameplay/ages/" + module + ".lua")).read_bytes())};'
-                          for module in ('switch_tiles', 'block_puzzles')).encode())
+                          for module in ('switch_tiles', 'block_puzzles', 'block_rules')).encode())
     assert revision.encode() in exe and revision.encode() in nro
     assert b'oracles-lua-phase1' in exe and b'sdmc:/switch/oracle-ages-lua-phase1/' in nro
     for build in (a.windows_build, a.switch_build):
@@ -104,13 +104,20 @@ def main():
     helper = (a.windows_build / 'test_native_ages.exe').read_bytes()
     assert b'--tas-dir' in helper and b'--rom' in helper, 'Replay helper must accept portable paths'
     assert b'activeCodePage' in helper and b'UTF-8' in helper
+    directed = (a.windows_build / 'test_lua_block_rules_rom.exe').read_bytes()
+    assert b'--tas-dir' in directed and b'--rom' in directed
+    assert b'activeCodePage' in directed and b'UTF-8' in directed
+    assert revision.encode() in directed
     source_tar, source_manifest = sources(root)
     # Verify corresponding source bytes before distributing either binary.
     with tarfile.open(fileobj=io.BytesIO(source_tar), mode='r:gz') as archive:
-        assert archive.extractfile('oracle-ages-lua/gameplay/ages/block_puzzles.lua').read() == (root/'gameplay/ages/block_puzzles.lua').read_bytes()
+        for module in ('switch_tiles', 'block_puzzles', 'block_rules'):
+            name = 'gameplay/ages/' + module + '.lua'
+            assert archive.extractfile('oracle-ages-lua/' + name).read() == (root/name).read_bytes()
         for entry in archive.getmembers():
             assert Path(entry.name).suffix.lower() not in {'.gb', '.gbc', '.sav', '.exe', '.nro'}
-    build = {'date': '2026-10-29', 'base_commit': source_manifest['base_commit'], 'working_tree': True,
+    build = {'date': '2026-10-30', 'base_commit': source_manifest['base_commit'], 'working_tree': True,
+             'scope': 'expanded phase 1; 32 typed rules plus original trigger and switches',
              'features': {'lua_gameplay': True, 'lua_block_puzzles': True}, 'scripts_sha256': revision,
              'windows_real_or_vm_tested': False, 'switch_hardware_tested': False,
              'windows_binary_sha256': sha(exe), 'switch_nro_sha256': sha(nro),
@@ -126,6 +133,8 @@ def main():
     wf.update({'Oracles-Windows-Lua-Phase1/Oracles-Lua-Fase1.exe': exe,
                'Oracles-Windows-Lua-Phase1/Tests/test_native_ages.exe': helper,
                'Oracles-Windows-Lua-Phase1/Tests/test_lua_gameplay.exe': (a.windows_build/'test_lua_gameplay.exe').read_bytes(),
+               'Oracles-Windows-Lua-Phase1/Tests/test_lua_block_rules.exe': (a.windows_build/'test_lua_block_rules.exe').read_bytes(),
+               'Oracles-Windows-Lua-Phase1/Tests/test_lua_block_rules_rom.exe': (a.windows_build/'test_lua_block_rules_rom.exe').read_bytes(),
                'Oracles-Windows-Lua-Phase1/Tests/oracles-native-run.exe': (a.windows_build/'oracles-native-run.exe').read_bytes(),
                'windows-audit.json': (json.dumps(dict(windows, file='Oracles-Lua-Fase1.exe'), indent=2)+'\n').encode(),
                'Licenses/SDL3.txt': (a.sdl_source/'LICENSE.txt').read_bytes(),
@@ -148,9 +157,9 @@ def main():
     for notice in sorted((root/'platform/switch/licenses').iterdir()):
         if notice.is_file(): sf['Licenses/'+notice.name] = notice.read_bytes()
     a.output.mkdir(parents=True, exist_ok=True)
-    packages = [write_zip(a.output/'Oracles-Windows-Lua-Phase1.zip', wf), write_zip(a.output/'Oracles-Switch-Lua-Phase1.zip', sf)]
+    packages = [write_zip(a.output/'Oracles-Windows-Lua-Phase1-Expanded.zip', wf), write_zip(a.output/'Oracles-Switch-Lua-Phase1-Expanded.zip', sf)]
     result = dict(build, packages=packages)
-    (a.output/'oracle-lua-phase1-builds.json').write_text(json.dumps(result, indent=2)+'\n')
+    (a.output/'oracle-lua-phase1-expanded-builds.json').write_text(json.dumps(result, indent=2)+'\n')
     print(json.dumps(result, indent=2))
 
 

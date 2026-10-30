@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/block_rules.h"
 
 #undef CYC
 #undef CYCT
@@ -245,12 +246,16 @@ void miscPuzzles_subid02_hook(GB *gb) {
   CYC(b_+8, b_+9); B = A;
   CYC(b_+9, b_+12); A = W8(wRotatingCubePos);
   CYC(b_+12, b_+13); alu_cp(gb, L);
-  if (!(F & FZ)) { RET_TAKEN(b_+13); return; } // ret nz
+  bool phase1_choice_41 = (F & FZ) != 0;
+  BLOCK_DECIDE(phase1_choice_41, puzzle_cube_position, A, L);
+  if (!phase1_choice_41) { RET_TAKEN(b_+13); return; } // ret nz
   CYC(b_+13, b_+14);
   CYC(b_+14, b_+17); A = W8(wRotatingCubeColor);
   CYC(b_+17, b_+19); alu_and(gb, 0x03);
   CYC(b_+19, b_+20); alu_cp(gb, B);
-  if (!(F & FZ)) { RET_TAKEN(b_+20); return; } // ret nz
+  bool phase1_choice_42 = (F & FZ) != 0;
+  BLOCK_DECIDE(phase1_choice_42, puzzle_cube_color, A, B);
+  if (!phase1_choice_42) { RET_TAKEN(b_+20); return; } // ret nz
   CYC(b_+20, b_+21);
   CYC(b_+21, b_+22); C = L;
   CYC(b_+22, b_+24); A = 0xa0; // TILEINDEX_STANDARD_FLOOR
@@ -289,7 +294,9 @@ void miscPuzzles_verifyTilesAtPositions_hook(GB *gb) {
 newTileIndex:
   CYC(b_+2, b_+3); A = mem_rd(gb, HL); SET_HL(HL + 1); // ldi a,(hl)
   CYC(b_+3, b_+4); alu_or(gb, A);
-  if (F & FZ) { RET_TAKEN(b_+4); return; } // ret z
+  bool phase1_choice_37 = (F & FZ) != 0;
+  BLOCK_DECIDE(phase1_choice_37, tiles_end, A);
+  if (phase1_choice_37) { BLOCK_SET_Z(true); RET_TAKEN(b_+4); return; } // ret z
   CYC(b_+4, b_+5);
   CYC(b_+5, b_+6); E = A;
 
@@ -297,14 +304,20 @@ nextTile:
   CYC(b_+6, b_+7); A = mem_rd(gb, HL); SET_HL(HL + 1); // ldi a,(hl)
   CYC(b_+7, b_+8); C = A;
   CYC(b_+8, b_+9); alu_or(gb, A);
-  if (F & FZ) { RET_TAKEN(b_+9); return; } // ret z
+  bool phase1_choice_38 = (F & FZ) != 0;
+  BLOCK_DECIDE(phase1_choice_38, tiles_end, C);
+  if (phase1_choice_38) { BLOCK_SET_Z(true); RET_TAKEN(b_+9); return; } // ret z
   CYC(b_+9, b_+10);
   CYC(b_+10, b_+11); A = alu_inc8(gb, A);
-  if (F & FZ) { CYCT(b_+11, b_+13); goto newTileIndex; } // jr z
+  bool phase1_choice_39 = (F & FZ) != 0;
+  BLOCK_DECIDE(phase1_choice_39, tiles_new_group, C);
+  if (phase1_choice_39) { CYCT(b_+11, b_+13); goto newTileIndex; } // jr z
   CYC(b_+11, b_+13);
   CYC(b_+13, b_+14); A = mem_rd(gb, BC);
   CYC(b_+14, b_+15); alu_cp(gb, E);
-  if (!(F & FZ)) { RET_TAKEN(b_+15); return; } // ret nz
+  bool phase1_choice_40 = (F & FZ) != 0;
+  BLOCK_DECIDE(phase1_choice_40, tiles_match, A, E);
+  if (!phase1_choice_40) { BLOCK_SET_Z(false); RET_TAKEN(b_+15); return; } // ret nz
   CYC(b_+15, b_+16);
   CYC(b_+16, b_+18); goto nextTile; // jr
 }
@@ -863,16 +876,22 @@ void miscPuzzles_subid0d_hook(GB *gb) {
   // miscPuzzles_subid0d@state0
   CALL_C(b_+10, getThisRoomFlags_hook, SYM(getThisRoomFlags), b_+13);
   CYC(b_+13, b_+15); alu_and(gb, 0x40); // ROOMFLAG_40
-  if (!(F & FZ)) { CYCT(b_+15, b_+18); interactionDelete_hook(gb); return; } // jp nz
+  bool phase1_choice_46 = (F & FZ) == 0;
+  BLOCK_DECIDE(phase1_choice_46, panel_opened, A);
+  if (phase1_choice_46) { CYCT(b_+15, b_+18); interactionDelete_hook(gb); return; } // jp nz
   CYC(b_+15, b_+18);
   CYC(b_+18, b_+21); A = W8(wNumTorchesLit);
   CYC(b_+21, b_+23); alu_cp(gb, 0x01);
-  if (!(F & FZ)) { RET_TAKEN(b_+23); return; } // ret nz
+  bool phase1_choice_47 = (F & FZ) != 0;
+  BLOCK_DECIDE(phase1_choice_47, panels_torch_count, A);
+  if (!phase1_choice_47) { RET_TAKEN(b_+23); return; } // ret nz
   CYC(b_+23, b_+24);
   CYC(b_+24, b_+27); SET_HL(wActiveTriggers);
   CYC(b_+27, b_+28); A = mem_rd(gb, HL);
   CYC(b_+28, b_+30); alu_cp(gb, 0x07);
-  if (!(F & FZ)) { RET_TAKEN(b_+30); return; } // ret nz
+  bool phase1_choice_48 = (F & FZ) != 0;
+  BLOCK_DECIDE(phase1_choice_48, panels_all_triggers, A);
+  if (!phase1_choice_48) { RET_TAKEN(b_+30); return; } // ret nz
   CYC(b_+30, b_+31);
   CYC(b_+31, b_+33); E = INTERACTION_BASE + OBJ_COUNTER1;
   CYC(b_+33, b_+35); A = 0x1e;
@@ -885,12 +904,16 @@ void miscPuzzles_subid0d_hook(GB *gb) {
 
 state1:
   CALL_C(b_+49, interactionDecCounter1_hook, SYM(interactionDecCounter1), b_+52);
-  if (!(F & FZ)) { RET_TAKEN(b_+52); return; } // ret nz
+  bool phase1_choice_49 = (F & FZ) != 0;
+  BLOCK_DECIDE(phase1_choice_49, panel_advance, (F & FZ) != 0);
+  if (!phase1_choice_49) { RET_TAKEN(b_+52); return; } // ret nz
   CYC(b_+52, b_+53);
   CYC(b_+53, b_+56); SET_HL(wActiveTriggers);
   CYC(b_+56, b_+57); A = mem_rd(gb, HL);
   CYC(b_+57, b_+59); alu_cp(gb, 0x07);
-  if (F & FZ) { CYCT(b_+59, b_+61); goto l70ca; } // jr z
+  bool phase1_choice_51 = (F & FZ) != 0;
+  BLOCK_DECIDE(phase1_choice_51, panels_all_triggers, A);
+  if (phase1_choice_51) { CYCT(b_+59, b_+61); goto l70ca; } // jr z
   CYC(b_+59, b_+61);
   CYC(b_+61, b_+63); E = INTERACTION_BASE + OBJ_STATE;
   CYC(b_+63, b_+64); alu_xor(gb, A);
@@ -904,7 +927,9 @@ l70ca:
 state2:
   CYC(b_+71, b_+74); A = W8(wActiveTriggers);
   CYC(b_+74, b_+76); alu_bit(gb, 7, A);
-  if (!(F & FZ)) { RET_TAKEN(b_+76); return; } // ret nz
+  bool phase1_choice_50 = (F & FZ) != 0;
+  BLOCK_DECIDE(phase1_choice_50, panels_wait_opened, A);
+  if (!phase1_choice_50) { RET_TAKEN(b_+76); return; } // ret nz
   CYC(b_+76, b_+77);
   CYC(b_+77, b_+79); A = 0x4d; // SND_SOLVEPUZZLE
   CALL_C(b_+79, playSound_b00_hook, SYM(playSound_b00), b_+82);
@@ -1052,17 +1077,23 @@ void miscPuzzles_subid14_hook(GB *gb) {
   CALL_C(b_+6, objectGetTileAtPosition_hook, SYM(objectGetTileAtPosition), b_+9);
   CYC(b_+9, b_+11); alu_sub(gb, 0xad); // TILEINDEX_RED_TOGGLE_FLOOR
   CYC(b_+11, b_+13); alu_cp(gb, 0x03);
-  if (!(F & FC)) { RET_TAKEN(b_+13); return; } // ret nc
+  bool phase1_choice_45 = (F & FC) != 0;
+  BLOCK_DECIDE(phase1_choice_45, puzzle_cube_valid_color, A);
+  if (!phase1_choice_45) { RET_TAKEN(b_+13); return; } // ret nc
   CYC(b_+13, b_+14);
   CYC(b_+14, b_+15); B = A;
   CYC(b_+15, b_+18); A = W8(wRotatingCubePos);
   CYC(b_+18, b_+19); alu_cp(gb, L);
-  if (!(F & FZ)) { RET_TAKEN(b_+19); return; } // ret nz
+  bool phase1_choice_43 = (F & FZ) != 0;
+  BLOCK_DECIDE(phase1_choice_43, puzzle_cube_position, A, L);
+  if (!phase1_choice_43) { RET_TAKEN(b_+19); return; } // ret nz
   CYC(b_+19, b_+20);
   CYC(b_+20, b_+23); A = W8(wRotatingCubeColor);
   CYC(b_+23, b_+25); alu_and(gb, 0x03);
   CYC(b_+25, b_+26); alu_cp(gb, B);
-  if (!(F & FZ)) { RET_TAKEN(b_+26); return; } // ret nz
+  bool phase1_choice_44 = (F & FZ) != 0;
+  BLOCK_DECIDE(phase1_choice_44, puzzle_cube_color, A, B);
+  if (!phase1_choice_44) { RET_TAKEN(b_+26); return; } // ret nz
   CYC(b_+26, b_+27);
   CYC(b_+27, b_+28); C = L;
   CYC(b_+28, b_+31); SET_HL(wActiveTriggers);
@@ -1086,7 +1117,9 @@ void miscPuzzles_subid15_hook(GB *gb) {
   CYC(b_+3, b_+6);
   CYC(b_+6, b_+9); A = W8(wActiveTriggers);
   CYC(b_+9, b_+11); alu_cp(gb, 0x07);
-  if (!(F & FZ)) { RET_TAKEN(b_+11); return; } // ret nz
+  bool phase1_choice_52 = (F & FZ) != 0;
+  BLOCK_DECIDE(phase1_choice_52, panels_all_triggers, A);
+  if (!phase1_choice_52) { RET_TAKEN(b_+11); return; } // ret nz
   CYC(b_+11, b_+12);
   CYC(b_+12, b_+14); A = 0x4d; // SND_SOLVEPUZZLE
   CALL_C(b_+14, playSound_b00_hook, SYM(playSound_b00), b_+17);
@@ -1158,12 +1191,16 @@ void miscPuzzles_subid18_hook(GB *gb) {
   CYC(b_+6, b_+9); SET_HL(wRoomLayout + 0x95);
   CYC(b_+9, b_+10); A = mem_rd(gb, HL);
   CYC(b_+10, b_+12); alu_cp(gb, 0x2a); // TILEINDEX_PUSHABLE_STATUE
-  if (!(F & FZ)) { RET_TAKEN(b_+12); return; } // ret nz
+  bool phase1_choice_53 = (F & FZ) != 0;
+  BLOCK_DECIDE(phase1_choice_53, statue_placed, A);
+  if (!phase1_choice_53) { RET_TAKEN(b_+12); return; } // ret nz
   CYC(b_+12, b_+13);
   CYC(b_+13, b_+15); L = 0x5d;
   CYC(b_+15, b_+16); A = mem_rd(gb, HL);
   CYC(b_+16, b_+18); alu_cp(gb, 0x2a); // TILEINDEX_PUSHABLE_STATUE
-  if (!(F & FZ)) { RET_TAKEN(b_+18); return; } // ret nz
+  bool phase1_choice_54 = (F & FZ) != 0;
+  BLOCK_DECIDE(phase1_choice_54, statue_placed, A);
+  if (!phase1_choice_54) { RET_TAKEN(b_+18); return; } // ret nz
   CYC(b_+18, b_+19);
   CYC(b_+19, b_+22); TAIL(miscPuzzles_dropSmallKeyHere); // jp
 }
@@ -1383,7 +1420,9 @@ void miscPuzzles_subid1f_hook(GB *gb) {
 
 subid1f_state1:
   CALL_C(b_+10, interactionDecCounter1_hook, SYM(interactionDecCounter1), b_+13);
-  if (!(F & FZ)) { RET_TAKEN(b_+13); return; } // ret nz
+  bool phase1_choice_55 = (F & FZ) != 0;
+  BLOCK_DECIDE(phase1_choice_55, trap_advance, (F & FZ) != 0);
+  if (!phase1_choice_55) { RET_TAKEN(b_+13); return; } // ret nz
   CYC(b_+13, b_+14);
   CYC(b_+14, b_+16); mem_wr(gb, HL, 30);
   CYC(b_+16, b_+19); SET_HL(w1Link_yh);
@@ -1407,15 +1446,21 @@ subid1f_checkNextOffset:
   CYC(b_+40, b_+42); B = (uint8_t)(wRoomCollisions >> 8);
   CYC(b_+42, b_+43); A = mem_rd(gb, BC);
   CYC(b_+43, b_+44); alu_or(gb, A);
-  if (F & FZ) { CYCT(b_+44, b_+46); goto subid1f_doneCheckingIfTrapped; } // jr z
+  bool phase1_choice_56 = (F & FZ) != 0;
+  BLOCK_DECIDE(phase1_choice_56, trap_route_open, A);
+  if (phase1_choice_56) { CYCT(b_+44, b_+46); goto subid1f_doneCheckingIfTrapped; } // jr z
   CYC(b_+44, b_+46);
   CYC(b_+46, b_+48); alu_bit(gb, 0, D);
-  if (!(F & FZ)) { CYCT(b_+48, b_+50); goto subid1f_decD; } // jr nz
+  bool phase1_choice_57 = (F & FZ) == 0;
+  BLOCK_DECIDE(phase1_choice_57, trap_skip_corner, D);
+  if (phase1_choice_57) { CYCT(b_+48, b_+50); goto subid1f_decD; } // jr nz
   CYC(b_+48, b_+50);
   CYC(b_+50, b_+52); B = (uint8_t)(wRoomLayout >> 8);
   CYC(b_+52, b_+53); A = mem_rd(gb, BC);
   CYC(b_+53, b_+54); alu_or(gb, A);
-  if (!(F & FZ)) { CYCT(b_+54, b_+56); goto subid1f_decD; } // jr nz
+  bool phase1_choice_58 = (F & FZ) == 0;
+  BLOCK_DECIDE(phase1_choice_58, trap_solid_tile, A);
+  if (phase1_choice_58) { CYCT(b_+54, b_+56); goto subid1f_decD; } // jr nz
   CYC(b_+54, b_+56);
   CYC(b_+56, b_+57); SET_HL(HL + 1); // inc hl
   CYC(b_+57, b_+58); D = alu_dec8(gb, D); // dec d
@@ -1429,7 +1474,9 @@ subid1f_doneCheckingIfTrapped:
   CYC(b_+61, b_+62); A = D;
   CYC(b_+62, b_+63); SET_DE(pop_effect(gb)); // pop de
   CYC(b_+63, b_+64); alu_or(gb, A);
-  if (!(F & FZ)) { RET_TAKEN(b_+64); return; } // ret nz
+  bool phase1_choice_59 = (F & FZ) != 0;
+  BLOCK_DECIDE(phase1_choice_59, trap_all_checked, A);
+  if (!phase1_choice_59) { RET_TAKEN(b_+64); return; } // ret nz
   CYC(b_+64, b_+65);
   CALL_C(b_+65, checkLinkVulnerable_hook, SYM(checkLinkVulnerable), b_+68);
   if (!(F & FC)) { RET_TAKEN(b_+68); return; } // ret nc
@@ -1446,7 +1493,9 @@ subid1f_doneCheckingIfTrapped:
 
 subid1f_state2:
   CALL_C(b_+98, interactionDecCounter1_hook, SYM(interactionDecCounter1), b_+101);
-  if (!(F & FZ)) { RET_TAKEN(b_+101); return; } // ret nz
+  bool phase1_choice_60 = (F & FZ) != 0;
+  BLOCK_DECIDE(phase1_choice_60, trap_advance, (F & FZ) != 0);
+  if (!phase1_choice_60) { RET_TAKEN(b_+101); return; } // ret nz
   CYC(b_+101, b_+102);
   CYC(b_+102, b_+103); alu_xor(gb, A);
   CYC(b_+103, b_+106); W8(wMenuDisabled) = A;

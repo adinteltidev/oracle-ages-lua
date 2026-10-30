@@ -13,6 +13,7 @@
 #include "core/hash.h"
 #ifdef ORACLES_LUA_GAMEPLAY
 #include "script/gameplay.h"
+#include "script/block_rules.h"
 #endif
 #include <stdio.h>
 #include <stdlib.h>
@@ -384,6 +385,8 @@ int main(int argc, char **argv) {
   fprintf(stderr, "Lua blocks=%llu/%llu/%llu/%llu; heap=%zu; peak=%zu\n",
     (unsigned long long)gameplay_block_calls(0), (unsigned long long)gameplay_block_calls(1),
     (unsigned long long)gameplay_block_calls(2), (unsigned long long)gameplay_block_calls(3), lua_stats.current, lua_stats.peak);
+  for(int r=0;r<GAMEPLAY_BLOCK_RULE_COUNT;++r)
+    fprintf(stderr,"Lua rule %s=%llu\n",gameplay_block_rule_name(r),(unsigned long long)gameplay_block_rule_calls(r));
 #endif
   return 0;
 }

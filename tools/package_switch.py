@@ -7,6 +7,15 @@ nro=(a.build/'oracles-switch.nro').read_bytes();audit=json.loads(a.audit.read_te
 assert hashlib.sha256(nro).hexdigest()==audit['nro_sha256']
 assert not audit['rom_header_embedded'] and not audit['interpreter_object']
 files={'switch/oracle-ages-native/oracles-switch.nro':nro,'LEIA-ME.txt':(root/'LEIA-ME-SWITCH.txt').read_bytes(),'SWITCH.md':(root/'SWITCH.md').read_bytes(),'LICENSE':(root/'LICENSE').read_bytes(),'build-audit.json':a.audit.read_bytes(),'sdk-lock.json':(root/'platform/switch/sdk-lock.json').read_bytes()}
+profile='oracle-ages-native'
+if b'sdmc:/switch/oracle-ages-lua-phase1/' in nro:profile='oracle-ages-lua-phase1'
+elif b'sdmc:/switch/oracle-ages-lua/' in nro:profile='oracle-ages-lua'
+if profile!='oracle-ages-native':
+ nro_name='oracles-lua-phase1.nro' if profile=='oracle-ages-lua-phase1' else 'oracles-switch.nro'
+ files['switch/'+profile+'/'+nro_name]=files.pop('switch/oracle-ages-native/oracles-switch.nro')
+ if profile=='oracle-ages-lua-phase1':files['LEIA-ME.txt']=(root/'LUA-PHASE-1-PLATFORM-TESTS.md').read_bytes()
+ else:files['LEIA-ME.txt']=b'Piloto C + Lua. Copie switch para a raiz do SD. ROM: sdmc:/switch/oracle-ages-lua/ages.gbc. Controles e detalhes em SWITCH.md.\n'
+ files['Licenses/Lua-MIT-header.txt']=(root/'third_party/lua/lua.h').read_bytes()
 verification=a.verification or root/'SWITCH-VERIFICATION.json'
 if __import__('os').environ.get('GITHUB_ACTIONS')=='true' and not a.verification:raise ValueError('CI requires a fresh build manifest')
 files['SWITCH-VERIFICATION.json']=verification.read_bytes()
@@ -14,7 +23,7 @@ if a.verification:
  manifest=json.loads(verification.read_text())
  assert manifest['binary']['sha256']==hashlib.sha256(nro).hexdigest(), 'Manifest does not match this NRO'
 for name in ['ages-boot.state','ages.ref','ages-consoleverified.inputs']:
- files['switch/oracle-ages-native/tests/'+name]=(root/'tas'/name).read_bytes()
+ files['switch/'+profile+'/tests/'+name]=(root/'tas'/name).read_bytes()
 for f in sorted((root/'platform/switch/licenses').iterdir()):
  if f.is_file():files['Licenses/'+f.name]=f.read_bytes()
 # Use the Git index plus explicit changed files, filtered through gitignore.

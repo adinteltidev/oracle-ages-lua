@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/block_rules.h"
 
 #undef CYC
 #undef CYCT
@@ -47,7 +48,9 @@ void interactionCode7b_hook(GB *gb) {
   CALL_C(b_+26, loadPaletteHeader_hook, SYM(loadPaletteHeader), b_+29);
   CALL_C(b_+29, getThisRoomFlags_hook, SYM(getThisRoomFlags), b_+32);
   CYC(b_+32, b_+34); alu_and(gb, 0x40);
-  if (!(F & FZ)) { CYCT(b_+34, b_+36); goto initializeOpenedState; } // jr nz
+  bool phase1_choice_29 = (F & FZ) == 0;
+  BLOCK_DECIDE(phase1_choice_29, panel_opened, A);
+  if (phase1_choice_29) { CYCT(b_+34, b_+36); goto initializeOpenedState; } // jr nz
   CYC(b_+34, b_+36);
 
   // Closed
@@ -68,7 +71,9 @@ initializeOpenedState:
   CYC(b_+54, b_+55); A = mem_rd(gb, DE);
   CYC(b_+55, b_+56); alu_or(gb, A);
   CYC(b_+56, b_+58); B = 0x10;
-  if (!(F & FZ)) { CYCT(b_+58, b_+60); goto L_60c0; } // jr nz
+  bool phase1_choice_30 = (F & FZ) == 0;
+  BLOCK_DECIDE(phase1_choice_30, panel_right, A);
+  if (phase1_choice_30) { CYCT(b_+58, b_+60); goto L_60c0; } // jr nz
   CYC(b_+58, b_+60);
   CYC(b_+60, b_+62); B = 0xf0;
 
@@ -108,7 +113,9 @@ state1:
   CALL_C(b_+104, objectPreventLinkFromPassing_hook, SYM(objectPreventLinkFromPassing), b_+107);
   CYC(b_+107, b_+110); A = W8(wActiveTriggers);
   CYC(b_+110, b_+112); alu_bit(gb, 7, A);
-  if (F & FZ) { RET_TAKEN(b_+112); return; } // ret z
+  bool phase1_choice_31 = (F & FZ) == 0;
+  BLOCK_DECIDE(phase1_choice_31, panel_trigger, A);
+  if (!phase1_choice_31) { RET_TAKEN(b_+112); return; } // ret z
   CYC(b_+112, b_+113);
   CYC(b_+113, b_+115); A = 0x81;
   CYC(b_+115, b_+118); W8(wDisabledObjects) = A;
@@ -133,14 +140,18 @@ state2:
 
   // @substate0: delay before opening
   CALL_C(b_+147, interactionDecCounter1_hook, SYM(interactionDecCounter1), b_+150);
-  if (!(F & FZ)) { RET_TAKEN(b_+150); return; } // ret nz
+  bool phase1_choice_33 = (F & FZ) != 0;
+  BLOCK_DECIDE(phase1_choice_33, panel_advance, (F & FZ) != 0);
+  if (!phase1_choice_33) { RET_TAKEN(b_+150); return; } // ret nz
   CYC(b_+150, b_+151);
   CYC(b_+151, b_+153); mem_wr(gb, HL, 0x80);
   CYC(b_+153, b_+155); E = INTERACTION_BASE + OBJ_SUBID;
-  CYC(b_+155, b_+156); A = mem_rd(gb, DE);
+  CYC(b_+155, b_+156); A = mem_rd(gb, DE); uint8_t panel_subid = A; (void)panel_subid;
   CYC(b_+156, b_+157); alu_or(gb, A);
   CYC(b_+157, b_+159); A = 0x18; // ANGLE_LEFT
-  if (F & FZ) { CYCT(b_+159, b_+161); goto L_6125; } // jr z
+  bool phase1_choice_32 = (F & FZ) == 0;
+  BLOCK_DECIDE(phase1_choice_32, panel_right, panel_subid);
+  if (!phase1_choice_32) { CYCT(b_+159, b_+161); goto L_6125; } // jr z
   CYC(b_+159, b_+161);
   CYC(b_+161, b_+163); A = 0x08; // ANGLE_RIGHT
 
@@ -158,11 +169,15 @@ L_6125:
 substate1:
   CYC(b_+179, b_+182); A = W8(wFrameCounter);
   CYC(b_+182, b_+183); alu_rrca(gb);
-  if (!(F & FC)) { RET_TAKEN(b_+183); return; } // ret nc
+  bool phase1_choice_36 = (F & FC) != 0;
+  BLOCK_DECIDE(phase1_choice_36, panel_move_tick, A);
+  if (!phase1_choice_36) { RET_TAKEN(b_+183); return; } // ret nc
   CYC(b_+183, b_+184);
   CALL_C(b_+184, objectApplySpeed_hook, SYM(objectApplySpeed), b_+187);
   CALL_C(b_+187, interactionDecCounter1_hook, SYM(interactionDecCounter1), b_+190);
-  if (!(F & FZ)) { RET_TAKEN(b_+190); return; } // ret nz
+  bool phase1_choice_34 = (F & FZ) != 0;
+  BLOCK_DECIDE(phase1_choice_34, panel_advance, (F & FZ) != 0);
+  if (!phase1_choice_34) { RET_TAKEN(b_+190); return; } // ret nz
   CYC(b_+190, b_+191);
   CYC(b_+191, b_+193); mem_wr(gb, HL, 0x1e);
   CYC(b_+193, b_+196); TAIL(interactionIncSubstate); // jp
@@ -170,7 +185,9 @@ substate1:
 // @substate2: done opening
 substate2:
   CALL_C(b_+196, interactionDecCounter1_hook, SYM(interactionDecCounter1), b_+199);
-  if (!(F & FZ)) { RET_TAKEN(b_+199); return; } // ret nz
+  bool phase1_choice_35 = (F & FZ) != 0;
+  BLOCK_DECIDE(phase1_choice_35, panel_advance, (F & FZ) != 0);
+  if (!phase1_choice_35) { RET_TAKEN(b_+199); return; } // ret nz
   CYC(b_+199, b_+200);
   CYC(b_+200, b_+201); alu_xor(gb, A);
   CYC(b_+201, b_+204); W8(wDisabledObjects) = A;

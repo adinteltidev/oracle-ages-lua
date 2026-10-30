@@ -1,6 +1,12 @@
 # Migração de gameplay para Lua: sete fases
 
-Data: 29/10/2026. Estado: fase 1 em execução; fases 2–7 ainda não iniciadas.
+Atualização: 30/10/2026. Estado: implementação experimental da fase 1 concluída;
+aceitação em aberto. Fases 2–7 ainda não iniciadas.
+
+[Evidências e limites atuais da fase 1](LUA-PHASE-1-IMPLEMENTATION.md).
+Windows/Switch ainda não foram testados pelo jogador; falta também a regressão
+completa de Seasons com ROM própria. Esses resultados bloqueiam a conclusão da
+validação e a promoção do build experimental a padrão.
 
 Execução iniciada: [fase 1, primeiro lote e inventário](LUA-PHASE-1.md).
 A fase continua em andamento; esse relatório não representa aprovação de todos

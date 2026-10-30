@@ -22,6 +22,10 @@ assert audit['format'] == 'PE32+ x86-64' and audit['subsystem'] == 'Windows GUI'
 assert audit['private_dlls_required'] == [] and audit['utf8_manifest']
 files = {'Oracles.exe': data, 'LEIA-ME.txt': (root / 'LEIA-ME-WINDOWS.txt').read_bytes(),
          'LICENSE': (root / 'LICENSE').read_bytes(), 'Licenses/SDL3.txt': (args.sdl_source / 'LICENSE.txt').read_bytes()}
+if b'oracles-lua-phase1' in data:
+    files['LEIA-ME.txt'] = files['LEIA-ME.txt'].decode().replace(
+        r'%APPDATA%\oracles-decomp\oracles\.',
+        r'%APPDATA%\oracles-decomp\oracles-lua-phase1\.').encode()
 if args.verification:
     manifest = json.loads(args.verification.read_text())
     assert manifest['binary']['sha256'] == audit['sha256'], 'Manifest does not match this EXE'

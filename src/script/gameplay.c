@@ -1,4 +1,5 @@
 #include "script/gameplay.h"
+#include "script/block_rules.h"
 #include "lua.h"
 #include "lauxlib.h"
 #include <stdio.h>
@@ -7,10 +8,21 @@
 
 extern const unsigned char ages_switch_tiles_lua[], ages_block_puzzles_lua[];
 extern const unsigned int ages_switch_tiles_lua_size, ages_block_puzzles_lua_size;
+extern const unsigned char ages_block_rules_lua[];
+extern const unsigned int ages_block_rules_lua_size;
 #define CAP (256u * 1024u)
-enum { SWITCH_CHANGED, SWITCH_ALTERNATE, BLOCK_NEXT_STATE, RULE_COUNT };
+enum { SWITCH_CHANGED, SWITCH_ALTERNATE, BLOCK_NEXT_STATE, BLOCK_RULE_FIRST,
+       RULE_COUNT = BLOCK_RULE_FIRST + GAMEPLAY_BLOCK_RULE_COUNT };
 static const char *const rule_names[RULE_COUNT] = {
   "ages/switch_tiles.changed", "ages/switch_tiles.alternate", "ages/block_puzzles.next_state",
+#define BLOCK_RULE1(name, a) "ages/block_rules." #name,
+#define BLOCK_RULE2(name, a, b) "ages/block_rules." #name,
+#define BLOCK_RULE_FLAG(name, a) "ages/block_rules." #name,
+#include "script/block_rules.def"
+#undef BLOCK_RULE1
+#undef BLOCK_RULE2
+#undef BLOCK_RULE_FLAG
+  "ages/block_rules.sync_next_state",
 };
 static lua_State *vm;
 static size_t used;
@@ -85,6 +97,9 @@ static int initialize(lua_State *L) {
   load_module(L, sources && sources->block_puzzles ? sources->block_puzzles : (const char *)ages_block_puzzles_lua,
     sources && sources->block_puzzles ? sources->block_puzzles_size : ages_block_puzzles_lua_size,
     "ages/block_puzzles.lua", BLOCK_NEXT_STATE, 1);
+  load_module(L, sources && sources->block_rules ? sources->block_rules : (const char *)ages_block_rules_lua,
+    sources && sources->block_rules ? sources->block_rules_size : ages_block_rules_lua_size,
+    "ages/block_rules.lua", BLOCK_RULE_FIRST, GAMEPLAY_BLOCK_RULE_COUNT);
   if (used > CAP - 16384) luaL_error(L, "gameplay initialization memory limit");
   if (!lua_checkstack(L, 16)) luaL_error(L, "gameplay stack limit");
   return 0;
@@ -111,6 +126,7 @@ bool gameplay_init(void) {
 }
 
 void gameplay_enable(bool value) { enabled = value; }
+bool gameplay_is_enabled(void) { return enabled; }
 
 static bool call_rule(int rule, const uint8_t *args, int count) {
   if (!gameplay_init()) return false;
@@ -167,6 +183,43 @@ bool gameplay_block_step(const GameplayBlockInput *in, GameplayBlockOutput *out)
   }
   out->next = (GameplayBlockState)next;
   return true;
+}
+
+static bool block_rule_boolean(GameplayBlockRule rule, const uint8_t *args, int count, bool *out) {
+  if (!out || rule < 0 || rule >= GAMEPLAY_BLOCK_RULE_COUNT)
+    return reject("block_rules", "invalid typed rule arguments");
+  int index = BLOCK_RULE_FIRST + rule;
+  if (!call_rule(index, args, count)) return false;
+  if (!lua_isboolean(vm, -1)) return reject(rule_names[index], "expected boolean result");
+  *out = lua_toboolean(vm, -1); lua_pop(vm, 1); ++calls[index];
+  return true;
+}
+#define BLOCK_RULE1(name, a) bool gameplay_##name(uint8_t a, bool *out) { \
+  uint8_t args[] = {a}; return block_rule_boolean(GAMEPLAY_RULE_##name, args, 1, out); }
+#define BLOCK_RULE2(name, a, b) bool gameplay_##name(uint8_t a, uint8_t b, bool *out) { \
+  uint8_t args[] = {a, b}; return block_rule_boolean(GAMEPLAY_RULE_##name, args, 2, out); }
+#define BLOCK_RULE_FLAG(name, a) bool gameplay_##name(bool a, bool *out) { \
+  uint8_t args[] = {a ? 1 : 0}; return block_rule_boolean(GAMEPLAY_RULE_##name, args, 1, out); }
+#include "script/block_rules.def"
+#undef BLOCK_RULE1
+#undef BLOCK_RULE2
+#undef BLOCK_RULE_FLAG
+uint64_t gameplay_block_rule_calls(GameplayBlockRule rule) {
+  return rule >= 0 && rule < GAMEPLAY_BLOCK_RULE_COUNT ? calls[BLOCK_RULE_FIRST + rule] : 0;
+}
+const char *gameplay_block_rule_name(GameplayBlockRule rule) {
+  return rule >= 0 && rule < GAMEPLAY_BLOCK_RULE_COUNT ? rule_names[BLOCK_RULE_FIRST + rule] : "invalid";
+}
+bool gameplay_sync_next_state(uint8_t current, uint8_t *out) {
+  int index = BLOCK_RULE_FIRST + GAMEPLAY_RULE_sync_next_state;
+  if (!out || current > 2) return reject(rule_names[index], "invalid sync state arguments");
+  uint8_t args[] = {current};
+  if (!call_rule(index, args, 1)) return false;
+  if (!lua_isinteger(vm, -1)) return reject(rule_names[index], "expected integer state");
+  lua_Integer value=lua_tointeger(vm,-1);
+  if (value != (current == 1 ? 2 : 1))
+    return reject(rule_names[index], "invalid sync state transition");
+  *out=(uint8_t)value; lua_pop(vm,1); ++calls[index]; return true;
 }
 
 const char *gameplay_error(void) { return error; }

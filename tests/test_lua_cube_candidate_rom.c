@@ -38,7 +38,9 @@ int main(void) {
         *g = *seed; g->f = flags ? 0xf0 : 0;
         mem_wr(g, wRotatingCubePos, positions[p]); mem_wr(g, wRotatingCubeColor, color);
         mem_wr(g, 0xd040 + OBJ_VAR31, tiles[t]);
+        gameplay_enable(false); // reference uses original C conditions
         pushblock_checkRotatingCubePermitsPushing(g);
+        gameplay_enable(true);
         ASSERT(!g->hung);
         ASSERT_EQ(permission, !(g->f & FC));
         ASSERT_EQ(g->sp, seed->sp + 2);

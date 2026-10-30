@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/block_rules.h"
 
 #undef CYC
 #undef CYCT
@@ -166,7 +167,9 @@ subid0:
 subid0State0:
   CALL_C(b_+22, getThisRoomFlags_hook, SYM(getThisRoomFlags), b_+25);
   CYC(b_+25, b_+27); alu_and(gb, 0x01);
-  if (!(F & FZ)) { CYCT(b_+27, b_+30); interactionDelete_hook(gb); return; } // jp nz
+  bool phase1_choice_25 = (F & FZ) != 0;
+  BLOCK_DECIDE(phase1_choice_25, water_exists, 0, A);
+  if (!phase1_choice_25) { CYCT(b_+27, b_+30); interactionDelete_hook(gb); return; } // jp nz
   CYC(b_+27, b_+30);
 
 initialize:
@@ -191,7 +194,9 @@ state1:
   CYC(b_+65, b_+67); A = 0x01;
   CYC(b_+67, b_+70); mem_wr(gb, wForceLinkPushAnimation, A);
   CALL_C(b_+70, interactionDecCounter1_hook, SYM(interactionDecCounter1), b_+73);
-  if (!(F & FZ)) { CYCT(b_+73, b_+74); ret_effect(gb); return; } // ret nz
+  bool phase1_choice_8 = (F & FZ) != 0;
+  BLOCK_DECIDE(phase1_choice_8, water_advance, (F & FZ) != 0);
+  if (!phase1_choice_8) { CYCT(b_+73, b_+74); ret_effect(gb); return; } // ret nz
   CYC(b_+73, b_+74);
   CYC(b_+74, b_+76); goto pushedLongEnough; // jr
 
@@ -209,14 +214,18 @@ pushedLongEnough:
   CYC(b_+90, b_+91); A = mem_rd(gb, DE);
   CYC(b_+91, b_+92); alu_or(gb, A);
   CYC(b_+92, b_+94); C = 0x02;
-  if (F & FZ) { CYCT(b_+94, b_+96); goto l_55d7; } // jr z
+  bool phase1_choice_28 = (F & FZ) != 0;
+  BLOCK_DECIDE(phase1_choice_28, water_initial_side, A);
+  if (phase1_choice_28) { CYCT(b_+94, b_+96); goto l_55d7; } // jr z
   CYC(b_+94, b_+96);
   CYC(b_+96, b_+98); C = 0x06;
 
 l_55d7:
   CYC(b_+98, b_+99); A = B;
   CYC(b_+99, b_+100); alu_cp(gb, C);
-  if (!(F & FZ)) { CYCT(b_+100, b_+101); ret_effect(gb); return; } // ret nz
+  bool phase1_choice_27 = (F & FZ) != 0;
+  BLOCK_DECIDE(phase1_choice_27, water_direction_match, A, C);
+  if (!phase1_choice_27) { CYCT(b_+100, b_+101); ret_effect(gb); return; } // ret nz
   CYC(b_+100, b_+101);
   CYC(b_+101, b_+103); E = INTERACTION_BASE + OBJ_DIRECTION;
   CYC(b_+103, b_+105); alu_xor(gb, 0x04);
@@ -243,7 +252,9 @@ state2:
   CALL_C(b_+140, objectApplySpeed_hook, SYM(objectApplySpeed), b_+143);
   CALL_C(b_+143, objectPreventLinkFromPassing_hook, SYM(objectPreventLinkFromPassing), b_+146);
   CALL_C(b_+146, interactionDecCounter1_hook, SYM(interactionDecCounter1), b_+149);
-  if (!(F & FZ)) { CYCT(b_+149, b_+150); ret_effect(gb); return; } // ret nz
+  bool phase1_choice_9 = (F & FZ) != 0;
+  BLOCK_DECIDE(phase1_choice_9, water_advance, (F & FZ) != 0);
+  if (!phase1_choice_9) { CYCT(b_+149, b_+150); ret_effect(gb); return; } // ret nz
   CYC(b_+149, b_+150);
   CYC(b_+150, b_+152); mem_wr(gb, HL, 70);
   CYC(b_+152, b_+155); TAIL(interactionIncState); // jp
@@ -270,7 +281,9 @@ subid0State3:
 
 subid0Substate0:
   CALL_C(b_+183, interactionDecCounter1_hook, SYM(interactionDecCounter1), b_+186);
-  if (!(F & FZ)) { CYCT(b_+186, b_+187); ret_effect(gb); return; } // ret nz
+  bool phase1_choice_10 = (F & FZ) != 0;
+  BLOCK_DECIDE(phase1_choice_10, water_advance, (F & FZ) != 0);
+  if (!phase1_choice_10) { CYCT(b_+186, b_+187); ret_effect(gb); return; } // ret nz
   CYC(b_+186, b_+187);
   CYC(b_+187, b_+189); mem_wr(gb, HL, 0x08);
   CYC(b_+189, b_+191); A = 0xc2; // SND_FLOODGATES
@@ -286,7 +299,9 @@ subid0Substate1:
 
 setGroundTilesWhenCounterIsZero:
   CALL_C(b_+210, interactionDecCounter1_hook, SYM(interactionDecCounter1), b_+213);
-  if (!(F & FZ)) { CYCT(b_+213, b_+214); ret_effect(gb); return; } // ret nz
+  bool phase1_choice_11 = (F & FZ) != 0;
+  BLOCK_DECIDE(phase1_choice_11, water_advance, (F & FZ) != 0);
+  if (!phase1_choice_11) { CYCT(b_+213, b_+214); ret_effect(gb); return; } // ret nz
   CYC(b_+213, b_+214);
   CYC(b_+214, b_+216); mem_wr(gb, HL, 0x08);
   CYC(b_+216, b_+217); A = B;
@@ -300,7 +315,9 @@ subid0Substate2:
 
 setHoleTilesWhenCounterIsZero:
   CALL_C(b_+230, interactionDecCounter1_hook, SYM(interactionDecCounter1), b_+233);
-  if (!(F & FZ)) { CYCT(b_+233, b_+234); ret_effect(gb); return; } // ret nz
+  bool phase1_choice_12 = (F & FZ) != 0;
+  BLOCK_DECIDE(phase1_choice_12, water_advance, (F & FZ) != 0);
+  if (!phase1_choice_12) { CYCT(b_+233, b_+234); ret_effect(gb); return; } // ret nz
   CYC(b_+233, b_+234);
   CYC(b_+234, b_+236); mem_wr(gb, HL, 0x08);
   CYC(b_+236, b_+237); A = B;
@@ -323,7 +340,9 @@ subid0Substate5:
 
 subid0Substate6:
   CALL_C(b_+262, interactionDecCounter1_hook, SYM(interactionDecCounter1), b_+265);
-  if (!(F & FZ)) { CYCT(b_+265, b_+266); ret_effect(gb); return; } // ret nz
+  bool phase1_choice_13 = (F & FZ) != 0;
+  BLOCK_DECIDE(phase1_choice_13, water_advance, (F & FZ) != 0);
+  if (!phase1_choice_13) { CYCT(b_+265, b_+266); ret_effect(gb); return; } // ret nz
   CYC(b_+265, b_+266);
   CYC(b_+266, b_+268); mem_wr(gb, HL, 0x08);
   CYC(b_+268, b_+270); A = 0x60;
@@ -334,7 +353,9 @@ subid0Substate6:
 
 subid0Substate7:
   CALL_C(b_+281, interactionDecCounter1_hook, SYM(interactionDecCounter1), b_+284);
-  if (!(F & FZ)) { CYCT(b_+284, b_+285); ret_effect(gb); return; } // ret nz
+  bool phase1_choice_14 = (F & FZ) != 0;
+  BLOCK_DECIDE(phase1_choice_14, water_advance, (F & FZ) != 0);
+  if (!phase1_choice_14) { CYCT(b_+284, b_+285); ret_effect(gb); return; } // ret nz
   CYC(b_+284, b_+285);
   CYC(b_+285, b_+287); mem_wr(gb, HL, 0x08);
   CYC(b_+287, b_+289); A = 0x60;
@@ -345,7 +366,9 @@ subid0Substate7:
 
 subid0Substate8:
   CALL_C(b_+300, interactionDecCounter1_hook, SYM(interactionDecCounter1), b_+303);
-  if (!(F & FZ)) { CYCT(b_+303, b_+304); ret_effect(gb); return; } // ret nz
+  bool phase1_choice_15 = (F & FZ) != 0;
+  BLOCK_DECIDE(phase1_choice_15, water_advance, (F & FZ) != 0);
+  if (!phase1_choice_15) { CYCT(b_+303, b_+304); ret_effect(gb); return; } // ret nz
   CYC(b_+303, b_+304);
   CYC(b_+304, b_+306); mem_wr(gb, HL, 0x08);
   CYC(b_+306, b_+308); A = 0x69;
@@ -354,7 +377,9 @@ subid0Substate8:
 
 subid0Substate9:
   CALL_C(b_+314, interactionDecCounter1_hook, SYM(interactionDecCounter1), b_+317);
-  if (!(F & FZ)) { CYCT(b_+317, b_+318); ret_effect(gb); return; } // ret nz
+  bool phase1_choice_16 = (F & FZ) != 0;
+  BLOCK_DECIDE(phase1_choice_16, water_advance, (F & FZ) != 0);
+  if (!phase1_choice_16) { CYCT(b_+317, b_+318); ret_effect(gb); return; } // ret nz
   CYC(b_+317, b_+318);
   CYC(b_+318, b_+320); mem_wr(gb, HL, 90);
   CYC(b_+320, b_+322); C = 0x69;
@@ -366,7 +391,9 @@ setWaterTileAndIncSubstate:
 
 substateA:
   CALL_C(b_+330, interactionDecCounter1_hook, SYM(interactionDecCounter1), b_+333);
-  if (!(F & FZ)) { CYCT(b_+333, b_+334); ret_effect(gb); return; } // ret nz
+  bool phase1_choice_17 = (F & FZ) != 0;
+  BLOCK_DECIDE(phase1_choice_17, water_advance, (F & FZ) != 0);
+  if (!phase1_choice_17) { CYCT(b_+333, b_+334); ret_effect(gb); return; } // ret nz
   CYC(b_+333, b_+334);
   CYC(b_+334, b_+336); mem_wr(gb, HL, 72);
   CYC(b_+336, b_+338); A = 0xf1; // SNDCTRL_STOPSFX
@@ -377,7 +404,9 @@ substateA:
 
 substateB:
   CALL_C(b_+349, interactionDecCounter1_hook, SYM(interactionDecCounter1), b_+352);
-  if (!(F & FZ)) { CYCT(b_+352, b_+353); ret_effect(gb); return; } // ret nz
+  bool phase1_choice_18 = (F & FZ) != 0;
+  BLOCK_DECIDE(phase1_choice_18, water_advance, (F & FZ) != 0);
+  if (!phase1_choice_18) { CYCT(b_+352, b_+353); ret_effect(gb); return; } // ret nz
   CYC(b_+352, b_+353);
   CYC(b_+353, b_+356); A = mem_rd(gb, wActiveMusic);
   CALL_C(b_+356, playSound_b00_hook, SYM(playSound_b00), b_+359);
@@ -403,7 +432,9 @@ subid1:
 subid1State0:
   CALL_C(b_+454, getThisRoomFlags_hook, SYM(getThisRoomFlags), b_+457);
   CYC(b_+457, b_+459); alu_and(gb, 0x01);
-  if (F & FZ) { CYCT(b_+459, b_+462); interactionDelete_hook(gb); return; } // jp z
+  bool phase1_choice_26 = (F & FZ) == 0;
+  BLOCK_DECIDE(phase1_choice_26, water_exists, 1, A);
+  if (!phase1_choice_26) { CYCT(b_+459, b_+462); interactionDelete_hook(gb); return; } // jp z
   CYC(b_+459, b_+462);
   CYC(b_+462, b_+465); goto initialize; // jp (local)
 
@@ -429,7 +460,9 @@ subid1State3:
 
 subid1Substate0:
   CALL_C(b_+493, interactionDecCounter1_hook, SYM(interactionDecCounter1), b_+496);
-  if (!(F & FZ)) { CYCT(b_+496, b_+497); ret_effect(gb); return; } // ret nz
+  bool phase1_choice_19 = (F & FZ) != 0;
+  BLOCK_DECIDE(phase1_choice_19, water_advance, (F & FZ) != 0);
+  if (!phase1_choice_19) { CYCT(b_+496, b_+497); ret_effect(gb); return; } // ret nz
   CYC(b_+496, b_+497);
   CYC(b_+497, b_+499); mem_wr(gb, HL, 0x08);
   CYC(b_+499, b_+501); A = 0xc2; // SND_FLOODGATES
@@ -449,7 +482,9 @@ subid1Substate2:
 
 setHoleTilesWhenCounterZero_2:
   CALL_C(b_+526, interactionDecCounter1_hook, SYM(interactionDecCounter1), b_+529);
-  if (!(F & FZ)) { CYCT(b_+529, b_+530); ret_effect(gb); return; } // ret nz
+  bool phase1_choice_20 = (F & FZ) != 0;
+  BLOCK_DECIDE(phase1_choice_20, water_advance, (F & FZ) != 0);
+  if (!phase1_choice_20) { CYCT(b_+529, b_+530); ret_effect(gb); return; } // ret nz
   CYC(b_+529, b_+530);
   CYC(b_+530, b_+532); mem_wr(gb, HL, 0x08);
   CYC(b_+532, b_+533); A = B;
@@ -472,7 +507,9 @@ subid1Substate5:
 
 subid1Substate6:
   CALL_C(b_+561, interactionDecCounter1_hook, SYM(interactionDecCounter1), b_+564);
-  if (!(F & FZ)) { CYCT(b_+564, b_+565); ret_effect(gb); return; } // ret nz
+  bool phase1_choice_21 = (F & FZ) != 0;
+  BLOCK_DECIDE(phase1_choice_21, water_advance, (F & FZ) != 0);
+  if (!phase1_choice_21) { CYCT(b_+564, b_+565); ret_effect(gb); return; } // ret nz
   CYC(b_+564, b_+565);
   CYC(b_+565, b_+567); mem_wr(gb, HL, 0x08);
   CYC(b_+567, b_+569); A = 0x60;
@@ -483,7 +520,9 @@ subid1Substate6:
 
 subid1Substate7:
   CALL_C(b_+580, interactionDecCounter1_hook, SYM(interactionDecCounter1), b_+583);
-  if (!(F & FZ)) { CYCT(b_+583, b_+584); ret_effect(gb); return; } // ret nz
+  bool phase1_choice_22 = (F & FZ) != 0;
+  BLOCK_DECIDE(phase1_choice_22, water_advance, (F & FZ) != 0);
+  if (!phase1_choice_22) { CYCT(b_+583, b_+584); ret_effect(gb); return; } // ret nz
   CYC(b_+583, b_+584);
   CYC(b_+584, b_+586); mem_wr(gb, HL, 0x08);
   CYC(b_+586, b_+588); A = 0x68;
@@ -493,7 +532,9 @@ subid1Substate7:
 
 subid1Substate8:
   CALL_C(b_+596, interactionDecCounter1_hook, SYM(interactionDecCounter1), b_+599);
-  if (!(F & FZ)) { CYCT(b_+599, b_+600); ret_effect(gb); return; } // ret nz
+  bool phase1_choice_23 = (F & FZ) != 0;
+  BLOCK_DECIDE(phase1_choice_23, water_advance, (F & FZ) != 0);
+  if (!phase1_choice_23) { CYCT(b_+599, b_+600); ret_effect(gb); return; } // ret nz
   CYC(b_+599, b_+600);
   CYC(b_+600, b_+602); mem_wr(gb, HL, 0x08);
   CYC(b_+602, b_+604); A = 0x69;
@@ -502,7 +543,9 @@ subid1Substate8:
 
 subid1Substate9:
   CALL_C(b_+610, interactionDecCounter1_hook, SYM(interactionDecCounter1), b_+613);
-  if (!(F & FZ)) { CYCT(b_+613, b_+614); ret_effect(gb); return; } // ret nz
+  bool phase1_choice_24 = (F & FZ) != 0;
+  BLOCK_DECIDE(phase1_choice_24, water_advance, (F & FZ) != 0);
+  if (!phase1_choice_24) { CYCT(b_+613, b_+614); ret_effect(gb); return; } // ret nz
   CYC(b_+613, b_+614);
   CYC(b_+614, b_+616); mem_wr(gb, HL, 90);
   CYC(b_+616, b_+618); A = 0x69;

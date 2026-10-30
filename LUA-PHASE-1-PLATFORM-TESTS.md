@@ -1,17 +1,25 @@
-# Testar a fase 1 C + Lua no Windows e no Nintendo Switch
+# Testar a fase 1 C + Lua expandida
 
-Build experimental baseado em `f8eb6b2`, com alterações locais de preparação dos
-pacotes. As duas opções `ORACLES_LUA_GAMEPLAY` e `ORACLES_LUA_BLOCK_PUZZLES`
-estão ativadas. Lua está incorporado; não é necessário instalá-lo.
+Atualização: 30/10/2026. Branch `port/lua-gameplay`, base `970dbe0` com alterações
+locais. Inclui as 32 regras tipadas de `block_rules.lua`, além do gatilho de blocos
+e dos interruptores anteriores. Ambas as opções Lua estão ON; Lua incorporado.
 
-Esta rodada prepara a validação em outras plataformas do primeiro lote dos
-puzzles com blocos. A fase 1 continua em andamento. A execução real no Windows e
-no Switch será confirmada pelos testes abaixo; compilação e auditoria de arquivos
-são resultados separados.
+Fontes Lua SHA256:
+`ad4a8fa264af3e1781d7a8710b6685ab3717b1c01fa06abf004a0dcb7bc4fe2a`.
+
+A compilação/auditoria local passou; Windows e Switch **ainda não testados em
+execução real**. A fase não tem aceitação final. [Evidências locais](LUA-PHASE-1-IMPLEMENTATION.md).
+
+## macOS Intel
+
+Abra `Oracles-macOS-Lua-Phase1-Expanded-Intel.dmg`, copie o app e importe sua ROM
+pelo menu. O pacote usa o perfil `oracles-decomp/oracles-lua-phase1` do SDL, em
+`~/Library/Application Support/`. Teste áudio, controles, quatro slots, retomada e
+as salas com cubos, água, painéis e estátuas. Assinatura ad hoc; sem notarização.
 
 ## Windows x64
 
-1. Extraia `Oracles-Windows-Lua-Phase1.zip` inteiro.
+1. Extraia `Oracles-Windows-Lua-Phase1-Expanded.zip` inteiro.
 2. Entre em `Oracles-Windows-Lua-Phase1` e execute `Iniciar-Oracles-Lua.cmd`.
 3. Adicione sua ROM de Ages USA/Australia pelo menu e faça uma partida.
 4. Teste controles, áudio, abertura do menu, os quatro slots e retomada após fechar.
@@ -26,7 +34,9 @@ Esse também é o perfil padrão do build com os blocos Lua ativados. `--cache`
 continua permitindo um diretório explícito. O iniciador grava `runtime.log` nessa
 pasta; o log inclui a identificação das fontes Lua e os contadores ao sair.
 
-Para verificar o runtime Lua e um replay curto, abra o Prompt de Comando na pasta
+O validador executa o contrato de 32 regras e 7.673 comparações dirigidas contra
+o C real, incluindo save/load e falhas, antes do replay. Para verificar o runtime
+Lua e um replay curto, abra o Prompt de Comando na pasta
 que contém os dois arquivos `.cmd` e execute, ajustando o caminho da sua ROM:
 
 ```bat
@@ -48,6 +58,8 @@ Logs da verificação:
 
 ```text
 %APPDATA%\oracles-decomp\oracles-lua-phase1\validation\lua-contract.log
+%APPDATA%\oracles-decomp\oracles-lua-phase1\validation\block-rules-contract.log
+%APPDATA%\oracles-decomp\oracles-lua-phase1\validation\block-rules-scenes.log
 %APPDATA%\oracles-decomp\oracles-lua-phase1\validation\replay.log
 ```
 
@@ -55,6 +67,8 @@ O verificador também pode ser chamado diretamente, sem Python ou PowerShell:
 
 ```bat
 Tests\test_lua_gameplay.exe
+Tests\test_lua_block_rules.exe
+Tests\test_lua_block_rules_rom.exe --rom "C:\Jogos\Ages.gbc" --tas-dir Tests
 Tests\test_native_ages.exe --rom "C:\Jogos\Ages.gbc" --tas-dir Tests --frames 289518 --run both
 ```
 
@@ -63,7 +77,7 @@ validação trata saídas diferentes de zero como falha ou teste não executado.
 
 ## Nintendo Switch
 
-1. Extraia `Oracles-Switch-Lua-Phase1.zip` e copie a pasta `switch` para a raiz do SD.
+1. Extraia `Oracles-Switch-Lua-Phase1-Expanded.zip` e copie a pasta `switch` para a raiz do SD.
 2. Coloque sua ROM de Ages USA/Australia neste caminho:
 
 ```text
@@ -100,13 +114,19 @@ O código de recarga espera as amostras pendentes serem comparadas antes do load
 
 `BUILD.json` identifica o commit-base, alterações locais, hashes dos binários e
 fontes Lua, as opções ativadas e os perfis de dados. `SHA256SUMS.txt` permite
-verificar os arquivos de cada ZIP. Ambos incluem fontes correspondentes em
+verificar os arquivos de cada ZIP. Os ZIPs incluem fontes correspondentes em
 `Sources/`, licenças e avisos das dependências. Não incluem ROM ou saves do jogador.
 
 Os artefatos têm nomes específicos para a fase 1. As opções continuam OFF por
-padrão no projeto. Os replays e medições já realizados no macOS estão em
-`LUA-PHASE-1-VALIDATION.md`; os resultados em hardware devem ser registrados
+padrão no projeto. Os resultados do primeiro lote estão em
+`LUA-PHASE-1-VALIDATION.md`; a rodada expandida está em
+`LUA-PHASE-1-IMPLEMENTATION.md`; os resultados em hardware devem ser registrados
 separadamente, com plataforma, modo portátil/dock, build e logs.
+
+O replay natural não visita todas as regras: contadores zero nas demais não
+indicam falha nem comprovam cobertura. Os testes dirigidos locais cobrem as 32;
+o Switch não executa esses fixtures dirigidos no NRO. É preciso testar também
+as salas migradas em uma partida real.
 
 Após testar, os logs acima permitem confirmar o resultado desta etapa e decidir
 sobre os próximos lotes da migração. Não há commit, push ou publicação automática.
