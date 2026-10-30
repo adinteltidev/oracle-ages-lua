@@ -14,6 +14,7 @@
 #ifdef ORACLES_LUA_GAMEPLAY
 #include "script/gameplay.h"
 #include "script/block_rules.h"
+#include "script/colored_cube.h"
 #endif
 #include <stdio.h>
 #include <stdlib.h>
@@ -387,6 +388,8 @@ int main(int argc, char **argv) {
     (unsigned long long)gameplay_block_calls(2), (unsigned long long)gameplay_block_calls(3), lua_stats.current, lua_stats.peak);
   for(int r=0;r<GAMEPLAY_BLOCK_RULE_COUNT;++r)
     fprintf(stderr,"Lua rule %s=%llu\n",gameplay_block_rule_name(r),(unsigned long long)gameplay_block_rule_calls(r));
+  for(int r=0;r<GAMEPLAY_COLORED_CUBE_RULE_COUNT;++r)
+    fprintf(stderr,"Lua rule %s=%llu\n",gameplay_colored_cube_rule_name(r),(unsigned long long)gameplay_colored_cube_calls(r));
 #endif
   return 0;
 }

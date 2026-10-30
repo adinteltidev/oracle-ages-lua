@@ -14,6 +14,7 @@ on:
 env:
   ORACLES_LUA_GAMEPLAY: ${{ inputs.lua-gameplay && 'ON' || 'OFF' }}
   ORACLES_LUA_BLOCK_PUZZLES: ${{ inputs.lua-gameplay && 'ON' || 'OFF' }}
+  ORACLES_LUA_COLORED_CUBE: ${{ inputs.lua-gameplay && 'ON' || 'OFF' }}
 permissions:
   contents: read
 jobs:
@@ -45,7 +46,7 @@ jobs:
           restore-keys: core-linux-gcc-
       - name: Build and test
         run: |
-          cmake -S . -B build-ci -G Ninja -DORACLES_SDL=OFF -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DORACLES_LUA_GAMEPLAY="$ORACLES_LUA_GAMEPLAY" -DORACLES_LUA_BLOCK_PUZZLES="$ORACLES_LUA_BLOCK_PUZZLES"
+          cmake -S . -B build-ci -G Ninja -DORACLES_SDL=OFF -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DORACLES_LUA_GAMEPLAY="$ORACLES_LUA_GAMEPLAY" -DORACLES_LUA_BLOCK_PUZZLES="$ORACLES_LUA_BLOCK_PUZZLES" -DORACLES_LUA_COLORED_CUBE="$ORACLES_LUA_COLORED_CUBE"
           cmake --build build-ci --parallel 3
           mkdir -p reports dist/sources
           ctest --test-dir build-ci --output-on-failure --output-junit "$PWD/reports/quality.xml"

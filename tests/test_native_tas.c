@@ -2,6 +2,7 @@
 #ifdef ORACLES_LUA_GAMEPLAY
 #include "script/gameplay.h"
 #include "script/block_rules.h"
+#include "script/colored_cube.h"
 #endif
 #include "platform/tempfile.h"
 #include "core/gb.h"
@@ -53,6 +54,8 @@ static void native_run(const char *rom_path, const char *inputs, const char *ref
 static void native_run_reloading(const char *rom_path, const char *inputs, const char *ref_path, const char *state_path, uint64_t frames, uint64_t reload_every) {
 #ifdef ORACLES_LUA_GAMEPLAY
   uint64_t rules_before[GAMEPLAY_BLOCK_RULE_COUNT];
+  uint64_t colors_before[GAMEPLAY_COLORED_CUBE_RULE_COUNT];
+  for(int i=0;i<GAMEPLAY_COLORED_CUBE_RULE_COUNT;++i) colors_before[i]=gameplay_colored_cube_calls(i);
   for (int i=0;i<GAMEPLAY_BLOCK_RULE_COUNT;++i) rules_before[i]=gameplay_block_rule_calls(i);
 #endif
   size_t n;
@@ -124,6 +127,8 @@ static void native_run_reloading(const char *rom_path, const char *inputs, const
   for (int i=0;i<GAMEPLAY_BLOCK_RULE_COUNT;++i)
     printf("Lua rule %s: %llu\n",gameplay_block_rule_name(i),
       (unsigned long long)(gameplay_block_rule_calls(i)-rules_before[i]));
+  for(int i=0;i<GAMEPLAY_COLORED_CUBE_RULE_COUNT;++i)
+    printf("Lua rule %s: %llu\n",gameplay_colored_cube_rule_name(i),(unsigned long long)(gameplay_colored_cube_calls(i)-colors_before[i]));
   fflush(stdout);
 #endif
   fclose(ref); free(gb); free(rom); tas_free(&t);

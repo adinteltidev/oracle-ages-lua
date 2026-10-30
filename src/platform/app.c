@@ -41,6 +41,7 @@
 #ifdef ORACLES_LUA_GAMEPLAY
 #include "script/gameplay.h"
 #include "script/block_rules.h"
+#include "script/colored_cube.h"
 #endif
 
 #ifdef __ANDROID__
@@ -2238,7 +2239,9 @@ int main(int argc, char **argv) {
   if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMEPAD)) { fprintf(stderr, "%s\n", SDL_GetError()); return 2; }
   SDL_AddEventWatch(on_app_event, NULL);
   char cache[1024];
-#ifdef ORACLES_LUA_BLOCK_PUZZLES
+#if defined(ORACLES_LUA_COLORED_CUBE)
+  const char *cache_profile = "oracles-lua-phase2";
+#elif defined(ORACLES_LUA_BLOCK_PUZZLES)
   const char *cache_profile = "oracles-lua-phase1";
 #else
   const char *cache_profile = "oracles";
@@ -2246,7 +2249,9 @@ int main(int argc, char **argv) {
   if (cache_arg) snprintf(cache, sizeof cache, "%s%s", cache_arg, cache_arg[strlen(cache_arg) - 1] == '/' ? "" : "/");
   else { char *p = SDL_GetPrefPath("oracles-decomp", cache_profile); if (!p) { fprintf(stderr, "%s\n", SDL_GetError()); return 2; } data_folder(cache, sizeof cache, p); SDL_free(p); }
   SDL_CreateDirectory(cache);
-#ifdef ORACLES_LUA_BLOCK_PUZZLES
+#ifdef ORACLES_LUA_COLORED_CUBE
+  fprintf(stderr, "Experimental C + Lua phase 2; cache=%s\n", cache);
+#elif defined(ORACLES_LUA_BLOCK_PUZZLES)
   fprintf(stderr, "Experimental C + Lua phase 1; cache=%s\n", cache);
 #endif
 
@@ -2335,6 +2340,8 @@ int main(int argc, char **argv) {
     (unsigned long long)gameplay_block_calls(2), (unsigned long long)gameplay_block_calls(3), lua_stats.current, lua_stats.peak);
   for(int r=0;r<GAMEPLAY_BLOCK_RULE_COUNT;++r)
     fprintf(stderr,"Lua rule %s=%llu\n",gameplay_block_rule_name(r),(unsigned long long)gameplay_block_rule_calls(r));
+  for(int r=0;r<GAMEPLAY_COLORED_CUBE_RULE_COUNT;++r)
+    fprintf(stderr,"Lua rule %s=%llu\n",gameplay_colored_cube_rule_name(r),(unsigned long long)gameplay_colored_cube_calls(r));
 #endif
   return status;
 }

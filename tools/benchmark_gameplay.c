@@ -17,6 +17,7 @@
 #include "rt/fibers.h"
 #ifdef ORACLES_LUA_GAMEPLAY
 #include "script/gameplay.h"
+#include "script/colored_cube.h"
 #endif
 #define CHECK(c) do { if (!(c)) { fprintf(stderr, "benchmark: %s (%s:%d)\n", #c, __FILE__, __LINE__); exit(1); } } while (0)
 
@@ -107,6 +108,20 @@ static void stimulus(GB *g, const Blocks *b, unsigned frame) {
 static int compare_double(const void *a, const void *b) {
   double x = *(const double *)a, y = *(const double *)b; return (x > y) - (x < y);
 }
+static void flame_stimulus(GB *g,const Blocks *b,unsigned frame) {
+  if(frame%80==0) {
+    for(unsigned i=0;i<b->count;++i) {
+      uint16_t base=b->slots[i];
+      for(unsigned j=0;j<0x40;++j) object_write(g,base+j,0);
+      object_write(g,base,1); object_write(g,base+OBJ_ID,0x1a);
+      object_write(g,base+OBJ_XH,0x28+i*0x10); object_write(g,base+OBJ_YH,0x68);
+      object_write(g,base+OBJ_OAM_FLAGS,0xa8);
+    }
+    mem_wr(g,wRotatingCubePos,0x44);
+  }
+  static const uint8_t colors[]={0x80,0x81,0x82,0,1,2};
+  mem_wr(g,wRotatingCubeColor,colors[(frame/10)%6]);
+}
 static void distribution(FILE *f, const char *name, double *values, unsigned count) {
   double total = 0; for (unsigned i = 0; i < count; ++i) total += values[i];
   qsort(values, count, sizeof *values, compare_double);
@@ -120,6 +135,7 @@ static unsigned number(const char *s) {
 int main(int argc, char **argv) {
   const char *prepare = NULL, *state = NULL, *trace_path = NULL, *output = NULL, *scenario = "idle";
   const char *reload_state = NULL;
+  bool lua_enabled=true; (void)lua_enabled;
   unsigned frames = 2000, warmup = 160, block_count = 4, reload_every = 0;
   for (int i = 1; i < argc; i += 2) {
     CHECK(i + 1 < argc);
@@ -127,6 +143,7 @@ int main(int argc, char **argv) {
     else if (!strcmp(argv[i], "--state")) state = argv[i+1];
     else if (!strcmp(argv[i], "--trace")) trace_path = argv[i+1];
     else if (!strcmp(argv[i], "--output")) output = argv[i+1];
+    else if (!strcmp(argv[i], "--lua")) { CHECK(!strcmp(argv[i+1],"on") || !strcmp(argv[i+1],"off")); lua_enabled=!strcmp(argv[i+1],"on"); }
     else if (!strcmp(argv[i], "--scenario")) scenario = argv[i+1];
     else if (!strcmp(argv[i], "--frames")) frames = number(argv[i+1]);
     else if (!strcmp(argv[i], "--warmup")) warmup = number(argv[i+1]);
@@ -136,10 +153,11 @@ int main(int argc, char **argv) {
     else { fprintf(stderr, "unknown argument: %s\n", argv[i]); return 2; }
   }
   bool stress = !strcmp(scenario, "blocks");
-  CHECK(stress || !strcmp(scenario, "idle")); CHECK(frames && block_count && block_count <= 8);
+  bool flame=!strcmp(scenario,"colored_cube");
+  CHECK(stress || flame || !strcmp(scenario, "idle")); CHECK(frames && block_count && block_count <= 8);
   CHECK(!reload_every || (trace_path && reload_state)); // Disk I/O never enters timing runs.
   // Start the measured stimulus at an identical cycle boundary after warm-up.
-  CHECK(!stress || (frames >= 80 && warmup % 80 == 0));
+  CHECK(!(stress || flame) || (frames >= 80 && warmup % 80 == 0));
   size_t size; uint8_t *rom = oracles_read_file(GAME_ROM_DIR "/Legend of Zelda, The - Oracle of Ages (USA, Australia).gbc", &size);
   if (!rom) { fprintf(stderr, "Ages ROM missing\n"); return 77; }
   Input in = {0}; GB *g = calloc(1, sizeof *g); CHECK(g);
@@ -161,16 +179,18 @@ int main(int argc, char **argv) {
   }
   CHECK(state); CHECK(oracles_load_boot_state(g, state));
   in.live = true; g->input_at = input_at; g->input_ctx = &in;
-  Blocks blocks = {0}; if (stress) select_slots(g, &blocks, block_count);
+  Blocks blocks = {0}; if (stress || flame) select_slots(g, &blocks, block_count);
 #ifdef ORACLES_LUA_GAMEPLAY
-  CHECK(gameplay_init());
+  CHECK(gameplay_init()); gameplay_enable(lua_enabled);
+  if(flame && lua_enabled) CHECK(gameplay_colored_cube_enabled());
 #ifndef ORACLES_LUA_BLOCK_PUZZLES
   CHECK(!stress); // An unintegrated module must not be reported as covered.
 #endif
 #endif
-  for (unsigned i = 0; i < warmup; ++i) { if (stress) stimulus(g, &blocks, i); tick(g); }
+  for (unsigned i = 0; i < warmup; ++i) { if (stress) stimulus(g, &blocks, i); if(flame) flame_stimulus(g,&blocks,i); tick(g); }
 #ifdef ORACLES_LUA_GAMEPLAY
   uint64_t before[4]; for (int i = 0; i < 4; ++i) before[i] = gameplay_block_calls(i);
+  uint64_t cube_before[3]; for(int i=0;i<3;++i) cube_before[i]=gameplay_colored_cube_calls(i);
   GameplayMemoryStats start = gameplay_memory_stats();
 #endif
   FILE *trace = trace_path ? fopen(trace_path, "w") : NULL; CHECK(!trace_path || trace);
@@ -188,7 +208,7 @@ int main(int argc, char **argv) {
       CHECK(oracles_load_boot_state(g, reload_state)); fibers_reset(g);
       ++reloads; pending = false;
     }
-    if (stress) stimulus(g, &blocks, i);
+    if (stress) stimulus(g, &blocks, i); if(flame) flame_stimulus(g,&blocks,i);
     if (trace) { tick(g); fprintf(trace, "%u %016llx\n", i, (unsigned long long)digest(g)); }
     else {
       uint64_t w = wall_ns(), c = cpu_ns(); tick(g);
@@ -200,18 +220,23 @@ int main(int argc, char **argv) {
   uint64_t coverage[4] = {0}; size_t heap = 0, peak_heap = 0; uint64_t allocations = 0;
   const char *mode = "c", *revision = "none";
 #ifdef ORACLES_LUA_GAMEPLAY
-  mode = "lua"; revision = gameplay_revision();
+  mode = lua_enabled?"lua":"c"; revision = gameplay_revision();
   GameplayMemoryStats end = gameplay_memory_stats();
   heap = end.current; peak_heap = end.peak; allocations = end.allocations - start.allocations;
-  for (int i = 0; i < 4; ++i) { coverage[i] = gameplay_block_calls(i) - before[i]; if (stress) CHECK(coverage[i]); }
+  for (int i = 0; i < 4; ++i) { coverage[i] = gameplay_block_calls(i) - before[i]; if (stress && lua_enabled) CHECK(coverage[i]); }
 #endif
   FILE *f = output ? fopen(output, "w") : stdout; CHECK(f);
   fprintf(f, "{\"mode\":\"%s\",\"scenario\":\"%s\",\"frames\":%u,\"warmup\":%u,\"blocks\":%u,\"timed\":%s,\"reloads\":%u,\"reloaded_block_states_mask\":%u,",
-    mode, scenario, frames, warmup, stress ? block_count : 0, trace ? "false" : "true", reloads, reloaded_block_states);
+    mode, scenario, frames, warmup, (stress || flame) ? block_count : 0, trace ? "false" : "true", reloads, reloaded_block_states);
   distribution(f, "cpu_ms", cpu, frames); fputc(',', f); distribution(f, "wall_ms", wall, frames);
-  fprintf(f, ",\"coverage\":[%llu,%llu,%llu,%llu],\"heap_bytes\":%zu,\"peak_heap_bytes\":%zu,\"measured_allocations\":%llu,\"scripts_sha256\":\"%s\"}\n",
+  fprintf(f, ",\"coverage\":[%llu,%llu,%llu,%llu],\"heap_bytes\":%zu,\"peak_heap_bytes\":%zu,\"measured_allocations\":%llu,\"scripts_sha256\":\"%s\"",
     (unsigned long long)coverage[0], (unsigned long long)coverage[1], (unsigned long long)coverage[2], (unsigned long long)coverage[3],
     heap, peak_heap, (unsigned long long)allocations, revision);
+  uint64_t colored[3]={0};
+#ifdef ORACLES_LUA_GAMEPLAY
+  for(int i=0;i<3;++i) { colored[i]=gameplay_colored_cube_calls(i)-cube_before[i]; if(flame && lua_enabled) CHECK(colored[i]); }
+#endif
+  fprintf(f,",\"colored_cube_coverage\":[%llu,%llu,%llu]}\n",(unsigned long long)colored[0],(unsigned long long)colored[1],(unsigned long long)colored[2]);
   if (output) CHECK(fclose(f) == 0);
   return 0;
 }

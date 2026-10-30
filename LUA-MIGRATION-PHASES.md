@@ -1,7 +1,8 @@
 # Migração de gameplay para Lua: sete fases
 
 Atualização: 30/10/2026. Estado: implementação experimental da fase 1 concluída;
-aceitação em aberto. Fases 2–7 ainda não iniciadas.
+aceitação em aberto. Implementação experimental da fase 2 concluída, aceitação
+também pendente. Fases 3–7 ainda não iniciadas.
 
 [Evidências e limites atuais da fase 1](LUA-PHASE-1-IMPLEMENTATION.md).
 Windows/Switch ainda não foram testados pelo jogador; falta também a regressão
@@ -119,6 +120,11 @@ Adicionar testes de contrato, limites, falhas e isolamento entre os módulos.
 nenhuma divergência nos testes e aprovação da validação comum abaixo.
 
 ## Fase 2 — Cubo colorido
+
+Implementação: [regras, testes e limites da rodada](LUA-PHASE-2.md).
+Distribuição: [guia dos pacotes da fase 2](LUA-PHASE-2-PLATFORM-TESTS.md).
+A opção `ORACLES_LUA_COLORED_CUBE` permanece OFF por padrão; pendências físicas
+da fase 1 não foram consideradas resolvidas pelo avanço solicitado.
 
 **Objetivo:** migrar as decisões da chama associada ao cubo em
 `src/game/ages/interactions/coloredCubeFlame.c`.

@@ -93,9 +93,10 @@ def main():
     configs = [cache(b / 'CMakeCache.txt') for b in (a.windows_build, a.switch_build)]
     for config in configs:
         assert all(config.get(key) == 'ON' for key in ('ORACLES_LUA_GAMEPLAY', 'ORACLES_LUA_BLOCK_PUZZLES'))
+        assert config.get('ORACLES_LUA_COLORED_CUBE', 'OFF') != 'ON', 'Use the phase-2 packager for colored-cube builds'
         assert not config.get('ORACLES_VERSION'), 'Test packages must not enable release updates'
     revision = sha(''.join(f'{module}:{sha((root / ("gameplay/ages/" + module + ".lua")).read_bytes())};'
-                          for module in ('switch_tiles', 'block_puzzles', 'block_rules')).encode())
+                          for module in ('switch_tiles', 'block_puzzles', 'block_rules', 'colored_cube')).encode())
     assert revision.encode() in exe and revision.encode() in nro
     assert b'oracles-lua-phase1' in exe and b'sdmc:/switch/oracle-ages-lua-phase1/' in nro
     for build in (a.windows_build, a.switch_build):
@@ -111,7 +112,7 @@ def main():
     source_tar, source_manifest = sources(root)
     # Verify corresponding source bytes before distributing either binary.
     with tarfile.open(fileobj=io.BytesIO(source_tar), mode='r:gz') as archive:
-        for module in ('switch_tiles', 'block_puzzles', 'block_rules'):
+        for module in ('switch_tiles', 'block_puzzles', 'block_rules', 'colored_cube'):
             name = 'gameplay/ages/' + module + '.lua'
             assert archive.extractfile('oracle-ages-lua/' + name).read() == (root/name).read_bytes()
         for entry in archive.getmembers():

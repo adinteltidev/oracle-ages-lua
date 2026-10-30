@@ -1,5 +1,6 @@
 #include "script/gameplay.h"
 #include "script/block_rules.h"
+#include "script/colored_cube.h"
 #include "lua.h"
 #include "lauxlib.h"
 #include <stdio.h>
@@ -10,9 +11,12 @@ extern const unsigned char ages_switch_tiles_lua[], ages_block_puzzles_lua[];
 extern const unsigned int ages_switch_tiles_lua_size, ages_block_puzzles_lua_size;
 extern const unsigned char ages_block_rules_lua[];
 extern const unsigned int ages_block_rules_lua_size;
+extern const unsigned char ages_colored_cube_lua[];
+extern const unsigned int ages_colored_cube_lua_size;
 #define CAP (256u * 1024u)
 enum { SWITCH_CHANGED, SWITCH_ALTERNATE, BLOCK_NEXT_STATE, BLOCK_RULE_FIRST,
-       RULE_COUNT = BLOCK_RULE_FIRST + GAMEPLAY_BLOCK_RULE_COUNT };
+       COLORED_CUBE_FIRST = BLOCK_RULE_FIRST + GAMEPLAY_BLOCK_RULE_COUNT,
+       RULE_COUNT = COLORED_CUBE_FIRST + GAMEPLAY_COLORED_CUBE_RULE_COUNT };
 static const char *const rule_names[RULE_COUNT] = {
   "ages/switch_tiles.changed", "ages/switch_tiles.alternate", "ages/block_puzzles.next_state",
 #define BLOCK_RULE1(name, a) "ages/block_rules." #name,
@@ -23,6 +27,7 @@ static const char *const rule_names[RULE_COUNT] = {
 #undef BLOCK_RULE2
 #undef BLOCK_RULE_FLAG
   "ages/block_rules.sync_next_state",
+  "ages/colored_cube.present", "ages/colored_cube.visible", "ages/colored_cube.palette_offset",
 };
 static lua_State *vm;
 static size_t used;
@@ -100,6 +105,9 @@ static int initialize(lua_State *L) {
   load_module(L, sources && sources->block_rules ? sources->block_rules : (const char *)ages_block_rules_lua,
     sources && sources->block_rules ? sources->block_rules_size : ages_block_rules_lua_size,
     "ages/block_rules.lua", BLOCK_RULE_FIRST, GAMEPLAY_BLOCK_RULE_COUNT);
+  load_module(L, sources && sources->colored_cube ? sources->colored_cube : (const char *)ages_colored_cube_lua,
+    sources && sources->colored_cube ? sources->colored_cube_size : ages_colored_cube_lua_size,
+    "ages/colored_cube.lua", COLORED_CUBE_FIRST, GAMEPLAY_COLORED_CUBE_RULE_COUNT);
   if (used > CAP - 16384) luaL_error(L, "gameplay initialization memory limit");
   if (!lua_checkstack(L, 16)) luaL_error(L, "gameplay stack limit");
   return 0;
@@ -222,6 +230,41 @@ bool gameplay_sync_next_state(uint8_t current, uint8_t *out) {
   *out=(uint8_t)value; lua_pop(vm,1); ++calls[index]; return true;
 }
 
+bool gameplay_colored_cube_enabled(void) {
+#ifdef ORACLES_LUA_COLORED_CUBE
+  return enabled;
+#else
+  return false;
+#endif
+}
+static bool colored_cube_boolean(GameplayColoredCubeRule rule, uint8_t value, bool *out) {
+  int index=COLORED_CUBE_FIRST+rule;
+  if (!out) return reject(rule_names[index], "invalid output argument");
+  if (!call_rule(index,&value,1)) return false;
+  if (!lua_isboolean(vm,-1)) return reject(rule_names[index], "expected boolean result");
+  *out=lua_toboolean(vm,-1); lua_pop(vm,1); ++calls[index]; return true;
+}
+bool gameplay_colored_cube_present(uint8_t position, bool *out) {
+  return colored_cube_boolean(GAMEPLAY_COLORED_CUBE_PRESENT,position,out);
+}
+bool gameplay_colored_cube_visible(uint8_t color, bool *out) {
+  return colored_cube_boolean(GAMEPLAY_COLORED_CUBE_VISIBLE,color,out);
+}
+bool gameplay_colored_cube_palette(uint8_t color, uint8_t *out) {
+  int index=COLORED_CUBE_FIRST+GAMEPLAY_COLORED_CUBE_PALETTE;
+  if (!out) return reject(rule_names[index],"invalid output argument");
+  if (!call_rule(index,&color,1)) return false;
+  if (!lua_isinteger(vm,-1)) return reject(rule_names[index],"expected integer palette offset");
+  lua_Integer result=lua_tointeger(vm,-1);
+  if (result<0 || result>127) return reject(rule_names[index],"invalid palette offset");
+  *out=(uint8_t)result; lua_pop(vm,1); ++calls[index]; return true;
+}
+uint64_t gameplay_colored_cube_calls(GameplayColoredCubeRule rule) {
+  return rule>=0 && rule<GAMEPLAY_COLORED_CUBE_RULE_COUNT ? calls[COLORED_CUBE_FIRST+rule] : 0;
+}
+const char *gameplay_colored_cube_rule_name(GameplayColoredCubeRule rule) {
+  return rule>=0 && rule<GAMEPLAY_COLORED_CUBE_RULE_COUNT ? rule_names[COLORED_CUBE_FIRST+rule] : "invalid";
+}
 const char *gameplay_error(void) { return error; }
 const char *gameplay_revision(void) { return ORACLES_GAMEPLAY_REVISION; }
 uint64_t gameplay_calls(int rule) { return rule >= 0 && rule < RULE_COUNT ? calls[rule] : 0; }

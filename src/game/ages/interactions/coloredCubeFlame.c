@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/colored_cube.h"
 
 #undef CYC
 #undef CYCT
@@ -25,7 +26,17 @@ static void coloredCubeFlame_addAToHl(GB *gb) {
 static void coloredCubeFlame_updateColor(GB *gb) {
   BASE(interactionCode1a);
   CYC(b_+38, b_+41); A = mem_rd(gb, wRotatingCubeColor);
+#ifdef ORACLES_LUA_GAMEPLAY
+  uint8_t color=A;
+#endif
   CYC(b_+41, b_+43); alu_and(gb, 0x7f);
+#ifdef ORACLES_LUA_GAMEPLAY
+  if (!game_seasons && gameplay_colored_cube_enabled()) {
+    uint8_t offset;
+    if (!gameplay_colored_cube_palette(color,&offset)) { gb_stop(gb,gameplay_error()); return; }
+    A=offset;
+  }
+#endif
   CYC(b_+43, b_+46); SET_HL(coloredCubeFlamePalettes_bank08);
   CYC(b_+46, b_+47); push_effect(gb, b_+47); coloredCubeFlame_addAToHl(gb);
   CYC(b_+47, b_+49); E = INTERACTION_BASE + OBJ_OAM_FLAGS;
@@ -47,23 +58,42 @@ void interactionCode1a_hook(GB *gb) {
   CYC(b_+3, b_+5);
   CYC(b_+5, b_+8); A = mem_rd(gb, wRotatingCubePos);
   CYC(b_+8, b_+9); alu_or(gb, A);
-  if (F & FZ) {
+  bool present=(F & FZ)==0;
+#ifdef ORACLES_LUA_GAMEPLAY
+  if (!game_seasons && gameplay_colored_cube_enabled() &&
+      !gameplay_colored_cube_present(A,&present)) { gb_stop(gb,gameplay_error()); return; }
+#endif
+  if (!present) {
     CYCT(b_+9, b_+10); ret_effect(gb); return;
   }
   CYC(b_+9, b_+10);
   CYC(b_+10, b_+13); push_effect(gb, b_+13); coloredCubeFlame_updateColor(gb);
+#ifdef ORACLES_LUA_GAMEPLAY
+  if (gb->hung && gameplay_colored_cube_enabled() && gameplay_error()[0]) return;
+#endif
   CALL_C(b_+13, interactionInitGraphics_hook, SYM(interactionInitGraphics), b_+16);
   CALL_C(b_+16, objectSetVisible82_hook, SYM(objectSetVisible82), b_+19);
   CALL_C(b_+19, interactionIncState_hook, SYM(interactionIncState), b_+22);
 
 initialized:
   CYC(b_+22, b_+25); A = mem_rd(gb, wRotatingCubeColor);
+#ifdef ORACLES_LUA_GAMEPLAY
+  uint8_t color=A;
+#endif
   CYC(b_+25, b_+26); alu_rlca(gb);
-  if (!(F & FC)) {
+  bool visible=(F & FC)!=0;
+#ifdef ORACLES_LUA_GAMEPLAY
+  if (!game_seasons && gameplay_colored_cube_enabled() &&
+      !gameplay_colored_cube_visible(color,&visible)) { gb_stop(gb,gameplay_error()); return; }
+#endif
+  if (!visible) {
     CYCT(b_+26, b_+29); TAIL(objectSetInvisible);
   }
   CYC(b_+26, b_+29);
   CALL_C(b_+29, objectSetVisible_hook, SYM(objectSetVisible), b_+32);
   CYC(b_+32, b_+35); push_effect(gb, b_+35); coloredCubeFlame_updateColor(gb);
+#ifdef ORACLES_LUA_GAMEPLAY
+  if (gb->hung && gameplay_colored_cube_enabled() && gameplay_error()[0]) return;
+#endif
   CYC(b_+35, b_+38); TAIL(interactionAnimate);
 }
