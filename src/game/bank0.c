@@ -2,6 +2,7 @@
 #include "rt/fibers.h"
 #include "game/gen.h"
 #include "script/doors.h"
+#include "script/items_shops.h"
 #include "game/offscreen.h"
 void s_seasonsFunc_2678_hook(GB *gb);
 
@@ -2829,6 +2830,7 @@ void objectSetPriorityRelativeToLink_withTerrainEffects_hook(GB *gb) {
 
 static void get_rupee_value(GB *gb) {
   BASE(getRupeeValue);
+  if(A<=0x14) SHOP_BYTE(A,price_index);
   uint16_t hl = HL;
   alu_cp(gb, 0x14);
   if (F & FC) CYCT(b_+0, b_+5);
@@ -2845,6 +2847,7 @@ static void get_rupee_value(GB *gb) {
 
 void getRupeeValue_hook(GB *gb) {
   get_rupee_value(gb);
+  TRADE_FAILED_RETURN();
   ret_effect(gb);
 }
 
@@ -2853,11 +2856,19 @@ void cpRupeeValue_hook(GB *gb) {
   SET_HL(wNumRupees);
   CYC(b_+0, b_+6);
   get_rupee_value(gb);
+  TRADE_FAILED_RETURN();
   CYC(b_+6, b_+7); A = mem_rd(gb, HL); SET_HL(HL + 1);
   CYC(b_+7, b_+8); H = mem_rd(gb, HL);
   L = A;
   CYC(b_+8, b_+12);
   compare_hl_to_bc(gb);
+#ifdef ORACLES_LUA_GAMEPLAY
+  if(TRADE_ACTIVE) {
+    bool enough_=A!=255, decision_;
+    if(!gameplay_shop_affordable(L,H,C,B,&decision_)) TRADE_STOP();
+    if(decision_!=enough_) { A=decision_?0:255;F=(uint8_t)((F&~FC)|(decision_?0:FC)); }
+  }
+#endif
   A = alu_inc8(gb, A);
   if (!(F & FZ)) { CYCT(b_+12, b_+15); alu_xor(gb, A); CYC(b_+17, b_+19); }
   else { CYC(b_+12, b_+15); A = alu_inc8(gb, A); CYC(b_+15, b_+17); }
@@ -3570,6 +3581,7 @@ static void give_treasure(GB *gb, uint16_t sp0_) {
 void giveTreasure_hook(GB *gb) {
   uint16_t sp0_ = gb->sp;
   give_treasure(gb, sp0_);
+  TRADE_FAILED_RETURN();
   ret_effect(gb);
 }
 
@@ -3590,6 +3602,7 @@ void removeRupeeValue_hook(GB *gb) {
   SET_HL(wNumRupees);
   CYC(b_+0, b_+6);
   get_rupee_value(gb);
+  TRADE_FAILED_RETURN();
   CYC(b_+6, b_+9);
   sub_decimal_from_hl_ref(gb);
   ret_effect(gb);
@@ -3639,6 +3652,7 @@ void refillSeedSatchel_hook(GB *gb) {
       C = 0x99;
       CYC(b_+8, b_+14);
       give_treasure(gb, sp0_);
+  TRADE_FAILED_RETURN();
     }
     E = alu_inc8(gb, E);
     A = E;
@@ -4276,6 +4290,7 @@ void interactionRunScript_hook(GB *gb) {
   CYC(b_+38, b_+39);
   CALL_ROM(b_+39, ROM__interactionActuallyRunScript);
   DOOR_FAILED_RETURN();
+  TRADE_FAILED_RETURN();
   if (F & FC) {
     CYCT(b_+42, b_+44);
     CALL_ROM(b_+49, ROM__interactionSaveScriptAddress);
@@ -11918,6 +11933,7 @@ void _interactionActuallyRunScript_hook(GB *gb) {
     CYC(b_+11, b_+14);
     CALL_ROM(b_+14, ROM_b0c_runScriptCommand);
     DOOR_FAILED_RETURN();
+  TRADE_FAILED_RETURN();
     if (F & FC) { CYCT(b_+17, b_+19); continue; }
     CYC(b_+17, b_+19);
     break;

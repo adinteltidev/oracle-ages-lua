@@ -5,6 +5,7 @@
 #include "script/colored_cube.h"
 #include "script/levers_lava.h"
 #include "script/doors.h"
+#include "script/items_shops.h"
 #endif
 #include "platform/tempfile.h"
 #include "core/gb.h"
@@ -57,6 +58,9 @@ static void native_run_reloading(const char *rom_path, const char *inputs, const
 #ifdef ORACLES_LUA_GAMEPLAY
   uint64_t rules_before[GAMEPLAY_BLOCK_RULE_COUNT];
   uint64_t colors_before[GAMEPLAY_COLORED_CUBE_RULE_COUNT];
+  uint64_t items_before[GAMEPLAY_ITEMS_COUNT],shops_before[GAMEPLAY_SHOPS_COUNT];
+  for(int i=0;i<GAMEPLAY_ITEMS_COUNT;++i)items_before[i]=gameplay_item_calls(i);
+  for(int i=0;i<GAMEPLAY_SHOPS_COUNT;++i)shops_before[i]=gameplay_shop_calls(i);
   uint64_t doors_before[GAMEPLAY_DOOR_RULE_COUNT];
   for(int i=0;i<GAMEPLAY_DOOR_RULE_COUNT;++i) doors_before[i]=gameplay_door_calls(i);
   uint64_t lava_before[GAMEPLAY_LAVA_RULE_COUNT];
@@ -127,6 +131,8 @@ static void native_run_reloading(const char *rom_path, const char *inputs, const
     (unsigned long long)rc.first_sample, (unsigned long long)rc.last_sample, (unsigned long long)rc.samples);
   for(int i=0;i<GAMEPLAY_DOOR_RULE_COUNT;++i)
     printf("Lua rule %s: %llu\n",gameplay_door_rule_name(i),(unsigned long long)(gameplay_door_calls(i)-doors_before[i]));
+  for(int i=0;i<GAMEPLAY_ITEMS_COUNT;++i)printf("Lua rule %s: %llu\n",gameplay_item_rule_name(i),(unsigned long long)(gameplay_item_calls(i)-items_before[i]));
+  for(int i=0;i<GAMEPLAY_SHOPS_COUNT;++i)printf("Lua rule %s: %llu\n",gameplay_shop_rule_name(i),(unsigned long long)(gameplay_shop_calls(i)-shops_before[i]));
   fflush(stdout);
 #ifdef ORACLES_LUA_GAMEPLAY
   printf("Lua cumulative block coverage: %llu/%llu/%llu/%llu\n",

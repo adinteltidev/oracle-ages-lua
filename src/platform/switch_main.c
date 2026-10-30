@@ -19,6 +19,7 @@
 #include "script/colored_cube.h"
 #include "script/levers_lava.h"
 #include "script/doors.h"
+#include "script/items_shops.h"
 #endif
 #include <stdio.h>
 #include <stdlib.h>
@@ -29,7 +30,9 @@
 #include <errno.h>
 #include "platform/switch_status.h"
 
-#if defined(ORACLES_LUA_DOORS)
+#if defined(ORACLES_LUA_ITEMS_SHOPS)
+#define DATA "sdmc:/switch/oracle-ages-lua-phase5/"
+#elif defined(ORACLES_LUA_DOORS)
 #define DATA "sdmc:/switch/oracle-ages-lua-phase4/"
 #elif defined(ORACLES_LUA_LEVERS_LAVA)
 #define DATA "sdmc:/switch/oracle-ages-lua-phase3/"
@@ -237,6 +240,10 @@ static int replay(bool full) {
       fprintf(result,"lua_rule.%s=%llu\n",gameplay_lava_rule_name(r),(unsigned long long)gameplay_lava_calls(r));
     for(int r=0;r<GAMEPLAY_DOOR_RULE_COUNT;++r)
       fprintf(result,"lua_rule.%s=%llu\n",gameplay_door_rule_name(r),(unsigned long long)gameplay_door_calls(r));
+    for(int r=0;r<GAMEPLAY_ITEMS_COUNT;++r)
+      fprintf(result,"lua_rule.%s=%llu\n",gameplay_item_rule_name(r),(unsigned long long)gameplay_item_calls(r));
+    for(int r=0;r<GAMEPLAY_SHOPS_COUNT;++r)
+      fprintf(result,"lua_rule.%s=%llu\n",gameplay_shop_rule_name(r),(unsigned long long)gameplay_shop_calls(r));
 #endif
     fclose(result);
   }
@@ -451,6 +458,10 @@ static int play(void) {
     fprintf(stderr,"Lua rule %s=%llu\n",gameplay_lava_rule_name(r),(unsigned long long)gameplay_lava_calls(r));
   for(int r=0;r<GAMEPLAY_DOOR_RULE_COUNT;++r)
     fprintf(stderr,"Lua rule %s=%llu\n",gameplay_door_rule_name(r),(unsigned long long)gameplay_door_calls(r));
+  for(int r=0;r<GAMEPLAY_ITEMS_COUNT;++r)
+    fprintf(stderr,"Lua rule %s=%llu\n",gameplay_item_rule_name(r),(unsigned long long)gameplay_item_calls(r));
+  for(int r=0;r<GAMEPLAY_SHOPS_COUNT;++r)
+    fprintf(stderr,"Lua rule %s=%llu\n",gameplay_shop_rule_name(r),(unsigned long long)gameplay_shop_calls(r));
 #endif
   if (!save_sram()) { fprintf(stderr, "Final SRAM save failed\n"); result = 1; }
  done:

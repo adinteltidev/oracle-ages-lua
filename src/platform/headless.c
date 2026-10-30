@@ -17,6 +17,7 @@
 #include "script/colored_cube.h"
 #include "script/levers_lava.h"
 #include "script/doors.h"
+#include "script/items_shops.h"
 #endif
 #include <stdio.h>
 #include <stdlib.h>
@@ -396,6 +397,10 @@ int main(int argc, char **argv) {
     fprintf(stderr,"Lua rule %s=%llu\n",gameplay_lava_rule_name(r),(unsigned long long)gameplay_lava_calls(r));
   for(int r=0;r<GAMEPLAY_DOOR_RULE_COUNT;++r)
     fprintf(stderr,"Lua rule %s=%llu\n",gameplay_door_rule_name(r),(unsigned long long)gameplay_door_calls(r));
+  for(int r=0;r<GAMEPLAY_ITEMS_COUNT;++r)
+    fprintf(stderr,"Lua rule %s=%llu\n",gameplay_item_rule_name(r),(unsigned long long)gameplay_item_calls(r));
+  for(int r=0;r<GAMEPLAY_SHOPS_COUNT;++r)
+    fprintf(stderr,"Lua rule %s=%llu\n",gameplay_shop_rule_name(r),(unsigned long long)gameplay_shop_calls(r));
 #endif
   return 0;
 }

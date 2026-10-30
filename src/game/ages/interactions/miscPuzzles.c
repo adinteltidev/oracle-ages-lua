@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/items_shops.h"
 #include "script/block_rules.h"
 
 #undef CYC
@@ -152,27 +153,30 @@ void miscPuzzles_subid00_hook(GB *gb) {
 
   // miscPuzzles_subid00@state0
   CALL_C(b_+12, interactionIncState_hook, SYM(interactionIncState), b_+15);
+  TRADE_FAILED_RETURN();
 
   // miscPuzzles_subid00@state1
 state1:
   CYC(b_+15, b_+18); SET_HL(wLever1PullDistance); // wLever1PullDistance
-  CYC(b_+18, b_+20); alu_bit(gb, 7, mem_rd(gb, HL));
+  CYC(b_+18, b_+20); ITEM_BIT(7,mem_rd(gb, HL));
   if (!(F & FZ)) { CYCT(b_+20, b_+22); goto checkAlreadyOpened; } // jr nz
   CYC(b_+20, b_+22);
   CYC(b_+22, b_+23); L = alu_inc8(gb, L);
-  CYC(b_+23, b_+25); alu_bit(gb, 7, mem_rd(gb, HL));
+  CYC(b_+23, b_+25); ITEM_BIT(7,mem_rd(gb, HL));
   if (F & FZ) { RET_TAKEN(b_+25); return; } // ret z
   CYC(b_+25, b_+26);
 
 checkAlreadyOpened:
   CALL_C(b_+26, getThisRoomFlags_hook, SYM(getThisRoomFlags), b_+29);
-  CYC(b_+29, b_+31); alu_and(gb, 0x20); // ROOMFLAG_ITEM
+  TRADE_FAILED_RETURN();
+  CYC(b_+29, b_+31); ITEM_AND(0x20); // ROOMFLAG_ITEM
   if (!(F & FZ)) { CYCT(b_+31, b_+33); goto alreadyOpened; } // jr nz
   CYC(b_+31, b_+33);
   CALL_C(b_+33, interactionIncState_hook, SYM(interactionIncState), b_+36);
+  TRADE_FAILED_RETURN();
   CYC(b_+36, b_+38); L = 0x47; // Interaction.counter2
   CYC(b_+38, b_+39); A = mem_rd(gb, HL);
-  CYC(b_+39, b_+40); alu_or(gb, A);
+  CYC(b_+39, b_+40); ITEM_OR(A);
   if (!(F & FZ)) { CYCT(b_+40, b_+42); goto checkRng; } // jr nz
   CYC(b_+40, b_+42);
   CYC(b_+42, b_+44); mem_wr(gb, HL, 0x01);
@@ -180,27 +184,31 @@ checkAlreadyOpened:
 
 checkRng:
   CALL_C(b_+46, getRandomNumber_hook, SYM(getRandomNumber), b_+49);
-  CYC(b_+49, b_+51); alu_and(gb, 0x03);
+  TRADE_FAILED_RETURN();
+  CYC(b_+49, b_+51); ITEM_AND(0x03);
   if (F & FZ) { CYCT(b_+51, b_+54); interactionIncState_hook(gb); return; } // jp z
   CYC(b_+51, b_+54);
 
 error:
   CYC(b_+54, b_+56); A = 0x5a; // SND_ERROR
   CALL_C(b_+56, playSound_b00_hook, SYM(playSound_b00), b_+59);
+  TRADE_FAILED_RETURN();
   CYC(b_+59, b_+62); A = W8(wActiveTilePos);
   CYC(b_+62, b_+65); W8(wWarpDestPos) = A;
   CYC(b_+65, b_+68); SET_HL(wEnemyPlacement); // wTmpcec0
   CYC(b_+68, b_+70); B = 0x20;
   CALL_C(b_+70, clearMemory_hook, SYM(clearMemory), b_+73);
+  TRADE_FAILED_RETURN();
   CYC(b_+73, b_+76); SET_HL(RV((SYM(twinrova_state1__subid00State2) + 21), 0x7866)); // roomInitialization.generateRandomBuffer
   CYC(b_+76, b_+78); E = 0x02; // bank of roomInitialization
   CALL_C(b_+78, interBankCall_hook, 0x008a, b_+81);
+  TRADE_FAILED_RETURN();
   CYC(b_+81, b_+84); SET_HL(RV((SYM(patch_subid00__state0) + 61), 0x78d1)); // objectData.objectData78db
   CYC(b_+84, b_+87); TAIL(parseGivenObjectData_b00); // jp
 
 state2:
   CYC(b_+87, b_+90); A = W8(wNumEnemies);
-  CYC(b_+90, b_+91); alu_or(gb, A);
+  CYC(b_+90, b_+91); ITEM_OR(A);
   if (!(F & FZ)) { RET_TAKEN(b_+91); return; } // ret nz
   CYC(b_+91, b_+92);
   CYC(b_+92, b_+94); A = 0x01;

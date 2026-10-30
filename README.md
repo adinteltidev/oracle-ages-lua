@@ -252,10 +252,10 @@ Wine tests and the remaining acceptance checks on a real Windows machine.
 
 ## Experimental C + Lua branch
 
-The optional Ages migration now includes door decisions (phase 4), alongside
-block puzzles, the colored cube and lever/lava rules. C still owns the engine
-and effects. See [phase 4](LUA-PHASE-4.md) and its
-[platform test instructions](LUA-PHASE-4-PLATFORM-TESTS.md). All integration
-options remain OFF by default. The player has reported working, stable Windows
-and Switch versions; see the [validation record](LUA-PHASE-4-PLAYER-VALIDATION.md).
-The full Seasons regression remains pending.
+The optional Ages migration now includes item and shop decisions (phase 5),
+alongside block puzzles, colored cube, levers/lava and doors. C owns the engine,
+ROM resources and effects. See [phase 5](LUA-PHASE-5.md) and its
+[platform test instructions](LUA-PHASE-5-PLATFORM-TESTS.md). All integration
+options remain OFF by default. The player's Windows/Switch stability report
+applies to [phase 4](LUA-PHASE-4-PLAYER-VALIDATION.md); the new phase-5 packages
+await device confirmation. The full Seasons regression remains pending.

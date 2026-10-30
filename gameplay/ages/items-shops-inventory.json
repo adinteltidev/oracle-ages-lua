@@ -1,0 +1,396 @@
+{
+  "phase": 5,
+  "game": "Ages USA/Australia",
+  "policy_modules": [
+    "items.lua",
+    "shops.lua"
+  ],
+  "resource_catalog": {
+    "object_id_slots": 99,
+    "valid_object_ids": 97,
+    "valid_records": 237,
+    "null_object_ids": [
+      "13",
+      "40"
+    ],
+    "source": "player ROM; tests/lua_items_catalog.h contains record counts only"
+  },
+  "representations": {
+    "rupee_value_selectors": [
+      0,
+      20
+    ],
+    "balance": "two packed BCD bytes; 0000..0999; preserve bytewise ordering for noncanonical bytes",
+    "seed_payment": "packed BCD; subtract 0x10 then DAA for ten seeds",
+    "shop_product_indices": [
+      0,
+      21
+    ],
+    "tokay_display_indices": [
+      0,
+      6
+    ],
+    "tokay_initial_treasure_indices": [
+      0,
+      1
+    ],
+    "treasure_parameter_modes": [
+      0,
+      15
+    ]
+  },
+  "families": [
+    {
+      "name": "common shop stock and upgrades",
+      "source": "src/game/common/interactions/shopItem.c",
+      "policy": "progression/linked/owned tests, ROM replacement chain, price and delivered ID"
+    },
+    {
+      "name": "shopkeeper and chest minigame",
+      "source": "src/game/common/interactions/shopkeeper.c",
+      "policy": "stock eligibility, caps, offer/outcome and ring tier; C supplies RNG"
+    },
+    {
+      "name": "Tokay trades",
+      "source": "src/game/ages/interactions/tokayShopItem.c",
+      "policy": "seed affordability, item-for-shovel substitutions, shield levels, unique bought flags; display 2/3 generated from original 0/1"
+    },
+    {
+      "name": "treasure collection and room reward flags",
+      "source": "src/game/common/interactions/treasureInteraction.c",
+      "policy": "availability, collection condition, resource ID and delivery decision"
+    },
+    {
+      "name": "inventory, consumables, drops and upgrades",
+      "source": "src/game/treasureAndDrops.c",
+      "policy": "already-owned checks, drops availability, substitution, parameter mode, limits and BCD carry"
+    },
+    {
+      "name": "D6 boss-key reward",
+      "source": "src/game/ages/interactions/miscPuzzles.c",
+      "policy": "subid00 completion/progress and winning comparison; RNG, lever physics and chest creation C"
+    },
+    {
+      "name": "transaction bytecode",
+      "source": "src/game/scripting.c",
+      "policy": "comparisons/table dispatch/outcome only for owners 46/81; common rupee checks shared through bank0"
+    }
+  ],
+  "mod_order": [
+    "capture original location and original ID/subid",
+    "Lua selects base resource (changed ID starts at subid 0)",
+    "existing mod matches original location/ID/subid and overrides Lua if applicable",
+    "C applies original writes, debit, delivery and flags in original order"
+  ],
+  "persistence": "existing object state/var3a/script pointer/inventory/flags; Lua is stateless; no rollback of earlier legitimate C effects on a later Lua failure",
+  "retained_c_services": [
+    "ROM tables/text/graphics and original script routing",
+    "inventory slot scans and ring storage/compaction",
+    "currency/seed debit, flags and item delivery",
+    "RNG, movement, collisions, animations, sound and UI",
+    "room object loading/persistence and linked-game state storage"
+  ],
+  "phase6_exclusions": [
+    "NPC dialogue/story event sequences, including reward scenes",
+    "opening chest animation/input and story actors that create rewards; created treasure uses this phase policies"
+  ],
+  "functions": [
+    {
+      "source": "src/game/ages/interactions/miscPuzzles.c",
+      "function": "miscPuzzles_subid00",
+      "operations": {
+        "cp": 0,
+        "or": 2,
+        "and": 2,
+        "bit": 2,
+        "decimal_carry": 0
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/tokayShopItem.c",
+      "function": "interactionCode81",
+      "operations": {
+        "cp": 3,
+        "or": 1,
+        "and": 0,
+        "bit": 0,
+        "decimal_carry": 0
+      }
+    },
+    {
+      "source": "src/game/common/interactions/shopItem.c",
+      "function": "shopItemState0",
+      "operations": {
+        "cp": 4,
+        "or": 2,
+        "and": 4,
+        "bit": 3,
+        "decimal_carry": 0
+      }
+    },
+    {
+      "source": "src/game/common/interactions/shopItem.c",
+      "function": "shopItemState3",
+      "operations": {
+        "cp": 1,
+        "or": 2,
+        "and": 0,
+        "bit": 0,
+        "decimal_carry": 0
+      }
+    },
+    {
+      "source": "src/game/common/interactions/shopkeeper.c",
+      "function": "shopkeeperCheckAllItemsBought",
+      "operations": {
+        "cp": 2,
+        "or": 2,
+        "and": 0,
+        "bit": 0,
+        "decimal_carry": 0
+      }
+    },
+    {
+      "source": "src/game/common/interactions/shopkeeper.c",
+      "function": "shopkeeperCheckLinkHasItemAlready",
+      "operations": {
+        "cp": 7,
+        "or": 1,
+        "and": 0,
+        "bit": 0,
+        "decimal_carry": 0
+      }
+    },
+    {
+      "source": "src/game/common/interactions/shopkeeper.c",
+      "function": "shopkeeperState0",
+      "operations": {
+        "cp": 2,
+        "or": 2,
+        "and": 1,
+        "bit": 0,
+        "decimal_carry": 0
+      }
+    },
+    {
+      "source": "src/game/common/interactions/shopkeeper.c",
+      "function": "shopkeeperState2",
+      "operations": {
+        "cp": 1,
+        "or": 1,
+        "and": 1,
+        "bit": 0,
+        "decimal_carry": 0
+      }
+    },
+    {
+      "source": "src/game/common/interactions/shopkeeper.c",
+      "function": "shopkeeperState3",
+      "operations": {
+        "cp": 0,
+        "or": 2,
+        "and": 1,
+        "bit": 0,
+        "decimal_carry": 0
+      }
+    },
+    {
+      "source": "src/game/common/interactions/shopkeeper.c",
+      "function": "shopkeeperState5",
+      "operations": {
+        "cp": 0,
+        "or": 2,
+        "and": 3,
+        "bit": 0,
+        "decimal_carry": 0
+      }
+    },
+    {
+      "source": "src/game/common/interactions/treasureInteraction.c",
+      "function": "interactionCode60",
+      "operations": {
+        "cp": 2,
+        "or": 7,
+        "and": 3,
+        "bit": 2,
+        "decimal_carry": 0
+      }
+    },
+    {
+      "source": "src/game/common/interactions/treasureInteraction.c",
+      "function": "interactionCode60__checkLinkTouched",
+      "operations": {
+        "cp": 2,
+        "or": 3,
+        "and": 0,
+        "bit": 0,
+        "decimal_carry": 0
+      }
+    },
+    {
+      "source": "src/game/common/interactions/treasureInteraction.c",
+      "function": "interactionCode60__giveTreasure",
+      "operations": {
+        "cp": 4,
+        "or": 1,
+        "and": 0,
+        "bit": 0,
+        "decimal_carry": 0
+      }
+    },
+    {
+      "source": "src/game/treasureAndDrops.c",
+      "function": "addTreasureToInventory",
+      "operations": {
+        "cp": 2,
+        "or": 0,
+        "and": 0,
+        "bit": 0,
+        "decimal_carry": 0
+      }
+    },
+    {
+      "source": "src/game/treasureAndDrops.c",
+      "function": "checkItemDropAvailable_body",
+      "operations": {
+        "cp": 0,
+        "or": 0,
+        "and": 1,
+        "bit": 0,
+        "decimal_carry": 0
+      }
+    },
+    {
+      "source": "src/game/treasureAndDrops.c",
+      "function": "checkTreasureObtained_body",
+      "operations": {
+        "cp": 1,
+        "or": 1,
+        "and": 1,
+        "bit": 0,
+        "decimal_carry": 0
+      }
+    },
+    {
+      "source": "src/game/treasureAndDrops.c",
+      "function": "decideItemDrop_body",
+      "operations": {
+        "cp": 1,
+        "or": 1,
+        "and": 4,
+        "bit": 0,
+        "decimal_carry": 0
+      }
+    },
+    {
+      "source": "src/game/treasureAndDrops.c",
+      "function": "giveTreasure_body",
+      "operations": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "bit": 0,
+        "decimal_carry": 0
+      }
+    },
+    {
+      "source": "src/game/treasureAndDrops.c",
+      "function": "giveTreasure_body__findItemInTable",
+      "operations": {
+        "cp": 1,
+        "or": 2,
+        "and": 0,
+        "bit": 0,
+        "decimal_carry": 0
+      }
+    },
+    {
+      "source": "src/game/treasureAndDrops.c",
+      "function": "giveTreasure_body__giveTreasure",
+      "operations": {
+        "cp": 0,
+        "or": 1,
+        "and": 1,
+        "bit": 1,
+        "decimal_carry": 0
+      }
+    },
+    {
+      "source": "src/game/treasureAndDrops.c",
+      "function": "giveTreasure_body__mode4",
+      "operations": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "bit": 0,
+        "decimal_carry": 1
+      }
+    },
+    {
+      "source": "src/game/treasureAndDrops.c",
+      "function": "giveTreasure_body__mode8",
+      "operations": {
+        "cp": 1,
+        "or": 0,
+        "and": 0,
+        "bit": 0,
+        "decimal_carry": 0
+      }
+    },
+    {
+      "source": "src/game/treasureAndDrops.c",
+      "function": "giveTreasure_body__mode9",
+      "operations": {
+        "cp": 1,
+        "or": 0,
+        "and": 0,
+        "bit": 0,
+        "decimal_carry": 0
+      }
+    },
+    {
+      "source": "src/game/treasureAndDrops.c",
+      "function": "giveTreasure_body__modec",
+      "operations": {
+        "cp": 3,
+        "or": 0,
+        "and": 0,
+        "bit": 0,
+        "decimal_carry": 0
+      }
+    },
+    {
+      "source": "src/game/treasureAndDrops.c",
+      "function": "giveTreasure_body__moded",
+      "operations": {
+        "cp": 1,
+        "or": 0,
+        "and": 0,
+        "bit": 0,
+        "decimal_carry": 0
+      }
+    },
+    {
+      "source": "src/game/treasureAndDrops.c",
+      "function": "giveTreasure_body__modee",
+      "operations": {
+        "cp": 1,
+        "or": 0,
+        "and": 0,
+        "bit": 0,
+        "decimal_carry": 0
+      }
+    },
+    {
+      "source": "src/game/treasureAndDrops.c",
+      "function": "giveTreasure_body__modef",
+      "operations": {
+        "cp": 1,
+        "or": 0,
+        "and": 0,
+        "bit": 0,
+        "decimal_carry": 0
+      }
+    }
+  ]
+}

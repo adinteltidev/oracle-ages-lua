@@ -3,6 +3,7 @@
 #include "script/colored_cube.h"
 #include "script/levers_lava.h"
 #include "script/doors.h"
+#include "script/items_shops.h"
 #include "lua.h"
 #include "lauxlib.h"
 #include <stdio.h>
@@ -19,12 +20,16 @@ extern const unsigned char ages_levers_lava_lua[];
 extern const unsigned int ages_levers_lava_lua_size;
 extern const unsigned char ages_doors_lua[];
 extern const unsigned int ages_doors_lua_size;
+extern const unsigned char ages_items_lua[], ages_shops_lua[];
+extern const unsigned int ages_items_lua_size, ages_shops_lua_size;
 #define CAP (256u * 1024u)
 enum { SWITCH_CHANGED, SWITCH_ALTERNATE, BLOCK_NEXT_STATE, BLOCK_RULE_FIRST,
        COLORED_CUBE_FIRST = BLOCK_RULE_FIRST + GAMEPLAY_BLOCK_RULE_COUNT,
        LAVA_FIRST = COLORED_CUBE_FIRST + GAMEPLAY_COLORED_CUBE_RULE_COUNT,
        DOOR_FIRST = LAVA_FIRST + GAMEPLAY_LAVA_RULE_COUNT,
-       RULE_COUNT = DOOR_FIRST + GAMEPLAY_DOOR_RULE_COUNT };
+       ITEMS_FIRST = DOOR_FIRST + GAMEPLAY_DOOR_RULE_COUNT,
+       SHOPS_FIRST = ITEMS_FIRST + GAMEPLAY_ITEMS_COUNT,
+       RULE_COUNT = SHOPS_FIRST + GAMEPLAY_SHOPS_COUNT };
 static const char *const rule_names[RULE_COUNT] = {
   "ages/switch_tiles.changed", "ages/switch_tiles.alternate", "ages/block_puzzles.next_state",
 #define BLOCK_RULE1(name, a) "ages/block_rules." #name,
@@ -48,6 +53,8 @@ static const char *const rule_names[RULE_COUNT] = {
 #undef DOOR_RULE2
 #undef DOOR_RULE_FLAG
 #undef DOOR_BYTE
+  "ages/items.compare", "ages/items.zero", "ages/items.bit_zero", "ages/items.carry", "ages/items.reward_id", "ages/items.parameter_mode",
+  "ages/shops.compare", "ages/shops.zero", "ages/shops.bit_zero", "ages/shops.carry", "ages/shops.reward_id", "ages/shops.price_index", "ages/shops.table_index", "ages/shops.purchase_outcome", "ages/shops.affordable",
 };
 static lua_State *vm;
 static size_t used;
@@ -134,6 +141,12 @@ static int initialize(lua_State *L) {
   load_module(L, sources && sources->doors ? sources->doors : (const char *)ages_doors_lua,
     sources && sources->doors ? sources->doors_size : ages_doors_lua_size,
     "ages/doors.lua", DOOR_FIRST, GAMEPLAY_DOOR_RULE_COUNT);
+  load_module(L, sources && sources->items ? sources->items : (const char *)ages_items_lua,
+    sources && sources->items ? sources->items_size : ages_items_lua_size,
+    "ages/items.lua", ITEMS_FIRST, GAMEPLAY_ITEMS_COUNT);
+  load_module(L, sources && sources->shops ? sources->shops : (const char *)ages_shops_lua,
+    sources && sources->shops ? sources->shops_size : ages_shops_lua_size,
+    "ages/shops.lua", SHOPS_FIRST, GAMEPLAY_SHOPS_COUNT);
   if (used > CAP - 16384) luaL_error(L, "gameplay initialization memory limit");
   if (!lua_checkstack(L, 16)) luaL_error(L, "gameplay stack limit");
   return 0;
@@ -380,6 +393,82 @@ uint64_t gameplay_door_calls(GameplayDoorRule rule) {
 const char *gameplay_door_rule_name(GameplayDoorRule rule) {
   return rule >= 0 && rule < GAMEPLAY_DOOR_RULE_COUNT ? rule_names[DOOR_FIRST + rule] : "invalid";
 }
+bool gameplay_items_shops_enabled(void) {
+#ifdef ORACLES_LUA_ITEMS_SHOPS
+  return enabled;
+#else
+  return false;
+#endif
+}
+static bool trade_boolean(int index,const uint8_t *args,int n,bool *out) {
+  if(!out)return reject(rule_names[index],"invalid output argument");
+  if(!call_rule(index,args,n))return false;
+  if(!lua_isboolean(vm,-1))return reject(rule_names[index],"expected boolean result");
+  *out=lua_toboolean(vm,-1);lua_pop(vm,1);++calls[index];return true;
+}
+static bool trade_integer(int index,const uint8_t *args,int n,int low,int high,uint8_t *out) {
+  if(!out)return reject(rule_names[index],"invalid output argument");
+  if(!call_rule(index,args,n))return false;
+  if(!lua_isinteger(vm,-1))return reject(rule_names[index],"expected integer result");
+  lua_Integer result=lua_tointeger(vm,-1);
+  if(result<low || result>high)return reject(rule_names[index],"invalid result domain");
+  if((index==ITEMS_FIRST+GAMEPLAY_ITEMS_reward_id || index==SHOPS_FIRST+GAMEPLAY_SHOPS_reward_id) && (result==0x13 || result==0x40))
+    return reject(rule_names[index],"reward has no Ages object resource");
+  if(index==SHOPS_FIRST+GAMEPLAY_SHOPS_purchase_outcome && result!=1 && result!=255)
+    return reject(rule_names[index],"invalid purchase outcome");
+  if(index==SHOPS_FIRST+GAMEPLAY_SHOPS_table_index && result>args[0])
+    return reject(rule_names[index],"table index exceeds original resource bound");
+  *out=(uint8_t)result;lua_pop(vm,1);++calls[index];return true;
+}
+bool gameplay_item_compare(uint8_t a, uint8_t b, uint8_t *out) {
+  uint8_t args[]={a,b};return trade_integer(ITEMS_FIRST+GAMEPLAY_ITEMS_compare,args,2,0,2,out);
+}
+bool gameplay_item_zero(uint8_t a, bool *out) {
+  uint8_t args[]={a};return trade_boolean(ITEMS_FIRST+GAMEPLAY_ITEMS_zero,args,1,out);
+}
+bool gameplay_item_bit_zero(uint8_t a, uint8_t b, bool *out) {
+  uint8_t args[]={a,b};return trade_boolean(ITEMS_FIRST+GAMEPLAY_ITEMS_bit_zero,args,2,out);
+}
+bool gameplay_item_carry(uint8_t a, bool *out) {
+  uint8_t args[]={a};return trade_boolean(ITEMS_FIRST+GAMEPLAY_ITEMS_carry,args,1,out);
+}
+bool gameplay_item_reward_id(uint8_t a, uint8_t *out) {
+  uint8_t args[]={a};return trade_integer(ITEMS_FIRST+GAMEPLAY_ITEMS_reward_id,args,1,0,98,out);
+}
+bool gameplay_item_parameter_mode(uint8_t a, uint8_t *out) {
+  uint8_t args[]={a};return trade_integer(ITEMS_FIRST+GAMEPLAY_ITEMS_parameter_mode,args,1,0,15,out);
+}
+uint64_t gameplay_item_calls(GameplayItemsRule rule) {return rule>=0 && rule<GAMEPLAY_ITEMS_COUNT?calls[ITEMS_FIRST+rule]:0;}
+const char *gameplay_item_rule_name(GameplayItemsRule rule) {return rule>=0 && rule<GAMEPLAY_ITEMS_COUNT?rule_names[ITEMS_FIRST+rule]:"invalid";}
+bool gameplay_shop_compare(uint8_t a, uint8_t b, uint8_t *out) {
+  uint8_t args[]={a,b};return trade_integer(SHOPS_FIRST+GAMEPLAY_SHOPS_compare,args,2,0,2,out);
+}
+bool gameplay_shop_zero(uint8_t a, bool *out) {
+  uint8_t args[]={a};return trade_boolean(SHOPS_FIRST+GAMEPLAY_SHOPS_zero,args,1,out);
+}
+bool gameplay_shop_bit_zero(uint8_t a, uint8_t b, bool *out) {
+  uint8_t args[]={a,b};return trade_boolean(SHOPS_FIRST+GAMEPLAY_SHOPS_bit_zero,args,2,out);
+}
+bool gameplay_shop_carry(uint8_t a, bool *out) {
+  uint8_t args[]={a};return trade_boolean(SHOPS_FIRST+GAMEPLAY_SHOPS_carry,args,1,out);
+}
+bool gameplay_shop_reward_id(uint8_t a, uint8_t *out) {
+  uint8_t args[]={a};return trade_integer(SHOPS_FIRST+GAMEPLAY_SHOPS_reward_id,args,1,0,98,out);
+}
+bool gameplay_shop_price_index(uint8_t a, uint8_t *out) {
+  uint8_t args[]={a};return trade_integer(SHOPS_FIRST+GAMEPLAY_SHOPS_price_index,args,1,0,20,out);
+}
+bool gameplay_shop_table_index(uint8_t a, uint8_t *out) {
+  uint8_t args[]={a};return trade_integer(SHOPS_FIRST+GAMEPLAY_SHOPS_table_index,args,1,0,255,out);
+}
+bool gameplay_shop_purchase_outcome(uint8_t a, uint8_t *out) {
+  uint8_t args[]={a};return trade_integer(SHOPS_FIRST+GAMEPLAY_SHOPS_purchase_outcome,args,1,1,255,out);
+}
+bool gameplay_shop_affordable(uint8_t a, uint8_t b, uint8_t c, uint8_t d, bool *out) {
+  uint8_t args[]={a,b,c,d};return trade_boolean(SHOPS_FIRST+GAMEPLAY_SHOPS_affordable,args,4,out);
+}
+uint64_t gameplay_shop_calls(GameplayShopsRule rule) {return rule>=0 && rule<GAMEPLAY_SHOPS_COUNT?calls[SHOPS_FIRST+rule]:0;}
+const char *gameplay_shop_rule_name(GameplayShopsRule rule) {return rule>=0 && rule<GAMEPLAY_SHOPS_COUNT?rule_names[SHOPS_FIRST+rule]:"invalid";}
 const char *gameplay_error(void) { return error; }
 const char *gameplay_revision(void) { return ORACLES_GAMEPLAY_REVISION; }
 uint64_t gameplay_calls(int rule) { return rule >= 0 && rule < RULE_COUNT ? calls[rule] : 0; }

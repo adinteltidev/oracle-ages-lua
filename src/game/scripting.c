@@ -1,6 +1,7 @@
 #include "game/game.h"
 #include "game/gen.h"
 #include "script/doors.h"
+#include "script/items_shops.h"
 
 #undef CYC
 #undef CYCT
@@ -444,6 +445,9 @@ void scriptCmd_jumpTable_memoryAddress_hook(GB *gb) {
   CYC(b_+4, b_+5); A = mem_rd(gb, HL); SET_HL(HL + 1);
   CYC(b_+5, b_+6); B = A;
   CYC(b_+6, b_+7); A = mem_rd(gb, BC);
+#ifdef ORACLES_LUA_GAMEPLAY
+  if(SHOP_SCRIPT_ACTIVE && !gameplay_shop_table_index(A,&A)) TRADE_STOP();
+#endif
   CYC(b_+7, b_+8); add_double_index_to_hl_from_rst(gb, b_+8);
   CYC(b_+8, b_+11); TAIL(scriptFunc_jump);
 }
@@ -534,6 +538,10 @@ void scriptCmd_writeInteractionByte_hook(GB *gb) {
   CYC(b_+2, b_+3); A = mem_rd(gb, HL); SET_HL(HL + 1);
   CYC(b_+3, b_+4); E = A;
   CYC(b_+4, b_+5); A = mem_rd(gb, HL); SET_HL(HL + 1);
+#ifdef ORACLES_LUA_GAMEPLAY
+  if(SHOP_SCRIPT_ACTIVE && gb->wram[1][((D&15)<<8)+0x41]==0x46 && E==0x7a && (A==1 || A==255) &&
+     !gameplay_shop_purchase_outcome(A,&A)) TRADE_STOP();
+#endif
   CYC(b_+5, b_+6); mem_wr(gb, DE, A);
   CYC(b_+6, b_+7); ret_effect(gb);
 }
@@ -931,7 +939,7 @@ void scriptCmd_jumpIfLinkVariableNe_hook(GB *gb) {
 
 static void scriptCmd_compareMemoryThenJump(GB *gb) {
   BASE(scriptCmd_jumpIfMemoryEq);
-  CYC(b_+7, b_+8); alu_cp(gb, mem_rd(gb, HL));
+  CYC(b_+7, b_+8); SHOP_SCRIPT_CP(mem_rd(gb, HL));
   if (!(F & FZ)) {
     CYCT(b_+8, b_+11);
     TAIL(scriptFunc_add3ToHl_scf);
@@ -1302,6 +1310,9 @@ void scriptCmd_jumpTable_hook(GB *gb) {
   CYC(b_+2, b_+3); A = mem_rd(gb, HL); SET_HL(HL + 1);
   CYC(b_+3, b_+4); E = A;
   CYC(b_+4, b_+5); A = mem_rd(gb, DE);
+#ifdef ORACLES_LUA_GAMEPLAY
+  if(SHOP_SCRIPT_ACTIVE && !gameplay_shop_table_index(A,&A)) TRADE_STOP();
+#endif
   CYC(b_+5, b_+6); add_double_index_to_hl_from_rst(gb, b_+6);
   CYC(b_+6, b_+9); TAIL(scriptFunc_jump);
 }

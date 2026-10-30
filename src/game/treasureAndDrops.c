@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/items_shops.h"
 
 #undef CYC
 #undef CYCT
@@ -71,22 +72,28 @@ void giveTreasure_body_hook(GB *gb) {
   CYC(b_+O(5), b_+OE(6)); push_effect(gb, BC);
   CYC(b_+O(6), b_+OE(9)); SET_HL(GV(b_+O(127), 0x4544));
   CALL_C(b_+O(9), giveTreasure_body__findItemInTable_hook, b_+O(40), b_+OE(12));
+  TRADE_FAILED_RETURN();
   if (F & FZ) {
     CYCT(b_+O(12), b_+OE(14));
   } else {
     CYC(b_+O(12), b_+OE(14));
     CALL_C(b_+O(14), loseTreasure_helper_hook, SYM(loseTreasure_helper), b_+OE(17));
+    TRADE_FAILED_RETURN();
     CYC(b_+O(17), b_+OE(18)); A = C;
     CALL_C(b_+O(18), loseTreasure_helper_hook, SYM(loseTreasure_helper), b_+OE(21));
+    TRADE_FAILED_RETURN();
   }
   CYC(b_+O(21), b_+OE(22)); SET_BC(pop_effect(gb));
   CYC(b_+O(22), b_+OE(23)); A = B;
   CALL_C(b_+O(23), giveTreasure_body__giveTreasure_hook, b_+O(57), b_+OE(26));
+  TRADE_FAILED_RETURN();
   CYC(b_+O(26), b_+OE(27)); push_effect(gb, AF);
   CYC(b_+O(27), b_+OE(30)); SET_HL(b_+O(114));
   CALL_C(b_+O(30), giveTreasure_body__findItemInTable_hook, b_+O(40), b_+OE(33));
+  TRADE_FAILED_RETURN();
   if (!(F & FZ)) {
     CALL_C_CC(b_+O(33), giveTreasure_body__giveTreasure_hook, b_+O(57), b_+OE(36));
+    TRADE_FAILED_RETURN();
   } else {
     CYC(b_+O(33), b_+OE(36));
   }
@@ -102,13 +109,13 @@ void giveTreasure_body__findItemInTable_hook(GB *gb) {
   CYC(b_+O(42), b_+OE(43)); C = A;
   for (;;) {
     CYC(b_+O(43), b_+OE(44)); A = mem_rd(gb, HL); SET_HL(HL + 1);
-    CYC(b_+O(44), b_+OE(45)); alu_cp(gb, C);
+    CYC(b_+O(44), b_+OE(45)); ITEM_CP(C);
     if (F & FZ) {
       CYCT(b_+O(45), b_+OE(47));
       break;
     }
     CYC(b_+O(45), b_+OE(47));
-    CYC(b_+O(47), b_+OE(48)); alu_or(gb, A);
+    CYC(b_+O(47), b_+OE(48)); ITEM_OR(A);
     if (F & FZ) {
       CYCT(b_+O(48), b_+OE(49)); ret_effect(gb); return;
     }
@@ -119,7 +126,7 @@ void giveTreasure_body__findItemInTable_hook(GB *gb) {
   }
   CYC(b_+O(53), b_+OE(54)); A = mem_rd(gb, HL); SET_HL(HL + 1);
   CYC(b_+O(54), b_+OE(55)); C = mem_rd(gb, HL);
-  CYC(b_+O(55), b_+OE(56)); alu_or(gb, A);
+  CYC(b_+O(55), b_+OE(56)); ITEM_OR(A);
   CYC(b_+O(56), b_+OE(57)); ret_effect(gb);
 }
 
@@ -128,10 +135,13 @@ void giveTreasure_body__giveTreasure_hook(GB *gb) {
   uint16_t sp0_ = gb->sp;
   CYC(b_+O(57), b_+OE(59)); H8(hFF8B) = A;
   CALL_C(b_+O(59), checkIncreaseGashaMaturityForGettingTreasure_hook, SYM(checkIncreaseGashaMaturityForGettingTreasure), b_+OE(62));
+  TRADE_FAILED_RETURN();
   CALL_C(b_+O(62), addTreasureToInventory_hook, SYM(addTreasureToInventory), b_+OE(65));
+  TRADE_FAILED_RETURN();
   CYC(b_+O(65), b_+OE(68)); SET_HL(wObtainedTreasureFlags);
   CYC(b_+O(68), b_+OE(70)); A = H8(hFF8B);
   CALL_C(b_+O(70), setFlag_hook, SYM(setFlag), b_+OE(73));
+  TRADE_FAILED_RETURN();
   CYC(b_+O(73), b_+OE(74)); push_effect(gb, BC);
   CYC(b_+O(74), b_+OE(76)); A = H8(hFF8B);
   CYC(b_+O(76), b_+OE(77)); C = A;
@@ -144,7 +154,7 @@ void giveTreasure_body__giveTreasure_hook(GB *gb) {
   CYC(b_+O(86), b_+OE(88)); D = 0xc6;
   CYC(b_+O(88), b_+OE(89)); A = mem_rd(gb, HL); SET_HL(HL + 1);
   CYC(b_+O(89), b_+OE(90)); E = A;
-  CYC(b_+O(90), b_+OE(91)); alu_or(gb, A);
+  CYC(b_+O(90), b_+OE(91)); ITEM_OR(A);
   if (!(F & FZ)) {
     CYCT(b_+O(91), b_+OE(93));
   } else {
@@ -152,11 +162,12 @@ void giveTreasure_body__giveTreasure_hook(GB *gb) {
     CYC(b_+O(93), b_+OE(95)); E = (uint8_t)wShortSecretIndex;
   }
   CYC(b_+O(95), b_+OE(96)); A = mem_rd(gb, HL);
-  CYC(b_+O(96), b_+OE(98)); alu_and(gb, 0x0f);
+  CYC(b_+O(96), b_+OE(98)); ITEM_AND(0x0f);
   CYC(b_+O(98), b_+OE(99)); push_effect(gb, HL);
   CALL_C(b_+O(99), giveTreasure_body__applyParameter_hook, SYM(giveTreasure_body__applyParameter), b_+OE(102));
+  TRADE_FAILED_RETURN();
   CYC(b_+O(102), b_+OE(103)); SET_HL(pop_effect(gb));
-  CYC(b_+O(103), b_+OE(105)); alu_bit(gb, 7, mem_rd(gb, HL));
+  CYC(b_+O(103), b_+OE(105)); ITEM_BIT(7,mem_rd(gb, HL));
   CYC(b_+O(105), b_+OE(106)); SET_HL(HL + 1);
   CYC(b_+O(106), b_+OE(107)); A = mem_rd(gb, HL); SET_HL(HL + 1);
   if (!(F & FZ)) {
@@ -164,6 +175,7 @@ void giveTreasure_body__giveTreasure_hook(GB *gb) {
   } else {
     CYC(b_+O(107), b_+OE(109));
     CALL_C(b_+O(109), playSound_b00_hook, SYM(playSound_b00), b_+OE(112));
+    TRADE_FAILED_RETURN();
     CYC(b_+O(112), b_+OE(113)); alu_xor(gb, A);
   }
   CYC(b_+O(113), b_+OE(114)); ret_effect(gb);
@@ -173,6 +185,7 @@ void giveTreasure_body__applyParameter_hook(GB *gb) {
   BASE(giveTreasure_body);
   uint16_t sp0_ = gb->sp;
   CYC(b_+O(128), b_+OE(129)); push_effect(gb, b_+OE(129));
+  ITEM_BYTE(A,parameter_mode);
   do { uint16_t jt_ = (treasure_jump_table(gb));
     if (jt_ == b_+O(113)) { CYC(b_+O(113), b_+OE(114)); ret_effect(gb); return; }
     else if (jt_ == b_+O(161)) { giveTreasure_body__modeb_hook(gb); return; }
@@ -199,12 +212,13 @@ void checkTreasureObtained_body_hook(GB *gb) {
   uint16_t sp0_ = gb->sp;
 
   CYC(b_+0, b_+1); A = L;
-  CYC(b_+1, b_+3); alu_cp(gb, 0x60);
+  CYC(b_+1, b_+3); ITEM_CP(0x60);
   if (!(F & FC)) {
     CYCT(b_+3, b_+5);
-    CYC(b_+39, b_+41); alu_and(gb, 0x07);
+    CYC(b_+39, b_+41); ITEM_AND(0x07);
     CYC(b_+41, b_+44); SET_HL(wUpgradesObtained);
     CALL_C(b_+44, checkFlag_hook, SYM(checkFlag), b_+47);
+    TRADE_FAILED_RETURN();
     if (!(F & FZ)) {
       CYCT(b_+47, b_+49);
       CYC(b_+36, b_+38); H = 0x01;
@@ -218,6 +232,7 @@ void checkTreasureObtained_body_hook(GB *gb) {
   CYC(b_+5, b_+7); H8(hFF8B) = A;
   CYC(b_+7, b_+10); SET_HL(wObtainedTreasureFlags);
   CALL_C(b_+10, checkFlag_hook, SYM(checkFlag), b_+13);
+  TRADE_FAILED_RETURN();
   if (F & FZ) {
     CYCT(b_+13, b_+15);
     CYC(b_+49, b_+51); H = 0x00;
@@ -235,7 +250,7 @@ void checkTreasureObtained_body_hook(GB *gb) {
   CYC(b_+27, b_+28); SET_BC(pop_effect(gb));
   CYC(b_+28, b_+29); A = mem_rd(gb, HL); SET_HL(HL + 1);
   CYC(b_+29, b_+30); L = A;
-  CYC(b_+30, b_+31); alu_or(gb, A);
+  CYC(b_+30, b_+31); ITEM_OR(A);
   if (F & FZ) {
     CYCT(b_+31, b_+33);
   } else {
@@ -389,7 +404,7 @@ void addTreasureToInventory_hook(GB *gb) {
   BASE(addTreasureToInventory);
   uint16_t sp0_ = gb->sp;
   CYC(b_+0, b_+2); A = H8(hFF8B);
-  CYC(b_+2, b_+4); alu_cp(gb, 0x20);
+  CYC(b_+2, b_+4); ITEM_CP(0x20);
   if (!(F & FC)) {
     CYCT(b_+4, b_+5); ret_effect(gb);
     return;
@@ -397,6 +412,7 @@ void addTreasureToInventory_hook(GB *gb) {
   CYC(b_+4, b_+5);
   CYC(b_+5, b_+6); push_effect(gb, BC);
   CALL_C(b_+6, addTreasureToInventory__addToInventory_hook, b_+38, b_+9);
+  TRADE_FAILED_RETURN();
   CYC(b_+9, b_+10); SET_BC(pop_effect(gb));
   if (!(F & FC)) {
     CYCT(b_+10, b_+11); ret_effect(gb);
@@ -414,12 +430,13 @@ void addTreasureToInventory_hook(GB *gb) {
   CYC(b_+18, b_+19); L = A;
   CYC(b_+19, b_+21); A = H8(hFF8B);
   CYC(b_+21, b_+22); C = A;
-  CYC(b_+22, b_+24); alu_cp(gb, 0x0c);
+  CYC(b_+22, b_+24); ITEM_CP(0x0c);
   if (F & FZ) {
     CYC(b_+24, b_+26);
     CYC(b_+26, b_+27); A = mem_rd(gb, HL);
     CYC(b_+27, b_+28); mem_wr(gb, HL, C);
     CALL_C(b_+28, addTreasureToInventory__addToInventory_hook, b_+38, b_+31);
+    TRADE_FAILED_RETURN();
   } else {
     CYCT(b_+24, b_+26);
   }
@@ -552,7 +569,7 @@ void decideItemDrop_body_hook(GB *gb) {
   BASE(decideItemDrop_body);
   uint16_t sp0_ = gb->sp;
   CYC(b_+O(0), b_+OE(1)); A = C;
-  CYC(b_+O(1), b_+OE(2)); alu_or(gb, A);
+  CYC(b_+O(1), b_+OE(2)); ITEM_OR(A);
   CYC(b_+O(2), b_+OE(4)); A |= 0x80;
   if (!(F & FZ)) {
     CYCT(b_+O(4), b_+OE(6));
@@ -567,7 +584,7 @@ void decideItemDrop_body_hook(GB *gb) {
   CYC(b_+O(15), b_+OE(16)); treasure_add_index_to_hl_from_rst(gb, b_+OE(16));
   CYC(b_+O(16), b_+OE(17)); A = mem_rd(gb, HL);
   CYC(b_+O(17), b_+OE(18)); C = A;
-  CYC(b_+O(18), b_+OE(20)); alu_cp(gb, 0xff);
+  CYC(b_+O(18), b_+OE(20)); ITEM_CP(0xff);
   if (F & FZ) {
     CYCT(b_+O(20), b_+OE(22));
     goto unavailable;
@@ -575,29 +592,32 @@ void decideItemDrop_body_hook(GB *gb) {
   CYC(b_+O(20), b_+OE(22));
   CYC(b_+O(22), b_+OE(24)); A = alu_swap(gb, A);
   CYC(b_+O(24), b_+OE(25)); alu_rrca(gb);
-  CYC(b_+O(25), b_+OE(27)); alu_and(gb, 0x07);
+  CYC(b_+O(25), b_+OE(27)); ITEM_AND(0x07);
   CYC(b_+O(27), b_+OE(30)); SET_HL(SYM(itemDropProbabilityTable));
   CYC(b_+O(30), b_+OE(31)); treasure_add_double_index_to_hl_from_rst(gb, b_+OE(31));
   CYC(b_+O(31), b_+OE(32)); A = mem_rd(gb, HL); SET_HL(HL + 1);
   CYC(b_+O(32), b_+OE(33)); H = mem_rd(gb, HL);
   CYC(b_+O(33), b_+OE(34)); L = A;
   CALL_C(b_+O(34), getRandomNumber_hook, SYM(getRandomNumber), b_+OE(37));
-  CYC(b_+O(37), b_+OE(39)); alu_and(gb, 0x3f);
+  TRADE_FAILED_RETURN();
+  CYC(b_+O(37), b_+OE(39)); ITEM_AND(0x3f);
   CALL_C(b_+O(39), checkFlag_hook, SYM(checkFlag), b_+OE(42));
+  TRADE_FAILED_RETURN();
   if (F & FZ) {
     CYCT(b_+O(42), b_+OE(44));
     goto unavailable;
   }
   CYC(b_+O(42), b_+OE(44));
   CYC(b_+O(44), b_+OE(45)); A = C;
-  CYC(b_+O(45), b_+OE(47)); alu_and(gb, 0x1f);
+  CYC(b_+O(45), b_+OE(47)); ITEM_AND(0x1f);
   CYC(b_+O(47), b_+OE(50)); SET_HL(SYM(itemDropSetTable));
   CYC(b_+O(50), b_+OE(51)); treasure_add_double_index_to_hl_from_rst(gb, b_+OE(51));
   CYC(b_+O(51), b_+OE(52)); A = mem_rd(gb, HL); SET_HL(HL + 1);
   CYC(b_+O(52), b_+OE(53)); H = mem_rd(gb, HL);
   CYC(b_+O(53), b_+OE(54)); L = A;
   CALL_C(b_+O(54), getRandomNumber_hook, SYM(getRandomNumber), b_+OE(57));
-  CYC(b_+O(57), b_+OE(59)); alu_and(gb, 0x1f);
+  TRADE_FAILED_RETURN();
+  CYC(b_+O(57), b_+OE(59)); ITEM_AND(0x1f);
   CYC(b_+O(59), b_+OE(60)); treasure_add_index_to_hl_from_rst(gb, b_+OE(60));
   CYC(b_+O(60), b_+OE(61)); A = mem_rd(gb, HL);
   CYC(b_+O(61), b_+OE(62)); C = A;
@@ -633,7 +653,7 @@ void checkItemDropAvailable_body_hook(GB *gb) {
   CYC(b_+O(7), b_+OE(8)); L = A;
   CYC(b_+O(8), b_+OE(10)); H = 0xc6;
   CYC(b_+O(10), b_+OE(11)); A = mem_rd(gb, HL);
-  CYC(b_+O(11), b_+OE(12)); alu_and(gb, B);
+  CYC(b_+O(11), b_+OE(12)); ITEM_AND(B);
   if (!(F & FZ)) {
     CYCT(b_+O(12), b_+OE(13)); ret_effect(gb); return;
   }
@@ -652,7 +672,7 @@ void giveTreasure_body__modeb_hook(GB *gb) {
 void giveTreasure_body__mode8_hook(GB *gb) {
   BASE(giveTreasure_body);
   CYC(b_+O(168), b_+OE(169)); A = mem_rd(gb, DE);
-  CYC(b_+O(169), b_+OE(170)); alu_cp(gb, C);
+  CYC(b_+O(169), b_+OE(170)); ITEM_CP(C);
   if (!(F & FC)) {
     CYCT(b_+O(170), b_+OE(171)); ret_effect(gb); return;
   }
@@ -698,7 +718,7 @@ void giveTreasure_body__mode4_hook(GB *gb) {
   BASE(giveTreasure_body);
   CYC(b_+O(198), b_+OE(199)); A = mem_rd(gb, DE);
   CYC(b_+O(199), b_+OE(200)); alu_add(gb, C);
-  CYC(b_+O(200), b_+OE(201)); alu_daa(gb);
+  CYC(b_+O(200), b_+OE(201)); alu_daa(gb); ITEM_CARRY();
   if (!(F & FC)) {
     CYCT(b_+O(201), b_+OE(203));
   } else {
@@ -740,13 +760,13 @@ void giveTreasure_body__modec_hook(GB *gb) {
   CYC(b_+O(224), b_+OE(225)); H = D;
   CYC(b_+O(225), b_+OE(226)); L = E;
   CYC(b_+O(226), b_+OE(228)); A = (uint8_t)wLinkHealth;
-  CYC(b_+O(228), b_+OE(229)); alu_cp(gb, E);
+  CYC(b_+O(228), b_+OE(229)); ITEM_CP(E);
   CYC(b_+O(229), b_+OE(230)); A = mem_rd(gb, HL); SET_HL(HL + 1);
   if (!(F & FZ)) {
     CYCT(b_+O(230), b_+OE(232));
   } else {
     CYC(b_+O(230), b_+OE(232));
-    CYC(b_+O(232), b_+OE(233)); alu_cp(gb, mem_rd(gb, HL));
+    CYC(b_+O(232), b_+OE(233)); ITEM_CP(mem_rd(gb, HL));
     if (F & FZ) {
       CYC(b_+O(233), b_+OE(235));
       CYC(b_+O(235), b_+OE(237)); A = 0x57;
@@ -758,7 +778,7 @@ void giveTreasure_body__modec_hook(GB *gb) {
   CYC(b_+O(240), b_+OE(241)); alu_add(gb, C);
   CYC(b_+O(241), b_+OE(242)); mem_wr(gb, DE, A);
   CYC(b_+O(242), b_+OE(244));
-  CYC(b_+O(250), b_+OE(251)); alu_cp(gb, mem_rd(gb, HL));
+  CYC(b_+O(250), b_+OE(251)); ITEM_CP(mem_rd(gb, HL));
   if (F & FC) {
     CYCT(b_+O(251), b_+OE(252)); ret_effect(gb); return;
   }
@@ -772,10 +792,11 @@ void giveTreasure_body__moded_hook(GB *gb) {
   BASE(giveTreasure_body);
   uint16_t sp0_ = gb->sp;
   CALL_C(b_+O(244), giveTreasure_body__mode4_hook, b_+O(198), b_+OE(247));
+  TRADE_FAILED_RETURN();
   CYC(b_+O(247), b_+OE(248)); H = D;
   CYC(b_+O(248), b_+OE(249)); L = E;
   CYC(b_+O(249), b_+OE(250)); L = alu_inc8(gb, L);
-  CYC(b_+O(250), b_+OE(251)); alu_cp(gb, mem_rd(gb, HL));
+  CYC(b_+O(250), b_+OE(251)); ITEM_CP(mem_rd(gb, HL));
   if (F & FC) {
     CYCT(b_+O(251), b_+OE(252)); ret_effect(gb); return;
   }
@@ -790,14 +811,17 @@ void giveTreasure_body__modee_hook(GB *gb) {
   uint16_t sp0_ = gb->sp;
   CYC(b_+O(255), b_+OE(256)); A = C;
   CALL_C(b_+O(256), getRupeeValue_hook, SYM(getRupeeValue), b_+OE(259));
+  TRADE_FAILED_RETURN();
   CYC(b_+O(259), b_+OE(260)); A = E;
-  CYC(b_+O(260), b_+OE(262)); alu_cp(gb, (uint8_t)wNumRupees);
+  CYC(b_+O(260), b_+OE(262)); ITEM_CP((uint8_t)wNumRupees);
   if (!(F & FZ)) {
     CYCT(b_+O(262), b_+OE(264));
   } else {
     CYC(b_+O(262), b_+OE(264));
     CYC(b_+O(264), b_+OE(266)); A = 0x01;
     CALL_C(b_+O(266), checkGlobalFlag_hook, SYM(checkGlobalFlag), b_+OE(269));
+    TRADE_FAILED_RETURN();
+    ITEM_FACT_ZERO();
     if (!(F & FZ)) {
       CYCT(b_+O(269), b_+OE(271));
     } else {
@@ -805,23 +829,27 @@ void giveTreasure_body__modee_hook(GB *gb) {
       CYC(b_+O(271), b_+OE(272)); H = D;
       CYC(b_+O(272), b_+OE(274)); L = (uint8_t)wTotalRupeesCollected;
       CALL_C(b_+O(274), addDecimalToHlRef_hook, SYM(addDecimalToHlRef), b_+OE(277));
+      TRADE_FAILED_RETURN();
       if (!(F & FC)) {
         CYCT(b_+O(277), b_+OE(279));
       } else {
         CYC(b_+O(277), b_+OE(279));
         CYC(b_+O(279), b_+OE(281)); A = 0x01;
         CALL_C(b_+O(281), setGlobalFlag_hook, SYM(setGlobalFlag), b_+OE(284));
+        TRADE_FAILED_RETURN();
       }
     }
   }
   CYC(b_+O(284), b_+OE(285)); H = D;
   CYC(b_+O(285), b_+OE(286)); L = E;
   CALL_C(b_+O(286), addDecimalToHlRef_hook, SYM(addDecimalToHlRef), b_+OE(289));
+  TRADE_FAILED_RETURN();
   CYC(b_+O(289), b_+OE(290)); A = mem_rd(gb, HL); SET_HL(HL + 1);
   CYC(b_+O(290), b_+OE(291)); H = mem_rd(gb, HL);
   CYC(b_+O(291), b_+OE(292)); L = A;
   CYC(b_+O(292), b_+OE(295)); SET_BC(0x0999);
   CALL_C(b_+O(295), compareHlToBc_hook, SYM(compareHlToBc), b_+OE(298));
+  TRADE_FAILED_RETURN();
   CYC(b_+O(298), b_+OE(299)); A = alu_dec8(gb, A);
   if (!(F & FZ)) {
     CYCT(b_+O(299), b_+OE(300)); ret_effect(gb); return;
@@ -840,12 +868,14 @@ void giveTreasure_body__modef_hook(GB *gb) {
   BASE(giveTreasure_body);
   uint16_t sp0_ = gb->sp;
   CALL_C(b_+O(310), giveTreasure_body__mode4_hook, b_+O(198), b_+OE(313));
+  TRADE_FAILED_RETURN();
   CALL_C(b_+O(313), setStatusBarNeedsRefreshBit1_hook, SYM(setStatusBarNeedsRefreshBit1), b_+OE(316));
+  TRADE_FAILED_RETURN();
   CYC(b_+O(316), b_+OE(319)); A = W8(wSeedSatchelLevel);
   CYC(b_+O(319), b_+OE(322)); SET_HL(GV(b_+O(328), 0x4616));
   CYC(b_+O(322), b_+OE(323)); treasure_add_index_to_hl_from_rst(gb, b_+OE(323));
   CYC(b_+O(323), b_+OE(324)); A = mem_rd(gb, DE);
-  CYC(b_+O(324), b_+OE(325)); alu_cp(gb, mem_rd(gb, HL));
+  CYC(b_+O(324), b_+OE(325)); ITEM_CP(mem_rd(gb, HL));
   if (F & FC) {
     CYCT(b_+O(325), b_+OE(326)); ret_effect(gb); return;
   }
@@ -860,13 +890,16 @@ void giveTreasure_body__mode9_hook(GB *gb) {
   uint16_t sp0_ = gb->sp;
   CYC(b_+O(332), b_+OE(334)); C |= 0x40;
   CALL_C(b_+O(334), realignUnappraisedRings_hook, SYM(realignUnappraisedRings), b_+OE(337));
-  CYC(b_+O(337), b_+OE(339)); alu_cp(gb, 0x64);
+  TRADE_FAILED_RETURN();
+  CYC(b_+O(337), b_+OE(339)); ITEM_CP(0x64);
   if (F & FC) {
     CYCT(b_+O(339), b_+OE(341));
   } else {
     CYC(b_+O(339), b_+OE(341));
     CALL_C(b_+O(341), giveTreasure_body__removeOneDuplicateRing_hook, b_+O(353), b_+OE(344));
+    TRADE_FAILED_RETURN();
     CALL_C(b_+O(344), realignUnappraisedRings_hook, SYM(realignUnappraisedRings), b_+OE(347));
+    TRADE_FAILED_RETURN();
   }
   CYC(b_+O(347), b_+OE(348)); A = C;
   CYC(b_+O(348), b_+OE(351)); mem_wr(gb, wUnappraisedRingsEnd - 1, A);
