@@ -8,9 +8,12 @@ on:
       - 'src/script/**'
       - 'src/game/common/interactions/switchTileToggler.c'
       - 'src/game/common/interactions/pushblockTrigger.c'
+      - 'src/game/common/interactions/pushblock.c'
       - 'cmake/LuaGameplay.cmake'
       - 'tests/test_lua_gameplay*'
       - 'tests/test_lua_blocks*'
+      - 'tests/test_lua_cube*'
+      - 'tests/lua_cube*'
       - '.github/workflows/lua-gameplay.yml'
 permissions:
   contents: read
@@ -28,6 +31,6 @@ jobs:
       - name: Configure standalone bounded runtime
         run: cmake -S . -B build-lua-ci -DORACLES_SDL=OFF -DORACLES_LUA_GAMEPLAY=ON -DORACLES_LUA_BLOCK_PUZZLES=ON
       - name: Compile
-        run: cmake --build build-lua-ci --config Release --target test_lua_gameplay --parallel 3
+        run: cmake --build build-lua-ci --config Release --target test_lua_gameplay test_lua_cube_candidate --parallel 3
       - name: Test (no commercial ROM)
-        run: ctest --test-dir build-lua-ci -C Release -R "^lua_gameplay$" --output-on-failure
+        run: ctest --test-dir build-lua-ci -C Release -R "^(lua_gameplay|lua_cube_candidate)$" --output-on-failure

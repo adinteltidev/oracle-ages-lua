@@ -6,6 +6,7 @@ como alteração local). Estado: em implementação, fase ainda não concluída.
 
 Continuação a partir de `b04e0d2`: [validação de cobertura e desempenho](LUA-PHASE-1-VALIDATION.md).
 Continuação a partir de `f8eb6b2`: [pacotes de teste Windows/Switch](LUA-PHASE-1-BUILDS.md).
+Continuação a partir de `73c4fd7`: [candidato da permissão de blocos ligada ao cubo](LUA-PHASE-1-CUBE-CANDIDATE.md), ainda sem integração ao jogo.
 Os resultados abaixo descrevem o primeiro lote; a continuação registra as novas
 evidências sem atribuí-las retrospectivamente aos testes anteriores.
 
@@ -14,7 +15,7 @@ evidências sem atribuí-las retrospectivamente aos testes anteriores.
 | Rotina/grupo | Regras e dependências | Estado |
 | --- | --- | --- |
 | `common/interactions/pushblockTrigger.c` / `interactionCode13` | Inicializar; aguardar contagem de inimigos atingir o limiar; detectar mudança do tile; concluir após decremento do contador | Implementado e aprovado nos testes dirigidos locais; hardware pendente |
-| `common/interactions/pushblock.c` / `interactionCode14` | Permissão ligada ao cubo, propriedades e condições de assentamento; movimento/colisão ficam em C | Pendente |
+| `common/interactions/pushblock.c` / `interactionCode14` | Permissão ligada ao cubo, propriedades e condições de assentamento; movimento/colisão ficam em C | Candidato da permissão preparado e testado, sem integração; propriedades/assentamento pendentes |
 | `ages/interactions/pushblockSynchronizer.c` / `interactionCodebd` | Sincronização de blocos e estado do puzzle | Pendente |
 | `ages/interactions/waterPushblock.c` / `interactionCode9e` | Gatilhos de inundação e layouts de salas; efeitos em C | Pendente |
 | `ages/interactions/stonePanel.c` | Gatilho e transições dos painéis de pedra | Pendente |
