@@ -1,6 +1,7 @@
 #include "script/gameplay.h"
 #include "script/block_rules.h"
 #include "script/colored_cube.h"
+#include "script/levers_lava.h"
 #include "lua.h"
 #include "lauxlib.h"
 #include <stdio.h>
@@ -13,10 +14,13 @@ extern const unsigned char ages_block_rules_lua[];
 extern const unsigned int ages_block_rules_lua_size;
 extern const unsigned char ages_colored_cube_lua[];
 extern const unsigned int ages_colored_cube_lua_size;
+extern const unsigned char ages_levers_lava_lua[];
+extern const unsigned int ages_levers_lava_lua_size;
 #define CAP (256u * 1024u)
 enum { SWITCH_CHANGED, SWITCH_ALTERNATE, BLOCK_NEXT_STATE, BLOCK_RULE_FIRST,
        COLORED_CUBE_FIRST = BLOCK_RULE_FIRST + GAMEPLAY_BLOCK_RULE_COUNT,
-       RULE_COUNT = COLORED_CUBE_FIRST + GAMEPLAY_COLORED_CUBE_RULE_COUNT };
+       LAVA_FIRST = COLORED_CUBE_FIRST + GAMEPLAY_COLORED_CUBE_RULE_COUNT,
+       RULE_COUNT = LAVA_FIRST + GAMEPLAY_LAVA_RULE_COUNT };
 static const char *const rule_names[RULE_COUNT] = {
   "ages/switch_tiles.changed", "ages/switch_tiles.alternate", "ages/block_puzzles.next_state",
 #define BLOCK_RULE1(name, a) "ages/block_rules." #name,
@@ -28,6 +32,9 @@ static const char *const rule_names[RULE_COUNT] = {
 #undef BLOCK_RULE_FLAG
   "ages/block_rules.sync_next_state",
   "ages/colored_cube.present", "ages/colored_cube.visible", "ages/colored_cube.palette_offset",
+  "ages/levers_lava.fully_pulled", "ages/levers_lava.released", "ages/levers_lava.timer_elapsed",
+  "ages/levers_lava.has_tile", "ages/levers_lava.source_found", "ages/levers_lava.source_segment",
+  "ages/levers_lava.source_delta", "ages/levers_lava.next_state", "ages/levers_lava.floor_tile",
 };
 static lua_State *vm;
 static size_t used;
@@ -108,6 +115,9 @@ static int initialize(lua_State *L) {
   load_module(L, sources && sources->colored_cube ? sources->colored_cube : (const char *)ages_colored_cube_lua,
     sources && sources->colored_cube ? sources->colored_cube_size : ages_colored_cube_lua_size,
     "ages/colored_cube.lua", COLORED_CUBE_FIRST, GAMEPLAY_COLORED_CUBE_RULE_COUNT);
+  load_module(L, sources && sources->levers_lava ? sources->levers_lava : (const char *)ages_levers_lava_lua,
+    sources && sources->levers_lava ? sources->levers_lava_size : ages_levers_lava_lua_size,
+    "ages/levers_lava.lua", LAVA_FIRST, GAMEPLAY_LAVA_RULE_COUNT);
   if (used > CAP - 16384) luaL_error(L, "gameplay initialization memory limit");
   if (!lua_checkstack(L, 16)) luaL_error(L, "gameplay stack limit");
   return 0;
@@ -265,6 +275,51 @@ uint64_t gameplay_colored_cube_calls(GameplayColoredCubeRule rule) {
 const char *gameplay_colored_cube_rule_name(GameplayColoredCubeRule rule) {
   return rule>=0 && rule<GAMEPLAY_COLORED_CUBE_RULE_COUNT ? rule_names[COLORED_CUBE_FIRST+rule] : "invalid";
 }
+bool gameplay_levers_lava_enabled(void) {
+#ifdef ORACLES_LUA_LEVERS_LAVA
+  return enabled;
+#else
+  return false;
+#endif
+}
+static bool lava_boolean(GameplayLavaRule rule,uint8_t value,bool *out) {
+  int index=LAVA_FIRST+rule;
+  if(!out) return reject(rule_names[index],"invalid output argument");
+  if(!call_rule(index,&value,1)) return false;
+  if(!lua_isboolean(vm,-1)) return reject(rule_names[index],"expected boolean result");
+  *out=lua_toboolean(vm,-1);lua_pop(vm,1);++calls[index];return true;
+}
+bool gameplay_lava_fully_pulled(uint8_t distance,bool *out) { return lava_boolean(GAMEPLAY_LAVA_FULLY_PULLED,distance,out); }
+bool gameplay_lava_released(uint8_t distance,bool *out) { return lava_boolean(GAMEPLAY_LAVA_RELEASED,distance,out); }
+bool gameplay_lava_timer_elapsed(bool zero,bool *out) { return lava_boolean(GAMEPLAY_LAVA_TIMER_ELAPSED,zero?1:0,out); }
+bool gameplay_lava_has_tile(uint8_t token,bool *out) { return lava_boolean(GAMEPLAY_LAVA_HAS_TILE,token,out); }
+bool gameplay_lava_source_found(bool zero,bool *out) { return lava_boolean(GAMEPLAY_LAVA_SOURCE_FOUND,zero?1:0,out); }
+bool gameplay_lava_source_segment(uint8_t relative,bool *out) { return lava_boolean(GAMEPLAY_LAVA_SOURCE_SEGMENT,relative,out); }
+static bool lava_integer(GameplayLavaRule rule,const uint8_t *args,int count,uint8_t *out) {
+  int index=LAVA_FIRST+rule;
+  if(!out) return reject(rule_names[index],"invalid output argument");
+  if(!call_rule(index,args,count)) return false;
+  if(!lua_isinteger(vm,-1)) return reject(rule_names[index],"expected integer result");
+  lua_Integer value=lua_tointeger(vm,-1);bool valid=false;
+  if(rule==GAMEPLAY_LAVA_SOURCE_DELTA) valid=value==6 || value==250;
+  else if(rule==GAMEPLAY_LAVA_NEXT_STATE) valid=value==(args[0]==4?1:args[0]+1);
+  else if(rule==GAMEPLAY_LAVA_FLOOR_TILE) valid=value==1 || (value>=0x61 && value<=0x64);
+  if(!valid) return reject(rule_names[index],"invalid result domain");
+  *out=(uint8_t)value;lua_pop(vm,1);++calls[index];return true;
+}
+bool gameplay_lava_source_delta(bool empty,uint8_t *out) {
+  uint8_t value=empty?1:0;return lava_integer(GAMEPLAY_LAVA_SOURCE_DELTA,&value,1,out);
+}
+bool gameplay_lava_next_state(uint8_t current,uint8_t *out) {
+  if(current>4) return reject(rule_names[LAVA_FIRST+GAMEPLAY_LAVA_NEXT_STATE],"invalid state argument");
+  return lava_integer(GAMEPLAY_LAVA_NEXT_STATE,&current,1,out);
+}
+bool gameplay_lava_floor_tile(uint8_t state,uint8_t random_byte,uint8_t *out) {
+  if(state!=2 && state!=4) return reject(rule_names[LAVA_FIRST+GAMEPLAY_LAVA_FLOOR_TILE],"invalid phase argument");
+  uint8_t args[]={state,random_byte};return lava_integer(GAMEPLAY_LAVA_FLOOR_TILE,args,2,out);
+}
+uint64_t gameplay_lava_calls(GameplayLavaRule rule) { return rule>=0 && rule<GAMEPLAY_LAVA_RULE_COUNT?calls[LAVA_FIRST+rule]:0; }
+const char *gameplay_lava_rule_name(GameplayLavaRule rule) { return rule>=0 && rule<GAMEPLAY_LAVA_RULE_COUNT?rule_names[LAVA_FIRST+rule]:"invalid"; }
 const char *gameplay_error(void) { return error; }
 const char *gameplay_revision(void) { return ORACLES_GAMEPLAY_REVISION; }
 uint64_t gameplay_calls(int rule) { return rule >= 0 && rule < RULE_COUNT ? calls[rule] : 0; }

@@ -17,6 +17,7 @@
 #include "script/gameplay.h"
 #include "script/block_rules.h"
 #include "script/colored_cube.h"
+#include "script/levers_lava.h"
 #endif
 #include <stdio.h>
 #include <stdlib.h>
@@ -27,7 +28,9 @@
 #include <errno.h>
 #include "platform/switch_status.h"
 
-#if defined(ORACLES_LUA_COLORED_CUBE)
+#if defined(ORACLES_LUA_LEVERS_LAVA)
+#define DATA "sdmc:/switch/oracle-ages-lua-phase3/"
+#elif defined(ORACLES_LUA_COLORED_CUBE)
 #define DATA "sdmc:/switch/oracle-ages-lua-phase2/"
 #elif defined(ORACLES_LUA_BLOCK_PUZZLES)
 #define DATA "sdmc:/switch/oracle-ages-lua-phase1/"
@@ -227,6 +230,8 @@ static int replay(bool full) {
       fprintf(result,"lua_rule.%s=%llu\n",gameplay_block_rule_name(r),(unsigned long long)gameplay_block_rule_calls(r));
     for(int r=0;r<GAMEPLAY_COLORED_CUBE_RULE_COUNT;++r)
       fprintf(result,"lua_rule.%s=%llu\n",gameplay_colored_cube_rule_name(r),(unsigned long long)gameplay_colored_cube_calls(r));
+    for(int r=0;r<GAMEPLAY_LAVA_RULE_COUNT;++r)
+      fprintf(result,"lua_rule.%s=%llu\n",gameplay_lava_rule_name(r),(unsigned long long)gameplay_lava_calls(r));
 #endif
     fclose(result);
   }
@@ -437,6 +442,8 @@ static int play(void) {
     (unsigned long long)gameplay_block_calls(2), (unsigned long long)gameplay_block_calls(3));
   for(int r=0;r<GAMEPLAY_COLORED_CUBE_RULE_COUNT;++r)
     fprintf(stderr,"Lua rule %s=%llu\n",gameplay_colored_cube_rule_name(r),(unsigned long long)gameplay_colored_cube_calls(r));
+  for(int r=0;r<GAMEPLAY_LAVA_RULE_COUNT;++r)
+    fprintf(stderr,"Lua rule %s=%llu\n",gameplay_lava_rule_name(r),(unsigned long long)gameplay_lava_calls(r));
 #endif
   if (!save_sram()) { fprintf(stderr, "Final SRAM save failed\n"); result = 1; }
  done:

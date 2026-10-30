@@ -40,6 +40,7 @@ typedef struct {
   const char *block_puzzles; size_t block_puzzles_size;
   const char *block_rules; size_t block_rules_size;
   const char *colored_cube; size_t colored_cube_size;
+  const char *levers_lava; size_t levers_lava_size;
 } GameplaySources;
 // Test seam: reset the runtime, replacing selected modules; NULL uses embedded source.
 bool gameplay_load_sources(const GameplaySources *sources);

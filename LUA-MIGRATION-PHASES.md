@@ -2,7 +2,8 @@
 
 Atualização: 30/10/2026. Estado: implementação experimental da fase 1 concluída;
 aceitação em aberto. Implementação experimental da fase 2 concluída, aceitação
-também pendente. Fases 3–7 ainda não iniciadas.
+também pendente. Implementação experimental da fase 3 concluída, aceitação
+física em aberto. Fases 4–7 ainda não iniciadas.
 
 [Evidências e limites atuais da fase 1](LUA-PHASE-1-IMPLEMENTATION.md).
 Windows/Switch ainda não foram testados pelo jogador; falta também a regressão
@@ -147,6 +148,11 @@ valores fora do domínio esperado, respeitando o comportamento da referência.
 estado e ciclos equivalentes nos casos cobertos e validação comum aprovada.
 
 ## Fase 3 — Alavancas e lava
+
+Implementação: [inventário, regras e testes](LUA-PHASE-3.md).
+Distribuição: [guia dos pacotes da fase 3](LUA-PHASE-3-PLATFORM-TESTS.md).
+A integração usa `ORACLES_LUA_LEVERS_LAVA`, OFF por padrão, e mantém as
+pendências físicas anteriores registradas. O avanço foi solicitado pelo jogador.
 
 **Objetivo:** migrar as regras do mecanismo em
 `src/game/ages/interactions/leverLavaFiller.c` e, em lotes, os mecanismos

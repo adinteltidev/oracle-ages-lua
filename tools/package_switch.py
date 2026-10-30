@@ -8,13 +8,15 @@ assert hashlib.sha256(nro).hexdigest()==audit['nro_sha256']
 assert not audit['rom_header_embedded'] and not audit['interpreter_object']
 files={'switch/oracle-ages-native/oracles-switch.nro':nro,'LEIA-ME.txt':(root/'LEIA-ME-SWITCH.txt').read_bytes(),'SWITCH.md':(root/'SWITCH.md').read_bytes(),'LICENSE':(root/'LICENSE').read_bytes(),'build-audit.json':a.audit.read_bytes(),'sdk-lock.json':(root/'platform/switch/sdk-lock.json').read_bytes()}
 profile='oracle-ages-native'
-if b'sdmc:/switch/oracle-ages-lua-phase2/' in nro:profile='oracle-ages-lua-phase2'
+if b'sdmc:/switch/oracle-ages-lua-phase3/' in nro:profile='oracle-ages-lua-phase3'
+elif b'sdmc:/switch/oracle-ages-lua-phase2/' in nro:profile='oracle-ages-lua-phase2'
 elif b'sdmc:/switch/oracle-ages-lua-phase1/' in nro:profile='oracle-ages-lua-phase1'
 elif b'sdmc:/switch/oracle-ages-lua/' in nro:profile='oracle-ages-lua'
 if profile!='oracle-ages-native':
- nro_name=profile.replace('oracle-ages-','oracles-')+'.nro' if profile in ('oracle-ages-lua-phase1','oracle-ages-lua-phase2') else 'oracles-switch.nro'
+ nro_name=profile.replace('oracle-ages-','oracles-')+'.nro' if profile in ('oracle-ages-lua-phase1','oracle-ages-lua-phase2','oracle-ages-lua-phase3') else 'oracles-switch.nro'
  files['switch/'+profile+'/'+nro_name]=files.pop('switch/oracle-ages-native/oracles-switch.nro')
- if profile=='oracle-ages-lua-phase2':files['LEIA-ME.txt']=(root/'LUA-PHASE-2-PLATFORM-TESTS.md').read_bytes()
+ if profile=='oracle-ages-lua-phase3':files['LEIA-ME.txt']=(root/'LUA-PHASE-3-PLATFORM-TESTS.md').read_bytes()
+ elif profile=='oracle-ages-lua-phase2':files['LEIA-ME.txt']=(root/'LUA-PHASE-2-PLATFORM-TESTS.md').read_bytes()
  elif profile=='oracle-ages-lua-phase1':files['LEIA-ME.txt']=(root/'LUA-PHASE-1-PLATFORM-TESTS.md').read_bytes()
  else:files['LEIA-ME.txt']=b'Piloto C + Lua. Copie switch para a raiz do SD. ROM: sdmc:/switch/oracle-ages-lua/ages.gbc. Controles e detalhes em SWITCH.md.\n'
  files['Licenses/Lua-MIT-header.txt']=(root/'third_party/lua/lua.h').read_bytes()
