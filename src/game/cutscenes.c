@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/global_events.h"
 
 #undef CYC
 #undef CYCT
@@ -12,7 +13,7 @@ void func_5d5d_hook(GB *gb);
 void cutscene06_hook(GB *gb) {
   BASE(cutscene06);
   uint16_t sp0_ = gb->sp; (void)sp0_;
-  CALL_C(b_+0, refreshLoadedTreeGfx_hook, SYM(refreshLoadedTreeGfx), b_+3);
+  NPC_CALL_C(b_+0, refreshLoadedTreeGfx_hook, SYM(refreshLoadedTreeGfx), b_+3);
   CYC(b_+3, b_+5); C = 0x00;
   CYC(b_+5, b_+8); SET_HL(RV((SYM(checkLinkCanStandOnTile) + 29), GV(0x630d, (SYM(checkLinkCanStandOnTile) + 29))));
   CYC(b_+8, b_+10); E = 0x03;
@@ -29,7 +30,7 @@ void cutscene07_hook(GB *gb) {
 void func_5d5d_hook(GB *gb) {
   BASE(func_5d5d);
   CYC(b_+0, b_+3); A = mem_rd(gb, wWarpTransition2);
-  CYC(b_+3, b_+4); alu_or(gb, A);
+  CYC(b_+3, b_+4); NPC_OR(A);
   if (!(F & FZ)) {
     CYCT(b_+4, b_+7);
     TAIL(applyWarpTransition2);
@@ -51,7 +52,7 @@ void cutscene08_hook(GB *gb) {
 void cutscene0c_hook(GB *gb) {
   BASE(cutscene0c);
   uint16_t sp0_ = gb->sp; (void)sp0_;
-  CALL_C(b_+0, refreshLoadedTreeGfx_hook, SYM(refreshLoadedTreeGfx), b_+3);
+  NPC_CALL_C(b_+0, refreshLoadedTreeGfx_hook, SYM(refreshLoadedTreeGfx), b_+3);
   CYC(b_+3, b_+5); C = 0x03;
   CYC(b_+5, b_+7);
   TAIL(func_5d5d);
@@ -60,10 +61,10 @@ void cutscene0c_hook(GB *gb) {
 void cutscene09_hook(GB *gb) {
   BASE(cutscene09);
   uint16_t sp0_ = gb->sp; (void)sp0_;
-  CALL_C(b_+O(0), refreshLoadedTreeGfx_hook, SYM(refreshLoadedTreeGfx), b_+OE(3));
+  NPC_CALL_C(b_+O(0), refreshLoadedTreeGfx_hook, SYM(refreshLoadedTreeGfx), b_+OE(3));
   if (!game_seasons) {
     CYC(b_+3, b_+6); A = W8(wCutsceneTrigger);
-    CYC(b_+6, b_+7); alu_or(gb, A);
+    CYC(b_+6, b_+7); NPC_OR(A);
     if (!(F & FZ)) {
       CYCT(b_+7, b_+10);
       TAIL(setCutsceneIndexIfCutsceneTriggerSet);
@@ -77,9 +78,9 @@ void cutscene09_hook(GB *gb) {
 void cutscene_endgameTail_hook(GB *gb) {
   BASE(cutscene09);
   uint16_t sp0_ = gb->sp; (void)sp0_;
-  CALL_C(b_+O(12), endgameCutsceneHandler_hook, SYM(endgameCutsceneHandler), b_+OE(15));
+  NPC_CALL_C(b_+O(12), endgameCutsceneHandler_hook, SYM(endgameCutsceneHandler), b_+OE(15));
   CYC(b_+O(15), b_+OE(18)); A = W8(wWarpTransition2);
-  CYC(b_+O(18), b_+OE(19)); alu_or(gb, A);
+  CYC(b_+O(18), b_+OE(19)); NPC_OR(A);
   if (F & FZ) {
     CYCT(b_+O(19), b_+OE(20));
     ret_effect(gb);
@@ -93,7 +94,7 @@ void cutscene_endgameTail_hook(GB *gb) {
 void cutscene0f_hook(GB *gb) {
   BASE(cutscene0f);
   uint16_t sp0_ = gb->sp; (void)sp0_;
-  CALL_C(b_+0, refreshLoadedTreeGfx_hook, SYM(refreshLoadedTreeGfx), b_+3);
+  NPC_CALL_C(b_+0, refreshLoadedTreeGfx_hook, SYM(refreshLoadedTreeGfx), b_+3);
   CYC(b_+3, b_+5); E = 0x02;
   CYC(b_+5, b_+8);
   TAIL(endgameCutsceneHandler);
@@ -109,7 +110,7 @@ void cutscene0a_hook(GB *gb) {
 void cutscene20_hook(GB *gb) {
   BASE(cutscene20);
   uint16_t sp0_ = gb->sp; (void)sp0_;
-  CALL_C(b_+0, refreshLoadedTreeGfx_hook, SYM(refreshLoadedTreeGfx), b_+3);
+  NPC_CALL_C(b_+0, refreshLoadedTreeGfx_hook, SYM(refreshLoadedTreeGfx), b_+3);
   CYC(b_+3, b_+5); E = 0x03;
   CYC(b_+5, b_+7);
   cutscene_endgameTail_hook(gb);
@@ -118,7 +119,7 @@ void cutscene20_hook(GB *gb) {
 void cutscene0d_hook(GB *gb) {
   BASE(cutscene0d);
   uint16_t sp0_ = gb->sp; (void)sp0_;
-  CALL_C(b_+0, refreshLoadedTreeGfx_hook, SYM(refreshLoadedTreeGfx), b_+3);
+  NPC_CALL_C(b_+0, refreshLoadedTreeGfx_hook, SYM(refreshLoadedTreeGfx), b_+3);
   CYC(b_+3, b_+5); C = 0x06;
   CYC(b_+5, b_+8); SET_HL(RV((SYM(checkLinkCanStandOnTile) + 29), GV(0x630d, (SYM(checkLinkCanStandOnTile) + 29))));
   CYC(b_+8, b_+10); E = 0x03;
@@ -129,9 +130,9 @@ void cutscene0d_hook(GB *gb) {
 void cutscene0e_hook(GB *gb) {
   BASE(cutscene0e);
   uint16_t sp0_ = gb->sp; (void)sp0_;
-  CALL_C(b_+0, refreshLoadedTreeGfx_hook, SYM(refreshLoadedTreeGfx), b_+3);
+  NPC_CALL_C(b_+0, refreshLoadedTreeGfx_hook, SYM(refreshLoadedTreeGfx), b_+3);
   CYC(b_+3, b_+6); A = W8(wWarpTransition2);
-  CYC(b_+6, b_+7); alu_or(gb, A);
+  CYC(b_+6, b_+7); NPC_OR(A);
   if (!(F & FZ)) {
     CYCT(b_+7, b_+9);
     TAIL(applyWarpTransition2);
@@ -147,7 +148,7 @@ void cutscene0e_hook(GB *gb) {
 void cutscene21_hook(GB *gb) {
   BASE(cutscene21);
   CYC(b_+0, b_+3); A = W8(wCutsceneTrigger);
-  CYC(b_+3, b_+4); alu_or(gb, A);
+  CYC(b_+3, b_+4); NPC_OR(A);
   if (!(F & FZ)) {
     CYCT(b_+4, b_+7);
     TAIL(setCutsceneIndexIfCutsceneTriggerSet);
@@ -168,7 +169,7 @@ void cutscene10_hook(GB *gb) {
 void cutscene11_hook(GB *gb) {
   BASE(cutscene11);
   uint16_t sp0_ = gb->sp; (void)sp0_;
-  CALL_C(b_+0, func_3ed0_hook, GV(SYM(func_3ed0), 0x335a), b_+3);
+  NPC_CALL_C(b_+0, func_3ed0_hook, GV(SYM(func_3ed0), 0x335a), b_+3);
   CYC(b_+3, b_+6);
   TAIL(func_5d41);
 }
@@ -177,13 +178,13 @@ void cutscene12_hook(GB *gb) {
   BASE(cutscene12);
   uint16_t sp0_ = gb->sp; (void)sp0_;
   CYC(b_+0, b_+3); A = mem_rd(gb, wCutsceneTrigger);
-  CYC(b_+3, b_+4); alu_or(gb, A);
+  CYC(b_+3, b_+4); NPC_OR(A);
   if (!(F & FZ)) {
     CYCT(b_+4, b_+7);
     TAIL(setCutsceneIndexIfCutsceneTriggerSet);
   }
   CYC(b_+4, b_+7);
-  CALL_C(b_+7, func_3ee4_hook, SYM(func_3ee4), b_+10);
+  NPC_CALL_C(b_+7, func_3ee4_hook, SYM(func_3ee4), b_+10);
   CYC(b_+10, b_+13);
   TAIL(func_5d41);
 }

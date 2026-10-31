@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/npcs_events.h"
 
 #undef CYC
 #undef CYCT
@@ -38,17 +39,17 @@ void interactionCodee5__runState_hook(GB *gb) {
     else { hook_continue(gb, HL, sp0_); return; }
   } while (0);
 state0:
-  CALL_C(b_+30, interactionInitGraphics_hook, SYM(interactionInitGraphics), b_+33);
+  NPC_CALL_C(b_+30, interactionInitGraphics_hook, SYM(interactionInitGraphics), b_+33);
   CYC(b_+33, b_+35); A = 0x30;
-  CALL_C(b_+35, interactionSetHighTextIndex_hook, SYM(interactionSetHighTextIndex), b_+38);
-  CALL_C(b_+38, interactionSetAlwaysUpdateBit_hook, SYM(interactionSetAlwaysUpdateBit), b_+41);
-  CALL_C(b_+41, interactionIncState_hook, SYM(interactionIncState), b_+44);
+  NPC_CALL_C(b_+35, interactionSetHighTextIndex_hook, SYM(interactionSetHighTextIndex), b_+38);
+  NPC_CALL_C(b_+38, interactionSetAlwaysUpdateBit_hook, SYM(interactionSetAlwaysUpdateBit), b_+41);
+  NPC_CALL_C(b_+41, interactionIncState_hook, SYM(interactionIncState), b_+44);
   CYC(b_+44, b_+46); A = 0x06;
-  CALL_C(b_+46, objectSetCollideRadius_hook, SYM(objectSetCollideRadius), b_+49);
+  NPC_CALL_C(b_+46, objectSetCollideRadius_hook, SYM(objectSetCollideRadius), b_+49);
   CYC(b_+49, b_+51); E = INTERACTION_BASE + OBJ_SUBID;
   CYC(b_+51, b_+52); A = mem_rd(gb, DE);
   CYC(b_+52, b_+55); SET_HL(GV(RV((SYM(twinrova_state8) + 44), 0x4b47), RV(0x4b48, 0x4b4b)));
-  CYC(b_+55, b_+56); alu_or(gb, A);
+  CYC(b_+55, b_+56); NPC_OR(A);
   if (F & FZ) {
     CYCT(b_+56, b_+58);
     goto setScript;
@@ -57,10 +58,10 @@ state0:
   CYC(b_+58, b_+60); E = INTERACTION_BASE + OBJ_OAM_FLAGS;
   CYC(b_+60, b_+61); A = mem_rd(gb, DE);
   CYC(b_+61, b_+62); A = alu_inc8(gb, A);
-  CYC(b_+62, b_+63); mem_wr(gb, DE, A);
+  CYC(b_+62, b_+63); EVENT_WRITE(DE, A);
   CYC(b_+63, b_+66); SET_HL(GV(RV((SYM(twinrova_state8) + 29), 0x4b38), RV(0x4b39, 0x4b3c)));
 setScript:
-  CALL_C(b_+66, interactionSetScript_hook, SYM(interactionSetScript), b_+69);
+  NPC_CALL_C(b_+66, interactionSetScript_hook, SYM(interactionSetScript), b_+69);
   CYC(b_+69, b_+71); E = INTERACTION_BASE + OBJ_PRESSED_A_BUTTON;
   CYC(b_+71, b_+74);
   TAIL(objectAddToAButtonSensitiveObjectList);
@@ -73,7 +74,7 @@ void interactionCodee5_hook(GB *gb) {
   BASE(interactionCodee5);
   uint16_t sp0_ = gb->sp; (void)sp0_;
   CYC(b_+0, b_+3); A = W8(wOamEnd);
-  CYC(b_+3, b_+4); alu_or(gb, A);
+  CYC(b_+3, b_+4); NPC_OR(A);
   if (!(F & FZ)) {
     CYCT(b_+4, b_+6);
     goto doneTextFlagSetup;

@@ -3,6 +3,7 @@
 #include "game/gen.h"
 #include "script/doors.h"
 #include "script/items_shops.h"
+#include "script/npcs_events.h"
 #include "game/offscreen.h"
 void s_seasonsFunc_2678_hook(GB *gb);
 
@@ -786,7 +787,7 @@ static void obj_dec(GB *gb, uint16_t addr, uint8_t off) {
 
 static void obj_inc(GB *gb, uint16_t addr, uint8_t off) {
   CYC(addr, addr + 3); SET_HL((uint16_t)((D << 8) | off));
-  CYC(addr + 3, addr + 4); mem_wr(gb, HL, alu_inc8(gb, mem_rd(gb, HL)));
+  CYC(addr + 3, addr + 4); EVENT_INC_WRITE(HL);
   CYC(addr + 4, addr + 5);
   ret_effect(gb);
 }
@@ -908,6 +909,7 @@ void checkIsLinkedGame_hook(GB *gb) {
   BASE(checkIsLinkedGame);
   CYC(b_+0, b_+3); A = W8(wIsLinkedGame);
   alu_or(gb, A);
+  EVENT_LINKED();
   CYC(b_+3, b_+5);
   ret_effect(gb);
 }
@@ -4255,7 +4257,8 @@ void interactionRunScript_hook(GB *gb) {
   alu_or(gb, A);
   if (!(F & FZ)) { CYCT(b_+3, b_+5); ret_effect(gb); return; }
   CYC(b_+3, b_+8); A = W8(wTextIsActive);
-  alu_add(gb, A);
+  uint8_t active_text_=A;alu_add(gb, A);
+  EVENT_SCRIPT_READY(active_text_);
   if (F & FC) CYCT(b_+8, b_+11);
   else if (!(F & FZ)) { CYC(b_+8, b_+11); CYCT(b_+11, b_+12); ret_effect(gb); return; }
   else CYC(b_+8, b_+12);
@@ -4291,6 +4294,7 @@ void interactionRunScript_hook(GB *gb) {
   CALL_ROM(b_+39, ROM__interactionActuallyRunScript);
   DOOR_FAILED_RETURN();
   TRADE_FAILED_RETURN();
+  NPC_FAILED_RETURN();
   if (F & FC) {
     CYCT(b_+42, b_+44);
     CALL_ROM(b_+49, ROM__interactionSaveScriptAddress);
@@ -8747,6 +8751,7 @@ void stopTextThread_hook(GB *gb) {
 
 static void show_text_tail(GB *gb) {
   BASE(_label_00_204);
+  EVENT_DIALOGUE();
   CYC(b_+0, b_+3); A = W8(wTextboxFlags);
   alu_or(gb, L);
   CYC(b_+3, b_+7); W8(wTextboxFlags) = A;
@@ -8778,10 +8783,12 @@ void _label_00_203_hook(GB *gb) {
   BASE(_label_00_203);
   CYC(b_+0, b_+2); E = 0x00;
   show_text_tail(gb);
+  NPC_FAILED_RETURN();
 }
 
 void _label_00_204_hook(GB *gb) {
   show_text_tail(gb);
+  NPC_FAILED_RETURN();
 }
 
 void showText_hook(GB *gb) {
@@ -11922,6 +11929,7 @@ void _interactionActuallyRunScript_hook(GB *gb) {
   for (;;) {
     CYC(b_+10, b_+11); A = mem_rd(gb, HL);
     alu_or(gb, A);
+    EVENT_ENDED();
     if (F & FZ) {
       CYCT(b_+11, b_+14);
       bank_pop(gb, b_+27);
@@ -11934,6 +11942,7 @@ void _interactionActuallyRunScript_hook(GB *gb) {
     CALL_ROM(b_+14, ROM_b0c_runScriptCommand);
     DOOR_FAILED_RETURN();
   TRADE_FAILED_RETURN();
+    NPC_FAILED_RETURN();
     if (F & FC) { CYCT(b_+17, b_+19); continue; }
     CYC(b_+17, b_+19);
     break;

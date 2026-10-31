@@ -45,6 +45,7 @@
 #include "script/levers_lava.h"
 #include "script/doors.h"
 #include "script/items_shops.h"
+#include "script/npcs_events.h"
 #endif
 
 #ifdef __ANDROID__
@@ -2242,7 +2243,9 @@ int main(int argc, char **argv) {
   if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMEPAD)) { fprintf(stderr, "%s\n", SDL_GetError()); return 2; }
   SDL_AddEventWatch(on_app_event, NULL);
   char cache[1024];
-#if defined(ORACLES_LUA_ITEMS_SHOPS)
+#if defined(ORACLES_LUA_NPCS_EVENTS)
+  const char *cache_profile = "oracles-lua-phase6";
+#elif defined(ORACLES_LUA_ITEMS_SHOPS)
   const char *cache_profile = "oracles-lua-phase5";
 #elif defined(ORACLES_LUA_DOORS)
   const char *cache_profile = "oracles-lua-phase4";
@@ -2258,7 +2261,9 @@ int main(int argc, char **argv) {
   if (cache_arg) snprintf(cache, sizeof cache, "%s%s", cache_arg, cache_arg[strlen(cache_arg) - 1] == '/' ? "" : "/");
   else { char *p = SDL_GetPrefPath("oracles-decomp", cache_profile); if (!p) { fprintf(stderr, "%s\n", SDL_GetError()); return 2; } data_folder(cache, sizeof cache, p); SDL_free(p); }
   SDL_CreateDirectory(cache);
-#ifdef ORACLES_LUA_ITEMS_SHOPS
+#ifdef ORACLES_LUA_NPCS_EVENTS
+  fprintf(stderr, "Experimental C + Lua phase 6; cache=%s\n", cache);
+#elif defined(ORACLES_LUA_ITEMS_SHOPS)
   fprintf(stderr, "Experimental C + Lua phase 5; cache=%s\n", cache);
 #elif defined(ORACLES_LUA_DOORS)
   fprintf(stderr, "Experimental C + Lua phase 4; cache=%s\n", cache);
@@ -2361,6 +2366,10 @@ int main(int argc, char **argv) {
     fprintf(stderr,"Lua rule %s=%llu\n",gameplay_lava_rule_name(r),(unsigned long long)gameplay_lava_calls(r));
   for(int r=0;r<GAMEPLAY_DOOR_RULE_COUNT;++r)
     fprintf(stderr,"Lua rule %s=%llu\n",gameplay_door_rule_name(r),(unsigned long long)gameplay_door_calls(r));
+  for(int r=0;r<GAMEPLAY_NPCS_COUNT;++r)
+    fprintf(stderr,"Lua rule %s=%llu\n",gameplay_npc_rule_name(r),(unsigned long long)gameplay_npc_calls(r));
+  for(int r=0;r<GAMEPLAY_EVENTS_COUNT;++r)
+    fprintf(stderr,"Lua rule %s=%llu\n",gameplay_event_rule_name(r),(unsigned long long)gameplay_event_calls(r));
   for(int r=0;r<GAMEPLAY_ITEMS_COUNT;++r)
     fprintf(stderr,"Lua rule %s=%llu\n",gameplay_item_rule_name(r),(unsigned long long)gameplay_item_calls(r));
   for(int r=0;r<GAMEPLAY_SHOPS_COUNT;++r)

@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/npcs_events.h"
 
 #undef CYC
 #undef CYCT
@@ -26,9 +27,9 @@ void interactionCodeda__state0_hook(GB *gb) {
   BASE(interactionCodeda);
   uint16_t sp0_ = gb->sp;
   CYC(b_+8, b_+10); A = 1;
-  CYC(b_+10, b_+11); mem_wr(gb, DE, A);
-  CALL_C(b_+11, getThisRoomFlags_hook, SYM(getThisRoomFlags), b_+14);
-  CYC(b_+14, b_+16); alu_and(gb, 0x80);
+  CYC(b_+10, b_+11); EVENT_WRITE(DE, A);
+  NPC_CALL_C(b_+11, getThisRoomFlags_hook, SYM(getThisRoomFlags), b_+14);
+  CYC(b_+14, b_+16); NPC_AND(0x80);
   if (!(F & FZ)) { CYCT(b_+16, b_+19); interactionDelete_hook(gb); return; }
   CYC(b_+16, b_+19);
   CYC(b_+19, b_+21); A = 0xac;
@@ -38,17 +39,17 @@ void interactionCodeda__state0_hook(GB *gb) {
 void interactionCodeda__state1_hook(GB *gb) {
   BASE(interactionCodeda);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+24, checkLinkVulnerable_hook, SYM(checkLinkVulnerable), b_+27);
+  NPC_CALL_C(b_+24, checkLinkVulnerable_hook, SYM(checkLinkVulnerable), b_+27);
   if (!(F & FC)) { CYCT(b_+27, b_+28); ret_effect(gb); return; }
   CYC(b_+27, b_+28);
   CYC(b_+28, b_+31); A = mem_rd(gb, wScreenVariables);
-  CYC(b_+31, b_+33); alu_and(gb, 0x0e);
+  CYC(b_+31, b_+33); NPC_AND(0x0e);
   if (!(F & FZ)) { CYCT(b_+33, b_+34); ret_effect(gb); return; }
   CYC(b_+33, b_+34);
   CYC(b_+34, b_+37); SET_HL(w1Link_yh);
   CYC(b_+37, b_+39); E = 0x4b;
   CYC(b_+39, b_+40); A = mem_rd(gb, DE);
-  CYC(b_+40, b_+41); alu_cp(gb, mem_rd(gb, HL));
+  CYC(b_+40, b_+41); NPC_CP(mem_rd(gb, HL));
   if (F & FC) { CYCT(b_+41, b_+42); ret_effect(gb); return; }
   CYC(b_+41, b_+42);
   CYC(b_+42, b_+44); L = 0x0d;
@@ -61,29 +62,29 @@ void interactionCodeda__state1_hook(GB *gb) {
     CYC(b_+50, b_+51); alu_cpl(gb);
     CYC(b_+51, b_+52); A = alu_inc8(gb, A);
   }
-  CYC(b_+52, b_+54); alu_cp(gb, 9);
+  CYC(b_+52, b_+54); NPC_CP(9);
   if (!(F & FC)) { CYCT(b_+54, b_+55); ret_effect(gb); return; }
   CYC(b_+54, b_+55);
   CYC(b_+55, b_+57); A = 0x17;
-  CYC(b_+57, b_+60); mem_wr(gb, wCutsceneTrigger, A);
-  CYC(b_+60, b_+63); mem_wr(gb, wMenuDisabled, A);
+  CYC(b_+57, b_+60); EVENT_WRITE(wCutsceneTrigger, A);
+  CYC(b_+60, b_+63); EVENT_WRITE(wMenuDisabled, A);
   CYC(b_+63, b_+66); SET_HL(w4StatusBarTileMap);
   for (;;) {
     CYC(b_+66, b_+68); L = 0x40;
     CYC(b_+68, b_+69); A = mem_rd(gb, HL); SET_HL(HL + 1);
-    CYC(b_+69, b_+70); alu_or(gb, A);
+    CYC(b_+69, b_+70); NPC_OR(A);
     if (F & FZ) { CYCT(b_+70, b_+72); goto next_interaction; }
     CYC(b_+70, b_+72);
     CYC(b_+72, b_+73); A = mem_rd(gb, HL); SET_HL(HL + 1);
-    CYC(b_+73, b_+75); alu_cp(gb, GV(0xa9, 0xb0));
+    CYC(b_+73, b_+75); NPC_CP(GV(0xa9, 0xb0));
     if (!(F & FZ)) { CYCT(b_+75, b_+77); goto next_interaction; }
     CYC(b_+75, b_+77);
     CYC(b_+77, b_+79); L = 0x5a;
-    CYC(b_+79, b_+81); mem_wr(gb, HL, (uint8_t)(mem_rd(gb, HL) & ~(1 << 7)));
+    CYC(b_+79, b_+81); EVENT_WRITE(HL, (uint8_t)(mem_rd(gb, HL) & ~(1 << 7)));
 next_interaction:
     CYC(b_+81, b_+82); H = alu_inc8(gb, H);
     CYC(b_+82, b_+83); A = H;
-    CYC(b_+83, b_+85); alu_cp(gb, 0xe0);
+    CYC(b_+83, b_+85); NPC_CP(0xe0);
     if (F & FC) { CYCT(b_+85, b_+87); continue; }
     CYC(b_+85, b_+87);
     CYC(b_+87, b_+90); TAIL(interactionDelete);

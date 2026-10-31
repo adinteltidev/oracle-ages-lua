@@ -5,7 +5,9 @@ O jogador validou as versões cumulativas da fase 4 no Windows e Switch e
 confirmou funcionamento e estabilidade. A pendência de validação manual dessas
 plataformas está atendida para a fase 4. A fase 5 possui implementação e
 validação local; a confirmação dos novos pacotes Windows/Switch está pendente.
-Fases 6 e 7 ainda não iniciadas.
+Fase 6 possui integração experimental em validação local; a aceitação completa
+depende das verificações registradas em [LUA-PHASE-6.md](LUA-PHASE-6.md).
+Fase 7 ainda não iniciada.
 
 [Fase 5: itens, lojas e validação](LUA-PHASE-5.md).
 [Fase 4: inventário, implementação e evidências](LUA-PHASE-4.md).

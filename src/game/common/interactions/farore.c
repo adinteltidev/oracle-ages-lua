@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/npcs_events.h"
 
 #undef CYC
 #undef CYCT
@@ -41,24 +42,24 @@ void interactionCode10_hook(GB *gb) {
 
 state0:
   CYC(b_+8, b_+10); A = 0x01;
-  CYC(b_+10, b_+11); mem_wr(gb, DE, A);
-  CALL_C(b_+11, interactionInitGraphics_hook, SYM(interactionInitGraphics), b_+14);
+  CYC(b_+10, b_+11); EVENT_WRITE(DE, A);
+  NPC_CALL_C(b_+11, interactionInitGraphics_hook, SYM(interactionInitGraphics), b_+14);
   CYC(b_+14, b_+16); A = 0x55;
-  CALL_C(b_+16, interactionSetHighTextIndex_hook, SYM(interactionSetHighTextIndex), b_+19);
+  NPC_CALL_C(b_+16, interactionSetHighTextIndex_hook, SYM(interactionSetHighTextIndex), b_+19);
   CYC(b_+19, b_+22); SET_HL(faroreScript_bank0c);
-  CALL_C(b_+22, interactionSetScript_hook, SYM(interactionSetScript), b_+25);
+  NPC_CALL_C(b_+22, interactionSetScript_hook, SYM(interactionSetScript), b_+25);
   CYC(b_+25, b_+27); A = 0x2c;
-  CALL_C(b_+27, unsetGlobalFlag_hook, SYM(unsetGlobalFlag), b_+30);
+  NPC_CALL_C(b_+27, unsetGlobalFlag_hook, SYM(unsetGlobalFlag), b_+30);
   CYC(b_+30, b_+32); A = 0x08;
-  CYC(b_+32, b_+35); mem_wr(gb, wTextboxFlags, A);
+  CYC(b_+32, b_+35); EVENT_WRITE(wTextboxFlags, A);
   CYC(b_+35, b_+37); A = 0x02;
-  CYC(b_+37, b_+40); mem_wr(gb, wTextboxPosition, A);
+  CYC(b_+37, b_+40); EVENT_WRITE(wTextboxPosition, A);
   CYC(b_+40, b_+43); objectSetVisible82_hook(gb);
   return;
 
 state1:
   CYC(b_+43, b_+46); SET_BC(0x1406);
-  CALL_C(b_+46, objectSetCollideRadii_hook, SYM(objectSetCollideRadii), b_+49);
-  CALL_C(b_+49, interactionRunScript_hook, SYM(interactionRunScript), b_+52);
+  NPC_CALL_C(b_+46, objectSetCollideRadii_hook, SYM(objectSetCollideRadii), b_+49);
+  NPC_CALL_C(b_+49, interactionRunScript_hook, SYM(interactionRunScript), b_+52);
   CYC(b_+52, b_+55); TAIL(interactionAnimate);
 }

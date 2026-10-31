@@ -1,6 +1,7 @@
 #include "game/game.h"
 #include "game/gen.h"
 #include "script/items_shops.h"
+#include "script/npcs_events.h"
 #include "script/block_rules.h"
 
 #undef CYC
@@ -488,33 +489,33 @@ void miscPuzzles_subid05_hook(GB *gb) {
 void miscPuzzles_subid07_hook(GB *gb) {
   BASE(miscPuzzles_subid07);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, checkInteractionState_hook, SYM(checkInteractionState), b_+3);
+  NPC_CALL_ZERO(b_+0, checkInteractionState_hook, SYM(checkInteractionState), b_+3);
   if (F & FZ) { CYCT(b_+3, b_+5); goto state0; } // jr z
   CYC(b_+3, b_+5);
 
 // miscPuzzles_subid07@state1
-  CALL_C(b_+5, checkLinkVulnerable_hook, SYM(checkLinkVulnerable), b_+8);
+  NPC_CALL_C(b_+5, checkLinkVulnerable_hook, SYM(checkLinkVulnerable), b_+8);
   if (!(F & FC)) { RET_TAKEN(b_+8); return; } // ret nc
   CYC(b_+8, b_+9);
   CYC(b_+9, b_+12); push_effect(gb, b_+12); goto checkLitTorches;
 afterCheckLitTorches_fromState1:
   CYC(b_+12, b_+14); E = INTERACTION_BASE + OBJ_COUNTER1;
   CYC(b_+14, b_+15); A = mem_rd(gb, DE);
-  CYC(b_+15, b_+16); alu_cp(gb, B);
+  CYC(b_+15, b_+16); NPC_CP(B);
   if (F & FZ) { RET_TAKEN(b_+16); return; } // ret z
   CYC(b_+16, b_+17);
   CYC(b_+17, b_+18); A = B;
-  CYC(b_+18, b_+19); mem_wr(gb, DE, A);
+  CYC(b_+18, b_+19); EVENT_WRITE(DE, A);
   CYC(b_+19, b_+21); E = INTERACTION_BASE + OBJ_SUBSTATE;
   CYC(b_+21, b_+22); A = mem_rd(gb, DE);
   CYC(b_+22, b_+25); SET_HL(b_+99); // @torchLightOrder (pure ROM data table)
   CYC(b_+25, b_+26); miscPuzzles_addAToHl_from_rst(gb, b_+26);
   CYC(b_+26, b_+27); A = mem_rd(gb, HL);
-  CYC(b_+27, b_+28); alu_cp(gb, B);
+  CYC(b_+27, b_+28); NPC_CP(B);
   if (!(F & FZ)) { CYCT(b_+28, b_+30); goto litWrongTorch; } // jr nz
   CYC(b_+28, b_+30);
   CYC(b_+30, b_+31); A = mem_rd(gb, DE);
-  CYC(b_+31, b_+33); alu_cp(gb, 0x03);
+  CYC(b_+31, b_+33); NPC_CP(0x03);
   if (F & FC) { CYCT(b_+33, b_+36); interactionIncSubstate_hook(gb); return; } // jp c
   CYC(b_+33, b_+36);
 
@@ -524,43 +525,43 @@ afterCheckLitTorches_fromState1:
   CYC(b_+41, b_+44); W8(wMenuDisabled) = A;
   CYC(b_+44, b_+46); A = 0x0b; // CUTSCENE_WALL_RETRACTION
   CYC(b_+46, b_+49); W8(wCutsceneTrigger) = A;
-  CALL_C(b_+49, getThisRoomFlags_hook, SYM(getThisRoomFlags), b_+52);
+  NPC_CALL_C(b_+49, getThisRoomFlags_hook, SYM(getThisRoomFlags), b_+52);
   CYC(b_+52, b_+54); L = 0x25; // <ROOM_AGES_525
-  CYC(b_+54, b_+56); mem_wr(gb, HL, mem_rd(gb, HL) | 0x40); // set 6,(hl)
+  CYC(b_+54, b_+56); EVENT_WRITE(HL, mem_rd(gb, HL) | 0x40); // set 6,(hl)
   CYC(b_+56, b_+59); TAIL(interactionDelete); // jp
 
 litWrongTorch:
   CYC(b_+59, b_+60); alu_xor(gb, A);
-  CYC(b_+60, b_+61); mem_wr(gb, DE, A);
+  CYC(b_+60, b_+61); EVENT_WRITE(DE, A);
   CYC(b_+61, b_+63); E = INTERACTION_BASE + OBJ_COUNTER1;
-  CYC(b_+63, b_+64); mem_wr(gb, DE, A);
+  CYC(b_+63, b_+64); EVENT_WRITE(DE, A);
   CYC(b_+64, b_+66); A = 0x5a; // SND_ERROR
-  CALL_C(b_+66, playSound_b00_hook, SYM(playSound_b00), b_+69);
+  NPC_CALL_C(b_+66, playSound_b00_hook, SYM(playSound_b00), b_+69);
   CYC(b_+69, b_+71); A = 0x08; // TILEINDEX_UNLIT_TORCH
   CYC(b_+71, b_+73); C = 0x31;
-  CALL_C(b_+73, setTile_hook, SYM(setTile), b_+76);
+  NPC_CALL_C(b_+73, setTile_hook, SYM(setTile), b_+76);
   CYC(b_+76, b_+78); A = 0x08;
   CYC(b_+78, b_+80); C = 0x33;
-  CALL_C(b_+80, setTile_hook, SYM(setTile), b_+83);
+  NPC_CALL_C(b_+80, setTile_hook, SYM(setTile), b_+83);
   CYC(b_+83, b_+85); A = 0x08;
   CYC(b_+85, b_+87); C = 0x35;
-  CALL_C(b_+87, setTile_hook, SYM(setTile), b_+90);
+  NPC_CALL_C(b_+87, setTile_hook, SYM(setTile), b_+90);
   CYC(b_+90, b_+92); A = 0x08;
   CYC(b_+92, b_+94); C = 0x53;
-  CALL_C(b_+94, setTile_hook, SYM(setTile), b_+97);
+  NPC_CALL_C(b_+94, setTile_hook, SYM(setTile), b_+97);
   CYC(b_+97, b_+99); goto makeTorchesLightable; // jr
 
 state0:
-  CALL_C(b_+103, getThisRoomFlags_hook, SYM(getThisRoomFlags), b_+106);
-  CYC(b_+106, b_+108); alu_and(gb, 0x80); // ROOMFLAG_80
+  NPC_CALL_C(b_+103, getThisRoomFlags_hook, SYM(getThisRoomFlags), b_+106);
+  CYC(b_+106, b_+108); NPC_AND(0x80); // ROOMFLAG_80
   if (!(F & FZ)) { CYCT(b_+108, b_+111); interactionDelete_hook(gb); return; } // jp nz
   CYC(b_+108, b_+111);
-  CALL_C(b_+111, interactionIncState_hook, SYM(interactionIncState), b_+114);
+  NPC_CALL_C(b_+111, interactionIncState_hook, SYM(interactionIncState), b_+114);
   CYC(b_+114, b_+117); push_effect(gb, b_+117); goto checkLitTorches;
 afterCheckLitTorches_fromState0:
   CYC(b_+117, b_+118); A = B;
   CYC(b_+118, b_+120); E = INTERACTION_BASE + OBJ_COUNTER1;
-  CYC(b_+120, b_+121); mem_wr(gb, DE, A);
+  CYC(b_+120, b_+121); EVENT_WRITE(DE, A);
 
 makeTorchesLightable:
   CYC(b_+121, b_+124); push_effect(gb, b_+124); goto makeTorchesUnlightable;
@@ -574,14 +575,14 @@ makeTorchesUnlightable:
 
 makeTorchesUnlightable_loop:
   CYC(b_+133, b_+134); A = mem_rd(gb, HL);
-  CYC(b_+134, b_+136); alu_cp(gb, 0x06); // PART_LIGHTABLE_TORCH
+  CYC(b_+134, b_+136); NPC_CP(0x06); // PART_LIGHTABLE_TORCH
   if (F & FZ) { CYCT(b_+136, b_+139); push_effect(gb, b_+139); goto deletePartObject; } // call z
   CYC(b_+136, b_+139);
 
 afterDeletePartObject:
   CYC(b_+139, b_+140); H = alu_inc8(gb, H);
   CYC(b_+140, b_+141); A = H;
-  CYC(b_+141, b_+143); alu_cp(gb, 0xe0); // LAST_PART_INDEX+1
+  CYC(b_+141, b_+143); NPC_CP(0xe0); // LAST_PART_INDEX+1
   if (F & FC) { CYCT(b_+143, b_+145); goto makeTorchesUnlightable_loop; } // jr c
   CYC(b_+143, b_+145);
   RET(b_+145);
@@ -594,7 +595,7 @@ deletePartObject:
   CYC(b_+146, b_+147); push_effect(gb, HL); // push hl
   CYC(b_+147, b_+148); L = alu_dec8(gb, L);
   CYC(b_+148, b_+150); B = 0x40;
-  CALL_C(b_+150, clearMemory_hook, SYM(clearMemory), b_+153);
+  NPC_CALL_C(b_+150, clearMemory_hook, SYM(clearMemory), b_+153);
   CYC(b_+153, b_+154); SET_HL(pop_effect(gb)); // pop hl
   RET(b_+154);
   if (gb->pc == b_+139 && gb->sp == (uint16_t)(sp0_ - 2)) goto afterDeletePartObject;
@@ -606,28 +607,28 @@ checkLitTorches:
   CYC(b_+155, b_+157); A = 0x09; // TILEINDEX_LIT_TORCH
   CYC(b_+157, b_+159); B = 0x00;
   CYC(b_+159, b_+162); SET_HL(wRoomLayout + 0x31);
-  CYC(b_+162, b_+163); alu_cp(gb, mem_rd(gb, HL));
+  CYC(b_+162, b_+163); NPC_CP(mem_rd(gb, HL));
   if (!(F & FZ)) { CYCT(b_+163, b_+165); goto checkLitTorches_L6f33; } // jr nz
   CYC(b_+163, b_+165);
   CYC(b_+165, b_+167); B |= (1 << 0); // set 0,b
 
 checkLitTorches_L6f33:
   CYC(b_+167, b_+169); L = 0x33;
-  CYC(b_+169, b_+170); alu_cp(gb, mem_rd(gb, HL));
+  CYC(b_+169, b_+170); NPC_CP(mem_rd(gb, HL));
   if (!(F & FZ)) { CYCT(b_+170, b_+172); goto checkLitTorches_L6f3a; } // jr nz
   CYC(b_+170, b_+172);
   CYC(b_+172, b_+174); B |= (1 << 1); // set 1,b
 
 checkLitTorches_L6f3a:
   CYC(b_+174, b_+176); L = 0x53;
-  CYC(b_+176, b_+177); alu_cp(gb, mem_rd(gb, HL));
+  CYC(b_+176, b_+177); NPC_CP(mem_rd(gb, HL));
   if (!(F & FZ)) { CYCT(b_+177, b_+179); goto checkLitTorches_L6f41; } // jr nz
   CYC(b_+177, b_+179);
   CYC(b_+179, b_+181); B |= (1 << 2); // set 2,b
 
 checkLitTorches_L6f41:
   CYC(b_+181, b_+183); L = 0x35;
-  CYC(b_+183, b_+184); alu_cp(gb, mem_rd(gb, HL));
+  CYC(b_+183, b_+184); NPC_CP(mem_rd(gb, HL));
   if (!(F & FZ)) {
     RET_TAKEN(b_+184);
     if (gb->pc == b_+12 && gb->sp == sp0_) goto afterCheckLitTorches_fromState1;
@@ -1021,16 +1022,16 @@ void miscPuzzles_subid10_hook(GB *gb) {
 void miscPuzzles_subid11_hook(GB *gb) {
   BASE(miscPuzzles_subid11);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, checkInteractionState_hook, SYM(checkInteractionState), b_+3);
+  NPC_CALL_ZERO(b_+0, checkInteractionState_hook, SYM(checkInteractionState), b_+3);
   if (!(F & FZ)) { CYCT(b_+3, b_+6); interactionRunScript_hook(gb); return; } // jp nz
   CYC(b_+3, b_+6);
-  CALL_C(b_+6, returnIfScrollMode01Unset_hook, SYM(returnIfScrollMode01Unset), b_+9);
-  CALL_C(b_+9, getThisRoomFlags_hook, SYM(getThisRoomFlags), b_+12);
-  CYC(b_+12, b_+14); alu_and(gb, 0x80); // ROOMFLAG_80
+  NPC_CALL_C(b_+6, returnIfScrollMode01Unset_hook, SYM(returnIfScrollMode01Unset), b_+9);
+  NPC_CALL_C(b_+9, getThisRoomFlags_hook, SYM(getThisRoomFlags), b_+12);
+  CYC(b_+12, b_+14); NPC_AND(0x80); // ROOMFLAG_80
   if (!(F & FZ)) { CYCT(b_+14, b_+17); interactionDelete_hook(gb); return; } // jp nz
   CYC(b_+14, b_+17);
   CYC(b_+17, b_+18); push_effect(gb, DE); // push de
-  CALL_C(b_+18, reloadTileMap_hook, SYM(reloadTileMap), b_+21);
+  NPC_CALL_C(b_+18, reloadTileMap_hook, SYM(reloadTileMap), b_+21);
   CYC(b_+21, b_+22); SET_DE(pop_effect(gb)); // pop de
   CYC(b_+22, b_+25); SET_HL(RV((SYM(twinrova_state1__runOtherHalf) + 15), 0x783f)); // mainScripts.miscPuzzles_crownDungeonOpeningScript
   TAIL(miscPuzzles_setScriptAndIncState); // falls into miscPuzzles_setScriptAndIncState
@@ -1049,11 +1050,11 @@ void miscPuzzles_setScriptAndIncState_hook(GB *gb) {
 void miscPuzzles_subid12_hook(GB *gb) {
   BASE(miscPuzzles_subid12);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, checkInteractionState_hook, SYM(checkInteractionState), b_+3);
+  NPC_CALL_ZERO(b_+0, checkInteractionState_hook, SYM(checkInteractionState), b_+3);
   if (!(F & FZ)) { CYCT(b_+3, b_+6); interactionRunScript_hook(gb); return; } // jp nz
   CYC(b_+3, b_+6);
-  CALL_C(b_+6, getThisRoomFlags_hook, SYM(getThisRoomFlags), b_+9);
-  CYC(b_+9, b_+11); alu_and(gb, 0x80); // ROOMFLAG_80
+  NPC_CALL_C(b_+6, getThisRoomFlags_hook, SYM(getThisRoomFlags), b_+9);
+  CYC(b_+9, b_+11); NPC_AND(0x80); // ROOMFLAG_80
   if (!(F & FZ)) { CYCT(b_+11, b_+14); interactionDelete_hook(gb); return; } // jp nz
   CYC(b_+11, b_+14);
   CYC(b_+14, b_+17); SET_HL(RV((SYM(twinrova_state1__runSubid06) + 2), 0x7859)); // mainScripts.miscPuzzles_mermaidsCaveDungeonOpeningScript
@@ -1064,11 +1065,11 @@ void miscPuzzles_subid12_hook(GB *gb) {
 void miscPuzzles_subid13_hook(GB *gb) {
   BASE(miscPuzzles_subid13);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, checkInteractionState_hook, SYM(checkInteractionState), b_+3);
+  NPC_CALL_ZERO(b_+0, checkInteractionState_hook, SYM(checkInteractionState), b_+3);
   if (!(F & FZ)) { CYCT(b_+3, b_+6); interactionRunScript_hook(gb); return; } // jp nz
   CYC(b_+3, b_+6);
-  CALL_C(b_+6, getThisRoomFlags_hook, SYM(getThisRoomFlags), b_+9);
-  CYC(b_+9, b_+11); alu_and(gb, 0x80); // ROOMFLAG_80
+  NPC_CALL_C(b_+6, getThisRoomFlags_hook, SYM(getThisRoomFlags), b_+9);
+  CYC(b_+9, b_+11); NPC_AND(0x80); // ROOMFLAG_80
   if (!(F & FZ)) { CYCT(b_+11, b_+14); interactionDelete_hook(gb); return; } // jp nz
   CYC(b_+11, b_+14);
   CYC(b_+14, b_+17); SET_HL(RV((SYM(twinrova_loadScript) + 4), 0x7863)); // mainScripts.miscPuzzles_eyeglassLibraryOpeningScript

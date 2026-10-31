@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/npcs_events.h"
 
 #undef CYC
 #undef CYCT
@@ -31,19 +32,19 @@ void oldMan_takeRupees_hook(GB *gb) {
   BASE(oldMan_takeRupees);
   CYC(b_+0, b_+3); SET_HL(wNumRupees);
   CYC(b_+3, b_+4); A = mem_rd(gb, HL); SET_HL(HL + 1);
-  CYC(b_+4, b_+5); alu_or(gb, mem_rd(gb, HL));
+  CYC(b_+4, b_+5); NPC_OR(mem_rd(gb, HL));
   CYC(b_+5, b_+7); E = INTERACTION_BASE + OBJ_VAR3F;
-  CYC(b_+7, b_+8); mem_wr(gb, DE, A);
+  CYC(b_+7, b_+8); EVENT_WRITE(DE, A);
   if (F & FZ) {
     RET_TAKEN(b_+8); return;
   }
   CYC(b_+8, b_+9);
   CYC(b_+9, b_+11); A = 0x01;
-  CYC(b_+11, b_+12); mem_wr(gb, DE, A);
+  CYC(b_+11, b_+12); EVENT_WRITE(DE, A);
   CYC(b_+12, b_+14); E = INTERACTION_BASE + OBJ_SUBID;
   CYC(b_+14, b_+15); A = mem_rd(gb, DE);
   CYC(b_+15, b_+18); SET_HL(SYM(oldMan_rupeeValues));
-  CYC(b_+18, b_+19); oldMan_addAToHl_from_rst(gb, b_+19);
+  CYC(b_+18, b_+19); NPC_LOCAL_CALL(oldMan_addAToHl_from_rst(gb, b_+19));
   CYC(b_+19, b_+20); A = mem_rd(gb, HL);
   CYC(b_+20, b_+23); TAIL(removeRupeeValue);
 }
@@ -53,7 +54,7 @@ void oldMan_giveRupees_hook(GB *gb) {
   CYC(b_+0, b_+2); E = INTERACTION_BASE + OBJ_SUBID;
   CYC(b_+2, b_+3); A = mem_rd(gb, DE);
   CYC(b_+3, b_+6); SET_HL(SYM(oldMan_rupeeValues));
-  CYC(b_+6, b_+7); oldMan_addAToHl_from_rst(gb, b_+7);
+  CYC(b_+6, b_+7); NPC_LOCAL_CALL(oldMan_addAToHl_from_rst(gb, b_+7));
   CYC(b_+7, b_+8); C = mem_rd(gb, HL);
   CYC(b_+8, b_+10); A = 0x28;
   CYC(b_+10, b_+13); TAIL(giveTreasure);
@@ -63,28 +64,28 @@ void oldManGiveShieldUpgradeToLink_hook(GB *gb) {
   BASE(oldManGiveShieldUpgradeToLink);
   uint16_t sp0_ = gb->sp; (void)sp0_;
   CYC(b_+0, b_+2); A = 0x01;
-  CALL_C(b_+2, checkTreasureObtained_hook, SYM(checkTreasureObtained), b_+5);
+  NPC_CALL_CARRY(b_+2, checkTreasureObtained_hook, SYM(checkTreasureObtained), b_+5);
   if (F & FC) { CYCT(b_+5, b_+7); goto afterShieldCheck; } // jr c
   CYC(b_+5, b_+7);
   CYC(b_+7, b_+10); A = W8(wShieldLevel);
 afterShieldCheck:
-  CYC(b_+10, b_+12); alu_cp(gb, 0x03);
+  CYC(b_+10, b_+12); NPC_CP(0x03);
   if (F & FC) { CYCT(b_+12, b_+14); goto haveSubidLevel; } // jr c
   CYC(b_+12, b_+14);
   CYC(b_+14, b_+16); A = 0x02;
 haveSubidLevel:
   CYC(b_+16, b_+17); C = A;
-  CALL_C(b_+17, getFreeInteractionSlot_hook, SYM(getFreeInteractionSlot), b_+20);
+  NPC_CALL_C(b_+17, getFreeInteractionSlot_hook, SYM(getFreeInteractionSlot), b_+20);
   if (!(F & FZ)) { RET_TAKEN(b_+20); return; } // ret nz
   CYC(b_+20, b_+21);
-  CYC(b_+21, b_+23); mem_wr(gb, HL, 0x60);
+  CYC(b_+21, b_+23); EVENT_WRITE(HL, 0x60);
   CYC(b_+23, b_+24); L = alu_inc8(gb, L);
-  CYC(b_+24, b_+26); mem_wr(gb, HL, 0x01);
+  CYC(b_+24, b_+26); EVENT_WRITE(HL, 0x01);
   CYC(b_+26, b_+27); L = alu_inc8(gb, L);
-  CYC(b_+27, b_+28); mem_wr(gb, HL, C);
+  CYC(b_+27, b_+28); EVENT_WRITE(HL, C);
   CYC(b_+28, b_+29); push_effect(gb, DE);
   CYC(b_+29, b_+32); SET_DE(w1Link_yh);
-  CALL_C(b_+32, objectCopyPosition_rawAddress_hook, SYM(objectCopyPosition_rawAddress), b_+35);
+  NPC_CALL_C(b_+32, objectCopyPosition_rawAddress_hook, SYM(objectCopyPosition_rawAddress), b_+35);
   CYC(b_+35, b_+36); SET_DE(pop_effect(gb));
   RET(b_+36); return; // ret
 }
@@ -93,7 +94,7 @@ void oldManWarpLinkToLibrary_hook(GB *gb) {
   BASE(oldManWarpLinkToLibrary);
   uint16_t sp0_ = gb->sp; (void)sp0_;
   CYC(b_+0, b_+3); SET_HL(b_+11);
-  CALL_C(b_+3, setWarpDestVariables_hook, SYM(setWarpDestVariables), b_+6);
+  NPC_CALL_C(b_+3, setWarpDestVariables_hook, SYM(setWarpDestVariables), b_+6);
   CYC(b_+6, b_+8); A = 0x8d;
   CYC(b_+8, b_+11); TAIL(playSound_b00); // jp
 }

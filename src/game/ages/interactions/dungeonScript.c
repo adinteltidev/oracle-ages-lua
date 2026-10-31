@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/npcs_events.h"
 
 #undef CYC
 #undef CYCT
@@ -42,35 +43,35 @@ static void dungeonScript_addDoubleIndex(GB *gb, uint16_t return_address) {
 static void dungeonScript_state0(GB *gb, uint16_t sp0_) {
   BASE(interactionCode20);
   CYC(b_+13, b_+15); A = 0x01;
-  CYC(b_+15, b_+16); mem_wr(gb, DE, A);
+  CYC(b_+15, b_+16); EVENT_WRITE(DE, A);
   CYC(b_+16, b_+17); alu_xor(gb, A);
-  CYC(b_+17, b_+20); mem_wr(gb, wTmpcfc0 + 1, A);
-  CYC(b_+20, b_+23); mem_wr(gb, wTmpcfc0 + 2, A);
+  CYC(b_+17, b_+20); EVENT_WRITE(wTmpcfc0 + 1, A);
+  CYC(b_+20, b_+23); EVENT_WRITE(wTmpcfc0 + 2, A);
   CYC(b_+23, b_+26); A = mem_rd(gb, wDungeonIndex);
-  CYC(b_+26, b_+28); alu_cp(gb, 0xff);
+  CYC(b_+26, b_+28); NPC_CP(0xff);
   if (F & FZ) {
     CYCT(b_+28, b_+31); TAIL(interactionDelete);
   }
   CYC(b_+28, b_+31);
   CYC(b_+31, b_+34); SET_HL(dungeonScriptTable_bank08);
-  CYC(b_+34, b_+35); dungeonScript_addDoubleIndex(gb, b_+35);
+  CYC(b_+34, b_+35); NPC_LOCAL_CALL(dungeonScript_addDoubleIndex(gb, b_+35));
   CYC(b_+35, b_+36); A = mem_rd(gb, HL); SET_HL(HL + 1);
   CYC(b_+36, b_+37); H = mem_rd(gb, HL);
   CYC(b_+37, b_+38); L = A;
   CYC(b_+38, b_+40); E = INTERACTION_BASE + OBJ_SUBID;
   CYC(b_+40, b_+41); A = mem_rd(gb, DE);
-  CYC(b_+41, b_+42); dungeonScript_addDoubleIndex(gb, b_+42);
+  CYC(b_+41, b_+42); NPC_LOCAL_CALL(dungeonScript_addDoubleIndex(gb, b_+42));
   CYC(b_+42, b_+43); A = mem_rd(gb, HL); SET_HL(HL + 1);
   CYC(b_+43, b_+44); H = mem_rd(gb, HL);
   CYC(b_+44, b_+45); L = A;
-  CALL_C(b_+45, interactionSetScript_hook, SYM(interactionSetScript), b_+48);
+  NPC_CALL_C(b_+45, interactionSetScript_hook, SYM(interactionSetScript), b_+48);
   CYC(b_+48, b_+51); interactionRunScript_hook(gb);
 }
 
 // @state1: run the script; delete self when it finishes.
 static void dungeonScript_state1(GB *gb, uint16_t sp0_) {
   BASE(interactionCode20);
-  CALL_C(b_+54, interactionRunScript_hook, SYM(interactionRunScript), b_+57);
+  NPC_CALL_C(b_+54, interactionRunScript_hook, SYM(interactionRunScript), b_+57);
   if (!(F & FC)) {
     CYCT(b_+57, b_+58); ret_effect(gb); return;
   }
@@ -81,22 +82,22 @@ static void dungeonScript_state1(GB *gb, uint16_t sp0_) {
 // @state2: like state 1, but also blocks Link; falls through into state 1.
 static void dungeonScript_state2(GB *gb, uint16_t sp0_) {
   BASE(interactionCode20);
-  CALL_C(b_+51, objectPreventLinkFromPassing_hook, SYM(objectPreventLinkFromPassing), b_+54);
-  dungeonScript_state1(gb, sp0_);
+  NPC_CALL_C(b_+51, objectPreventLinkFromPassing_hook, SYM(objectPreventLinkFromPassing), b_+54);
+  NPC_LOCAL_CALL(dungeonScript_state1(gb, sp0_));
 }
 
 // INTERAC_DUNGEON_SCRIPT: runs one of the per-dungeon puzzle scripts.
 void interactionCode20_hook(GB *gb) {
   BASE(interactionCode20);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, interactionDeleteAndRetIfEnabled02_hook, SYM(interactionDeleteAndRetIfEnabled02), b_+3);
+  NPC_CALL_C(b_+0, interactionDeleteAndRetIfEnabled02_hook, SYM(interactionDeleteAndRetIfEnabled02), b_+3);
   CYC(b_+3, b_+5); E = INTERACTION_BASE + OBJ_STATE;
   CYC(b_+5, b_+6); A = mem_rd(gb, DE);
   CYC(b_+6, b_+7); push_effect(gb, b_+7);
   do { uint16_t jt_ = (dungeonScript_jumpTable(gb));
-    if (jt_ == b_+13) { dungeonScript_state0(gb, sp0_); return; }
-    else if (jt_ == b_+54) { dungeonScript_state1(gb, sp0_); return; }
-    else if (jt_ == b_+51) { dungeonScript_state2(gb, sp0_); return; }
+    if (jt_ == b_+13) { NPC_LOCAL_CALL(dungeonScript_state0(gb, sp0_)); return; }
+    else if (jt_ == b_+54) { NPC_LOCAL_CALL(dungeonScript_state1(gb, sp0_)); return; }
+    else if (jt_ == b_+51) { NPC_LOCAL_CALL(dungeonScript_state2(gb, sp0_)); return; }
     else { HANDOFF(HL); }
   } while (0);
 }

@@ -6,6 +6,7 @@
 #include "script/levers_lava.h"
 #include "script/doors.h"
 #include "script/items_shops.h"
+#include "script/npcs_events.h"
 #endif
 #include "platform/tempfile.h"
 #include "core/gb.h"
@@ -58,6 +59,9 @@ static void native_run_reloading(const char *rom_path, const char *inputs, const
 #ifdef ORACLES_LUA_GAMEPLAY
   uint64_t rules_before[GAMEPLAY_BLOCK_RULE_COUNT];
   uint64_t colors_before[GAMEPLAY_COLORED_CUBE_RULE_COUNT];
+  uint64_t npcs_before[GAMEPLAY_NPCS_COUNT],events_before[GAMEPLAY_EVENTS_COUNT];
+  for(int i=0;i<GAMEPLAY_NPCS_COUNT;++i)npcs_before[i]=gameplay_npc_calls(i);
+  for(int i=0;i<GAMEPLAY_EVENTS_COUNT;++i)events_before[i]=gameplay_event_calls(i);
   uint64_t items_before[GAMEPLAY_ITEMS_COUNT],shops_before[GAMEPLAY_SHOPS_COUNT];
   for(int i=0;i<GAMEPLAY_ITEMS_COUNT;++i)items_before[i]=gameplay_item_calls(i);
   for(int i=0;i<GAMEPLAY_SHOPS_COUNT;++i)shops_before[i]=gameplay_shop_calls(i);
@@ -131,6 +135,9 @@ static void native_run_reloading(const char *rom_path, const char *inputs, const
     (unsigned long long)rc.first_sample, (unsigned long long)rc.last_sample, (unsigned long long)rc.samples);
   for(int i=0;i<GAMEPLAY_DOOR_RULE_COUNT;++i)
     printf("Lua rule %s: %llu\n",gameplay_door_rule_name(i),(unsigned long long)(gameplay_door_calls(i)-doors_before[i]));
+  for(int i=0;i<GAMEPLAY_NPCS_COUNT;++i)printf("Lua rule %s: %llu\n",gameplay_npc_rule_name(i),(unsigned long long)(gameplay_npc_calls(i)-npcs_before[i]));
+  for(int i=0;i<GAMEPLAY_EVENTS_COUNT;++i)printf("Lua rule %s: %llu\n",gameplay_event_rule_name(i),(unsigned long long)(gameplay_event_calls(i)-events_before[i]));
+  for(unsigned i=0;i<256;++i)if(gameplay_npc_owner_calls(i))printf("Lua NPC owner %02x: %llu\n",i,(unsigned long long)gameplay_npc_owner_calls(i));
   for(int i=0;i<GAMEPLAY_ITEMS_COUNT;++i)printf("Lua rule %s: %llu\n",gameplay_item_rule_name(i),(unsigned long long)(gameplay_item_calls(i)-items_before[i]));
   for(int i=0;i<GAMEPLAY_SHOPS_COUNT;++i)printf("Lua rule %s: %llu\n",gameplay_shop_rule_name(i),(unsigned long long)(gameplay_shop_calls(i)-shops_before[i]));
   fflush(stdout);

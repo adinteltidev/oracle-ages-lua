@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/npcs_events.h"
 
 #undef CYC
 #undef CYCT
@@ -55,11 +56,11 @@ void interactionCode6a_hook(GB *gb) {
 
 state0:
   CYC(b_+8, b_+10); A = 0x01;
-  CYC(b_+10, b_+11); mem_wr(gb, DE, A);
-  CALL_C(b_+11, interactionInitGraphics_hook, SYM(interactionInitGraphics), b_+14);
-  CALL_C(b_+14, objectSetVisiblec2_hook, SYM(objectSetVisiblec2), b_+17);
+  CYC(b_+10, b_+11); EVENT_WRITE(DE, A);
+  NPC_CALL_C(b_+11, interactionInitGraphics_hook, SYM(interactionInitGraphics), b_+14);
+  NPC_CALL_C(b_+14, objectSetVisiblec2_hook, SYM(objectSetVisiblec2), b_+17);
   CYC(b_+17, b_+19); A = 0x27; // >TX_2700
-  CALL_C(b_+19, interactionSetHighTextIndex_hook, SYM(interactionSetHighTextIndex), b_+22);
+  NPC_CALL_C(b_+19, interactionSetHighTextIndex_hook, SYM(interactionSetHighTextIndex), b_+22);
   CYC(b_+22, b_+24); E = INTERACTION_BASE + OBJ_SUBID;
   CYC(b_+24, b_+25); A = mem_rd(gb, DE);
   {
@@ -78,14 +79,14 @@ state1:
   }
 
 runSubid00:
-  CALL_C(b_+34, interactionRunScript_hook, SYM(interactionRunScript), b_+37);
+  NPC_CALL_C(b_+34, interactionRunScript_hook, SYM(interactionRunScript), b_+37);
   CYC(b_+37, b_+40); TAIL(interactionAnimateAsNpc); // jp
 
 loadScript:
   CYC(b_+40, b_+42); E = INTERACTION_BASE + OBJ_SUBID;
   CYC(b_+42, b_+43); A = mem_rd(gb, DE);
   CYC(b_+43, b_+46); SET_HL(b_+53); // interactionCode6a@scriptTable
-  CYC(b_+46, b_+47); interactionCode6a_addDoubleIndexToHl_from_rst(gb, b_+47);
+  CYC(b_+46, b_+47); NPC_LOCAL_CALL(interactionCode6a_addDoubleIndexToHl_from_rst(gb, b_+47));
   CYC(b_+47, b_+48); A = mem_rd(gb, HL); SET_HL(HL + 1); // ldi a,(hl)
   CYC(b_+48, b_+49); H = mem_rd(gb, HL);
   CYC(b_+49, b_+50); L = A;

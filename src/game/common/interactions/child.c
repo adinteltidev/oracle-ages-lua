@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/npcs_events.h"
 
 #undef CYC
 #undef CYCT
@@ -81,10 +82,10 @@ static void child_setAnimation(GB *gb, uint16_t sp0_) {
   BASE(interactionCode35);
   CYC(b_+121, b_+122); H = D;
   CYC(b_+122, b_+124); L = INTERACTION_BASE + OBJ_VAR3A;
-  CYC(b_+124, b_+125); mem_wr(gb, HL, A);
+  CYC(b_+124, b_+125); EVENT_WRITE(HL, A);
   CYC(b_+125, b_+127); L = INTERACTION_BASE + OBJ_VAR37;
   CYC(b_+127, b_+128); alu_add(gb, mem_rd(gb, HL));
-  CALL_C(b_+128, interactionSetAnimation_hook, SYM(interactionSetAnimation), b_+131);
+  NPC_CALL_C(b_+128, interactionSetAnimation_hook, SYM(interactionSetAnimation), b_+131);
   CYC(b_+131, b_+134); childUpdateSolidityAndVisibility_hook(gb);
 }
 
@@ -94,36 +95,36 @@ static void child_hyperactiveStage4Or5(GB *gb, uint16_t sp0_) {
   BASE(interactionCode35);
   CYC(b_+106, b_+107); H = D;
   CYC(b_+107, b_+109); L = INTERACTION_BASE + OBJ_VAR39;
-  CYC(b_+109, b_+111); mem_wr(gb, HL, 0x01);
+  CYC(b_+109, b_+111); EVENT_WRITE(HL, 0x01);
   CYC(b_+111, b_+113); L = INTERACTION_BASE + OBJ_SPEED;
-  CYC(b_+113, b_+115); mem_wr(gb, HL, 0x3c); // SPEED_180
+  CYC(b_+113, b_+115); EVENT_WRITE(HL, 0x3c); // SPEED_180
   CYC(b_+115, b_+117); L = INTERACTION_BASE + OBJ_ANGLE;
-  CYC(b_+117, b_+119); mem_wr(gb, HL, 0x18);
+  CYC(b_+117, b_+119); EVENT_WRITE(HL, 0x18);
   CYC(b_+119, b_+121); A = 0x00;
-  child_setAnimation(gb, sp0_);
+  NPC_LOCAL_CALL(child_setAnimation(gb, sp0_));
 }
 
 // @state0: init graphics, pick the script from var03, then per-var03 setup.
 static void child_state0(GB *gb, uint16_t sp0_) {
   BASE(interactionCode35);
-  CALL_C(b_+8, childDetermineAnimationBase_hook, SYM(childDetermineAnimationBase), b_+11);
-  CALL_C(b_+11, interactionInitGraphics_hook, SYM(interactionInitGraphics), b_+14);
-  CALL_C(b_+14, interactionIncState_hook, SYM(interactionIncState), b_+17);
+  NPC_CALL_C(b_+8, childDetermineAnimationBase_hook, SYM(childDetermineAnimationBase), b_+11);
+  NPC_CALL_C(b_+11, interactionInitGraphics_hook, SYM(interactionInitGraphics), b_+14);
+  NPC_CALL_C(b_+14, interactionIncState_hook, SYM(interactionIncState), b_+17);
   CYC(b_+17, b_+19); E = INTERACTION_BASE + OBJ_VAR03;
   CYC(b_+19, b_+20); A = mem_rd(gb, DE);
   CYC(b_+20, b_+23); SET_HL(childScriptTable_bank08);
-  CYC(b_+23, b_+24); child_addDoubleIndex(gb, b_+24);
+  CYC(b_+23, b_+24); NPC_LOCAL_CALL(child_addDoubleIndex(gb, b_+24));
   CYC(b_+24, b_+25); A = mem_rd(gb, HL); SET_HL(HL + 1);
   CYC(b_+25, b_+26); H = mem_rd(gb, HL);
   CYC(b_+26, b_+27); L = A;
-  CALL_C(b_+27, interactionSetScript_hook, SYM(interactionSetScript), b_+30);
+  NPC_CALL_C(b_+27, interactionSetScript_hook, SYM(interactionSetScript), b_+30);
   CYC(b_+30, b_+32); E = INTERACTION_BASE + OBJ_VAR03;
   CYC(b_+32, b_+33); A = mem_rd(gb, DE);
   CYC(b_+33, b_+34); push_effect(gb, b_+34);
   do { uint16_t jt_ = (child_jumpTable(gb));
     if (jt_ == b_+92) { goto initAnimation; }
     else if (jt_ == b_+101) { goto hyperactiveStage6; }
-    else if (jt_ == b_+106) { child_hyperactiveStage4Or5(gb, sp0_); return; }
+    else if (jt_ == b_+106) { NPC_LOCAL_CALL(child_hyperactiveStage4Or5(gb, sp0_)); return; }
     else if (jt_ == b_+134) { goto val16; }
     else if (jt_ == b_+143) { goto shyStage4Or5; }
     else if (jt_ == b_+150) { goto shyStage6; }
@@ -139,83 +140,83 @@ static void child_state0(GB *gb, uint16_t sp0_) {
 initAnimation:
   CYC(b_+92, b_+94); E = INTERACTION_BASE + OBJ_VAR37;
   CYC(b_+94, b_+95); A = mem_rd(gb, DE);
-  CALL_C(b_+95, interactionSetAnimation_hook, SYM(interactionSetAnimation), b_+98);
+  NPC_CALL_C(b_+95, interactionSetAnimation_hook, SYM(interactionSetAnimation), b_+98);
   CYC(b_+98, b_+101); childUpdateSolidityAndVisibility_hook(gb);
   return;
 
 hyperactiveStage6:
   CYC(b_+101, b_+103); A = 0x02;
-  CALL_C(b_+103, childLoadPositionListPointer_hook, SYM(childLoadPositionListPointer), b_+106);
-  child_hyperactiveStage4Or5(gb, sp0_);
+  NPC_CALL_C(b_+103, childLoadPositionListPointer_hook, SYM(childLoadPositionListPointer), b_+106);
+  NPC_LOCAL_CALL(child_hyperactiveStage4Or5(gb, sp0_));
   return;
 
 val16:
-  CYC(b_+134, b_+137); push_effect(gb, b_+137); child_hyperactiveStage4Or5(gb, sp0_);
+  CYC(b_+134, b_+137); push_effect(gb, b_+137); NPC_LOCAL_CALL(child_hyperactiveStage4Or5(gb, sp0_));
   CYC(b_+137, b_+138); H = D;
   CYC(b_+138, b_+140); L = INTERACTION_BASE + OBJ_SPEED;
-  CYC(b_+140, b_+142); mem_wr(gb, HL, 0x28); // SPEED_100
+  CYC(b_+140, b_+142); EVENT_WRITE(HL, 0x28); // SPEED_100
   CYC(b_+142, b_+143); ret_effect(gb);
   return;
 
 shyStage4Or5:
   CYC(b_+143, b_+145); A = 0x00;
-  CALL_C(b_+145, childLoadPositionListPointer_hook, SYM(childLoadPositionListPointer), b_+148);
+  NPC_CALL_C(b_+145, childLoadPositionListPointer_hook, SYM(childLoadPositionListPointer), b_+148);
   CYC(b_+148, b_+150); goto shyCommon;
 
 shyStage6:
   CYC(b_+150, b_+152); A = 0x01;
-  CALL_C(b_+152, childLoadPositionListPointer_hook, SYM(childLoadPositionListPointer), b_+155);
+  NPC_CALL_C(b_+152, childLoadPositionListPointer_hook, SYM(childLoadPositionListPointer), b_+155);
 
 shyCommon:
   CYC(b_+155, b_+156); H = D;
   CYC(b_+156, b_+158); L = INTERACTION_BASE + OBJ_VAR39;
-  CYC(b_+158, b_+160); mem_wr(gb, HL, 0x01);
+  CYC(b_+158, b_+160); EVENT_WRITE(HL, 0x01);
   CYC(b_+160, b_+162); L = INTERACTION_BASE + OBJ_SPEED;
-  CYC(b_+162, b_+164); mem_wr(gb, HL, 0x50); // SPEED_200
+  CYC(b_+162, b_+164); EVENT_WRITE(HL, 0x50); // SPEED_200
   CYC(b_+164, b_+166); A = 0x00;
-  CYC(b_+166, b_+168); child_setAnimation(gb, sp0_);
+  CYC(b_+166, b_+168); NPC_LOCAL_CALL(child_setAnimation(gb, sp0_));
   return;
 
 curious:
   CYC(b_+168, b_+169); H = D;
   CYC(b_+169, b_+171); L = INTERACTION_BASE + OBJ_VAR39;
-  CYC(b_+171, b_+173); mem_wr(gb, HL, 0x02);
+  CYC(b_+171, b_+173); EVENT_WRITE(HL, 0x02);
   CYC(b_+173, b_+175); A = 0x00;
-  CYC(b_+175, b_+177); child_setAnimation(gb, sp0_);
+  CYC(b_+175, b_+177); NPC_LOCAL_CALL(child_setAnimation(gb, sp0_));
   return;
 
 slacker:
   CYC(b_+177, b_+179); A = 0x00;
-  CYC(b_+179, b_+181); child_setAnimation(gb, sp0_);
+  CYC(b_+179, b_+181); NPC_LOCAL_CALL(child_setAnimation(gb, sp0_));
   return;
 
 warrior:
   CYC(b_+181, b_+183); A = 0x03;
-  CALL_C(b_+183, childLoadPositionListPointer_hook, SYM(childLoadPositionListPointer), b_+186);
+  NPC_CALL_C(b_+183, childLoadPositionListPointer_hook, SYM(childLoadPositionListPointer), b_+186);
   CYC(b_+186, b_+188); goto warriorCommon;
 
 script0f:
   CYC(b_+188, b_+190); A = 0x04;
-  CALL_C(b_+190, childLoadPositionListPointer_hook, SYM(childLoadPositionListPointer), b_+193);
+  NPC_CALL_C(b_+190, childLoadPositionListPointer_hook, SYM(childLoadPositionListPointer), b_+193);
 
 warriorCommon:
   CYC(b_+193, b_+194); H = D;
   CYC(b_+194, b_+196); L = INTERACTION_BASE + OBJ_VAR39;
-  CYC(b_+196, b_+198); mem_wr(gb, HL, 0x01);
+  CYC(b_+196, b_+198); EVENT_WRITE(HL, 0x01);
   CYC(b_+198, b_+200); L = INTERACTION_BASE + OBJ_SPEED;
-  CYC(b_+200, b_+202); mem_wr(gb, HL, 0x14); // SPEED_80
+  CYC(b_+200, b_+202); EVENT_WRITE(HL, 0x14); // SPEED_80
   CYC(b_+202, b_+204); A = 0x00;
-  CYC(b_+204, b_+206); child_setAnimation(gb, sp0_);
+  CYC(b_+204, b_+206); NPC_LOCAL_CALL(child_setAnimation(gb, sp0_));
   return;
 
 arborist:
   CYC(b_+206, b_+208); A = 0x03;
-  CYC(b_+208, b_+210); child_setAnimation(gb, sp0_);
+  CYC(b_+208, b_+210); NPC_LOCAL_CALL(child_setAnimation(gb, sp0_));
   return;
 
 singer:
   CYC(b_+210, b_+212); A = 0x00;
-  CYC(b_+212, b_+214); child_setAnimation(gb, sp0_);
+  CYC(b_+212, b_+214); NPC_LOCAL_CALL(child_setAnimation(gb, sp0_));
 }
 
 void interactionCode35_hook(GB *gb) {
@@ -225,7 +226,7 @@ void interactionCode35_hook(GB *gb) {
   CYC(b_+2, b_+3); A = mem_rd(gb, DE);
   CYC(b_+3, b_+4); push_effect(gb, b_+4);
   do { uint16_t jt_ = (child_jumpTable(gb));
-    if (jt_ == b_+8) { child_state0(gb, sp0_); return; }
+    if (jt_ == b_+8) { NPC_LOCAL_CALL(child_state0(gb, sp0_)); return; }
     else if (jt_ == SYM(interac65_state1) && hook_is(gb, SYM(interac65_state1), interac65_state1_hook)) { interac65_state1_hook(gb); return; }
     else { HANDOFF(HL); }
   } while (0);
@@ -255,50 +256,50 @@ void interac65_state1_hook(GB *gb) {
 hyperactiveMovement:
   CYC(b_+62, b_+64); E = INTERACTION_BASE + OBJ_COUNTER1;
   CYC(b_+64, b_+65); A = mem_rd(gb, DE);
-  CYC(b_+65, b_+66); alu_or(gb, A);
+  CYC(b_+65, b_+66); NPC_OR(A);
   if (!(F & FZ)) {
     CYCT(b_+66, b_+68); goto arboristMovement;
   }
   CYC(b_+66, b_+68);
-  CALL_C(b_+68, childUpdateHyperactiveMovement_hook, SYM(childUpdateHyperactiveMovement), b_+71);
+  NPC_CALL_C(b_+68, childUpdateHyperactiveMovement_hook, SYM(childUpdateHyperactiveMovement), b_+71);
 
 arboristMovement:
-  CALL_C(b_+71, interactionRunScript_hook, SYM(interactionRunScript), b_+74);
+  NPC_CALL_C(b_+71, interactionRunScript_hook, SYM(interactionRunScript), b_+74);
 
 updateAnimationAndSolidity:
   CYC(b_+74, b_+77); childUpdateAnimationAndSolidity_hook(gb);
   return;
 
 val16:
-  CALL_C(b_+77, childUpdateUnknownMovement_hook, SYM(childUpdateUnknownMovement), b_+80);
+  NPC_CALL_C(b_+77, childUpdateUnknownMovement_hook, SYM(childUpdateUnknownMovement), b_+80);
   CYC(b_+80, b_+83); childUpdateAnimationAndSolidity_hook(gb);
   return;
 
 shyMovement:
   CYC(b_+83, b_+85); E = INTERACTION_BASE + OBJ_COUNTER1;
   CYC(b_+85, b_+86); A = mem_rd(gb, DE);
-  CYC(b_+86, b_+87); alu_or(gb, A);
+  CYC(b_+86, b_+87); NPC_OR(A);
   if (!(F & FZ)) {
     CYCT(b_+87, b_+89); goto shyDone;
   }
   CYC(b_+87, b_+89);
-  CALL_C(b_+89, childUpdateShyMovement_hook, SYM(childUpdateShyMovement), b_+92);
+  NPC_CALL_C(b_+89, childUpdateShyMovement_hook, SYM(childUpdateShyMovement), b_+92);
 shyDone:
   CYC(b_+92, b_+94); goto runScriptAndUpdateAnimation;
 
 usePositionList:
   CYC(b_+94, b_+96); E = INTERACTION_BASE + OBJ_COUNTER1;
   CYC(b_+96, b_+97); A = mem_rd(gb, DE);
-  CYC(b_+97, b_+98); alu_or(gb, A);
+  CYC(b_+97, b_+98); NPC_OR(A);
   if (!(F & FZ)) {
     CYCT(b_+98, b_+100); goto positionListDone;
   }
   CYC(b_+98, b_+100);
-  CALL_C(b_+100, childUpdateAngleAndApplySpeed_hook, SYM(childUpdateAngleAndApplySpeed), b_+103);
-  CALL_C(b_+103, childCheckAnimationDirectionChanged_hook, SYM(childCheckAnimationDirectionChanged), b_+106);
-  CALL_C(b_+106, childCheckReachedDestination_hook, SYM(childCheckReachedDestination), b_+109);
+  NPC_CALL_C(b_+100, childUpdateAngleAndApplySpeed_hook, SYM(childUpdateAngleAndApplySpeed), b_+103);
+  NPC_CALL_C(b_+103, childCheckAnimationDirectionChanged_hook, SYM(childCheckAnimationDirectionChanged), b_+106);
+  NPC_CALL_C(b_+106, childCheckReachedDestination_hook, SYM(childCheckReachedDestination), b_+109);
   if (F & FC) {
-    CALL_C_CC(b_+109, childIncPositionIndex_hook, SYM(childIncPositionIndex), b_+112);
+    NPC_CALL_C_CC(b_+109, childIncPositionIndex_hook, SYM(childIncPositionIndex), b_+112);
   } else {
     CYC(b_+109, b_+112);
   }
@@ -306,12 +307,12 @@ positionListDone:
   CYC(b_+112, b_+114); goto runScriptAndUpdateAnimation;
 
 curiousMovement:
-  CALL_C(b_+114, childUpdateCuriousMovement_hook, SYM(childUpdateCuriousMovement), b_+117);
+  NPC_CALL_C(b_+114, childUpdateCuriousMovement_hook, SYM(childUpdateCuriousMovement), b_+117);
   CYC(b_+117, b_+119); E = INTERACTION_BASE + OBJ_VAR3D;
   CYC(b_+119, b_+120); A = mem_rd(gb, DE);
-  CYC(b_+120, b_+121); alu_or(gb, A);
+  CYC(b_+120, b_+121); NPC_OR(A);
   if (F & FZ) {
-    CALL_C_CC(b_+121, interactionRunScript_hook, SYM(interactionRunScript), b_+124);
+    NPC_CALL_C_CC(b_+121, interactionRunScript_hook, SYM(interactionRunScript), b_+124);
   } else {
     CYC(b_+121, b_+124);
   }
@@ -322,14 +323,14 @@ val1b:
 
 slackerMovement:
   CYC(b_+127, b_+130); A = mem_rd(gb, wFrameCounter);
-  CYC(b_+130, b_+132); alu_and(gb, 0x1f);
+  CYC(b_+130, b_+132); NPC_AND(0x1f);
   if (!(F & FZ)) {
     CYCT(b_+132, b_+134); goto slackerDone;
   }
   CYC(b_+132, b_+134);
   CYC(b_+134, b_+136); E = INTERACTION_BASE + OBJ_ANIM_PARAMETER;
   CYC(b_+136, b_+137); A = mem_rd(gb, DE);
-  CYC(b_+137, b_+139); alu_and(gb, 0x01);
+  CYC(b_+137, b_+139); NPC_AND(0x01);
   CYC(b_+139, b_+141); C = 0x08;
   if (!(F & FZ)) {
     CYCT(b_+141, b_+143);
@@ -338,20 +339,20 @@ slackerMovement:
     CYC(b_+143, b_+145); C = 0xfc;
   }
   CYC(b_+145, b_+147); B = 0xf4;
-  CALL_C(b_+147, objectCreateFloatingMusicNote_hook, SYM(objectCreateFloatingMusicNote), b_+150);
+  NPC_CALL_C(b_+147, objectCreateFloatingMusicNote_hook, SYM(objectCreateFloatingMusicNote), b_+150);
 slackerDone:
   CYC(b_+150, b_+152); goto runScriptAndUpdateAnimation;
 
 singerMovement:
   CYC(b_+152, b_+155); A = mem_rd(gb, wFrameCounter);
-  CYC(b_+155, b_+157); alu_and(gb, 0x1f);
+  CYC(b_+155, b_+157); NPC_AND(0x1f);
   if (!(F & FZ)) {
     CYCT(b_+157, b_+159); goto runScriptAndUpdateAnimation;
   }
   CYC(b_+157, b_+159);
   CYC(b_+159, b_+161); E = INTERACTION_BASE + OBJ_DIRECTION;
   CYC(b_+161, b_+162); A = mem_rd(gb, DE);
-  CYC(b_+162, b_+163); alu_or(gb, A);
+  CYC(b_+162, b_+163); NPC_OR(A);
   CYC(b_+163, b_+165); C = 0xfc;
   if (F & FZ) {
     CYCT(b_+165, b_+167);
@@ -360,10 +361,10 @@ singerMovement:
     CYC(b_+167, b_+169); C = 0x00;
   }
   CYC(b_+169, b_+171); B = 0xfc;
-  CALL_C(b_+171, objectCreateFloatingMusicNote_hook, SYM(objectCreateFloatingMusicNote), b_+174);
+  NPC_CALL_C(b_+171, objectCreateFloatingMusicNote_hook, SYM(objectCreateFloatingMusicNote), b_+174);
 
 runScriptAndUpdateAnimation:
-  CALL_C(b_+174, interactionRunScript_hook, SYM(interactionRunScript), b_+177);
+  NPC_CALL_C(b_+174, interactionRunScript_hook, SYM(interactionRunScript), b_+177);
   CYC(b_+177, b_+180); TAIL(childUpdateAnimationAndSolidity);
 }
 
@@ -371,7 +372,7 @@ runScriptAndUpdateAnimation:
 void childUpdateAnimationAndSolidity_hook(GB *gb) {
   BASE(childUpdateAnimationAndSolidity);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, interactionAnimate_hook, SYM(interactionAnimate), SYM(childUpdateSolidityAndVisibility));
+  NPC_CALL_C(b_+0, interactionAnimate_hook, SYM(interactionAnimate), SYM(childUpdateSolidityAndVisibility));
   TAIL(childUpdateSolidityAndVisibility);
 }
 
@@ -381,22 +382,22 @@ void childUpdateSolidityAndVisibility_hook(GB *gb) {
   uint16_t sp0_ = gb->sp;
   CYC(b_+0, b_+2); E = INTERACTION_BASE + OBJ_VAR39;
   CYC(b_+2, b_+3); A = mem_rd(gb, DE);
-  CYC(b_+3, b_+5); alu_cp(gb, 0x01);
+  CYC(b_+3, b_+5); NPC_CP(0x01);
   if (F & FZ) {
     CYCT(b_+5, b_+7); goto lightSolidity;
   }
   CYC(b_+5, b_+7);
-  CYC(b_+7, b_+9); alu_cp(gb, 0x02);
+  CYC(b_+7, b_+9); NPC_CP(0x02);
   if (F & FZ) {
     CYCT(b_+9, b_+12); TAIL(objectSetPriorityRelativeToLink_withTerrainEffects);
   }
   CYC(b_+9, b_+12);
-  CALL_C(b_+12, objectPreventLinkFromPassing_hook, SYM(objectPreventLinkFromPassing), b_+15);
+  NPC_CALL_C(b_+12, objectPreventLinkFromPassing_hook, SYM(objectPreventLinkFromPassing), b_+15);
   CYC(b_+15, b_+18); objectSetPriorityRelativeToLink_withTerrainEffects_hook(gb);
   return;
 
 lightSolidity:
-  CALL_C(b_+18, objectPushLinkAwayOnCollision_hook, SYM(objectPushLinkAwayOnCollision), b_+21);
+  NPC_CALL_C(b_+18, objectPushLinkAwayOnCollision_hook, SYM(objectPushLinkAwayOnCollision), b_+21);
   CYC(b_+21, b_+24); TAIL(objectSetPriorityRelativeToLink_withTerrainEffects);
 }
 
@@ -406,10 +407,10 @@ void childDetermineAnimationBase_hook(GB *gb) {
   CYC(b_+0, b_+2); E = INTERACTION_BASE + OBJ_SUBID;
   CYC(b_+2, b_+3); A = mem_rd(gb, DE);
   CYC(b_+3, b_+6); SET_HL(childDetermineAnimationBase_animations_bank08);
-  CYC(b_+6, b_+7); push_effect(gb, b_+7); child_addAToHl(gb);
+  CYC(b_+6, b_+7); push_effect(gb, b_+7); NPC_LOCAL_CALL(child_addAToHl(gb));
   CYC(b_+7, b_+8); A = mem_rd(gb, HL);
   CYC(b_+8, b_+10); E = INTERACTION_BASE + OBJ_VAR37;
-  CYC(b_+10, b_+11); mem_wr(gb, DE, A);
+  CYC(b_+10, b_+11); EVENT_WRITE(DE, A);
   CYC(b_+11, b_+12); ret_effect(gb);
 }
 
@@ -418,35 +419,35 @@ void childDetermineAnimationBase_hook(GB *gb) {
 void childUpdateHyperactiveMovement_hook(GB *gb) {
   BASE(childUpdateHyperactiveMovement);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, objectApplySpeed_hook, SYM(objectApplySpeed), b_+3);
+  NPC_CALL_C(b_+0, objectApplySpeed_hook, SYM(objectApplySpeed), b_+3);
   CYC(b_+3, b_+4); H = D;
   CYC(b_+4, b_+6); L = INTERACTION_BASE + OBJ_XH;
   CYC(b_+6, b_+7); A = mem_rd(gb, HL);
   CYC(b_+7, b_+9); alu_sub(gb, 0x29);
-  CYC(b_+9, b_+11); alu_cp(gb, 0x40);
+  CYC(b_+9, b_+11); NPC_CP(0x40);
   if (F & FC) {
     CYCT(b_+11, b_+12); ret_effect(gb); return;
   }
   CYC(b_+11, b_+12);
-  CYC(b_+12, b_+14); alu_bit(gb, 7, A);
+  CYC(b_+12, b_+14); NPC_BIT(7, A);
   if (!(F & FZ)) {
     CYCT(b_+14, b_+16);
   } else {
     CYC(b_+14, b_+16);
-    CYC(b_+16, b_+17); mem_wr(gb, HL, alu_dec8(gb, mem_rd(gb, HL)));
-    CYC(b_+17, b_+18); mem_wr(gb, HL, alu_dec8(gb, mem_rd(gb, HL)));
+    CYC(b_+16, b_+17); EVENT_WRITE(HL, alu_dec8(gb, mem_rd(gb, HL)));
+    CYC(b_+17, b_+18); EVENT_WRITE(HL, alu_dec8(gb, mem_rd(gb, HL)));
   }
-  CYC(b_+18, b_+19); mem_wr(gb, HL, alu_inc8(gb, mem_rd(gb, HL)));
+  CYC(b_+18, b_+19); EVENT_WRITE(HL, alu_inc8(gb, mem_rd(gb, HL)));
   CYC(b_+19, b_+21); L = INTERACTION_BASE + OBJ_VAR3C;
   CYC(b_+21, b_+22); A = mem_rd(gb, HL);
   CYC(b_+22, b_+23); A = alu_inc8(gb, A);
-  CYC(b_+23, b_+25); alu_and(gb, 0x03);
-  CYC(b_+25, b_+26); mem_wr(gb, HL, A);
+  CYC(b_+23, b_+25); NPC_AND(0x03);
+  CYC(b_+25, b_+26); EVENT_WRITE(HL, A);
   CYC(b_+26, b_+29); SET_BC(childHyperactiveMovementAngles_bank08);
-  CALL_C(b_+29, addAToBc_hook, 0x006d, b_+32);
+  NPC_CALL_C(b_+29, addAToBc_hook, 0x006d, b_+32);
   CYC(b_+32, b_+33); A = mem_rd(gb, BC);
   CYC(b_+33, b_+35); L = INTERACTION_BASE + OBJ_ANGLE;
-  CYC(b_+35, b_+36); mem_wr(gb, HL, A);
+  CYC(b_+35, b_+36); EVENT_WRITE(HL, A);
   TAIL(childFlipAnimation);
 }
 
@@ -455,8 +456,8 @@ void childFlipAnimation_hook(GB *gb) {
   BASE(childFlipAnimation);
   CYC(b_+0, b_+2); L = INTERACTION_BASE + OBJ_VAR3A;
   CYC(b_+2, b_+3); A = mem_rd(gb, HL);
-  CYC(b_+3, b_+5); alu_xor(gb, 0x01);
-  CYC(b_+5, b_+6); mem_wr(gb, HL, A);
+  CYC(b_+3, b_+5); NPC_XOR(0x01);
+  CYC(b_+5, b_+6); EVENT_WRITE(HL, A);
   CYC(b_+6, b_+8); L = INTERACTION_BASE + OBJ_VAR37;
   CYC(b_+8, b_+9); alu_add(gb, mem_rd(gb, HL));
   CYC(b_+9, b_+12); TAIL(interactionSetAnimation);
@@ -466,11 +467,11 @@ void childFlipAnimation_hook(GB *gb) {
 void childUpdateUnknownMovement_hook(GB *gb) {
   BASE(childUpdateUnknownMovement);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, objectApplySpeed_hook, SYM(objectApplySpeed), b_+3);
+  NPC_CALL_C(b_+0, objectApplySpeed_hook, SYM(objectApplySpeed), b_+3);
   CYC(b_+3, b_+5); E = INTERACTION_BASE + OBJ_XH;
   CYC(b_+5, b_+6); A = mem_rd(gb, DE);
   CYC(b_+6, b_+8); alu_sub(gb, 0x14);
-  CYC(b_+8, b_+10); alu_cp(gb, 0x28);
+  CYC(b_+8, b_+10); NPC_CP(0x28);
   if (F & FC) {
     CYCT(b_+10, b_+11); ret_effect(gb); return;
   }
@@ -478,8 +479,8 @@ void childUpdateUnknownMovement_hook(GB *gb) {
   CYC(b_+11, b_+12); H = D;
   CYC(b_+12, b_+14); L = INTERACTION_BASE + OBJ_ANGLE;
   CYC(b_+14, b_+15); A = mem_rd(gb, HL);
-  CYC(b_+15, b_+17); alu_xor(gb, 0x10);
-  CYC(b_+17, b_+18); mem_wr(gb, HL, A);
+  CYC(b_+15, b_+17); NPC_XOR(0x10);
+  CYC(b_+17, b_+18); EVENT_WRITE(HL, A);
   CYC(b_+18, b_+20); TAIL(childFlipAnimation);
 }
 
@@ -498,23 +499,23 @@ void childUpdateShyMovement_hook(GB *gb) {
 
 substate0:
   CYC(b_+8, b_+10); C = 0x18;
-  CALL_C(b_+10, objectCheckLinkWithinDistance_hook, SYM(objectCheckLinkWithinDistance), b_+13);
+  NPC_CALL_C(b_+10, objectCheckLinkWithinDistance_hook, SYM(objectCheckLinkWithinDistance), b_+13);
   if (!(F & FC)) {
     CYCT(b_+13, b_+14); ret_effect(gb); return;
   }
   CYC(b_+13, b_+14);
-  CALL_C(b_+14, interactionIncSubstate_hook, SYM(interactionIncSubstate), b_+17);
+  NPC_CALL_C(b_+14, interactionIncSubstate_hook, SYM(interactionIncSubstate), b_+17);
 
 substate1:
-  CALL_C(b_+17, childUpdateAngleAndApplySpeed_hook, SYM(childUpdateAngleAndApplySpeed), b_+20);
-  CALL_C(b_+20, childCheckReachedDestination_hook, SYM(childCheckReachedDestination), b_+23);
+  NPC_CALL_C(b_+17, childUpdateAngleAndApplySpeed_hook, SYM(childUpdateAngleAndApplySpeed), b_+20);
+  NPC_CALL_C(b_+20, childCheckReachedDestination_hook, SYM(childCheckReachedDestination), b_+23);
   if (!(F & FC)) {
     CYCT(b_+23, b_+24); ret_effect(gb); return;
   }
   CYC(b_+23, b_+24);
   CYC(b_+24, b_+25); H = D;
   CYC(b_+25, b_+27); L = INTERACTION_BASE + OBJ_SUBSTATE;
-  CYC(b_+27, b_+29); mem_wr(gb, HL, 0x00);
+  CYC(b_+27, b_+29); EVENT_WRITE(HL, 0x00);
   CYC(b_+29, b_+32); TAIL(childIncPositionIndex);
 }
 
@@ -534,13 +535,13 @@ void childUpdateAngleAndApplySpeed_hook(GB *gb) {
   CYC(b_+12, b_+13); A = mem_rd(gb, DE);
   CYC(b_+13, b_+14); H = A;
   CYC(b_+14, b_+15); A = B;
-  CYC(b_+15, b_+16); push_effect(gb, b_+16); child_addAToHl(gb);
+  CYC(b_+15, b_+16); push_effect(gb, b_+16); NPC_LOCAL_CALL(child_addAToHl(gb));
   CYC(b_+16, b_+17); B = mem_rd(gb, HL);
   CYC(b_+17, b_+18); SET_HL(HL + 1);
   CYC(b_+18, b_+19); C = mem_rd(gb, HL);
-  CALL_C(b_+19, objectGetRelativeAngle_hook, SYM(objectGetRelativeAngle), b_+22);
+  NPC_CALL_C(b_+19, objectGetRelativeAngle_hook, SYM(objectGetRelativeAngle), b_+22);
   CYC(b_+22, b_+24); E = INTERACTION_BASE + OBJ_ANGLE;
-  CYC(b_+24, b_+25); mem_wr(gb, DE, A);
+  CYC(b_+24, b_+25); EVENT_WRITE(DE, A);
   CYC(b_+25, b_+28); TAIL(objectApplySpeed);
 }
 
@@ -560,12 +561,12 @@ void childCheckReachedDestination_hook(GB *gb) {
   CYC(b_+12, b_+13); A = mem_rd(gb, DE);
   CYC(b_+13, b_+14); B = A;
   CYC(b_+14, b_+15); SET_AF(pop_effect(gb));
-  CALL_C(b_+15, addAToBc_hook, 0x006d, b_+18);
+  NPC_CALL_C(b_+15, addAToBc_hook, 0x006d, b_+18);
   CYC(b_+18, b_+20); L = INTERACTION_BASE + OBJ_YH;
   CYC(b_+20, b_+21); A = mem_rd(gb, BC);
   CYC(b_+21, b_+22); alu_sub(gb, mem_rd(gb, HL));
   CYC(b_+22, b_+24); alu_add(gb, 0x01);
-  CYC(b_+24, b_+26); alu_cp(gb, 0x03);
+  CYC(b_+24, b_+26); NPC_CP(0x03);
   if (!(F & FC)) {
     CYCT(b_+26, b_+27); ret_effect(gb); return;
   }
@@ -575,7 +576,7 @@ void childCheckReachedDestination_hook(GB *gb) {
   CYC(b_+30, b_+31); A = mem_rd(gb, BC);
   CYC(b_+31, b_+32); alu_sub(gb, mem_rd(gb, HL));
   CYC(b_+32, b_+34); alu_add(gb, 0x01);
-  CYC(b_+34, b_+36); alu_cp(gb, 0x03);
+  CYC(b_+34, b_+36); NPC_CP(0x03);
   CYC(b_+36, b_+37); ret_effect(gb);
 }
 
@@ -586,15 +587,15 @@ void childCheckAnimationDirectionChanged_hook(GB *gb) {
   CYC(b_+1, b_+3); L = INTERACTION_BASE + OBJ_ANGLE;
   CYC(b_+3, b_+4); A = mem_rd(gb, HL);
   CYC(b_+4, b_+6); A = alu_swap(gb, A);
-  CYC(b_+6, b_+8); alu_and(gb, 0x01);
-  CYC(b_+8, b_+10); alu_xor(gb, 0x01);
+  CYC(b_+6, b_+8); NPC_AND(0x01);
+  CYC(b_+8, b_+10); NPC_XOR(0x01);
   CYC(b_+10, b_+12); L = INTERACTION_BASE + OBJ_DIRECTION;
-  CYC(b_+12, b_+13); alu_cp(gb, mem_rd(gb, HL));
+  CYC(b_+12, b_+13); NPC_CP(mem_rd(gb, HL));
   if (F & FZ) {
     CYCT(b_+13, b_+14); ret_effect(gb); return;
   }
   CYC(b_+13, b_+14);
-  CYC(b_+14, b_+15); mem_wr(gb, HL, A);
+  CYC(b_+14, b_+15); EVENT_WRITE(HL, A);
   CYC(b_+15, b_+17); L = INTERACTION_BASE + OBJ_VAR3A;
   CYC(b_+17, b_+18); alu_add(gb, mem_rd(gb, HL));
   CYC(b_+18, b_+20); L = INTERACTION_BASE + OBJ_VAR37;
@@ -609,13 +610,13 @@ void childIncPositionIndex_hook(GB *gb) {
   CYC(b_+1, b_+3); L = INTERACTION_BASE + OBJ_VAR3D;
   CYC(b_+3, b_+4); A = mem_rd(gb, HL);
   CYC(b_+4, b_+6); L = INTERACTION_BASE + OBJ_VAR3C;
-  CYC(b_+6, b_+7); mem_wr(gb, HL, alu_inc8(gb, mem_rd(gb, HL)));
-  CYC(b_+7, b_+8); alu_cp(gb, mem_rd(gb, HL));
+  CYC(b_+6, b_+7); EVENT_WRITE(HL, alu_inc8(gb, mem_rd(gb, HL)));
+  CYC(b_+7, b_+8); NPC_CP(mem_rd(gb, HL));
   if (!(F & FC)) {
     CYCT(b_+8, b_+9); ret_effect(gb); return;
   }
   CYC(b_+8, b_+9);
-  CYC(b_+9, b_+11); mem_wr(gb, HL, 0x00);
+  CYC(b_+9, b_+11); EVENT_WRITE(HL, 0x00);
   CYC(b_+11, b_+12); ret_effect(gb);
 }
 
@@ -625,16 +626,16 @@ void childLoadPositionListPointer_hook(GB *gb) {
   CYC(b_+0, b_+1); alu_add(gb, A);
   CYC(b_+1, b_+2); alu_add(gb, A);
   CYC(b_+2, b_+5); SET_HL(childLoadPositionListPointer_positionTable_bank08);
-  CYC(b_+5, b_+6); push_effect(gb, b_+6); child_addAToHl(gb);
+  CYC(b_+5, b_+6); push_effect(gb, b_+6); NPC_LOCAL_CALL(child_addAToHl(gb));
   CYC(b_+6, b_+8); E = INTERACTION_BASE + OBJ_VAR3F;
   CYC(b_+8, b_+9); A = mem_rd(gb, HL); SET_HL(HL + 1);
-  CYC(b_+9, b_+10); mem_wr(gb, DE, A);
+  CYC(b_+9, b_+10); EVENT_WRITE(DE, A);
   CYC(b_+10, b_+12); E = INTERACTION_BASE + OBJ_VAR3E;
   CYC(b_+12, b_+13); A = mem_rd(gb, HL); SET_HL(HL + 1);
-  CYC(b_+13, b_+14); mem_wr(gb, DE, A);
+  CYC(b_+13, b_+14); EVENT_WRITE(DE, A);
   CYC(b_+14, b_+16); E = INTERACTION_BASE + OBJ_VAR3D;
   CYC(b_+16, b_+17); A = mem_rd(gb, HL); SET_HL(HL + 1);
-  CYC(b_+17, b_+18); mem_wr(gb, DE, A);
+  CYC(b_+17, b_+18); EVENT_WRITE(DE, A);
   CYC(b_+18, b_+19); ret_effect(gb);
 }
 
@@ -655,47 +656,47 @@ void childUpdateCuriousMovement_hook(GB *gb) {
 substate0:
   CYC(b_+10, b_+11); H = D;
   CYC(b_+11, b_+13); L = INTERACTION_BASE + OBJ_SPEED;
-  CYC(b_+13, b_+15); mem_wr(gb, HL, 0x28); // SPEED_100
+  CYC(b_+13, b_+15); EVENT_WRITE(HL, 0x28); // SPEED_100
   CYC(b_+15, b_+17); L = INTERACTION_BASE + OBJ_ANGLE;
-  CYC(b_+17, b_+19); mem_wr(gb, HL, 0x18);
+  CYC(b_+17, b_+19); EVENT_WRITE(HL, 0x18);
 
 gotoSubstate1AndJump:
   CYC(b_+19, b_+20); H = D;
   CYC(b_+20, b_+22); L = INTERACTION_BASE + OBJ_SUBSTATE;
-  CYC(b_+22, b_+24); mem_wr(gb, HL, 0x01);
+  CYC(b_+22, b_+24); EVENT_WRITE(HL, 0x01);
   CYC(b_+24, b_+26); L = INTERACTION_BASE + OBJ_VAR3D;
-  CYC(b_+26, b_+28); mem_wr(gb, HL, 0x01);
+  CYC(b_+26, b_+28); EVENT_WRITE(HL, 0x01);
   CYC(b_+28, b_+30); L = INTERACTION_BASE + OBJ_SPEED_Z;
-  CYC(b_+30, b_+32); mem_wr(gb, HL, 0x00);
+  CYC(b_+30, b_+32); EVENT_WRITE(HL, 0x00);
   CYC(b_+32, b_+33); SET_HL(HL + 1);
-  CYC(b_+33, b_+35); mem_wr(gb, HL, 0xfb);
+  CYC(b_+33, b_+35); EVENT_WRITE(HL, 0xfb);
   CYC(b_+35, b_+37); A = 0x53; // SND_JUMP
   CYC(b_+37, b_+40); playSound_b00_hook(gb);
   return;
 
 substate1:
   CYC(b_+40, b_+42); C = 0x50;
-  CALL_C(b_+42, objectUpdateSpeedZ_paramC_hook, SYM(objectUpdateSpeedZ_paramC), b_+45);
+  NPC_CALL_C(b_+42, objectUpdateSpeedZ_paramC_hook, SYM(objectUpdateSpeedZ_paramC), b_+45);
   if (!(F & FZ)) {
     CYCT(b_+45, b_+48); TAIL(objectApplySpeed);
   }
   CYC(b_+45, b_+48);
-  CALL_C(b_+48, interactionIncSubstate_hook, SYM(interactionIncSubstate), b_+51);
+  NPC_CALL_C(b_+48, interactionIncSubstate_hook, SYM(interactionIncSubstate), b_+51);
   CYC(b_+51, b_+53); L = INTERACTION_BASE + OBJ_VAR3D;
-  CYC(b_+53, b_+55); mem_wr(gb, HL, 0x00);
+  CYC(b_+53, b_+55); EVENT_WRITE(HL, 0x00);
   CYC(b_+55, b_+57); L = INTERACTION_BASE + OBJ_VAR3C;
-  CYC(b_+57, b_+59); mem_wr(gb, HL, 0x78);
+  CYC(b_+57, b_+59); EVENT_WRITE(HL, 0x78);
   CYC(b_+59, b_+61); L = INTERACTION_BASE + OBJ_ANGLE;
   CYC(b_+61, b_+62); A = mem_rd(gb, HL);
-  CYC(b_+62, b_+64); alu_xor(gb, 0x10);
-  CYC(b_+64, b_+65); mem_wr(gb, HL, A);
+  CYC(b_+62, b_+64); NPC_XOR(0x10);
+  CYC(b_+64, b_+65); EVENT_WRITE(HL, A);
   CYC(b_+65, b_+66); ret_effect(gb);
   return;
 
 substate2:
   CYC(b_+66, b_+67); H = D;
   CYC(b_+67, b_+69); L = INTERACTION_BASE + OBJ_VAR3C;
-  CYC(b_+69, b_+70); mem_wr(gb, HL, alu_dec8(gb, mem_rd(gb, HL)));
+  CYC(b_+69, b_+70); EVENT_WRITE(HL, alu_dec8(gb, mem_rd(gb, HL)));
   if (!(F & FZ)) {
     CYCT(b_+70, b_+71); ret_effect(gb); return;
   }

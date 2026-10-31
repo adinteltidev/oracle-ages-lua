@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/npcs_events.h"
 
 #undef CYC
 #undef CYCT
@@ -50,11 +51,11 @@ void interactionCode8d_hook(GB *gb) {
 
   // interactionCode8d@state0
   CYC(b_+8, b_+10); A = 0x01;
-  CYC(b_+10, b_+11); mem_wr(gb, DE, A);
-  CALL_C(b_+11, interactionInitGraphics_hook, SYM(interactionInitGraphics), b_+14);
-  CALL_C(b_+14, objectSetVisiblec2_hook, SYM(objectSetVisiblec2), b_+17);
+  CYC(b_+10, b_+11); EVENT_WRITE(DE, A);
+  NPC_CALL_C(b_+11, interactionInitGraphics_hook, SYM(interactionInitGraphics), b_+14);
+  NPC_CALL_C(b_+14, objectSetVisiblec2_hook, SYM(objectSetVisiblec2), b_+17);
   CYC(b_+17, b_+19); A = 0x28; // >TX_2800
-  CALL_C(b_+19, interactionSetHighTextIndex_hook, SYM(interactionSetHighTextIndex), b_+22);
+  NPC_CALL_C(b_+19, interactionSetHighTextIndex_hook, SYM(interactionSetHighTextIndex), b_+22);
   CYC(b_+22, b_+24); E = INTERACTION_BASE + OBJ_SUBID;
   CYC(b_+24, b_+25); A = mem_rd(gb, DE);
   {
@@ -67,9 +68,9 @@ void interactionCode8d_hook(GB *gb) {
 
   // interactionCode8d@initSubid0
   CYC(b_+32, b_+34); A = 0x03;
-  CALL_C(b_+34, interactionSetAnimation_hook, SYM(interactionSetAnimation), b_+37);
+  NPC_CALL_C(b_+34, interactionSetAnimation_hook, SYM(interactionSetAnimation), b_+37);
   CYC(b_+37, b_+40); SET_BC((SYM(interactionCode79__state0) + 27));
-  CALL_C(b_+40, interactionSetPosition_hook, SYM(interactionSetPosition), b_+43);
+  NPC_CALL_C(b_+40, interactionSetPosition_hook, SYM(interactionSetPosition), b_+43);
 
 initSubid2:
   CYC(b_+43, b_+46); push_effect(gb, b_+46); goto loadScript; // call
@@ -78,9 +79,9 @@ afterLoadScript:
 
 initSubid1:
   CYC(b_+49, b_+52); SET_BC((SYM(interactionCode78__tileReplacement) + 27));
-  CALL_C(b_+52, interactionSetPosition_hook, SYM(interactionSetPosition), b_+55);
+  NPC_CALL_C(b_+52, interactionSetPosition_hook, SYM(interactionSetPosition), b_+55);
   CYC(b_+55, b_+57); L = INTERACTION_BASE + OBJ_COUNTER1;
-  CYC(b_+57, b_+59); mem_wr(gb, HL, 30);
+  CYC(b_+57, b_+59); EVENT_WRITE(HL, 30);
   CYC(b_+59, b_+62); TAIL(objectSetInvisible); // jp
 
 state1:
@@ -94,23 +95,23 @@ state1:
   }
 
   // interactionCode8d@runSubid0 / @runSubid2
-  CALL_C(b_+72, interactionRunScript_hook, SYM(interactionRunScript), b_+75);
+  NPC_CALL_C(b_+72, interactionRunScript_hook, SYM(interactionRunScript), b_+75);
   if (!(F & FC)) { CYCT(b_+75, b_+78); interactionAnimate_hook(gb); return; } // jp nc
   CYC(b_+75, b_+78);
-  CALL_C(b_+78, objectCreatePuff_hook, SYM(objectCreatePuff), b_+81);
+  NPC_CALL_C(b_+78, objectCreatePuff_hook, SYM(objectCreatePuff), b_+81);
   CYC(b_+81, b_+83); E = INTERACTION_BASE + OBJ_SUBID;
   CYC(b_+83, b_+84); A = mem_rd(gb, DE);
-  CYC(b_+84, b_+85); alu_or(gb, A);
+  CYC(b_+84, b_+85); NPC_OR(A);
   if (F & FZ) { CYCT(b_+85, b_+87); goto L_6bb5; } // jr z
   CYC(b_+85, b_+87);
   CYC(b_+87, b_+90); SET_BC(0x9302); // INTERAC_TWINROVA, subid 2
-  CALL_C(b_+90, objectCreateInteraction_hook, SYM(objectCreateInteraction), b_+93);
+  NPC_CALL_C(b_+90, objectCreateInteraction_hook, SYM(objectCreateInteraction), b_+93);
 
 L_6bb5:
   CYC(b_+93, b_+96); TAIL(interactionDelete); // jp
 
 runSubid1:
-  CALL_C(b_+96, interactionAnimate_hook, SYM(interactionAnimate), b_+99);
+  NPC_CALL_C(b_+96, interactionAnimate_hook, SYM(interactionAnimate), b_+99);
   CYC(b_+99, b_+101); E = INTERACTION_BASE + OBJ_SUBSTATE;
   CYC(b_+101, b_+102); A = mem_rd(gb, DE);
   {
@@ -123,14 +124,14 @@ runSubid1:
   }
 
   // interactionCode8d@subid1Substate0
-  CALL_C(b_+111, interactionDecCounter1_hook, SYM(interactionDecCounter1), b_+114);
+  NPC_CALL_ZERO(b_+111, interactionDecCounter1_hook, SYM(interactionDecCounter1), b_+114);
   if (!(F & FZ)) { RET_TAKEN(b_+114); return; } // ret nz
   CYC(b_+114, b_+115);
-  CYC(b_+115, b_+117); mem_wr(gb, HL, 20);
+  CYC(b_+115, b_+117); EVENT_WRITE(HL, 20);
   CYC(b_+117, b_+119); A = 0x21; // MUS_DISASTER
-  CALL_C(b_+119, playSound_b00_hook, SYM(playSound_b00), b_+122);
-  CALL_C(b_+122, objectSetVisible_hook, SYM(objectSetVisible), b_+125);
-  CALL_C(b_+125, fadeinFromBlack_hook, SYM(fadeinFromBlack), b_+128);
+  NPC_CALL_C(b_+119, playSound_b00_hook, SYM(playSound_b00), b_+122);
+  NPC_CALL_C(b_+122, objectSetVisible_hook, SYM(objectSetVisible), b_+125);
+  NPC_CALL_C(b_+125, fadeinFromBlack_hook, SYM(fadeinFromBlack), b_+128);
   CYC(b_+128, b_+130); A = 0x06;
   CYC(b_+130, b_+133); W8(wDirtyFadeSprPalettes) = A;
   CYC(b_+133, b_+136); W8(wFadeSprPaletteSources) = A;
@@ -140,30 +141,30 @@ runSubid1:
   CYC(b_+144, b_+147); TAIL(interactionIncSubstate); // jp
 
 subid1Substate1:
-  CALL_C(b_+147, interactionDecCounter1IfPaletteNotFading_hook, SYM(interactionDecCounter1IfPaletteNotFading), b_+150);
+  NPC_CALL_C(b_+147, interactionDecCounter1IfPaletteNotFading_hook, SYM(interactionDecCounter1IfPaletteNotFading), b_+150);
   if (!(F & FZ)) { RET_TAKEN(b_+150); return; } // ret nz
   CYC(b_+150, b_+151);
-  CYC(b_+151, b_+153); mem_wr(gb, HL, 20);
-  CALL_C(b_+153, interactionIncSubstate_hook, SYM(interactionIncSubstate), b_+156);
+  CYC(b_+151, b_+153); EVENT_WRITE(HL, 20);
+  NPC_CALL_C(b_+153, interactionIncSubstate_hook, SYM(interactionIncSubstate), b_+156);
   CYC(b_+156, b_+159); SET_BC(0x2808); // TX_2808
   CYC(b_+159, b_+162); TAIL(showText); // jp
 
 subid1Substate2:
-  CALL_C(b_+162, interactionDecCounter1IfTextNotActive_hook, SYM(interactionDecCounter1IfTextNotActive), b_+165);
+  NPC_CALL_C(b_+162, interactionDecCounter1IfTextNotActive_hook, SYM(interactionDecCounter1IfTextNotActive), b_+165);
   if (!(F & FZ)) { RET_TAKEN(b_+165); return; } // ret nz
   CYC(b_+165, b_+166);
   CYC(b_+166, b_+168); A = 0xd2; // SND_LIGHTNING
-  CALL_C(b_+168, playSound_b00_hook, SYM(playSound_b00), b_+171);
+  NPC_CALL_C(b_+168, playSound_b00_hook, SYM(playSound_b00), b_+171);
   CYC(b_+171, b_+174); SET_HL(wGenericCutscene_cbb3);
-  CYC(b_+174, b_+176); mem_wr(gb, HL, 0x00);
+  CYC(b_+174, b_+176); EVENT_WRITE(HL, 0x00);
   CYC(b_+176, b_+179); SET_HL(wGenericCutscene_cbba);
-  CYC(b_+179, b_+181); mem_wr(gb, HL, 0xff);
+  CYC(b_+179, b_+181); EVENT_WRITE(HL, 0xff);
   CYC(b_+181, b_+184); TAIL(interactionIncSubstate); // jp
 
 subid1Substate3:
   CYC(b_+184, b_+187); SET_HL(wGenericCutscene_cbb3);
   CYC(b_+187, b_+189); B = 0x02;
-  CALL_C(b_+189, flashScreen_hook, SYM(flashScreen), b_+192);
+  NPC_CALL_C(b_+189, flashScreen_hook, SYM(flashScreen), b_+192);
   if (F & FZ) { RET_TAKEN(b_+192); return; } // ret z
   CYC(b_+192, b_+193);
   CYC(b_+193, b_+195); A = 0x02;
@@ -177,7 +178,7 @@ loadScript:
   CYC(b_+206, b_+208); E = INTERACTION_BASE + OBJ_SUBID;
   CYC(b_+208, b_+209); A = mem_rd(gb, DE);
   CYC(b_+209, b_+212); SET_HL(b_+219); // @scriptTable
-  CYC(b_+212, b_+213); interactionCode8d_add_double_index(gb, b_+213);
+  CYC(b_+212, b_+213); NPC_LOCAL_CALL(interactionCode8d_add_double_index(gb, b_+213));
   CYC(b_+213, b_+214); A = mem_rd(gb, HL); SET_HL(HL + 1); // ldi a,(hl)
   CYC(b_+214, b_+215); H = mem_rd(gb, HL);
   CYC(b_+215, b_+216); L = A;

@@ -97,9 +97,10 @@ def main():
         assert config.get('ORACLES_LUA_LEVERS_LAVA', 'OFF') != 'ON', 'Use the phase-3 packager'
         assert config.get('ORACLES_LUA_DOORS', 'OFF') != 'ON', 'Use the phase-4 packager'
         assert config.get('ORACLES_LUA_ITEMS_SHOPS', 'OFF') != 'ON', 'Use the phase-5 packager'
+        assert config.get('ORACLES_LUA_NPCS_EVENTS', 'OFF') != 'ON', 'Use the phase-6 packager'
         assert not config.get('ORACLES_VERSION'), 'Test packages must not enable release updates'
     revision = sha(''.join(f'{module}:{sha((root / ("gameplay/ages/" + module + ".lua")).read_bytes())};'
-                          for module in ('switch_tiles', 'block_puzzles', 'block_rules', 'colored_cube', 'levers_lava', 'doors', 'items', 'shops')).encode())
+                          for module in ('switch_tiles', 'block_puzzles', 'block_rules', 'colored_cube', 'levers_lava', 'doors', 'items', 'shops', 'npcs/rules', 'events/flow')).encode())
     assert revision.encode() in exe and revision.encode() in nro
     assert b'oracles-lua-phase1' in exe and b'sdmc:/switch/oracle-ages-lua-phase1/' in nro
     for build in (a.windows_build, a.switch_build):
@@ -115,7 +116,7 @@ def main():
     source_tar, source_manifest = sources(root)
     # Verify corresponding source bytes before distributing either binary.
     with tarfile.open(fileobj=io.BytesIO(source_tar), mode='r:gz') as archive:
-        for module in ('switch_tiles', 'block_puzzles', 'block_rules', 'colored_cube', 'levers_lava', 'doors', 'items', 'shops'):
+        for module in ('switch_tiles', 'block_puzzles', 'block_rules', 'colored_cube', 'levers_lava', 'doors', 'items', 'shops', 'npcs/rules', 'events/flow'):
             name = 'gameplay/ages/' + module + '.lua'
             assert archive.extractfile('oracle-ages-lua/' + name).read() == (root/name).read_bytes()
         for entry in archive.getmembers():

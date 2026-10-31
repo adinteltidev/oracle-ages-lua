@@ -97,6 +97,212 @@ if(ORACLES_SWITCH OR CMAKE_SYSTEM_NAME STREQUAL "NintendoSwitch")
       src/game/ages/interactions/tokayShopItem.c src/game/common/interactions/treasureInteraction.c
       src/game/treasureAndDrops.c src/game/features.c src/game/loadTreasureData.c
       APPEND PROPERTY COMPILE_DEFINITIONS ORACLES_LUA_GAMEPLAY=1)
+    if(ORACLES_LUA_NPCS_EVENTS)
+      target_compile_definitions(oraclesnative INTERFACE ORACLES_LUA_NPCS_EVENTS=1)
+    endif()
+    set_property(SOURCE
+      src/game/npcEventPolicy.c
+      src/game/cutscenes.c
+      src/game/cutscenes2.c
+      src/game/miscCutscenes.c
+      src/game/bank3Cutscenes.c
+      src/game/linkedGameCutscenes.c
+      src/game/endgameCutscenes.c
+      src/game/common/enemies/ganonRevivalCutscene.c
+      src/game/common/interactions/eraOrSeasonInfo.c
+      src/game/common/interactions/essence.c
+      src/game/common/interactions/essence15.c
+      src/game/ages/interactions/harpOfAgesSpawner.c
+      src/game/ages/interactions/makuSeed.c
+      src/game/ages/interactions/makuSeedAndEssences.c
+      src/game/ages/interactions/rickysGloveSpawner.c
+      src/game/ages/interactions/slateSlot.c
+      src/game/ages/interactions/slateSlot15.c
+      src/game/ages/interactions/triforceStone.c
+      src/game/common/interactions/bipin.c
+      src/game/common/interactions/bipinBlossomFamilySpawner.c
+      src/game/common/interactions/blossom.c
+      src/game/common/interactions/businessScrub.c
+      src/game/common/interactions/c1.c
+      src/game/common/interactions/cf.c
+      src/game/common/interactions/child.c
+      src/game/common/interactions/companionSpawner.c
+      src/game/common/interactions/companionTutorial.c
+      src/game/common/interactions/endgameCutsceneBipsomFamily.c
+      src/game/common/interactions/farore.c
+      src/game/common/interactions/farore15.c
+      src/game/common/interactions/faroreGiveItem.c
+      src/game/common/interactions/faroreMakeChest.c
+      src/game/common/interactions/faroresMemory.c
+      src/game/common/interactions/finalDungeonEnergy.c
+      src/game/common/interactions/gameCompleteDialog.c
+      src/game/common/interactions/gameCompleteDialog15.c
+      src/game/common/interactions/interactionMinecart.c
+      src/game/common/interactions/introBird.c
+      src/game/common/interactions/introSprites1.c
+      src/game/common/interactions/nayruRalphCredits.c
+      src/game/common/interactions/ringHelpBook.c
+      src/game/common/interactions/syrup.c
+      src/game/common/interactions/syrupCucco.c
+      src/game/common/interactions/vasu.c
+      src/game/common/interactions/vasu15.c
+      src/game/common/interactions/zeldaApproachTrigger.c
+      src/game/ages/interactions/97.c
+      src/game/ages/interactions/a8.c
+      src/game/ages/interactions/adlar.c
+      src/game/ages/interactions/ambi.c
+      src/game/ages/interactions/ambi15.c
+      src/game/ages/interactions/bear.c
+      src/game/ages/interactions/bipin15.c
+      src/game/ages/interactions/bird.c
+      src/game/ages/interactions/blackTowerDoorHandler.c
+      src/game/ages/interactions/blossom15.c
+      src/game/ages/interactions/bombUpgradeFairy.c
+      src/game/ages/interactions/bombUpgradeFairy15.c
+      src/game/ages/interactions/boy.c
+      src/game/ages/interactions/boy15.c
+      src/game/ages/interactions/boy2.c
+      src/game/ages/interactions/carpenter.c
+      src/game/ages/interactions/carpenter15.c
+      src/game/ages/interactions/cheval.c
+      src/game/ages/interactions/cheval15.c
+      src/game/ages/interactions/child15.c
+      src/game/ages/interactions/childJabu.c
+      src/game/ages/interactions/cloakedTwinrova.c
+      src/game/ages/interactions/comedian.c
+      src/game/ages/interactions/comedian15.c
+      src/game/ages/interactions/companionScript15.c
+      src/game/ages/interactions/companionScripts.c
+      src/game/ages/interactions/dekuScrub.c
+      src/game/ages/interactions/din.c
+      src/game/ages/interactions/dungeonEvents.c
+      src/game/ages/interactions/dungeonScript.c
+      src/game/ages/interactions/fairyHidingMinigame.c
+      src/game/ages/interactions/fairyHidingMinigame15.c
+      src/game/ages/interactions/femaleVillager.c
+      src/game/ages/interactions/forestFairy.c
+      src/game/ages/interactions/ghiniHarassingMoosh.c
+      src/game/ages/interactions/ghiniHarassingMoosh15.c
+      src/game/ages/interactions/ghostVeran.c
+      src/game/ages/interactions/ghostVeran15.c
+      src/game/ages/interactions/goron.c
+      src/game/ages/interactions/goron15.c
+      src/game/ages/interactions/goronBigBang15.c
+      src/game/ages/interactions/goronElder.c
+      src/game/ages/interactions/goronTargetCarts15.c
+      src/game/ages/interactions/greatFairy.c
+      src/game/ages/interactions/greatFairy15.c
+      src/game/ages/interactions/greatFairyOctorok15.c
+      src/game/ages/interactions/hardhatWorker.c
+      src/game/ages/interactions/humanVeran.c
+      src/game/ages/interactions/impa15.c
+      src/game/ages/interactions/impaInCutscene.c
+      src/game/ages/interactions/impaNpc.c
+      src/game/ages/interactions/interaction6b15.c
+      src/game/ages/interactions/interactiondc15.c
+      src/game/ages/interactions/introSprite.c
+      src/game/ages/interactions/kingMoblinDefeated.c
+      src/game/ages/interactions/kingMoblinDefeated15.c
+      src/game/ages/interactions/kingZora.c
+      src/game/ages/interactions/knowItAllBird.c
+      src/game/ages/interactions/librarian.c
+      src/game/ages/interactions/linkedGameGhini.c
+      src/game/ages/interactions/linkedNpc15.c
+      src/game/ages/interactions/makuGateOpening.c
+      src/game/ages/interactions/makuSprout.c
+      src/game/ages/interactions/makuSprout15.c
+      src/game/ages/interactions/makuTree.c
+      src/game/ages/interactions/makuTree15.c
+      src/game/ages/interactions/mamamuDog.c
+      src/game/ages/interactions/mamamuDog15.c
+      src/game/ages/interactions/mamamuYan.c
+      src/game/ages/interactions/mamamuYan15.c
+      src/game/ages/interactions/maskSalesman.c
+      src/game/ages/interactions/masterDiver.c
+      src/game/ages/interactions/miscMan.c
+      src/game/ages/interactions/miscMan2.c
+      src/game/ages/interactions/miscellaneous1.c
+      src/game/ages/interactions/miscellaneous2.c
+      src/game/ages/interactions/moblin.c
+      src/game/ages/interactions/moblin15.c
+      src/game/ages/interactions/monkey15.c
+      src/game/ages/interactions/monkeyMain.c
+      src/game/ages/interactions/monkeyThunk.c
+      src/game/ages/interactions/mustacheMan.c
+      src/game/ages/interactions/nayru.c
+      src/game/ages/interactions/nayruSavedCutscene.c
+      src/game/ages/interactions/nayruSavedCutscene15.c
+      src/game/ages/interactions/oldLady.c
+      src/game/ages/interactions/oldMan.c
+      src/game/ages/interactions/oldMan15.c
+      src/game/ages/interactions/oldManWithRupees.c
+      src/game/ages/interactions/oldZora.c
+      src/game/ages/interactions/pastGirl.c
+      src/game/ages/interactions/pastGuy.c
+      src/game/ages/interactions/pastOldLady.c
+      src/game/ages/interactions/patch.c
+      src/game/ages/interactions/patch15.c
+      src/game/ages/interactions/pickaxeWorker.c
+      src/game/ages/interactions/pickaxeWorker15.c
+      src/game/ages/interactions/pirate.c
+      src/game/ages/interactions/pirate15.c
+      src/game/ages/interactions/pirateCaptain.c
+      src/game/ages/interactions/pirateCaptain15.c
+      src/game/ages/interactions/pirateShip.c
+      src/game/ages/interactions/pirateShipInteraction.c
+      src/game/ages/interactions/plen.c
+      src/game/ages/interactions/poe.c
+      src/game/ages/interactions/poe15.c
+      src/game/ages/interactions/possessedNayru.c
+      src/game/ages/interactions/possessedNayru15.c
+      src/game/ages/interactions/postman.c
+      src/game/ages/interactions/rabbit.c
+      src/game/ages/interactions/rabbitMain.c
+      src/game/ages/interactions/rafton.c
+      src/game/ages/interactions/raftwreckCutscene.c
+      src/game/ages/interactions/raftwreckCutscene15.c
+      src/game/ages/interactions/raftwreckCutsceneHelper.c
+      src/game/ages/interactions/ralph.c
+      src/game/ages/interactions/ralph15.c
+      src/game/ages/interactions/remoteMakuCutscene.c
+      src/game/ages/interactions/remoteMakuCutscene15.c
+      src/game/ages/interactions/rosa.c
+      src/game/ages/interactions/shootingGallery.c
+      src/game/ages/interactions/shootingGallery15.c
+      src/game/ages/interactions/soldier.c
+      src/game/ages/interactions/soldier15.c
+      src/game/ages/interactions/subrosian.c
+      src/game/ages/interactions/symmetryNpc.c
+      src/game/ages/interactions/symmetryNpc15.c
+      src/game/ages/interactions/tingle.c
+      src/game/ages/interactions/tingle15.c
+      src/game/ages/interactions/toiletHand.c
+      src/game/ages/interactions/toiletHand15.c
+      src/game/ages/interactions/tokay.c
+      src/game/ages/interactions/tokay15.c
+      src/game/ages/interactions/tokkey.c
+      src/game/ages/interactions/tokkey15.c
+      src/game/ages/interactions/torchesAndBridges15.c
+      src/game/ages/interactions/troy.c
+      src/game/ages/interactions/troy15.c
+      src/game/ages/interactions/tuniNut.c
+      src/game/ages/interactions/tuniNutMain.c
+      src/game/ages/interactions/twinrova15.c
+      src/game/ages/interactions/twinrova3.c
+      src/game/ages/interactions/twinrovaInCutscene.c
+      src/game/ages/interactions/twinrovaInteraction.c
+      src/game/ages/interactions/veranCutsceneFace.c
+      src/game/ages/interactions/veranCutsceneWallmaster.c
+      src/game/ages/interactions/villager.c
+      src/game/ages/interactions/villager15.c
+      src/game/ages/interactions/vire.c
+      src/game/ages/interactions/vire15.c
+      src/game/ages/interactions/wildTokayController.c
+      src/game/ages/interactions/zelda.c
+      src/game/ages/interactions/zelda15.c
+      src/game/ages/interactions/zora.c
+      src/game/ages/interactions/zora15.c
+      APPEND PROPERTY COMPILE_DEFINITIONS ORACLES_LUA_GAMEPLAY=1)
     if(ORACLES_LUA_ITEMS_SHOPS)
       target_compile_definitions(oraclesnative INTERFACE ORACLES_LUA_ITEMS_SHOPS=1)
     endif()
@@ -276,6 +482,21 @@ endif()
 
 enable_testing()
 if(ORACLES_LUA_GAMEPLAY)
+  if(ORACLES_LUA_NPCS_EVENTS)
+    target_compile_definitions(oraclesnative INTERFACE ORACLES_LUA_NPCS_EVENTS=1)
+  endif()
+  if(ORACLES_LUA_NPCS_EVENTS)
+    add_executable(test_lua_npcs_events tests/test_lua_npcs_events.c)
+    target_include_directories(test_lua_npcs_events PRIVATE tests)
+    target_link_libraries(test_lua_npcs_events PRIVATE oraclesgameplay)
+    add_test(NAME lua_npcs_events COMMAND test_lua_npcs_events)
+    add_executable(test_lua_npcs_events_rom tests/test_lua_npcs_events_rom.c)
+    target_include_directories(test_lua_npcs_events_rom PRIVATE tests)
+    target_link_libraries(test_lua_npcs_events_rom PRIVATE oraclesnative)
+    target_compile_definitions(test_lua_npcs_events_rom PRIVATE GAME_ROM_DIR="${CMAKE_SOURCE_DIR}/roms")
+    add_test(NAME lua_npcs_events_rom COMMAND test_lua_npcs_events_rom)
+    set_tests_properties(lua_npcs_events_rom PROPERTIES SKIP_RETURN_CODE 77 LABELS "rom" TIMEOUT 600)
+  endif()
   if(ORACLES_LUA_ITEMS_SHOPS)
     add_executable(test_lua_items_shops tests/test_lua_items_shops.c)
     target_include_directories(test_lua_items_shops PRIVATE tests)

@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/npcs_events.h"
 
 #undef CYC
 #undef CYCT
@@ -26,15 +27,15 @@ void interactionCodebb__afterCall6dd1_hook(GB *gb) {
   BASE(interactionCodebb);
   uint16_t sp0_ = gb->sp;
   CYC(b_+14, b_+17); SET_HL(RV((SYM(interactionCoded8__subid0Script) + 58), 0x7d93));
-  CALL_C(b_+17, interactionSetScript_hook, SYM(interactionSetScript), b_+20);
+  NPC_CALL_C(b_+17, interactionSetScript_hook, SYM(interactionSetScript), b_+20);
   CYC(b_+20, b_+23); TAIL(objectSetVisible82);
 }
 
 void interactionCodebb__state0_hook(GB *gb) {
   BASE(interactionCodebb);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+8, interactionIncState_hook, SYM(interactionIncState), b_+11);
-  CALL_C(b_+11, interactionInitGraphics_hook, SYM(interactionInitGraphics), b_+14);
+  NPC_CALL_C(b_+8, interactionIncState_hook, SYM(interactionIncState), b_+11);
+  NPC_CALL_C(b_+11, interactionInitGraphics_hook, SYM(interactionInitGraphics), b_+14);
   interactionCodebb__afterCall6dd1_hook(gb);
 }
 
@@ -42,12 +43,12 @@ void interactionCodebb__state1_hook(GB *gb) {
   BASE(interactionCodebb);
   uint16_t sp0_ = gb->sp;
   CYC(b_+23, b_+25); A = 0x1a;
-  CALL_C(b_+25, objectGetRelatedObject1Var_hook, SYM(objectGetRelatedObject1Var), b_+28);
+  NPC_CALL_C(b_+25, objectGetRelatedObject1Var_hook, SYM(objectGetRelatedObject1Var), b_+28);
   CYC(b_+28, b_+29); A = mem_rd(gb, HL);
-  CYC(b_+29, b_+31); alu_xor(gb, 0x80);
+  CYC(b_+29, b_+31); NPC_XOR(0x80);
   CYC(b_+31, b_+32); E = L;
-  CYC(b_+32, b_+33); mem_wr(gb, DE, A);
-  CALL_C(b_+33, interactionRunScript_hook, SYM(interactionRunScript), b_+36);
+  CYC(b_+32, b_+33); EVENT_WRITE(DE, A);
+  NPC_CALL_C(b_+33, interactionRunScript_hook, SYM(interactionRunScript), b_+36);
   if (!(F & FC)) { CYCT(b_+36, b_+37); ret_effect(gb); return; }
   CYC(b_+36, b_+37);
   CYC(b_+37, b_+40); TAIL(interactionDelete);

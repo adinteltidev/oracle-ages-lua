@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/npcs_events.h"
 
 #undef CYC
 #undef CYCT
@@ -17,7 +18,7 @@ void blossom_openNameEntryMenu_hook(GB *gb);
 void setNextChildStage_hook(GB *gb) {
   BASE(setNextChildStage);
   CYC(b_+0, b_+3); SET_HL(wNextChildStage);
-  CYC(b_+3, b_+4); mem_wr(gb, HL, A);
+  CYC(b_+3, b_+4); EVENT_WRITE(HL, A);
   RET(b_+4);
 }
 
@@ -31,7 +32,7 @@ void checkc6e2BitSet_hook(GB *gb) {
   BASE(checkc6e2BitSet);
   uint16_t sp0_ = gb->sp;
   CYC(b_+0, b_+3); SET_HL(wc6e2);
-  CALL_C(b_+3, checkFlag_hook, SYM(checkFlag), b_+6);
+  NPC_CALL_ZERO(b_+3, checkFlag_hook, SYM(checkFlag), b_+6);
   CYC(b_+6, b_+8); A = 0x01;
   if (!(F & FZ)) {
     CYCT(b_+8, b_+10);
@@ -42,16 +43,16 @@ void checkc6e2BitSet_hook(GB *gb) {
 
 setResult:
   CYC(b_+11, b_+13); E = INTERACTION_BASE + OBJ_VAR3B;
-  CYC(b_+13, b_+14); mem_wr(gb, DE, A);
+  CYC(b_+13, b_+14); EVENT_WRITE(DE, A);
   RET(b_+14);
 }
 
 void blossom_checkHasRupees_hook(GB *gb) {
   BASE(blossom_checkHasRupees);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, cpRupeeValue_hook, SYM(cpRupeeValue), b_+3);
+  NPC_CALL_C(b_+0, cpRupeeValue_hook, SYM(cpRupeeValue), b_+3);
   CYC(b_+3, b_+5); E = INTERACTION_BASE + OBJ_VAR3C;
-  CYC(b_+5, b_+6); mem_wr(gb, DE, A);
+  CYC(b_+5, b_+6); EVENT_WRITE(DE, A);
   RET(b_+6);
 }
 
@@ -59,7 +60,7 @@ void blossom_addValueToChildStatus_hook(GB *gb) {
   BASE(blossom_addValueToChildStatus);
   CYC(b_+0, b_+3); SET_HL(wChildStatus);
   CYC(b_+3, b_+4); alu_add(gb, mem_rd(gb, HL));
-  CYC(b_+4, b_+5); mem_wr(gb, HL, A);
+  CYC(b_+4, b_+5); EVENT_WRITE(HL, A);
   RET(b_+5);
 }
 
@@ -70,13 +71,13 @@ void blossom_decideInitialChildStatus_hook(GB *gb) {
 
 nextChar:
   CYC(b_+5, b_+6); A = mem_rd(gb, HL); SET_HL(HL + 1);
-  CYC(b_+6, b_+7); alu_or(gb, A);
+  CYC(b_+6, b_+7); NPC_OR(A);
   if (F & FZ) {
     CYCT(b_+7, b_+9);
     goto parsedName;
   }
   CYC(b_+7, b_+9);
-  CYC(b_+9, b_+11); alu_and(gb, 0x0f);
+  CYC(b_+9, b_+11); NPC_AND(0x0f);
   CYC(b_+11, b_+12); alu_add(gb, B);
   CYC(b_+12, b_+13); B = A;
   CYC(b_+13, b_+15);
@@ -93,7 +94,7 @@ reduceLoop:
   }
   CYC(b_+18, b_+20);
   CYC(b_+20, b_+22); alu_add(gb, 0x04);
-  CYC(b_+22, b_+25); mem_wr(gb, wChildStatus, A);
+  CYC(b_+22, b_+25); EVENT_WRITE(wChildStatus, A);
   RET(b_+25);
 }
 

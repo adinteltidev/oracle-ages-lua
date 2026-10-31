@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/npcs_events.h"
 
 #undef CYC
 #undef CYCT
@@ -42,7 +43,7 @@ static void linkedNpc_add_a_to_hl(GB *gb, uint16_t return_address) {
 void linkedNpc_checkShouldSpawn_hook(GB *gb) {
   BASE(linkedNpc_checkShouldSpawn);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, checkIsLinkedGame_hook, SYM(checkIsLinkedGame), b_+3);
+  NPC_CALL_ZERO(b_+0, checkIsLinkedGame_hook, SYM(checkIsLinkedGame), b_+3);
   if (!(F & FZ)) { CYCT(b_+3, b_+5); goto notLinked; }
   CYC(b_+3, b_+5);
   CYC(b_+5, b_+8); TAIL(writeFlagsTocddb);
@@ -71,7 +72,7 @@ checkd2_2:
   CYC(b_+47, b_+49); A = 0x01;
   CYC(b_+49, b_+52); TAIL(checkEssenceNotObtained);
 always:
-  CYC(b_+52, b_+53); alu_or(gb, D);
+  CYC(b_+52, b_+53); NPC_OR(D);
   CYC(b_+53, b_+56); TAIL(writeFlagsTocddb);
 }
 
@@ -80,9 +81,9 @@ void linkedNpc_checkHasExtraTextBox_hook(GB *gb) {
   CYC(b_+0, b_+2); E = 0x7f;
   CYC(b_+2, b_+3); A = mem_rd(gb, DE);
   CYC(b_+3, b_+6); SET_HL(b_+12);
-  CYC(b_+6, b_+7); linkedNpc_add_a_to_hl(gb, b_+7);
+  CYC(b_+6, b_+7); NPC_LOCAL_CALL(linkedNpc_add_a_to_hl(gb, b_+7));
   CYC(b_+7, b_+8); A = mem_rd(gb, HL);
-  CYC(b_+8, b_+9); alu_or(gb, A);
+  CYC(b_+8, b_+9); NPC_OR(A);
   CYC(b_+9, b_+12); TAIL(writeFlagsTocddb);
 }
 
@@ -94,10 +95,10 @@ void linkedNpc_generateSecret_hook(GB *gb) {
   CYC(b_+3, b_+4); B = mem_rd(gb, HL);
   CYC(b_+4, b_+6); A = GV(0x50, 0x64);
   CYC(b_+6, b_+7); alu_add(gb, B);
-  CALL_C(b_+7, setGlobalFlag_hook, SYM(setGlobalFlag), b_+10);
+  NPC_CALL_C(b_+7, setGlobalFlag_hook, SYM(setGlobalFlag), b_+10);
   CYC(b_+10, b_+12); A = GV(0x20, 0x00);
   CYC(b_+12, b_+13); alu_add(gb, B);
-  CYC(b_+13, b_+16); mem_wr(gb, wShortSecretIndex, A);
+  CYC(b_+13, b_+16); EVENT_WRITE(wShortSecretIndex, A);
   CYC(b_+16, b_+19); SET_BC(0x0003);
   CYC(b_+19, b_+22); TAIL(secretFunctionCaller);
 }
@@ -108,7 +109,7 @@ void linkedNpc_initHighTextIndex_hook(GB *gb) {
   if (game_seasons) {
     CYC(b_+S(0), b_+S(1)); C = A;
     CYC(b_+S(1), b_+S(3)); A = 0x53;
-    CALL_C(b_+S(3), interactionSetHighTextIndex_hook, SYM(interactionSetHighTextIndex), b_+S(6));
+    NPC_CALL_C(b_+S(3), interactionSetHighTextIndex_hook, SYM(interactionSetHighTextIndex), b_+S(6));
     CYC(b_+S(6), b_+S(7)); A = C;
     TAIL(linkedNpc_calcLowTextIndex);
   }
@@ -133,6 +134,6 @@ void linkedNpc_calcLowTextIndex_hook(GB *gb) {
   }
   CYC(b_+O(10), b_+OE(11)); alu_add(gb, C);
   CYC(b_+O(11), b_+OE(13)); E = 0x72;
-  CYC(b_+O(13), b_+OE(14)); mem_wr(gb, DE, A);
+  CYC(b_+O(13), b_+OE(14)); EVENT_WRITE(DE, A);
   CYC(b_+O(14), b_+OE(15)); ret_effect(gb);
 }

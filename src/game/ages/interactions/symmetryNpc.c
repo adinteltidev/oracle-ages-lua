@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/npcs_events.h"
 
 #undef CYC
 #undef CYCT
@@ -55,11 +56,11 @@ void interactionCodebf_hook(GB *gb) {
   }
 
   // interactionCodebf@state0
-  CALL_C(b_+10, interactionInitGraphics_hook, SYM(interactionInitGraphics), b_+13); // SWITCHES THREADS
-  CALL_C(b_+13, objectSetVisible82_hook, SYM(objectSetVisible82), b_+16);
-  CALL_C(b_+16, interactionIncState_hook, SYM(interactionIncState), b_+19);
+  NPC_CALL_C(b_+10, interactionInitGraphics_hook, SYM(interactionInitGraphics), b_+13); // SWITCHES THREADS
+  NPC_CALL_C(b_+13, objectSetVisible82_hook, SYM(objectSetVisible82), b_+16);
+  NPC_CALL_C(b_+16, interactionIncState_hook, SYM(interactionIncState), b_+19);
   CYC(b_+19, b_+21); A = 0x2d; // >TX_2d00
-  CALL_C(b_+21, interactionSetHighTextIndex_hook, SYM(interactionSetHighTextIndex), b_+24);
+  NPC_CALL_C(b_+21, interactionSetHighTextIndex_hook, SYM(interactionSetHighTextIndex), b_+24);
   CYC(b_+24, b_+26); E = INTERACTION_BASE + OBJ_SUBID;
   CYC(b_+26, b_+27); A = mem_rd(gb, DE);
   {
@@ -71,7 +72,10 @@ void interactionCodebf_hook(GB *gb) {
 
   // interactionCodebf@subid0cInit
   CYC(b_+54, b_+56); A = 0x29; // GLOBALFLAG_TUNI_NUT_PLACED
-  CALL_C(b_+56, checkGlobalFlag_hook, SYM(checkGlobalFlag), b_+59);
+  NPC_CALL_ZERO(b_+56, checkGlobalFlag_hook, SYM(checkGlobalFlag), b_+59);
+#ifdef ORACLES_LUA_GAMEPLAY
+  if(NPC_ACTIVE){bool allowed_;if(!gameplay_npc_symmetry_available(12,(F&FZ)?0:1,&allowed_))NPC_STOP();F=(uint8_t)((F&~FZ)|(allowed_?0:FZ));}
+#endif
   if (F & FZ) { CYCT(b_+59, b_+62); interactionDelete_hook(gb); return; } // jp z
   CYC(b_+59, b_+62);
 
@@ -79,7 +83,7 @@ loadScript: // interactionCodebf@loadScript
   CYC(b_+62, b_+64); E = INTERACTION_BASE + OBJ_SUBID;
   CYC(b_+64, b_+65); A = mem_rd(gb, DE);
   CYC(b_+65, b_+68); SET_HL(b_+75); // @scriptTable
-  CYC(b_+68, b_+69); interactionCodebf_add_double_index(gb, b_+69);
+  CYC(b_+68, b_+69); NPC_LOCAL_CALL(interactionCodebf_add_double_index(gb, b_+69));
   CYC(b_+69, b_+70); A = mem_rd(gb, HL); SET_HL(HL + 1);
   CYC(b_+70, b_+71); H = mem_rd(gb, HL);
   CYC(b_+71, b_+72); L = A;
@@ -87,16 +91,19 @@ loadScript: // interactionCodebf@loadScript
 
 state2: // interactionCodebf@state2
   CYC(b_+101, b_+104); SET_HL(wTmpcfc0_genericCutscene_state);
-  CYC(b_+104, b_+106); alu_bit(gb, 0, mem_rd(gb, HL));
+  CYC(b_+104, b_+106); NPC_BIT(0, mem_rd(gb, HL));
+#ifdef ORACLES_LUA_GAMEPLAY
+  if(NPC_ACTIVE){bool restart_;if(!gameplay_npc_symmetry_restart(2,mem_rd(gb,HL),&restart_))NPC_STOP();F=(uint8_t)((F&~FZ)|(restart_?0:FZ));}
+#endif
   if (F & FZ) { CYCT(b_+106, b_+108); goto runScriptAndAnimate; } // jr z
   CYC(b_+106, b_+108);
   CYC(b_+108, b_+111); SET_HL(RV((SYM(interactionCoded8__subid1Script) + 6), 0x7db2)); // mainScripts.symmetryNpcSubid8And9Script_afterTuniNutRestored
-  CALL_C(b_+111, interactionSetScript_hook, SYM(interactionSetScript), b_+114);
+  NPC_CALL_C(b_+111, interactionSetScript_hook, SYM(interactionSetScript), b_+114);
   CYC(b_+114, b_+116); E = INTERACTION_BASE + OBJ_STATE;
   CYC(b_+116, b_+118); A = 0x01;
-  CYC(b_+118, b_+119); mem_wr(gb, DE, A);
+  CYC(b_+118, b_+119); EVENT_WRITE(DE, A);
 
 runScriptAndAnimate: // interactionCodebf@runScriptAndAnimate
-  CALL_C(b_+119, interactionRunScript_hook, SYM(interactionRunScript), b_+122);
+  NPC_CALL_C(b_+119, interactionRunScript_hook, SYM(interactionRunScript), b_+122);
   CYC(b_+122, b_+125); TAIL(npcFaceLinkAndAnimate); // jp
 }

@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/npcs_events.h"
 
 #undef CYC
 #undef CYCT
@@ -38,30 +39,30 @@ static void boy2_add_double_index(GB *gb, uint16_t return_address) {
 static void boy2_initialize_script(GB *gb, uint16_t sp0_) {
   BASE(interactionCode3f);
   CYC(b_+189, b_+191); A = 0x29;
-  CALL_C(b_+191, interactionSetHighTextIndex_hook, SYM(interactionSetHighTextIndex), b_+194);
+  NPC_CALL_C(b_+191, interactionSetHighTextIndex_hook, SYM(interactionSetHighTextIndex), b_+194);
   CYC(b_+194, b_+196); E = INTERACTION_BASE + OBJ_SUBID;
   CYC(b_+196, b_+197); A = mem_rd(gb, DE);
   CYC(b_+197, b_+200); SET_HL(b_+210);
-  CYC(b_+200, b_+201); boy2_add_double_index(gb, b_+201);
+  CYC(b_+200, b_+201); NPC_LOCAL_CALL(boy2_add_double_index(gb, b_+201));
   CYC(b_+201, b_+202); A = mem_rd(gb, HL); SET_HL(HL + 1);
   CYC(b_+202, b_+203); H = mem_rd(gb, HL);
   CYC(b_+203, b_+204); L = A;
-  CALL_C(b_+204, interactionSetScript_hook, SYM(interactionSetScript), b_+207);
+  NPC_CALL_C(b_+204, interactionSetScript_hook, SYM(interactionSetScript), b_+207);
   CYC(b_+207, b_+210); interactionIncState_hook(gb);
 }
 
 static void boy2_init_graphics_and_inc_state(GB *gb, uint16_t sp0_) {
   BASE(interactionCode3f);
-  CALL_C(b_+174, interactionInitGraphics_hook, SYM(interactionInitGraphics), b_+177);
-  CALL_C(b_+177, objectMarkSolidPosition_hook, SYM(objectMarkSolidPosition), b_+180);
+  NPC_CALL_C(b_+174, interactionInitGraphics_hook, SYM(interactionInitGraphics), b_+177);
+  NPC_CALL_C(b_+177, objectMarkSolidPosition_hook, SYM(objectMarkSolidPosition), b_+180);
   CYC(b_+180, b_+183); interactionIncState_hook(gb);
 }
 
 static void boy2_initialize_graphics_and_script(GB *gb, uint16_t sp0_) {
   BASE(interactionCode3f);
-  CALL_C(b_+183, interactionInitGraphics_hook, SYM(interactionInitGraphics), b_+186);
-  CALL_C(b_+186, objectMarkSolidPosition_hook, SYM(objectMarkSolidPosition), b_+189);
-  boy2_initialize_script(gb, sp0_);
+  NPC_CALL_C(b_+183, interactionInitGraphics_hook, SYM(interactionInitGraphics), b_+186);
+  NPC_CALL_C(b_+186, objectMarkSolidPosition_hook, SYM(objectMarkSolidPosition), b_+189);
+  NPC_LOCAL_CALL(boy2_initialize_script(gb, sp0_));
 }
 
 void interactionCode3f_hook(GB *gb) {
@@ -79,70 +80,70 @@ void interactionCode3f_hook(GB *gb) {
   } while (0);
 
 subid0:
-  CALL_C(b_+12, checkInteractionState_hook, SYM(checkInteractionState), b_+15);
+  NPC_CALL_ZERO(b_+12, checkInteractionState_hook, SYM(checkInteractionState), b_+15);
   if (!(F & FZ)) {
     CYCT(b_+15, b_+17); goto subid0_state1;
   }
   CYC(b_+15, b_+17);
   CYC(b_+17, b_+19); A = 0x14;
-  CALL_C(b_+19, checkGlobalFlag_hook, SYM(checkGlobalFlag), b_+22);
+  NPC_CALL_ZERO(b_+19, checkGlobalFlag_hook, SYM(checkGlobalFlag), b_+22);
   if (!(F & FZ)) {
     CYCT(b_+22, b_+25); TAIL(interactionDelete);
   }
   CYC(b_+22, b_+25);
   CYC(b_+25, b_+27); A = 0x0b;
-  CALL_C(b_+27, checkGlobalFlag_hook, SYM(checkGlobalFlag), b_+30);
+  NPC_CALL_ZERO(b_+27, checkGlobalFlag_hook, SYM(checkGlobalFlag), b_+30);
   if (!(F & FZ)) {
     CYCT(b_+30, b_+33); TAIL(interactionDelete);
   }
   CYC(b_+30, b_+33);
   CYC(b_+33, b_+36); push_effect(gb, b_+36);
-  boy2_initialize_graphics_and_script(gb, sp0_);
+  NPC_LOCAL_CALL(boy2_initialize_graphics_and_script(gb, sp0_));
 subid0_state1:
-  CALL_C(b_+36, interactionRunScript_hook, SYM(interactionRunScript), b_+39);
+  NPC_CALL_C(b_+36, interactionRunScript_hook, SYM(interactionRunScript), b_+39);
   CYC(b_+39, b_+42); npcFaceLinkAndAnimate_hook(gb);
   return;
 
 subid1:
-  CALL_C(b_+42, checkInteractionState_hook, SYM(checkInteractionState), b_+45);
+  NPC_CALL_ZERO(b_+42, checkInteractionState_hook, SYM(checkInteractionState), b_+45);
   if (!(F & FZ)) {
     CYCT(b_+45, b_+47); goto subid1_state1;
   }
   CYC(b_+45, b_+47);
   CYC(b_+47, b_+50); SET_HL(SYM(getGameProgress_1));
   CYC(b_+50, b_+52); E = 0x09;
-  CALL_C(b_+52, interBankCall_hook, 0x008a, b_+55);
+  NPC_CALL_C(b_+52, interBankCall_hook, 0x008a, b_+55);
   CYC(b_+55, b_+56); A = B;
-  CYC(b_+56, b_+58); alu_cp(gb, 3);
+  CYC(b_+56, b_+58); NPC_CP(3);
   if (!(F & FZ)) {
     CYCT(b_+58, b_+61); TAIL(interactionDelete);
   }
   CYC(b_+58, b_+61);
   CYC(b_+61, b_+64); push_effect(gb, b_+64);
-  boy2_initialize_graphics_and_script(gb, sp0_);
+  NPC_LOCAL_CALL(boy2_initialize_graphics_and_script(gb, sp0_));
 subid1_state1:
-  CALL_C(b_+64, interactionRunScript_hook, SYM(interactionRunScript), b_+67);
+  NPC_CALL_C(b_+64, interactionRunScript_hook, SYM(interactionRunScript), b_+67);
   CYC(b_+67, b_+70); npcFaceLinkAndAnimate_hook(gb);
   return;
 
 subid2:
-  CALL_C(b_+70, checkInteractionState_hook, SYM(checkInteractionState), b_+73);
+  NPC_CALL_ZERO(b_+70, checkInteractionState_hook, SYM(checkInteractionState), b_+73);
   if (!(F & FZ)) {
     CYCT(b_+73, b_+75); goto subid2_state1;
   }
   CYC(b_+73, b_+75);
-  CALL_C(b_+75, getThisRoomFlags_hook, SYM(getThisRoomFlags), b_+78);
-  CYC(b_+78, b_+80); alu_bit(gb, 6, A);
+  NPC_CALL_C(b_+75, getThisRoomFlags_hook, SYM(getThisRoomFlags), b_+78);
+  CYC(b_+78, b_+80); NPC_BIT(6, A);
   if (!(F & FZ)) {
     CYCT(b_+80, b_+83); TAIL(interactionDelete);
   }
   CYC(b_+80, b_+83);
   CYC(b_+83, b_+86); push_effect(gb, b_+86);
-  boy2_init_graphics_and_inc_state(gb, sp0_);
+  NPC_LOCAL_CALL(boy2_init_graphics_and_inc_state(gb, sp0_));
   CYC(b_+86, b_+88); L = INTERACTION_BASE + OBJ_VAR3D;
   CYC(b_+88, b_+90); E = INTERACTION_BASE + OBJ_XH;
   CYC(b_+90, b_+91); A = mem_rd(gb, DE);
-  CYC(b_+91, b_+92); mem_wr(gb, HL, A);
+  CYC(b_+91, b_+92); EVENT_WRITE(HL, A);
   CYC(b_+92, b_+95); objectSetVisiblec2_hook(gb);
   return;
 
@@ -158,14 +159,14 @@ subid2_state1:
   } while (0);
 
 substate0:
-  CALL_C(b_+105, interactionAnimate_hook, SYM(interactionAnimate), b_+108);
+  NPC_CALL_C(b_+105, interactionAnimate_hook, SYM(interactionAnimate), b_+108);
   CYC(b_+108, b_+111); A = mem_rd(gb, wTmpcfc0_genericCutscene_cfd1);
-  CYC(b_+111, b_+113); alu_cp(gb, 1);
+  CYC(b_+111, b_+113); NPC_CP(1);
   if (!(F & FZ)) {
     CYCT(b_+113, b_+114); ret_effect(gb); return;
   }
   CYC(b_+113, b_+114);
-  CALL_C(b_+114, interactionIncSubstate_hook, SYM(interactionIncSubstate), b_+117);
+  NPC_CALL_C(b_+114, interactionIncSubstate_hook, SYM(interactionIncSubstate), b_+117);
   CYC(b_+117, b_+120); SET_HL(RV((SYM(interactionCode64__state0) + 5), 0x73df));
   CYC(b_+120, b_+122); E = 0x08;
   CYC(b_+122, b_+125); interBankCall_hook(gb);
@@ -173,15 +174,15 @@ substate0:
 
 substate1:
   CYC(b_+125, b_+127); C = 0x20;
-  CALL_C(b_+127, objectUpdateSpeedZ_paramC_hook, SYM(objectUpdateSpeedZ_paramC), b_+130);
+  NPC_CALL_C(b_+127, objectUpdateSpeedZ_paramC_hook, SYM(objectUpdateSpeedZ_paramC), b_+130);
   if (!(F & FZ)) {
     CYCT(b_+130, b_+131); ret_effect(gb); return;
   }
   CYC(b_+130, b_+131);
-  CALL_C(b_+131, interactionIncSubstate_hook, SYM(interactionIncSubstate), b_+134);
+  NPC_CALL_C(b_+131, interactionIncSubstate_hook, SYM(interactionIncSubstate), b_+134);
   CYC(b_+134, b_+137); push_effect(gb, b_+137);
-  boy2_initialize_script(gb, sp0_);
-  CYC(b_+137, b_+138); mem_wr(gb, HL, alu_dec8(gb, mem_rd(gb, HL)));
+  NPC_LOCAL_CALL(boy2_initialize_script(gb, sp0_));
+  CYC(b_+137, b_+138); EVENT_WRITE(HL, alu_dec8(gb, mem_rd(gb, HL)));
   CYC(b_+138, b_+139); ret_effect(gb);
   return;
 
@@ -192,7 +193,7 @@ substate2:
   return;
 
 subid3:
-  CALL_C(b_+147, checkInteractionState_hook, SYM(checkInteractionState), b_+150);
+  NPC_CALL_ZERO(b_+147, checkInteractionState_hook, SYM(checkInteractionState), b_+150);
   if (F & FZ) {
     CYCT(b_+150, b_+152); goto subid3_state0;
   }
@@ -204,10 +205,10 @@ subid3:
 
 subid3_state0:
   CYC(b_+160, b_+163); push_effect(gb, b_+163);
-  boy2_init_graphics_and_inc_state(gb, sp0_);
+  NPC_LOCAL_CALL(boy2_init_graphics_and_inc_state(gb, sp0_));
   CYC(b_+163, b_+165); L = INTERACTION_BASE + OBJ_COUNTER1;
-  CYC(b_+165, b_+167); mem_wr(gb, HL, 0x78);
+  CYC(b_+165, b_+167); EVENT_WRITE(HL, 0x78);
   CYC(b_+167, b_+169); L = INTERACTION_BASE + OBJ_OAM_FLAGS;
-  CYC(b_+169, b_+171); mem_wr(gb, HL, 0x02);
+  CYC(b_+169, b_+171); EVENT_WRITE(HL, 0x02);
   CYC(b_+171, b_+174); TAIL(objectSetVisiblec1);
 }

@@ -1,5 +1,6 @@
 #include "script/doors.h"
 #include "script/items_shops.h"
+#include "script/npcs_events.h"
 // Headless full-engine frame benchmark. Correctness traces run separately from timing.
 #include <stdio.h>
 #include <stdlib.h>
@@ -172,6 +173,20 @@ static void items_stimulus(GB *g,const Blocks *b,unsigned frame) {
   }
   if(phase>=24)mem_wr(g,wTextIsActive,0);
 }
+// Four NPC/event machines update through their original ROM scripts every frame.
+static void npcs_stimulus(GB *g,const Blocks *b,unsigned frame){
+  unsigned phase=frame%240;
+  if(!phase){
+    static const uint8_t ids[]={0x45,0xbf,0x38,0x43};
+    mem_wr(g,w1Link_xh,0x28);mem_wr(g,w1Link_yh,0x28);mem_wr(g,wActiveMusic,3);
+    for(unsigned i=0;i<b->count;++i){uint16_t base=b->slots[i];for(unsigned j=0;j<0x40;++j)object_write(g,base+j,0);
+      object_write(g,base,1);object_write(g,base+OBJ_ID,ids[i%4]);object_write(g,base+OBJ_SUBID,i%4==1?2:0);
+      object_write(g,base+OBJ_XH,0x48+i*0x10);object_write(g,base+OBJ_YH,0x68);
+    }
+  }
+  mem_wr(g,wTextIsActive,0);mem_wr(g,wSelectedTextOption,(frame/40)&1);
+  if(phase%40==8)for(unsigned i=0;i<b->count;++i)object_write(g,b->slots[i]+0x31,1);
+}
 static void distribution(FILE *f, const char *name, double *values, unsigned count) {
   double total = 0; for (unsigned i = 0; i < count; ++i) total += values[i];
   qsort(values, count, sizeof *values, compare_double);
@@ -207,7 +222,8 @@ int main(int argc, char **argv) {
   bool lava=!strcmp(scenario,"levers_lava");
   bool doors=!strcmp(scenario,"doors");
   bool items=!strcmp(scenario,"items_shops");
-  CHECK(stress || flame || lava || doors || items || !strcmp(scenario, "idle"));
+  bool npcs=!strcmp(scenario,"npcs_events");
+  CHECK(stress || flame || lava || doors || items || npcs || !strcmp(scenario, "idle"));
   CHECK(!lava || (block_count==1 && warmup%480==0)); CHECK(frames && block_count && block_count <= 8);
   CHECK(!reload_every || (trace_path && reload_state)); // Disk I/O never enters timing runs.
   // Start the measured stimulus at an identical cycle boundary after warm-up.
@@ -233,18 +249,19 @@ int main(int argc, char **argv) {
   }
   CHECK(state); CHECK(oracles_load_boot_state(g, state));
   in.live = true; g->input_at = input_at; g->input_ctx = &in;
-  Blocks blocks = {0}; if (stress || flame || lava || doors || items) select_slots(g, &blocks, block_count);
+  Blocks blocks = {0}; if (stress || flame || lava || doors || items || npcs) select_slots(g, &blocks, block_count);
 #ifdef ORACLES_LUA_GAMEPLAY
   CHECK(gameplay_init()); gameplay_enable(lua_enabled);
   if(flame && lua_enabled) CHECK(gameplay_colored_cube_enabled());
   if(lava && lua_enabled) CHECK(gameplay_levers_lava_enabled());
   if(doors && lua_enabled) CHECK(gameplay_doors_enabled());
   if(items && lua_enabled) CHECK(gameplay_items_shops_enabled());
+  if(npcs && lua_enabled) CHECK(gameplay_npcs_events_enabled());
 #ifndef ORACLES_LUA_BLOCK_PUZZLES
   CHECK(!stress); // An unintegrated module must not be reported as covered.
 #endif
 #endif
-  for (unsigned i = 0; i < warmup; ++i) { if (stress) stimulus(g, &blocks, i); if(flame) flame_stimulus(g,&blocks,i); if(lava) lava_stimulus(g,&blocks,i); if(doors) doors_stimulus(g,&blocks,i); if(items) items_stimulus(g,&blocks,i); tick(g); }
+  for (unsigned i = 0; i < warmup; ++i) { if (stress) stimulus(g, &blocks, i); if(flame) flame_stimulus(g,&blocks,i); if(lava) lava_stimulus(g,&blocks,i); if(doors) doors_stimulus(g,&blocks,i); if(items) items_stimulus(g,&blocks,i); if(npcs) npcs_stimulus(g,&blocks,i); tick(g); }
 #ifdef ORACLES_LUA_GAMEPLAY
   uint64_t before[4]; for (int i = 0; i < 4; ++i) before[i] = gameplay_block_calls(i);
   uint64_t cube_before[3]; for(int i=0;i<3;++i) cube_before[i]=gameplay_colored_cube_calls(i);
@@ -253,6 +270,9 @@ int main(int argc, char **argv) {
   uint64_t item_before[GAMEPLAY_ITEMS_COUNT],shop_before[GAMEPLAY_SHOPS_COUNT];
   for(int i=0;i<GAMEPLAY_ITEMS_COUNT;++i)item_before[i]=gameplay_item_calls(i);
   for(int i=0;i<GAMEPLAY_SHOPS_COUNT;++i)shop_before[i]=gameplay_shop_calls(i);
+  uint64_t npc_before[GAMEPLAY_NPCS_COUNT],event_before[GAMEPLAY_EVENTS_COUNT];
+  for(int i=0;i<GAMEPLAY_NPCS_COUNT;++i)npc_before[i]=gameplay_npc_calls(i);
+  for(int i=0;i<GAMEPLAY_EVENTS_COUNT;++i)event_before[i]=gameplay_event_calls(i);
   GameplayMemoryStats start = gameplay_memory_stats();
 #endif
   FILE *trace = trace_path ? fopen(trace_path, "w") : NULL; CHECK(!trace_path || trace);
@@ -270,7 +290,7 @@ int main(int argc, char **argv) {
       CHECK(oracles_load_boot_state(g, reload_state)); fibers_reset(g);
       ++reloads; pending = false;
     }
-    if (stress) stimulus(g, &blocks, i); if(flame) flame_stimulus(g,&blocks,i); if(lava) lava_stimulus(g,&blocks,i); if(doors) doors_stimulus(g,&blocks,i); if(items) items_stimulus(g,&blocks,i);
+    if (stress) stimulus(g, &blocks, i); if(flame) flame_stimulus(g,&blocks,i); if(lava) lava_stimulus(g,&blocks,i); if(doors) doors_stimulus(g,&blocks,i); if(items) items_stimulus(g,&blocks,i); if(npcs) npcs_stimulus(g,&blocks,i);
     if (trace) { tick(g); fprintf(trace, "%u %016llx\n", i, (unsigned long long)digest(g)); }
     else {
       uint64_t w = wall_ns(), c = cpu_ns(); tick(g);
@@ -289,7 +309,7 @@ int main(int argc, char **argv) {
 #endif
   FILE *f = output ? fopen(output, "w") : stdout; CHECK(f);
   fprintf(f, "{\"mode\":\"%s\",\"scenario\":\"%s\",\"frames\":%u,\"warmup\":%u,\"blocks\":%u,\"timed\":%s,\"reloads\":%u,\"reloaded_block_states_mask\":%u,",
-    mode, scenario, frames, warmup, (stress || flame || lava || doors || items) ? block_count : 0, trace ? "false" : "true", reloads, reloaded_block_states);
+    mode, scenario, frames, warmup, (stress || flame || lava || doors || items || npcs) ? block_count : 0, trace ? "false" : "true", reloads, reloaded_block_states);
   distribution(f, "cpu_ms", cpu, frames); fputc(',', f); distribution(f, "wall_ms", wall, frames);
   fprintf(f, ",\"coverage\":[%llu,%llu,%llu,%llu],\"heap_bytes\":%zu,\"peak_heap_bytes\":%zu,\"measured_allocations\":%llu,\"scripts_sha256\":\"%s\"",
     (unsigned long long)coverage[0], (unsigned long long)coverage[1], (unsigned long long)coverage[2], (unsigned long long)coverage[3],
@@ -322,6 +342,15 @@ int main(int argc, char **argv) {
   if(items && lua_enabled)CHECK(trade_total>0);
 #endif
   for(int i=0;i<GAMEPLAY_ITEMS_COUNT+GAMEPLAY_SHOPS_COUNT;++i)fprintf(f,"%s%llu",i?",":"",(unsigned long long)trade_counts[i]);
+  fputs("],\"npcs_events_coverage\":[",f);
+  uint64_t story_counts[GAMEPLAY_NPCS_COUNT+GAMEPLAY_EVENTS_COUNT]={0};
+#ifdef ORACLES_LUA_GAMEPLAY
+  uint64_t story_total=0;
+  for(int i=0;i<GAMEPLAY_NPCS_COUNT;++i){story_counts[i]=gameplay_npc_calls(i)-npc_before[i];story_total+=story_counts[i];}
+  for(int i=0;i<GAMEPLAY_EVENTS_COUNT;++i){story_counts[GAMEPLAY_NPCS_COUNT+i]=gameplay_event_calls(i)-event_before[i];story_total+=story_counts[GAMEPLAY_NPCS_COUNT+i];}
+  if(npcs && lua_enabled)CHECK(story_total>0);
+#endif
+  for(int i=0;i<GAMEPLAY_NPCS_COUNT+GAMEPLAY_EVENTS_COUNT;++i)fprintf(f,"%s%llu",i?",":"",(unsigned long long)story_counts[i]);
   fputs("]}\n",f);
   if (output) CHECK(fclose(f) == 0);
   return 0;

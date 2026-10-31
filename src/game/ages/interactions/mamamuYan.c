@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/npcs_events.h"
 
 #undef CYC
 #undef CYCT
@@ -19,29 +20,29 @@ static void mamamuYan_add_double_index(GB *gb, uint16_t return_address) {
 
 static void mamamuYan_initialize(GB *gb, uint16_t sp0_) {
   BASE(interactionCode53);
-  CALL_C(b_+23, interactionInitGraphics_hook, SYM(interactionInitGraphics), b_+26);
+  NPC_CALL_C(b_+23, interactionInitGraphics_hook, SYM(interactionInitGraphics), b_+26);
   CYC(b_+26, b_+28); A = 0x0b;
-  CALL_C(b_+28, interactionSetHighTextIndex_hook, SYM(interactionSetHighTextIndex), b_+31);
+  NPC_CALL_C(b_+28, interactionSetHighTextIndex_hook, SYM(interactionSetHighTextIndex), b_+31);
   CYC(b_+31, b_+33); E = 0x42;
   CYC(b_+33, b_+34); A = mem_rd(gb, DE);
   CYC(b_+34, b_+37); SET_HL(b_+47);
-  CYC(b_+37, b_+38); mamamuYan_add_double_index(gb, b_+38);
+  CYC(b_+37, b_+38); NPC_LOCAL_CALL(mamamuYan_add_double_index(gb, b_+38));
   CYC(b_+38, b_+39); A = mem_rd(gb, HL); SET_HL(HL + 1);
   CYC(b_+39, b_+40); H = mem_rd(gb, HL);
   CYC(b_+40, b_+41); L = A;
-  CALL_C(b_+41, interactionSetScript_hook, SYM(interactionSetScript), b_+44);
+  NPC_CALL_C(b_+41, interactionSetScript_hook, SYM(interactionSetScript), b_+44);
   CYC(b_+44, b_+47); interactionIncState_hook(gb);
 }
 
 void interactionCode53_hook(GB *gb) {
   BASE(interactionCode53);
   uint16_t sp0_ = gb->sp; (void)sp0_;
-  CALL_C(b_+0, checkInteractionState_hook, SYM(checkInteractionState), b_+3);
+  NPC_CALL_ZERO(b_+0, checkInteractionState_hook, SYM(checkInteractionState), b_+3);
   if (F & FZ) {
     CYC(b_+3, b_+5);
-    CYC(b_+5, b_+8); push_effect(gb, b_+8); mamamuYan_initialize(gb, sp0_);
+    CYC(b_+5, b_+8); push_effect(gb, b_+8); NPC_LOCAL_CALL(mamamuYan_initialize(gb, sp0_));
   } else CYCT(b_+3, b_+5);
-  CALL_C(b_+8, interactionRunScript_hook, SYM(interactionRunScript), b_+11);
+  NPC_CALL_C(b_+8, interactionRunScript_hook, SYM(interactionRunScript), b_+11);
   if (F & FC) { CYCT(b_+11, b_+14); interactionDelete_hook(gb); return; }
   CYC(b_+11, b_+14);
   CYC(b_+14, b_+17); TAIL(npcFaceLinkAndAnimate);

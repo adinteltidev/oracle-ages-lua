@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/npcs_events.h"
 
 #undef CYC
 #undef CYCT
@@ -48,7 +49,7 @@ void interactionCode96_hook(GB *gb) {
   }
 
   // interactionCode96@subid0 / @subid1
-  CALL_C(b_+8, checkInteractionState_hook, SYM(checkInteractionState), b_+11);
+  NPC_CALL_ZERO(b_+8, checkInteractionState_hook, SYM(checkInteractionState), b_+11);
   if (!(F & FZ)) { CYCT(b_+11, b_+13); goto state1; } // jr nz
   CYC(b_+11, b_+13);
 
@@ -56,15 +57,15 @@ void interactionCode96_hook(GB *gb) {
   CYC(b_+13, b_+16); push_effect(gb, b_+16); goto initGraphicsAndLoadScript;
 
 state1:
-  CALL_C(b_+16, interactionRunScript_hook, SYM(interactionRunScript), b_+19);
+  NPC_CALL_C(b_+16, interactionRunScript_hook, SYM(interactionRunScript), b_+19);
   if (F & FC) { CYCT(b_+19, b_+22); interactionDelete_hook(gb); return; } // jp c
   CYC(b_+19, b_+22);
   CYC(b_+22, b_+24); E = INTERACTION_BASE + OBJ_VAR3F;
   CYC(b_+24, b_+25); A = mem_rd(gb, DE);
-  CYC(b_+25, b_+26); alu_or(gb, A);
+  CYC(b_+25, b_+26); NPC_OR(A);
   if (!(F & FZ)) { CYCT(b_+26, b_+28); goto skipAnimate; } // jr nz
   CYC(b_+26, b_+28);
-  CALL_C(b_+28, interactionAnimate_hook, SYM(interactionAnimate), b_+31);
+  NPC_CALL_C(b_+28, interactionAnimate_hook, SYM(interactionAnimate), b_+31);
 
 skipAnimate:
   CYC(b_+31, b_+34); TAIL(interactionPushLinkAwayAndUpdateDrawPriority); // jp
@@ -72,15 +73,15 @@ skipAnimate:
   // interactionCode96@initGraphicsAndLoadScript; single caller (@state0, above), same
   // sp0_ depth, entered via a genuine `call`. Its final tail-call resumes @state1.
 initGraphicsAndLoadScript:
-  CALL_C(b_+40, interactionInitGraphics_hook, SYM(interactionInitGraphics), b_+43);
+  NPC_CALL_C(b_+40, interactionInitGraphics_hook, SYM(interactionInitGraphics), b_+43);
   CYC(b_+43, b_+45); E = INTERACTION_BASE + OBJ_SUBID;
   CYC(b_+45, b_+46); A = mem_rd(gb, DE);
   CYC(b_+46, b_+49); SET_HL(b_+59); // @scriptTable
-  CYC(b_+49, b_+50); moblin_addDoubleIndexToHl_from_rst(gb, b_+50);
+  CYC(b_+49, b_+50); NPC_LOCAL_CALL(moblin_addDoubleIndexToHl_from_rst(gb, b_+50));
   CYC(b_+50, b_+51); A = mem_rd(gb, HL); SET_HL(HL + 1); // ldi a,(hl)
   CYC(b_+51, b_+52); H = mem_rd(gb, HL);
   CYC(b_+52, b_+53); L = A;
-  CALL_C(b_+53, interactionSetScript_hook, SYM(interactionSetScript), b_+56);
+  NPC_CALL_C(b_+53, interactionSetScript_hook, SYM(interactionSetScript), b_+56);
   CYC(b_+56, b_+59); interactionIncState_hook(gb);
   if (gb->pc == b_+16 && gb->sp == sp0_) goto state1;
   return; // jp

@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/npcs_events.h"
 
 #undef CYC
 #undef CYCT
@@ -40,14 +41,14 @@ void interactionCodecf__afterCall4b19_hook(GB *gb) {
   CYC(b_+16, b_+17); A = mem_rd(gb, DE);
   CYC(b_+17, b_+20); SET_HL(b_+32);
   CYC(b_+20, b_+21); push_effect(gb, b_+21);
-  cf_add_double_index(gb);
+  NPC_LOCAL_CALL(cf_add_double_index(gb));
   CYC(b_+21, b_+22); A = mem_rd(gb, HL); SET_HL(HL + 1);
   CYC(b_+22, b_+24); E = 0x4b;
-  CYC(b_+24, b_+25); mem_wr(gb, DE, A);
+  CYC(b_+24, b_+25); EVENT_WRITE(DE, A);
   CYC(b_+25, b_+26); E = alu_inc8(gb, E);
   CYC(b_+26, b_+27); E = alu_inc8(gb, E);
   CYC(b_+27, b_+28); A = mem_rd(gb, HL);
-  CYC(b_+28, b_+29); mem_wr(gb, DE, A);
+  CYC(b_+28, b_+29); EVENT_WRITE(DE, A);
   CYC(b_+29, b_+32); TAIL(objectSetVisible82);
 }
 
@@ -60,8 +61,8 @@ void interactionCodecf_hook(GB *gb) {
   do { uint16_t jt_ = (cf_jump_table(gb));
     if (jt_ == b_+8) {
       CYC(b_+8, b_+10); A = 1;
-      CYC(b_+10, b_+11); mem_wr(gb, DE, A);
-      CALL_C(b_+11, interactionInitGraphics_hook, SYM(interactionInitGraphics), b_+14);
+      CYC(b_+10, b_+11); EVENT_WRITE(DE, A);
+      NPC_CALL_C(b_+11, interactionInitGraphics_hook, SYM(interactionInitGraphics), b_+14);
       interactionCodecf__afterCall4b19_hook(gb);
       return;
     }

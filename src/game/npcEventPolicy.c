@@ -1,0 +1,151 @@
+#include "game/game.h"
+#include "script/npcs_events.h"
+#ifdef ORACLES_LUA_GAMEPLAY
+// Resolve the owner at each decision. No process-global context survives a fiber switch.
+bool gameplay_npc_event_owner(GB *gb) {
+  uint8_t page=H8(hActiveObject);
+  if(H8(hActiveObjectType)!=INTERACTION_BASE || page<0xd0 || page>0xdf)return false;
+  uint8_t id=gb->wram[1][((page&15)<<8)+0x41];
+  switch(id){
+    case 0x10:
+    case 0x11:
+    case 0x16:
+    case 0x1c:
+    case 0x20:
+    case 0x21:
+    case 0x28:
+    case 0x29:
+    case 0x2a:
+    case 0x2b:
+    case 0x2c:
+    case 0x2d:
+    case 0x2e:
+    case 0x30:
+    case 0x31:
+    case 0x34:
+    case 0x35:
+    case 0x36:
+    case 0x37:
+    case 0x38:
+    case 0x39:
+    case 0x3a:
+    case 0x3b:
+    case 0x3c:
+    case 0x3d:
+    case 0x3e:
+    case 0x3f:
+    case 0x40:
+    case 0x41:
+    case 0x42:
+    case 0x43:
+    case 0x44:
+    case 0x45:
+    case 0x48:
+    case 0x49:
+    case 0x4a:
+    case 0x4b:
+    case 0x4c:
+    case 0x4d:
+    case 0x4e:
+    case 0x4f:
+    case 0x52:
+    case 0x53:
+    case 0x54:
+    case 0x55:
+    case 0x57:
+    case 0x58:
+    case 0x59:
+    case 0x5a:
+    case 0x5b:
+    case 0x5c:
+    case 0x5d:
+    case 0x5f:
+    case 0x64:
+    case 0x65:
+    case 0x66:
+    case 0x67:
+    case 0x68:
+    case 0x69:
+    case 0x6a:
+    case 0x6b:
+    case 0x6c:
+    case 0x6d:
+    case 0x6e:
+    case 0x70:
+    case 0x71:
+    case 0x73:
+    case 0x74:
+    case 0x75:
+    case 0x76:
+    case 0x7f:
+    case 0x83:
+    case 0x87:
+    case 0x88:
+    case 0x89:
+    case 0x8a:
+    case 0x8b:
+    case 0x8d:
+    case 0x93:
+    case 0x94:
+    case 0x96:
+    case 0x97:
+    case 0x9a:
+    case 0x9b:
+    case 0x9c:
+    case 0x9d:
+    case 0xa6:
+    case 0xa7:
+    case 0xa8:
+    case 0xaa:
+    case 0xab:
+    case 0xac:
+    case 0xad:
+    case 0xb0:
+    case 0xb1:
+    case 0xb2:
+    case 0xb3:
+    case 0xb5:
+    case 0xb8:
+    case 0xba:
+    case 0xbb:
+    case 0xbc:
+    case 0xbf:
+    case 0xc1:
+    case 0xc2:
+    case 0xc3:
+    case 0xc4:
+    case 0xc6:
+    case 0xc8:
+    case 0xc9:
+    case 0xca:
+    case 0xcb:
+    case 0xcc:
+    case 0xcd:
+    case 0xce:
+    case 0xcf:
+    case 0xd0:
+    case 0xd1:
+    case 0xd3:
+    case 0xd5:
+    case 0xd6:
+    case 0xd7:
+    case 0xd9:
+    case 0xda:
+    case 0xdb:
+    case 0xdc:
+    case 0xdf:
+    case 0xe0:
+    case 0xe3:
+    case 0xe5:
+      return true;
+    case 0x72:{uint8_t sub=gb->wram[1][((page&15)<<8)+0x42];return sub==7 || (sub>=0x11 && sub<=0x13);}
+    default:return false;
+  }
+}
+void gameplay_story_note(GB *gb){
+  extern void gameplay_npc_note_owner(uint8_t owner);
+  uint8_t page=H8(hActiveObject);
+  if(H8(hActiveObjectType)==INTERACTION_BASE && page>=0xd0 && page<=0xdf)
+    gameplay_npc_note_owner(gb->wram[1][((page&15)<<8)+0x41]);
+}
+#endif

@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/npcs_events.h"
 
 #undef CYC
 #undef CYCT
@@ -39,19 +40,19 @@ void interactionCode2c_hook(GB *gb) {
 
 state0:
   CYC(b_+8, b_+10); A = 0x01;
-  CYC(b_+10, b_+11); mem_wr(gb, DE, A);
-  CALL_C(b_+11, interactionInitGraphics_hook, SYM(interactionInitGraphics), b_+14);
+  CYC(b_+10, b_+11); EVENT_WRITE(DE, A);
+  NPC_CALL_C(b_+11, interactionInitGraphics_hook, SYM(interactionInitGraphics), b_+14);
   CYC(b_+14, b_+17); SET_BC(0x0140);
-  CALL_C(b_+17, objectSetSpeedZ_hook, SYM(objectSetSpeedZ), b_+20);
+  NPC_CALL_C(b_+17, objectSetSpeedZ_hook, SYM(objectSetSpeedZ), b_+20);
   CYC(b_+20, b_+22); L = INTERACTION_BASE + OBJ_COUNTER1;
-  CYC(b_+22, b_+24); mem_wr(gb, HL, 0x14);
+  CYC(b_+22, b_+24); EVENT_WRITE(HL, 0x14);
   CYC(b_+24, b_+26); L = INTERACTION_BASE + OBJ_ZH;
-  CYC(b_+26, b_+28); mem_wr(gb, HL, 0xa0);
-  CALL_C(b_+28, objectSetVisiblec3_hook, SYM(objectSetVisiblec3), b_+31);
+  CYC(b_+26, b_+28); EVENT_WRITE(HL, 0xa0);
+  NPC_CALL_C(b_+28, objectSetVisiblec3_hook, SYM(objectSetVisiblec3), b_+31);
   // falls through into state 1
 
 state1:
-  CALL_C(b_+31, interactionAnimate_hook, SYM(interactionAnimate), b_+34);
+  NPC_CALL_C(b_+31, interactionAnimate_hook, SYM(interactionAnimate), b_+34);
   CYC(b_+34, b_+36); E = INTERACTION_BASE + OBJ_SUBSTATE;
   CYC(b_+36, b_+37); A = mem_rd(gb, DE);
   CYC(b_+37, b_+38); push_effect(gb, b_+38);
@@ -64,7 +65,7 @@ state1:
   } while (0);
 
 substate0:
-  CALL_C(b_+46, interactionDecCounter1_hook, SYM(interactionDecCounter1), b_+49);
+  NPC_CALL_ZERO(b_+46, interactionDecCounter1_hook, SYM(interactionDecCounter1), b_+49);
   if (!(F & FZ)) {
     CYCT(b_+49, b_+50); ret_effect(gb); return;
   }
@@ -74,25 +75,25 @@ substate0:
 
 substate1:
   CYC(b_+53, b_+55); C = 0x00;
-  CALL_C(b_+55, objectUpdateSpeedZ_paramC_hook, SYM(objectUpdateSpeedZ_paramC), b_+58);
+  NPC_CALL_C(b_+55, objectUpdateSpeedZ_paramC_hook, SYM(objectUpdateSpeedZ_paramC), b_+58);
   if (!(F & FZ)) {
     CYCT(b_+58, b_+59); ret_effect(gb); return;
   }
   CYC(b_+58, b_+59);
   CYC(b_+59, b_+61); A = 0x01;
-  CALL_C(b_+61, interactionSetAnimation_hook, SYM(interactionSetAnimation), b_+64);
+  NPC_CALL_C(b_+61, interactionSetAnimation_hook, SYM(interactionSetAnimation), b_+64);
   CYC(b_+64, b_+67); interactionIncSubstate_hook(gb);
   return;
 
 substate2:
   CYC(b_+67, b_+69); E = INTERACTION_BASE + OBJ_ANIM_PARAMETER;
   CYC(b_+69, b_+70); A = mem_rd(gb, DE);
-  CYC(b_+70, b_+72); alu_bit(gb, 7, A);
+  CYC(b_+70, b_+72); NPC_BIT(7, A);
   if (!(F & FZ)) {
     CYCT(b_+72, b_+75); TAIL(interactionIncSubstate);
   }
   CYC(b_+72, b_+75);
-  CYC(b_+75, b_+76); alu_or(gb, A);
+  CYC(b_+75, b_+76); NPC_OR(A);
   if (F & FZ) {
     CYCT(b_+76, b_+77); ret_effect(gb); return;
   }
@@ -101,7 +102,7 @@ substate2:
   CYC(b_+78, b_+81); W8(w1Link_visible) = A;
   CYC(b_+81, b_+83); A = 0x1e;
   CYC(b_+83, b_+85); E = INTERACTION_BASE + OBJ_COUNTER1;
-  CYC(b_+85, b_+86); mem_wr(gb, DE, A);
+  CYC(b_+85, b_+86); EVENT_WRITE(DE, A);
   CYC(b_+86, b_+88); A = 0x67; // SND_BOSS_DEAD
   CYC(b_+88, b_+91); playSound_b00_hook(gb);
   return;
@@ -109,13 +110,13 @@ substate2:
 substate3:
   CYC(b_+91, b_+93); E = INTERACTION_BASE + OBJ_COUNTER1;
   CYC(b_+93, b_+94); A = mem_rd(gb, DE);
-  CYC(b_+94, b_+95); alu_or(gb, A);
+  CYC(b_+94, b_+95); NPC_OR(A);
   if (F & FZ) {
     CYCT(b_+95, b_+97); goto counterDone;
   }
   CYC(b_+95, b_+97);
   CYC(b_+97, b_+98); A = alu_dec8(gb, A);
-  CYC(b_+98, b_+99); mem_wr(gb, DE, A);
+  CYC(b_+98, b_+99); EVENT_WRITE(DE, A);
   CYC(b_+99, b_+100); ret_effect(gb);
   return;
 
@@ -123,13 +124,13 @@ counterDone:
   CYC(b_+100, b_+102); E = INTERACTION_BASE + OBJ_ZH;
   CYC(b_+102, b_+103); A = mem_rd(gb, DE);
   CYC(b_+103, b_+104); A = alu_dec8(gb, A);
-  CYC(b_+104, b_+105); mem_wr(gb, DE, A);
-  CYC(b_+105, b_+107); alu_cp(gb, 0xb0);
+  CYC(b_+104, b_+105); EVENT_WRITE(DE, A);
+  CYC(b_+105, b_+107); NPC_CP(0xb0);
   if (!(F & FZ)) {
     CYCT(b_+107, b_+108); ret_effect(gb); return;
   }
   CYC(b_+107, b_+108);
   CYC(b_+108, b_+110); A = 0x08;
-  CYC(b_+110, b_+113); mem_wr(gb, wTmpcbb5, A);
+  CYC(b_+110, b_+113); EVENT_WRITE(wTmpcbb5, A);
   CYC(b_+113, b_+116); TAIL(interactionDelete);
 }

@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/npcs_events.h"
 
 #undef CYC
 #undef CYCT
@@ -27,7 +28,7 @@ void bipin_showText_subid1To9_hook(GB *gb) {
   CYC(b_+0, b_+2); E = INTERACTION_BASE + OBJ_SUBID;
   CYC(b_+2, b_+3); A = mem_rd(gb, DE);
   CYC(b_+3, b_+6); SET_HL(b_+12);
-  CYC(b_+6, b_+7); bipin_addAToHl_from_rst(gb, b_+7);
+  CYC(b_+6, b_+7); NPC_LOCAL_CALL(bipin_addAToHl_from_rst(gb, b_+7));
   CYC(b_+7, b_+9); B = 0x43;
   CYC(b_+9, b_+10); C = mem_rd(gb, HL);
   CYC(b_+10, b_+13); TAIL(showText);
