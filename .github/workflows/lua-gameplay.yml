@@ -95,10 +95,10 @@ jobs:
         run: ctest --test-dir build-lua-ci -C Release -R "^(lua_gameplay|lua_cube_candidate|lua_sync_candidate|lua_block_rules|lua_colored_cube|lua_levers_lava|lua_doors|lua_items_shops|lua_npcs_events|lua_enemies|mods_clock_failure)$" --output-on-failure
       - name: Compile external mod host and Switch adapter (POSIX)
         if: runner.os != 'Windows'
-        run: cmake --build build-lua-ci --target test_mods test_switch_mods --parallel 3
+        run: cmake --build build-lua-ci --target test_mods test_switch_mods test_switch_game --parallel 3
       - name: Test external mod host and Switch adapter (no ROM)
         if: runner.os != 'Windows'
-        run: ctest --test-dir build-lua-ci -R "^(mods|switch_mods)$" --output-on-failure
+        run: ctest --test-dir build-lua-ci -R "^(mods|switch_mods|switch_game)$" --output-on-failure
   artifacts:
     if: github.event_name == 'workflow_dispatch'
     uses: ./.github/workflows/build-platforms.yml

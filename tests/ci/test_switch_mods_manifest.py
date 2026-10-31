@@ -20,7 +20,7 @@ class SwitchModManifestTests(unittest.TestCase):
                                         ('windows-x64', 'ON', False), ('macos-intel', 'ON', False)]:
             with self.subTest(platform=platform, flag=flag), tempfile.TemporaryDirectory() as tmp:
                 binary = Path(tmp) / 'binary'
-                binary.write_bytes(b'fixture, not a runnable NRO')
+                binary.write_bytes(b'fixture switch-games-v1:ages,seasons-us,seasons-eu')
                 output = Path(tmp) / 'BUILD.json'
                 args = ['manifest.py', '--platform', platform, '--binary', str(binary),
                         '--compiler', 'fixture', '--output', str(output)]
@@ -33,6 +33,8 @@ class SwitchModManifestTests(unittest.TestCase):
                 self.assertEqual(result['features']['switch_mods'], enabled)
                 self.assertEqual(result['mod_host'], {'api': 2, 'version': 1} if enabled else None)
                 self.assertFalse(result['hardware_tested'])
+                self.assertEqual(result['features']['switch_seasons'],platform=='switch-arm64')
+                self.assertEqual(result['switch_games'],['ages-us','seasons-us','seasons-eu'] if platform=='switch-arm64' else None)
 
 
 if __name__ == '__main__':

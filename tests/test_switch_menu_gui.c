@@ -91,7 +91,11 @@ int main(int argc,char **argv) {
   menu->mods_page=false;
 #endif
   menu->tab=1; capture(renderer,menu,1280,720,argv[1],"seasons-720p");
-  menu->tab=0; menu->files_page=true; menu->files[0].valid=true; menu->files[0].max_health=12;
+  menu->game=1; menu->tab=1; menu->row=0;
+  capture(renderer,menu,1280,720,argv[1],"seasons-active-720p");
+  assert(Clay_GetElementData(CLAY_IDI("SwitchRow",1)).found);
+  menu->tab=0; capture(renderer,menu,1280,720,argv[1],"switch-to-ages-720p");
+  menu->game=0; menu->tab=0; menu->files_page=true; menu->files[0].valid=true; menu->files[0].max_health=12;
   strcpy(menu->files[0].name,"LINK"); capture(renderer,menu,1280,720,argv[1],"files-720p");
   menu->files_page=false; menu->row=0; SDL_SetWindowSize(window,1920,1080);
   capture(renderer,menu,1920,1080,argv[1],"home-1080p");

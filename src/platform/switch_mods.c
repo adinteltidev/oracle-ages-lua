@@ -14,7 +14,7 @@ static struct {
   char config[512], report[512], disabled[MODS_MAX][64]; int disabled_count;
   Choice choices[MODS_MAX_SETTINGS]; int choice_count;
   int staged[MODS_MAX_SETTINGS]; bool staged_known[MODS_MAX_SETTINGS],pending;
-  UiFont font; const uint8_t *rom; size_t size;
+  UiFont font; const uint8_t *rom; size_t size; bool seasons;
   unsigned long long frames, late, underruns, io, cpu[2001], modcpu[2001];
   double cpu_sum, mod_sum, io_seconds; size_t heap_peak;
 } state;
@@ -152,11 +152,12 @@ bool switch_mods_start(const char *data,const uint8_t *rom,size_t size) {
   if(mkdir(dir,0777) && errno!=EEXIST) return false;
   if(!read_config()) return false;
   state.rom=rom; state.size=size;
+  state.seasons=rom && size>0x150 && !memcmp(rom+0x134,"ZELDA DIN",9);
   ui_font_load(&state.font,rom,size);
   mods_store_backend(recover,write_file);
   mods_settings_policy(restore_setting);
   mods_heap_limit(16*1024*1024); // Experimental aggregate ceiling; hardware tuning remains pending.
-  bool ok=mods_init_filtered(dir,false,wanted_id,NULL);
+  bool ok=mods_init_filtered(dir,state.seasons,wanted_id,NULL);
   features.treasure_swap=mods_treasure_swap;
   fprintf(stderr,"mods: Switch host API %d, %d packages, directory=%s\n",MODS_API_VERSION,mods_count(),dir);
   return ok;
@@ -168,7 +169,7 @@ bool switch_mods_present(GB *game,uint32_t *pixels) {
   if(!game->sample || !mods_count()) return false;
   bool failed=false;
   bool enabled[MODS_MAX]; for(int i=0;i<mods_count();++i) enabled[i]=mods_enabled(i);
-  ModsFrame f=mods_snapshot(game->sample,false,160,state.rom,state.size,&state.font);
+  ModsFrame f=mods_snapshot(game->sample,state.seasons,160,state.rom,state.size,&state.font);
   mods_frame(&f); mods_compose_abgr(pixels,160); mods_apply_writes(game);
   for(int i=0;i<mods_count();++i) if(enabled[i] && !mods_enabled(i)) {
     failed=true; fprintf(stderr,"mods: disabled %s: %s\n",mods_id(i),mods_error(i));

@@ -121,6 +121,15 @@ static void settings_restore_before_main_and_during_dynamic_registration(void) {
   ASSERT(!switch_mods_present(&gb,pixels)); ASSERT_EQ(strcmp(mods_last_log(),"off"),0);
   ASSERT(switch_mods_start(data,NULL,0)); ASSERT(!switch_mods_present(&gb,pixels)); ASSERT_EQ(strcmp(mods_last_log(),"on"),0); cleanup();
 }
+static void seasons_uses_its_own_api_context_and_mod_filter(void) {
+  setup(); package("only-ages","error('Ages mod must not run in Seasons')",false);
+  package("only-seasons","assert(oracles.game()=='seasons') oracles.on_frame(function() local r=oracles.room() assert(r.room==73 and r.group==2) end)",false);
+  file("mods/only-seasons/mod.ini","id=only-seasons\napi=1\ngames=seasons\n");
+  uint8_t rom[0x151]={0}; memcpy(rom+0x134,"ZELDA DIN",9);
+  ASSERT(switch_mods_start(data,rom,sizeof rom)); ASSERT_EQ(mods_count(),1); ASSERT(!strcmp(mods_id(0),"only-seasons"));
+  sample.wram[0][0xc4c]=73; sample.wram[0][0xc49]=2; sample.wram[0][0xd0a]=20; sample.wram[0][0xd0b]=16;
+  ASSERT(!switch_mods_present(&gb,pixels)); ASSERT(mods_enabled(0)); ASSERT(mods_current_frame()->seasons); cleanup();
+}
 static void menu_controller_navigation(void) {
   SwitchMenu m={0}; switch_menu_open(&m,true); m.tab=2; m.setting=3; m.mod_count=3;
   ASSERT_EQ(switch_menu_press(&m,UI_ACCEPT,false),SWITCH_MENU_NONE); ASSERT(m.mods_page);
@@ -140,6 +149,7 @@ int main(void) {
   RUN(missing_folder_and_wrong_game_are_normal);
   RUN(corrupt_selection_never_runs_main);
   RUN(settings_restore_before_main_and_during_dynamic_registration);
+  RUN(seasons_uses_its_own_api_context_and_mod_filter);
   RUN(menu_controller_navigation);
   return 0;
 }

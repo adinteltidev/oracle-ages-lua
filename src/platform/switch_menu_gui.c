@@ -19,7 +19,7 @@ static Clay_String mod_detail(const char *text) {
 #endif
 
 void switch_menu_draw(SwitchMenu *m, int w, int h) {
-  GuiTheme theme; gui_theme(&theme, true); const GuiTheme *t = &theme;
+  GuiTheme theme; gui_theme(&theme, m->tab==2 ? m->game==0 : m->tab==0); const GuiTheme *t = &theme;
   GuiFrame f = {.w=w, .h=h, .safe={0,0,w,h}, .hints=true, .ok_key="A", .back_key="B"};
   static const char *const tabs[] = {"Ages", "Seasons", "Settings"};
   gui_begin(page_scale(&f));
@@ -58,9 +58,11 @@ void switch_menu_draw(SwitchMenu *m, int w, int h) {
         }
       } else
 #endif
-      if (m->tab == 1) {
-        section(t, "Not available");
-        paragraph(CLAY_STRING("This Switch build supports Oracle of Ages (USA/Australia)."), TEXT, t->muted, 20, 12);
+      if (m->tab<2 && m->tab!=m->game) {
+        section(t, "Switch game");
+        paragraph(CLAY_STRING("Battery progress is saved before switching. Each game keeps its own states and mods."),TEXT,t->muted,20,12);
+        row(t,(Row){.id=CLAY_IDI("SwitchRow",0),.enabled=true,.selected=true,
+          .label=m->tab ? CLAY_STRING("Start Oracle of Seasons") : CLAY_STRING("Start Oracle of Ages"),.value=CLAY_STRING(">")});
       } else if (m->tab == 2) {
         section(t, "Settings");
         #ifdef ORACLES_SWITCH_MODS
@@ -73,7 +75,7 @@ void switch_menu_draw(SwitchMenu *m, int w, int h) {
             .label=gui_str("%s", i==0 ? "Volume" : i==1 ? "Integer scale" : i==2 ? "Exit game" : "Mods"),
             .value=i==0 ? gui_str("%d / 10",m->volume) : i==1 ? gui_str("%s",m->integer_scale ? "On" : "Off") : CLAY_STRING(">")});
         }
-        paragraph(CLAY_STRING("Left/Right change   Minus returns to Ages"), SMALL, t->muted, 20, 0);
+        paragraph(CLAY_STRING("Left/Right change   Minus returns to game"), SMALL, t->muted, 20, 0);
       } else if (m->files_page) {
         section(t, "Save files");
         for (int i=0; i<3; ++i) {
@@ -102,7 +104,7 @@ void switch_menu_draw(SwitchMenu *m, int w, int h) {
         }
       }
     }
-    hint_line(t,&f,m->mods_page ? "A toggle   Left/Right option   B back" : m->tab==2 ? "A change   B resume   Minus Ages" : m->files_page ? "A select   B back" : "A load/play   X save   B resume   L+R menu");
+    hint_line(t,&f,m->mods_page ? "A toggle   Left/Right option   B back" : m->tab==2 ? "A change   B resume   Minus game" : m->tab<2 && m->tab!=m->game ? "A switch game   B resume   Left/Right tabs" : m->files_page ? "A select   B back" : "A load/play   X save   B resume   L+R menu");
   }
   gui_end();
 }

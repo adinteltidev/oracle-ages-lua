@@ -37,6 +37,12 @@ if mods:
  files['Licenses/Lua-MIT-header.txt']=(root/'third_party/lua/lua.h').read_bytes()
  for example in sorted((root/'examples/switch-mods').rglob('*')):
   if example.is_file(): files['Examples/'+str(example.relative_to(root/'examples'))]=example.read_bytes()
+seasons=b'switch-games-v1:ages,seasons-us,seasons-eu' in nro
+if seasons:
+ if not a.verification: raise ValueError('Dual-game packages require a fresh capability manifest')
+ files['SWITCH-SEASONS.md']=(root/'SWITCH-SEASONS.md').read_bytes()
+ files['SWITCH-SEASONS-IMPLEMENTATION.md']=(root/'SWITCH-SEASONS-IMPLEMENTATION.md').read_bytes()
+ files['LEIA-ME.txt']=(root/'SWITCH-SEASONS.md').read_bytes()
 verification=a.verification or root/'SWITCH-VERIFICATION.json'
 if __import__('os').environ.get('GITHUB_ACTIONS')=='true' and not a.verification:raise ValueError('CI requires a fresh build manifest')
 files['SWITCH-VERIFICATION.json']=verification.read_bytes()
@@ -45,8 +51,13 @@ if a.verification:
  assert manifest['binary']['sha256']==hashlib.sha256(nro).hexdigest(), 'Manifest does not match this NRO'
  assert manifest.get('features',{}).get('switch_mods',False)==mods, 'Mod feature does not match NRO'
  if mods: assert manifest.get('mod_host')=={'api':2,'version':1}
+ assert manifest.get('features',{}).get('switch_seasons',False)==seasons, 'Seasons capability does not match NRO'
+ if seasons: assert manifest.get('switch_games')==['ages-us','seasons-us','seasons-eu']
 for name in ['ages-boot.state','ages.ref','ages-consoleverified.inputs']:
  files['switch/'+profile+'/tests/'+name]=(root/'tas'/name).read_bytes()
+if seasons:
+ for name in ['seasons-consoleverified-boot.state','seasons.ref','seasons-consoleverified.inputs']:
+  files['switch/'+profile+'/tests/'+name]=(root/'tas'/name).read_bytes()
 for f in sorted((root/'platform/switch/licenses').iterdir()):
  if f.is_file():files['Licenses/'+f.name]=f.read_bytes()
 # Use the Git index plus explicit changed files, filtered through gitignore.

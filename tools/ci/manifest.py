@@ -46,6 +46,7 @@ def main():
         raise ValueError('Cannot package failed tests')
     if evidence and evidence.get('passed') is not True:
         raise ValueError('Failed evidence')
+    seasons=a.platform.startswith('switch') and b'switch-games-v1:ages,seasons-us,seasons-eu' in binary
     data = {'schema_version': 1, 'platform': a.platform, 'commit': sha,
             'source_dirty': bool(subprocess.check_output(['git', 'status', '--porcelain', '--untracked-files=no'], text=True).strip()),
             'run_id': os.getenv('GITHUB_RUN_ID'), 'run_attempt': os.getenv('GITHUB_RUN_ATTEMPT'),
@@ -58,6 +59,8 @@ def main():
             'audit': audit, 'tests': tests, 'evidence': evidence,
             'rom_supplied': False, 'rom_replay_executed': False, 'hardware_tested': False,
             'toolchain': json.loads(a.toolchain.read_text()) if a.toolchain else None}
+    data['features']['switch_seasons']=seasons
+    data['switch_games']=['ages-us','seasons-us','seasons-eu'] if seasons else None
     if os.getenv('GITHUB_ACTIONS') == 'true' and data['source_dirty']:
         raise ValueError('Tracked sources changed during the CI build')
     a.output.parent.mkdir(parents=True, exist_ok=True)

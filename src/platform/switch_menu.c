@@ -4,7 +4,7 @@ bool switch_menu_chord(bool both, bool *previous) {
   bool edge = both && !*previous; *previous = both; return edge;
 }
 void switch_menu_open(SwitchMenu *m, bool can_save) {
-  m->tab = m->row = m->setting = m->file = 0;
+  m->tab=m->game; m->row=m->setting=m->file=0;
   m->mods_page=false; m->mod_row=0;
   m->files_page = false; m->can_save = can_save; ++m->stamp;
 }
@@ -14,7 +14,7 @@ void switch_menu_open(SwitchMenu *m, bool can_save) {
 #define SETTINGS_COUNT 3
 #endif
 SwitchMenuAction switch_menu_press(SwitchMenu *m, UiButton b, bool save) {
-  if (save && (m->tab != 0 || m->files_page || m->row < 1 || m->row > 4)) return SWITCH_MENU_NONE;
+  if (save && (m->tab != m->game || m->files_page || m->row < 1 || m->row > 4)) return SWITCH_MENU_NONE;
   if (b == UI_BACK) {
     if (m->mods_page) { m->mods_page=false; return SWITCH_MENU_NONE; }
     if (m->files_page) { m->files_page = false; return SWITCH_MENU_NONE; }
@@ -45,7 +45,7 @@ SwitchMenuAction switch_menu_press(SwitchMenu *m, UiButton b, bool save) {
     m->tab = (m->tab + (b == UI_LEFT ? 2 : 1)) % 3;
     return SWITCH_MENU_NONE;
   }
-  if (m->tab == 1) return SWITCH_MENU_NONE; // Only Ages is supported by this port.
+  if (m->tab != m->game) return b==UI_ACCEPT ? SWITCH_MENU_CHANGE_GAME : SWITCH_MENU_NONE;
   if (m->files_page) {
     if (b == UI_UP || b == UI_DOWN) m->file = (m->file + (b == UI_UP ? 2 : 1)) % 3;
     if (b == UI_ACCEPT) return SWITCH_MENU_FILE;

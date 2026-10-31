@@ -23,6 +23,7 @@ uint8_t switch_menu_boot_input(GB *game, SwitchMenuBoot *boot, uint8_t live_joy)
     if (game->wram[0][0x2e6]==3 && game->wram[0][0x2e7]==3) { boot->phase=1; return 0; }
     return pulse ? JOY_START : 0;
   }
+  if (mode==8) return live_joy; // European language selection belongs to the player.
   if (mode!=1 || sub!=1) return 0;
   if (game->wram[0][wFileSelect_cursorPos&0xfff]==boot->file) { boot->file=-1; return 0; }
   return pulse ? JOY_DOWN : 0;

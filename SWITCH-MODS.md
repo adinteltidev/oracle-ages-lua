@@ -23,13 +23,16 @@ Host versão 1, API Lua 1/2. Base C + Lua fase 7. Build com
 6. A seleção e as opções são gravadas em `mods.cfg`. Para aplicar, saia da sessão
    feche o NRO, abra-o novamente e escolha Play. Não há recarga de código no meio da partida.
 
-Os exemplos ficam em `Examples/switch-mods/`, fora da pasta instalada no SD.
+Os exemplos de overlay/leitura aceitam ambos os jogos. Os exemplos ficam em `Examples/switch-mods/`, fora da pasta instalada no SD.
 Comece por `overlay-info`. `api2-demo` altera uma recompensa: instale-o apenas
 se desejar esse teste e use uma cópia descartável do save. A API completa e
 seus limites estão em [MODDING.md](MODDING.md).
 
 O caminho é derivado do perfil DATA: os outros perfis usam sua própria pasta.
-Esta implementação Switch executa Ages e respeita `games=ages`. Os onze módulos
+Esta implementação Switch executa Ages e Seasons e respeita o campo `games`.
+Seasons usa `DATA/seasons/mods/`, ou `DATA/seasons-eu/mods/` para a edição
+europeia. Seus stores e configurações ficam separados de Ages; veja
+[SWITCH-SEASONS.md](SWITCH-SEASONS.md). Os onze módulos
 internos de gameplay continuam incorporados e separados das VMs dos mods.
 
 ## Saves, falhas e persistência

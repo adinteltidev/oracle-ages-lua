@@ -764,3 +764,7 @@ Install packages under the active DATA profile's `mods/` folder. Open
 **L + R → Settings → Mods**; choices apply on the next play session.
 See [SWITCH-MODS.md](SWITCH-MODS.md) for installation, storage, limits, build
 options and hardware validation still required for this new NRO.
+
+Seasons is also supported by the Switch frontend. Its packages, settings and
+stores use the region's separate profile directory. Read-only examples accept
+both games. See [SWITCH-SEASONS.md](SWITCH-SEASONS.md) for paths and controls.
