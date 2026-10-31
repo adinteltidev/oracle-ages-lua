@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/npcs_events.h"
 
 #undef CYC
 #undef CYCT
@@ -41,7 +42,7 @@ void interactionCodee0_hook(GB *gb) {
   } while (0);
 state0:
   CYC(b_+O(12), b_+OE(14)); A = 0x01;
-  CYC(b_+O(14), b_+OE(15)); mem_wr(gb, DE, A);
+  CYC(b_+O(14), b_+OE(15)); EVENT_WRITE(DE, A);
   if (game_seasons) {       // the season of the room pack being entered, or of the current room
     CYC(b_+S(15), b_+S(18)); A = W8(wLoadingRoomPack);
     CYC(b_+S(18), b_+S(19)); A = alu_inc8(gb, A);
@@ -49,17 +50,17 @@ state0:
     else { CYC(b_+S(19), b_+S(21)); CYC(b_+S(21), b_+S(24)); A = W8(wRoomStateModifier); }
   } else {                  // present or past
     CYC(b_+15, b_+18); A = W8(wTilesetFlags);
-    CYC(b_+18, b_+20); alu_and(gb, 0x80);
+    CYC(b_+18, b_+20); NPC_AND(0x80);
     CYC(b_+20, b_+21); alu_rlca(gb);
   }
   CYC(b_+O(21), b_+OE(23)); E = INTERACTION_BASE + OBJ_SUBID;
-  CYC(b_+O(23), b_+OE(24)); mem_wr(gb, DE, A);
-  CALL_C(b_+O(24), interactionInitGraphics_hook, SYM(interactionInitGraphics), b_+OE(27));
-  CALL_C(b_+O(27), interactionSetAlwaysUpdateBit_hook, SYM(interactionSetAlwaysUpdateBit), b_+OE(30));
+  CYC(b_+O(23), b_+OE(24)); EVENT_WRITE(DE, A);
+  NPC_CALL_C(b_+O(24), interactionInitGraphics_hook, SYM(interactionInitGraphics), b_+OE(27));
+  NPC_CALL_C(b_+O(27), interactionSetAlwaysUpdateBit_hook, SYM(interactionSetAlwaysUpdateBit), b_+OE(30));
   CYC(b_+O(30), b_+OE(32)); L = INTERACTION_BASE + OBJ_YH;
-  CYC(b_+O(32), b_+OE(34)); mem_wr(gb, HL, 0x0a);
+  CYC(b_+O(32), b_+OE(34)); EVENT_WRITE(HL, 0x0a);
   CYC(b_+O(34), b_+OE(36)); L = INTERACTION_BASE + OBJ_XH;
-  CYC(b_+O(36), b_+OE(38)); mem_wr(gb, HL, 0xb0);
+  CYC(b_+O(36), b_+OE(38)); EVENT_WRITE(HL, 0xb0);
   CYC(b_+O(38), b_+OE(41));
   TAIL(objectSetVisible80);
 state1:
@@ -67,32 +68,32 @@ state1:
   CYC(b_+O(42), b_+OE(44)); L = INTERACTION_BASE + OBJ_XH;
   CYC(b_+O(44), b_+OE(45)); A = mem_rd(gb, HL);
   CYC(b_+O(45), b_+OE(47)); alu_sub(gb, 0x04);
-  CYC(b_+O(47), b_+OE(48)); mem_wr(gb, HL, A);
-  CYC(b_+O(48), b_+OE(50)); alu_cp(gb, 0x10);
+  CYC(b_+O(47), b_+OE(48)); EVENT_WRITE(HL, A);
+  CYC(b_+O(48), b_+OE(50)); NPC_CP(0x10);
   if (!(F & FZ)) { RET_TAKEN(b_+O(50)); return; }
   CYC(b_+O(50), b_+OE(51));
   CYC(b_+O(51), b_+OE(52)); L = E;
-  CYC(b_+O(52), b_+OE(53)); mem_wr(gb, HL, alu_inc8(gb, mem_rd(gb, HL)));
+  CYC(b_+O(52), b_+OE(53)); EVENT_WRITE(HL, alu_inc8(gb, mem_rd(gb, HL)));
   CYC(b_+O(53), b_+OE(55)); L = INTERACTION_BASE + OBJ_COUNTER1;
-  CYC(b_+O(55), b_+OE(57)); mem_wr(gb, HL, 0x28);
+  CYC(b_+O(55), b_+OE(57)); EVENT_WRITE(HL, 0x28);
   RET(b_+O(57)); return;
 state2:
-  CALL_C(b_+O(58), interactionDecCounter1_hook, SYM(interactionDecCounter1), b_+OE(61));
+  NPC_CALL_ZERO(b_+O(58), interactionDecCounter1_hook, SYM(interactionDecCounter1), b_+OE(61));
   if (!(F & FZ)) { RET_TAKEN(b_+O(61)); return; }
   CYC(b_+O(61), b_+OE(62));
   CYC(b_+O(62), b_+OE(63)); L = E;
-  CYC(b_+O(63), b_+OE(64)); mem_wr(gb, HL, alu_inc8(gb, mem_rd(gb, HL)));
+  CYC(b_+O(63), b_+OE(64)); EVENT_WRITE(HL, alu_inc8(gb, mem_rd(gb, HL)));
   CYC(b_+O(64), b_+OE(66)); L = INTERACTION_BASE + OBJ_COUNTER1;
-  CYC(b_+O(66), b_+OE(68)); mem_wr(gb, HL, 0x06);
+  CYC(b_+O(66), b_+OE(68)); EVENT_WRITE(HL, 0x06);
   RET(b_+O(68)); return;
 state3:
   CYC(b_+O(69), b_+OE(70)); H = D;
   CYC(b_+O(70), b_+OE(72)); L = INTERACTION_BASE + OBJ_XH;
   CYC(b_+O(72), b_+OE(73)); A = mem_rd(gb, HL);
   CYC(b_+O(73), b_+OE(75)); alu_sub(gb, 0x06);
-  CYC(b_+O(75), b_+OE(76)); mem_wr(gb, HL, A);
+  CYC(b_+O(75), b_+OE(76)); EVENT_WRITE(HL, A);
   CYC(b_+O(76), b_+OE(78)); L = INTERACTION_BASE + OBJ_COUNTER1;
-  CYC(b_+O(78), b_+OE(79)); mem_wr(gb, HL, alu_dec8(gb, mem_rd(gb, HL)));
+  CYC(b_+O(78), b_+OE(79)); EVENT_WRITE(HL, alu_dec8(gb, mem_rd(gb, HL)));
   if (!(F & FZ)) { RET_TAKEN(b_+O(79)); return; }
   CYC(b_+O(79), b_+OE(80));
   CYC(b_+O(80), b_+OE(83));

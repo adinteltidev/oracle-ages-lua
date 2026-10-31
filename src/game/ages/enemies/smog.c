@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/enemies.h"
 
 #undef CYC
 #undef CYCT
@@ -48,12 +49,12 @@ static uint16_t enemyCode7c_jump_table(GB *gb) {
 void enemyCode7c_hook(GB *gb) {
   BASE(enemyCode7c);
   uint16_t sp0_ = gb->sp;
-  if (F & FZ) { CYCT(b_+0, b_+2); goto normalStatus; } // jr z
+  if (ENEMY_FLAG(FZ)) { CYCT(b_+0, b_+2); goto normalStatus; } // jr z
   CYC(b_+0, b_+2);
   CYC(b_+2, b_+4); alu_sub(gb, 0x03); // ENEMYSTATUS_NO_HEALTH
-  if (F & FC) { RET_TAKEN(b_+4); return; } // ret c
+  if (ENEMY_FLAG(FC)) { RET_TAKEN(b_+4); return; } // ret c
   CYC(b_+4, b_+5);
-  if (!(F & FZ)) { CYCT(b_+5, b_+7); goto normalStatus; } // jr nz
+  if (!(ENEMY_FLAG(FZ))) { CYCT(b_+5, b_+7); goto normalStatus; } // jr nz
   CYC(b_+5, b_+7);
   CYC(b_+7, b_+10); TAIL(enemyBoss_dead_b0f); // jp
 

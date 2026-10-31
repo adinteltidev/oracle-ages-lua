@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/enemies.h"
 
 #undef CYC
 #undef CYCT
@@ -38,7 +39,7 @@ static void waterTektite_addAToHl_from_rst(GB *gb, uint16_t return_address) {
   push_effect(gb, return_address);
   burn_rom(gb, 0x00, 0x0010, 0x0011, false); alu_add(gb, L);
   burn_rom(gb, 0x00, 0x0011, 0x0012, false); L = A;
-  if (F & FC) {
+  if ((F & FC)) {
     burn_rom(gb, 0x00, 0x0012, 0x0013, false);
     burn_rom(gb, 0x00, 0x0013, 0x0014, false); H = alu_inc8(gb, H);
     burn_rom(gb, 0x00, 0x0014, 0x0015, false);
@@ -54,15 +55,15 @@ static void waterTektite_addAToHl_from_rst(GB *gb, uint16_t return_address) {
 void enemyCode3a_hook(GB *gb) {
   BASE(enemyCode3a);
   uint16_t sp0_ = gb->sp;
-  if (F & FZ) { CYCT(b_+0, b_+2); goto normalStatus; } // jr z
+  if (ENEMY_FLAG(FZ)) { CYCT(b_+0, b_+2); goto normalStatus; } // jr z
   CYC(b_+0, b_+2);
   CYC(b_+2, b_+4); alu_sub(gb, 0x03); // ENEMYSTATUS_NO_HEALTH
-  if (F & FC) { RET_TAKEN(b_+4); return; } // ret c
+  if (ENEMY_FLAG(FC)) { RET_TAKEN(b_+4); return; } // ret c
   CYC(b_+4, b_+5);
-  if (F & FZ) { CYCT(b_+5, b_+8); enemyDie_hook(gb); return; } // jp z
+  if (ENEMY_FLAG(FZ)) { CYCT(b_+5, b_+8); ENEMY_LOCAL_CALL(enemyDie_hook(gb)); return; } // jp z
   CYC(b_+5, b_+8);
   CYC(b_+8, b_+9); A = alu_dec8(gb, A);
-  if (F & FZ) { RET_TAKEN(b_+9); return; } // ret z
+  if (ENEMY_FLAG(FZ)) { RET_TAKEN(b_+9); return; } // ret z
   CYC(b_+9, b_+10);
 
   // ENEMYSTATUS_KNOCKBACK
@@ -72,15 +73,15 @@ void enemyCode3a_hook(GB *gb) {
   CYC(b_+12, b_+13); A = mem_rd(gb, DE);
   CYC(b_+13, b_+14); push_effect(gb, AF); // push af
   CYC(b_+14, b_+16); A = 0x50; // SPEED_200
-  CYC(b_+16, b_+17); mem_wr(gb, DE, A);
+  CYC(b_+16, b_+17); ENEMY_WRITE(DE, A);
   CYC(b_+17, b_+19); E = ENEMY_BASE + OBJ_KNOCKBACK_ANGLE;
-  CALL_C(b_+19, waterTektite_getAdjacentWallsBitsetGivenAngle_hook, SYM(waterTektite_getAdjacentWallsBitsetGivenAngle), b_+22);
+  ENEMY_CALL_C(b_+19, waterTektite_getAdjacentWallsBitsetGivenAngle_hook, SYM(waterTektite_getAdjacentWallsBitsetGivenAngle), b_+22);
   CYC(b_+22, b_+24); E = ENEMY_BASE + OBJ_KNOCKBACK_ANGLE;
-  CALL_C(b_+24, ecom_applyVelocityGivenAdjacentWalls_b0e_hook, SYM(ecom_applyVelocityGivenAdjacentWalls_b0e), b_+27);
+  ENEMY_CALL_C(b_+24, ecom_applyVelocityGivenAdjacentWalls_b0e_hook, SYM(ecom_applyVelocityGivenAdjacentWalls_b0e), b_+27);
 
   CYC(b_+27, b_+28); SET_AF(pop_effect(gb)); // pop af
   CYC(b_+28, b_+30); E = ENEMY_BASE + OBJ_SPEED;
-  CYC(b_+30, b_+31); mem_wr(gb, DE, A);
+  CYC(b_+30, b_+31); ENEMY_WRITE(DE, A);
   RET(b_+31); return; // ret
 
 normalStatus:
@@ -89,11 +90,11 @@ normalStatus:
   {
     CYC(b_+35, b_+36); push_effect(gb, b_+36);
     uint16_t target = waterTektite_jump_table(gb);
-    if (target == SYM(waterTektite_state_uninitialized)) { waterTektite_state_uninitialized_hook(gb); return; }
-    if (target == SYM(waterTektike_state_stub)) { waterTektike_state_stub_hook(gb); return; }
-    if (target == SYM(ecom_blownByGaleSeedState_b0e)) { ecom_blownByGaleSeedState_b0e_hook(gb); return; }
-    if (target == SYM(waterTektike_state8)) { waterTektike_state8_hook(gb); return; }
-    if (target == SYM(waterTektike_state9)) { waterTektike_state9_hook(gb); return; }
+    if (target == SYM(waterTektite_state_uninitialized)) { ENEMY_LOCAL_CALL(waterTektite_state_uninitialized_hook(gb)); return; }
+    if (target == SYM(waterTektike_state_stub)) { ENEMY_LOCAL_CALL(waterTektike_state_stub_hook(gb)); return; }
+    if (target == SYM(ecom_blownByGaleSeedState_b0e)) { ENEMY_LOCAL_CALL(ecom_blownByGaleSeedState_b0e_hook(gb)); return; }
+    if (target == SYM(waterTektike_state8)) { ENEMY_LOCAL_CALL(waterTektike_state8_hook(gb)); return; }
+    if (target == SYM(waterTektike_state9)) { ENEMY_LOCAL_CALL(waterTektike_state9_hook(gb)); return; }
     HANDOFF(target);
   }
 }
@@ -103,7 +104,7 @@ normalStatus:
 void waterTektite_state_uninitialized_hook(GB *gb) {
   BASE(waterTektite_state_uninitialized);
   uint16_t sp0_ = gb->sp; (void)sp0_;
-  CALL_C(b_+0, objectSetVisible82_hook, SYM(objectSetVisible82), SYM(waterTektike_decideNewAngle));
+  ENEMY_CALL_C(b_+0, objectSetVisible82_hook, SYM(objectSetVisible82), SYM(waterTektike_decideNewAngle));
   TAIL(waterTektike_decideNewAngle); // fallthrough
 }
 
@@ -114,35 +115,35 @@ void waterTektike_decideNewAngle_hook(GB *gb) {
   uint16_t sp0_ = gb->sp;
   CYC(b_+0, b_+1); H = D;
   CYC(b_+1, b_+3); L = ENEMY_BASE + OBJ_STATE;
-  CYC(b_+3, b_+5); mem_wr(gb, HL, 0x08);
+  CYC(b_+3, b_+5); ENEMY_WRITE(HL, 0x08);
   CYC(b_+5, b_+7); L = ENEMY_BASE + OBJ_COUNTER1;
-  CYC(b_+7, b_+9); mem_wr(gb, HL, 0x40);
+  CYC(b_+7, b_+9); ENEMY_WRITE(HL, 0x40);
   CYC(b_+9, b_+12); A = mem_rd(gb, wScentSeedActive);
-  CYC(b_+12, b_+13); alu_or(gb, A);
-  if (!(F & FZ)) { CYCT(b_+13, b_+15); goto scentSeedActive; } // jr nz
+  CYC(b_+12, b_+13); ENEMY_OR(A);
+  if (!(ENEMY_FLAG(FZ))) { CYCT(b_+13, b_+15); goto scentSeedActive; } // jr nz
   CYC(b_+13, b_+15);
 
   // Random diagonal angle
-  CALL_C(b_+15, getRandomNumber_noPreserveVars_hook, SYM(getRandomNumber_noPreserveVars), b_+18);
-  CYC(b_+18, b_+20); alu_and(gb, 0x18);
+  ENEMY_CALL_C(b_+15, getRandomNumber_noPreserveVars_hook, SYM(getRandomNumber_noPreserveVars), b_+18);
+  CYC(b_+18, b_+20); ENEMY_AND(0x18);
   CYC(b_+20, b_+22); alu_add(gb, 0x04);
   CYC(b_+22, b_+24); E = ENEMY_BASE + OBJ_ANGLE;
-  CYC(b_+24, b_+25); mem_wr(gb, DE, A);
+  CYC(b_+24, b_+25); ENEMY_WRITE(DE, A);
   CYC(b_+25, b_+27); TAIL(waterTektike_animate); // jr
 
 scentSeedActive:
   CYC(b_+27, b_+29); A = mem_rd(gb, hFFB2); // hFFB2
-  CYC(b_+29, b_+31); mem_wr(gb, hFF8F, A); // hFF8F
+  CYC(b_+29, b_+31); ENEMY_WRITE(hFF8F, A); // hFF8F
   CYC(b_+31, b_+33); A = mem_rd(gb, hFFB3); // hFFB3
-  CYC(b_+33, b_+35); mem_wr(gb, hFF8E, A); // hFF8E
+  CYC(b_+33, b_+35); ENEMY_WRITE(hFF8E, A); // hFF8E
   CYC(b_+35, b_+37); L = ENEMY_BASE + OBJ_YH;
   CYC(b_+37, b_+38); A = mem_rd(gb, HL); SET_HL(HL + 1); // ldi a,(hl)
   CYC(b_+38, b_+39); B = A;
   CYC(b_+39, b_+40); L = alu_inc8(gb, L);
   CYC(b_+40, b_+41); C = mem_rd(gb, HL);
-  CALL_C(b_+41, objectGetRelativeAngleWithTempVars_hook, SYM(objectGetRelativeAngleWithTempVars), b_+44);
+  ENEMY_CALL_C(b_+41, objectGetRelativeAngleWithTempVars_hook, SYM(objectGetRelativeAngleWithTempVars), b_+44);
   CYC(b_+44, b_+46); E = ENEMY_BASE + OBJ_ANGLE;
-  CYC(b_+46, b_+47); mem_wr(gb, DE, A);
+  CYC(b_+46, b_+47); ENEMY_WRITE(DE, A);
   CYC(b_+47, b_+49); TAIL(waterTektike_animate); // jr
 }
 
@@ -157,21 +158,21 @@ void waterTektike_state_stub_hook(GB *gb) {
 void waterTektike_state8_hook(GB *gb) {
   BASE(waterTektike_state8);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, ecom_decCounter1_b0e_hook, SYM(ecom_decCounter1_b0e), b_+3);
-  if (!(F & FZ)) { CYCT(b_+3, b_+5); goto keepMoving; } // jr nz
+  ENEMY_CALL_C(b_+0, ecom_decCounter1_b0e_hook, SYM(ecom_decCounter1_b0e), b_+3);
+  if (!(ENEMY_FLAG(FZ))) { CYCT(b_+3, b_+5); goto keepMoving; } // jr nz
   CYC(b_+3, b_+5);
   CYC(b_+5, b_+6); L = E;
-  CYC(b_+6, b_+7); mem_wr(gb, HL, alu_inc8(gb, mem_rd(gb, HL))); // [state]
+  CYC(b_+6, b_+7); ENEMY_WRITE(HL, alu_inc8(gb, mem_rd(gb, HL))); // [state]
   CYC(b_+7, b_+9); L = ENEMY_BASE + OBJ_COUNTER1;
-  CYC(b_+9, b_+11); mem_wr(gb, HL, 0x08);
+  CYC(b_+9, b_+11); ENEMY_WRITE(HL, 0x08);
   CYC(b_+11, b_+13); TAIL(waterTektike_animate); // jr
 
 keepMoving:
-  CALL_C(b_+13, waterTektike_setSpeedFromCounter1_hook, SYM(waterTektike_setSpeedFromCounter1), b_+16);
-  CALL_C(b_+16, waterTektite_getAdjacentWallsBitset_hook, SYM(waterTektite_getAdjacentWallsBitset), b_+19);
+  ENEMY_CALL_C(b_+13, waterTektike_setSpeedFromCounter1_hook, SYM(waterTektike_setSpeedFromCounter1), b_+16);
+  ENEMY_CALL_C(b_+16, waterTektite_getAdjacentWallsBitset_hook, SYM(waterTektite_getAdjacentWallsBitset), b_+19);
   CYC(b_+19, b_+21); E = ENEMY_BASE + OBJ_ANGLE;
-  CALL_C(b_+21, ecom_applyVelocityGivenAdjacentWalls_b0e_hook, SYM(ecom_applyVelocityGivenAdjacentWalls_b0e), b_+24);
-  CALL_C(b_+24, ecom_bounceOffScreenBoundary_b0e_hook, SYM(ecom_bounceOffScreenBoundary_b0e), SYM(waterTektike_animate));
+  ENEMY_CALL_C(b_+21, ecom_applyVelocityGivenAdjacentWalls_b0e_hook, SYM(ecom_applyVelocityGivenAdjacentWalls_b0e), b_+24);
+  ENEMY_CALL_C(b_+24, ecom_bounceOffScreenBoundary_b0e_hook, SYM(ecom_bounceOffScreenBoundary_b0e), SYM(waterTektike_animate));
   TAIL(waterTektike_animate); // fallthrough
 }
 
@@ -188,8 +189,8 @@ void waterTektike_animate_hook(GB *gb) {
 void waterTektike_state9_hook(GB *gb) {
   BASE(waterTektike_state9);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, ecom_decCounter1_b0e_hook, SYM(ecom_decCounter1_b0e), b_+3);
-  if (!(F & FZ)) { CYCT(b_+3, b_+5); waterTektike_animate_hook(gb); return; } // jr nz
+  ENEMY_CALL_C(b_+0, ecom_decCounter1_b0e_hook, SYM(ecom_decCounter1_b0e), b_+3);
+  if (!(ENEMY_FLAG(FZ))) { CYCT(b_+3, b_+5); ENEMY_LOCAL_CALL(waterTektike_animate_hook(gb)); return; } // jr nz
   CYC(b_+3, b_+5);
   CYC(b_+5, b_+7); TAIL(waterTektike_decideNewAngle); // jr
 }
@@ -210,43 +211,43 @@ void waterTektite_getAdjacentWallsBitsetGivenAngle_hook(GB *gb) {
   BASE(waterTektite_getAdjacentWallsBitsetGivenAngle);
   uint16_t sp0_ = gb->sp;
   CYC(b_+0, b_+1); A = mem_rd(gb, DE);
-  CALL_C(b_+1, ecom_getAdjacentWallTableOffset_b0e_hook, SYM(ecom_getAdjacentWallTableOffset_b0e), b_+4);
+  ENEMY_CALL_C(b_+1, ecom_getAdjacentWallTableOffset_b0e_hook, SYM(ecom_getAdjacentWallTableOffset_b0e), b_+4);
   CYC(b_+4, b_+5); H = D;
   CYC(b_+5, b_+7); L = ENEMY_BASE + OBJ_YH;
   CYC(b_+7, b_+8); B = mem_rd(gb, HL);
   CYC(b_+8, b_+10); L = ENEMY_BASE + OBJ_XH;
   CYC(b_+10, b_+11); C = mem_rd(gb, HL);
   CYC(b_+11, b_+14); SET_HL(SYM(ecom_sideviewAdjacentWallOffsetTable_b0e)); // ecom_sideviewAdjacentWallOffsetTable (bank 0e)
-  CYC(b_+14, b_+15); waterTektite_addAToHl_from_rst(gb, b_+15);
+  CYC(b_+14, b_+15); ENEMY_LOCAL_CALL(waterTektite_addAToHl_from_rst(gb, b_+15));
 
   CYC(b_+15, b_+17); A = 0x10;
-  CYC(b_+17, b_+19); mem_wr(gb, hFF8B, A); // hFF8B
+  CYC(b_+17, b_+19); ENEMY_WRITE(hFF8B, A); // hFF8B
   CYC(b_+19, b_+21); D = 0xcf; // >wRoomLayout
 
 nextOffset:
   CYC(b_+21, b_+22); A = mem_rd(gb, HL); SET_HL(HL + 1); // ldi a,(hl)
   CYC(b_+22, b_+23); alu_add(gb, B);
   CYC(b_+23, b_+24); B = A;
-  CYC(b_+24, b_+26); alu_and(gb, 0xf0);
+  CYC(b_+24, b_+26); ENEMY_AND(0xf0);
   CYC(b_+26, b_+27); E = A;
   CYC(b_+27, b_+28); A = mem_rd(gb, HL); SET_HL(HL + 1); // ldi a,(hl)
   CYC(b_+28, b_+29); alu_add(gb, C);
   CYC(b_+29, b_+30); C = A;
-  CYC(b_+30, b_+32); alu_and(gb, 0xf0);
+  CYC(b_+30, b_+32); ENEMY_AND(0xf0);
   CYC(b_+32, b_+34); A = alu_swap(gb, A);
-  CYC(b_+34, b_+35); alu_or(gb, E);
+  CYC(b_+34, b_+35); ENEMY_OR(E);
   CYC(b_+35, b_+36); E = A;
   CYC(b_+36, b_+37); A = mem_rd(gb, DE);
   CYC(b_+37, b_+39); alu_sub(gb, GV(0xf9, 0xfa)); // TILEINDEX_PUDDLE
-  CYC(b_+39, b_+41); alu_cp(gb, GV(0x05, 0x04)); // TILEINDEX_FD-TILEINDEX_PUDDLE+1
+  CYC(b_+39, b_+41); ENEMY_CP(GV(0x05, 0x04)); // TILEINDEX_FD-TILEINDEX_PUDDLE+1
   CYC(b_+41, b_+43); A = mem_rd(gb, hFF8B); // hFF8B
   CYC(b_+43, b_+44); alu_rla(gb);
-  CYC(b_+44, b_+46); mem_wr(gb, hFF8B, A); // hFF8B
-  if (!(F & FC)) { CYCT(b_+46, b_+48); goto nextOffset; } // jr nc
+  CYC(b_+44, b_+46); ENEMY_WRITE(hFF8B, A); // hFF8B
+  if (!(ENEMY_FLAG(FC))) { CYCT(b_+46, b_+48); goto nextOffset; } // jr nc
   CYC(b_+46, b_+48);
 
-  CYC(b_+48, b_+50); alu_xor(gb, 0x0f);
-  CYC(b_+50, b_+52); mem_wr(gb, hFF8B, A); // hFF8B
+  CYC(b_+48, b_+50); ENEMY_XOR(0x0f);
+  CYC(b_+50, b_+52); ENEMY_WRITE(hFF8B, A); // hFF8B
   CYC(b_+52, b_+54); A = mem_rd(gb, hActiveObject); // hActiveObject
   CYC(b_+54, b_+55); D = A;
   RET(b_+55); return; // ret
@@ -261,9 +262,9 @@ void waterTektike_setSpeedFromCounter1_hook(GB *gb) {
   CYC(b_+1, b_+3); A = alu_srl(gb, A);
   CYC(b_+3, b_+5); A = alu_srl(gb, A);
   CYC(b_+5, b_+8); SET_HL(b_+14); // @speedVals
-  CYC(b_+8, b_+9); waterTektite_addAToHl_from_rst(gb, b_+9);
+  CYC(b_+8, b_+9); ENEMY_LOCAL_CALL(waterTektite_addAToHl_from_rst(gb, b_+9));
   CYC(b_+9, b_+11); E = ENEMY_BASE + OBJ_SPEED;
   CYC(b_+11, b_+12); A = mem_rd(gb, HL);
-  CYC(b_+12, b_+13); mem_wr(gb, DE, A);
+  CYC(b_+12, b_+13); ENEMY_WRITE(DE, A);
   RET(b_+13); return; // ret
 }

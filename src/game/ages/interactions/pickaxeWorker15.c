@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/npcs_events.h"
 
 #undef CYC
 #undef CYCT
@@ -25,12 +26,12 @@ void pickaxeWorker_setRandomDelay_hook(GB *gb) {
   BASE(pickaxeWorker_setRandomDelay);
   uint16_t sp0_ = gb->sp;
   (void)sp0_;
-  CALL_C(b_+0, getRandomNumber_noPreserveVars_hook, SYM(getRandomNumber_noPreserveVars), b_+3);
-  CYC(b_+3, b_+5); alu_and(gb, 0x1f);
+  NPC_CALL_C(b_+0, getRandomNumber_noPreserveVars_hook, SYM(getRandomNumber_noPreserveVars), b_+3);
+  CYC(b_+3, b_+5); NPC_AND(0x1f);
   CYC(b_+5, b_+7); alu_sub(gb, 0x10);
   CYC(b_+7, b_+9); alu_add(gb, 0x3c);
   CYC(b_+9, b_+11); E = INTERACTION_BASE + OBJ_COUNTER1;
-  CYC(b_+11, b_+12); mem_wr(gb, DE, A);
+  CYC(b_+11, b_+12); EVENT_WRITE(DE, A);
   RET(b_+12); return;
 }
 
@@ -40,7 +41,7 @@ void pickaxeWorker_setAnimationFromVar03_hook(GB *gb) {
   CYC(b_+0, b_+2); E = INTERACTION_BASE + OBJ_VAR03;
   CYC(b_+2, b_+3); A = mem_rd(gb, DE);
   CYC(b_+3, b_+6); SET_HL(b_+11); // @animations
-  CYC(b_+6, b_+7); pickaxeWorker15_addAToHl_from_rst(gb, b_+7);
+  CYC(b_+6, b_+7); NPC_LOCAL_CALL(pickaxeWorker15_addAToHl_from_rst(gb, b_+7));
   CYC(b_+7, b_+8); A = mem_rd(gb, HL);
   CYC(b_+8, b_+11); TAIL(interactionSetAnimation); // jp
 }
@@ -48,15 +49,15 @@ void pickaxeWorker_setAnimationFromVar03_hook(GB *gb) {
 void pickaxeWorker_chooseRandomBlackTowerText_hook(GB *gb) {
   BASE(pickaxeWorker_chooseRandomBlackTowerText);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, getRandomNumber_hook, SYM(getRandomNumber), b_+3);
-  CYC(b_+3, b_+5); alu_and(gb, 0x07);
+  NPC_CALL_C(b_+0, getRandomNumber_hook, SYM(getRandomNumber), b_+3);
+  CYC(b_+3, b_+5); NPC_AND(0x07);
   CYC(b_+5, b_+8); SET_HL(b_+18); // @blackTowerText
-  CYC(b_+8, b_+9); pickaxeWorker15_addAToHl_from_rst(gb, b_+9);
+  CYC(b_+8, b_+9); NPC_LOCAL_CALL(pickaxeWorker15_addAToHl_from_rst(gb, b_+9));
   CYC(b_+9, b_+10); A = mem_rd(gb, HL);
   CYC(b_+10, b_+12); E = INTERACTION_BASE + OBJ_TEXT_ID;
-  CYC(b_+12, b_+13); mem_wr(gb, DE, A);
+  CYC(b_+12, b_+13); EVENT_WRITE(DE, A);
   CYC(b_+13, b_+15); A = 0x1b; // >TX_1b00
   CYC(b_+15, b_+16); E = alu_inc8(gb, E);
-  CYC(b_+16, b_+17); mem_wr(gb, DE, A);
+  CYC(b_+16, b_+17); EVENT_WRITE(DE, A);
   RET(b_+17); return;
 }

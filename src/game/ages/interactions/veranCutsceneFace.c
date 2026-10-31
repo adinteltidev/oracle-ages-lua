@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/npcs_events.h"
 
 #undef CYC
 #undef CYCT
@@ -46,13 +47,13 @@ void interactionCode2d_hook(GB *gb) {
 
 state0:
   CYC(b_+10, b_+12); A = 0x01;
-  CYC(b_+12, b_+13); mem_wr(gb, DE, A);
-  CALL_C(b_+13, interactionInitGraphics_hook, SYM(interactionInitGraphics), b_+16);
-  CALL_C(b_+16, interactionSetAlwaysUpdateBit_hook, SYM(interactionSetAlwaysUpdateBit), b_+19);
+  CYC(b_+12, b_+13); EVENT_WRITE(DE, A);
+  NPC_CALL_C(b_+13, interactionInitGraphics_hook, SYM(interactionInitGraphics), b_+16);
+  NPC_CALL_C(b_+16, interactionSetAlwaysUpdateBit_hook, SYM(interactionSetAlwaysUpdateBit), b_+19);
   CYC(b_+19, b_+21); A = 0x87; // PALH_87
-  CALL_C(b_+21, loadPaletteHeader_hook, SYM(loadPaletteHeader), b_+24);
+  NPC_CALL_C(b_+21, loadPaletteHeader_hook, SYM(loadPaletteHeader), b_+24);
   CYC(b_+24, b_+27); SET_HL(veranFaceCutsceneScript_bank0c);
-  CALL_C(b_+27, interactionSetScript_hook, SYM(interactionSetScript), b_+30);
+  NPC_CALL_C(b_+27, interactionSetScript_hook, SYM(interactionSetScript), b_+30);
   // falls through into state 2 (just a ret)
 
 state2:
@@ -60,15 +61,15 @@ state2:
   return;
 
 state1:
-  CALL_C(b_+31, interactionAnimate_hook, SYM(interactionAnimate), b_+34);
-  CALL_C(b_+34, interactionRunScript_hook, SYM(interactionRunScript), b_+37);
+  NPC_CALL_C(b_+31, interactionAnimate_hook, SYM(interactionAnimate), b_+34);
+  NPC_CALL_C(b_+34, interactionRunScript_hook, SYM(interactionRunScript), b_+37);
   if (!(F & FC)) {
     CYCT(b_+37, b_+38); ret_effect(gb); return;
   }
   CYC(b_+37, b_+38);
   CYC(b_+38, b_+41); SET_HL(veranCutsceneFaceWarpDestVariables_bank08);
-  CALL_C(b_+41, setWarpDestVariables_hook, SYM(setWarpDestVariables), b_+44);
+  NPC_CALL_C(b_+41, setWarpDestVariables_hook, SYM(setWarpDestVariables), b_+44);
   CYC(b_+44, b_+45); alu_xor(gb, A);
-  CYC(b_+45, b_+48); mem_wr(gb, wcc50, A);
+  CYC(b_+45, b_+48); EVENT_WRITE(wcc50, A);
   CYC(b_+48, b_+51); TAIL(interactionIncState);
 }

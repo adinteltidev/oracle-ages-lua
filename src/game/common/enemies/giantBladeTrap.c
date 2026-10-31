@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/enemies.h"
 
 #undef CYC
 #undef CYCT
@@ -28,7 +29,7 @@ static void giantBladeTrap_addAToHl_from_rst(GB *gb, uint16_t return_address) {
   push_effect(gb, return_address);
   burn_rom(gb, 0x00, 0x0010, 0x0011, false); alu_add(gb, L);
   burn_rom(gb, 0x00, 0x0011, 0x0012, false); L = A;
-  if (F & FC) {
+  if ((F & FC)) {
     burn_rom(gb, 0x00, 0x0012, 0x0013, false);
     burn_rom(gb, 0x00, 0x0013, 0x0014, false); H = alu_inc8(gb, H);
     burn_rom(gb, 0x00, 0x0014, 0x0015, false);
@@ -46,16 +47,16 @@ static void giantBladeTrap_checkTileAtOffsetSolid(GB *gb, uint16_t return_addres
   push_effect(gb, return_address);
   CYC(b_+29, b_+30); A = mem_rd(gb, HL); SET_HL(HL + 1);
   CYC(b_+30, b_+31); alu_add(gb, B);
-  CYC(b_+31, b_+33); alu_and(gb, 0xf0);
+  CYC(b_+31, b_+33); ENEMY_AND(0xf0);
   CYC(b_+33, b_+34); E = A;
   CYC(b_+34, b_+35); A = mem_rd(gb, HL); SET_HL(HL + 1);
   CYC(b_+35, b_+36); alu_add(gb, C);
   CYC(b_+36, b_+38); A = alu_swap(gb, A);
-  CYC(b_+38, b_+40); alu_and(gb, 0x0f);
-  CYC(b_+40, b_+41); alu_or(gb, E);
+  CYC(b_+38, b_+40); ENEMY_AND(0x0f);
+  CYC(b_+40, b_+41); ENEMY_OR(E);
   CYC(b_+41, b_+42); E = A;
   CYC(b_+42, b_+43); A = mem_rd(gb, DE);
-  CYC(b_+43, b_+44); alu_or(gb, A);
+  CYC(b_+43, b_+44); ENEMY_OR(A);
   CYC(b_+44, b_+45); ret_effect(gb);
 }
 
@@ -84,21 +85,21 @@ void enemyCode2a_hook(GB *gb) {
   BASE(enemyCode2a);
   uint16_t sp0_ = gb->sp;
   CYC(b_+0, b_+1); A = alu_dec8(gb, A);
-  if (F & FZ) { CYCT(b_+1, b_+2); ret_effect(gb); return; } // ret z
+  if (ENEMY_FLAG(FZ)) { CYCT(b_+1, b_+2); ret_effect(gb); return; } // ret z
   CYC(b_+1, b_+2);
   CYC(b_+2, b_+3); A = alu_dec8(gb, A);
-  if (F & FZ) { CYCT(b_+3, b_+4); ret_effect(gb); return; } // ret z
+  if (ENEMY_FLAG(FZ)) { CYCT(b_+3, b_+4); ret_effect(gb); return; } // ret z
   CYC(b_+3, b_+4);
-  CALL_C(b_+4, ecom_getSubidAndCpStateTo08_b0d_hook, SYM(ecom_getSubidAndCpStateTo08_b0d), b_+7);
-  if (F & FC) { CYCT(b_+7, b_+9); goto commonState; } // jr c
+  ENEMY_CALL_C(b_+4, ecom_getSubidAndCpStateTo08_b0d_hook, SYM(ecom_getSubidAndCpStateTo08_b0d), b_+7);
+  if (ENEMY_FLAG(FC)) { CYCT(b_+7, b_+9); goto commonState; } // jr c
   CYC(b_+7, b_+9);
   CYC(b_+9, b_+10); A = B;
   CYC(b_+10, b_+11); push_effect(gb, b_+11);
   {
     uint16_t target = enemyCode2a_jump_table(gb);
-    if (target == SYM(giantBladeTrap_subid01)) { giantBladeTrap_subid01_hook(gb); return; }
-    if (target == SYM(giantBladeTrap_subid02)) { giantBladeTrap_subid02_hook(gb); return; }
-    if (target == SYM(giantBladeTrap_subid03)) { giantBladeTrap_subid03_hook(gb); return; }
+    if (target == SYM(giantBladeTrap_subid01)) { ENEMY_LOCAL_CALL(giantBladeTrap_subid01_hook(gb)); return; }
+    if (target == SYM(giantBladeTrap_subid02)) { ENEMY_LOCAL_CALL(giantBladeTrap_subid02_hook(gb)); return; }
+    if (target == SYM(giantBladeTrap_subid03)) { ENEMY_LOCAL_CALL(giantBladeTrap_subid03_hook(gb)); return; }
     TAIL(giantBladeTrap_subid00); // target == 0x63aa
   }
 
@@ -106,7 +107,7 @@ commonState:
   CYC(b_+19, b_+20); push_effect(gb, b_+20);
   {
     uint16_t target = enemyCode2a_jump_table(gb);
-    if (target == SYM(giantBladeTrap_state_uninitialized)) { giantBladeTrap_state_uninitialized_hook(gb); return; }
+    if (target == SYM(giantBladeTrap_state_uninitialized)) { ENEMY_LOCAL_CALL(giantBladeTrap_state_uninitialized_hook(gb)); return; }
     TAIL(giantBladeTrap_state_stub); // states 1-7 all target 0x63a9
   }
 }
@@ -114,7 +115,7 @@ commonState:
 void giantBladeTrap_state_uninitialized_hook(GB *gb) {
   BASE(giantBladeTrap_state_uninitialized);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, ecom_setSpeedAndState8_b0d_hook, SYM(ecom_setSpeedAndState8_b0d), b_+3);
+  ENEMY_CALL_C(b_+0, ecom_setSpeedAndState8_b0d_hook, SYM(ecom_setSpeedAndState8_b0d), b_+3);
   CYC(b_+3, b_+6); TAIL(objectSetVisible82); // jp
 }
 
@@ -135,8 +136,8 @@ void giantBladeTrap_subid01_hook(GB *gb) {
   CYC(b_+3, b_+4); push_effect(gb, b_+4);
   {
     uint16_t target = enemyCode2a_jump_table(gb);
-    if (target == SYM(giantBladeTrap_subid01_state9)) { giantBladeTrap_subid01_state9_hook(gb); return; }
-    if (target == SYM(giantBladeTrap_subid01_stateA)) { giantBladeTrap_subid01_stateA_hook(gb); return; }
+    if (target == SYM(giantBladeTrap_subid01_state9)) { ENEMY_LOCAL_CALL(giantBladeTrap_subid01_state9_hook(gb)); return; }
+    if (target == SYM(giantBladeTrap_subid01_stateA)) { ENEMY_LOCAL_CALL(giantBladeTrap_subid01_stateA_hook(gb)); return; }
     TAIL(giantBladeTrap_subid01_state8); // target == 0x63b5
   }
 }
@@ -146,11 +147,11 @@ void giantBladeTrap_subid01_state8_hook(GB *gb) {
   BASE(giantBladeTrap_subid01_state8);
   uint16_t sp0_ = gb->sp;
   CYC(b_+0, b_+2); A = 0x09;
-  CYC(b_+2, b_+3); mem_wr(gb, DE, A); // [state] = 9
-  CALL_C(b_+3, giantBladeTrap_chooseInitialAngle_hook, SYM(giantBladeTrap_chooseInitialAngle), b_+6);
+  CYC(b_+2, b_+3); ENEMY_WRITE(DE, A); // [state] = 9
+  ENEMY_CALL_C(b_+3, giantBladeTrap_chooseInitialAngle_hook, SYM(giantBladeTrap_chooseInitialAngle), b_+6);
   CYC(b_+6, b_+8); E = ENEMY_BASE + OBJ_SPEED;
   CYC(b_+8, b_+10); A = 0x14; // SPEED_80
-  CYC(b_+10, b_+11); mem_wr(gb, DE, A);
+  CYC(b_+10, b_+11); ENEMY_WRITE(DE, A);
   RET(b_+11); return;
 }
 
@@ -158,12 +159,12 @@ void giantBladeTrap_subid01_state8_hook(GB *gb) {
 void giantBladeTrap_subid01_state9_hook(GB *gb) {
   BASE(giantBladeTrap_subid01_state9);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, giantBladeTrap_checkCanMoveInDirection_hook, SYM(giantBladeTrap_checkCanMoveInDirection), b_+3);
-  if (F & FZ) { CYCT(b_+3, b_+6); objectApplySpeed_hook(gb); return; } // jp z
+  ENEMY_CALL_C(b_+0, giantBladeTrap_checkCanMoveInDirection_hook, SYM(giantBladeTrap_checkCanMoveInDirection), b_+3);
+  if (ENEMY_FLAG(FZ)) { CYCT(b_+3, b_+6); ENEMY_LOCAL_CALL(objectApplySpeed_hook(gb)); return; } // jp z
   CYC(b_+3, b_+6);
-  CALL_C(b_+6, ecom_incState_b0d_hook, SYM(ecom_incState_b0d), b_+9);
+  ENEMY_CALL_C(b_+6, ecom_incState_b0d_hook, SYM(ecom_incState_b0d), b_+9);
   CYC(b_+9, b_+11); L = ENEMY_BASE + OBJ_COUNTER1;
-  CYC(b_+11, b_+13); mem_wr(gb, HL, 0x10);
+  CYC(b_+11, b_+13); ENEMY_WRITE(HL, 0x10);
   RET(b_+13); return;
 }
 
@@ -171,16 +172,16 @@ void giantBladeTrap_subid01_state9_hook(GB *gb) {
 void giantBladeTrap_subid01_stateA_hook(GB *gb) {
   BASE(giantBladeTrap_subid01_stateA);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, ecom_decCounter1_b0d_hook, SYM(ecom_decCounter1_b0d), b_+3);
-  if (!(F & FZ)) { CYCT(b_+3, b_+4); ret_effect(gb); return; } // ret nz
+  ENEMY_CALL_C(b_+0, ecom_decCounter1_b0d_hook, SYM(ecom_decCounter1_b0d), b_+3);
+  if (!(ENEMY_FLAG(FZ))) { CYCT(b_+3, b_+4); ret_effect(gb); return; } // ret nz
   CYC(b_+3, b_+4);
   CYC(b_+4, b_+5); L = E;
-  CYC(b_+5, b_+6); mem_wr(gb, HL, alu_dec8(gb, mem_rd(gb, HL))); // [state]--
+  CYC(b_+5, b_+6); ENEMY_WRITE(HL, alu_dec8(gb, mem_rd(gb, HL))); // [state]--
   CYC(b_+6, b_+8); L = ENEMY_BASE + OBJ_ANGLE;
   CYC(b_+8, b_+9); A = mem_rd(gb, HL);
   CYC(b_+9, b_+11); alu_add(gb, 0x08);
-  CYC(b_+11, b_+13); alu_and(gb, 0x18);
-  CYC(b_+13, b_+14); mem_wr(gb, HL, A);
+  CYC(b_+11, b_+13); ENEMY_AND(0x18);
+  CYC(b_+13, b_+14); ENEMY_WRITE(HL, A);
   RET(b_+14); return;
 }
 
@@ -191,8 +192,8 @@ void giantBladeTrap_subid02_hook(GB *gb) {
   CYC(b_+3, b_+4); push_effect(gb, b_+4);
   {
     uint16_t target = enemyCode2a_jump_table(gb);
-    if (target == SYM(giantBladeTrap_commonState9)) { giantBladeTrap_commonState9_hook(gb); return; }
-    if (target == SYM(giantBladeTrap_subid02_stateA)) { giantBladeTrap_subid02_stateA_hook(gb); return; }
+    if (target == SYM(giantBladeTrap_commonState9)) { ENEMY_LOCAL_CALL(giantBladeTrap_commonState9_hook(gb)); return; }
+    if (target == SYM(giantBladeTrap_subid02_stateA)) { ENEMY_LOCAL_CALL(giantBladeTrap_subid02_stateA_hook(gb)); return; }
     TAIL(giantBladeTrap_subid02_state8); // target == 0x63e8
   }
 }
@@ -202,9 +203,9 @@ void giantBladeTrap_subid02_state8_hook(GB *gb) {
   BASE(giantBladeTrap_subid02_state8);
   CYC(b_+0, b_+1); H = D;
   CYC(b_+1, b_+2); L = E;
-  CYC(b_+2, b_+3); mem_wr(gb, HL, alu_inc8(gb, mem_rd(gb, HL)));
+  CYC(b_+2, b_+3); ENEMY_WRITE(HL, alu_inc8(gb, mem_rd(gb, HL)));
   CYC(b_+3, b_+5); L = ENEMY_BASE + OBJ_COUNTER1;
-  CYC(b_+5, b_+7); mem_wr(gb, HL, 60);
+  CYC(b_+5, b_+7); ENEMY_WRITE(HL, 60);
   RET(b_+7); return;
 }
 
@@ -212,23 +213,23 @@ void giantBladeTrap_subid02_state8_hook(GB *gb) {
 void giantBladeTrap_commonState9_hook(GB *gb) {
   BASE(giantBladeTrap_commonState9);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, giantBladeTrap_updateSpeed_hook, SYM(giantBladeTrap_updateSpeed), b_+3);
-  CALL_C(b_+3, giantBladeTrap_checkCanMoveInDirection_hook, SYM(giantBladeTrap_checkCanMoveInDirection), b_+6);
-  if (F & FZ) { CYCT(b_+6, b_+9); objectApplySpeed_hook(gb); return; } // jp z
+  ENEMY_CALL_C(b_+0, giantBladeTrap_updateSpeed_hook, SYM(giantBladeTrap_updateSpeed), b_+3);
+  ENEMY_CALL_C(b_+3, giantBladeTrap_checkCanMoveInDirection_hook, SYM(giantBladeTrap_checkCanMoveInDirection), b_+6);
+  if (ENEMY_FLAG(FZ)) { CYCT(b_+6, b_+9); ENEMY_LOCAL_CALL(objectApplySpeed_hook(gb)); return; } // jp z
   CYC(b_+6, b_+9);
-  CALL_C(b_+9, ecom_incState_b0d_hook, SYM(ecom_incState_b0d), b_+12);
+  ENEMY_CALL_C(b_+9, ecom_incState_b0d_hook, SYM(ecom_incState_b0d), b_+12);
   CYC(b_+12, b_+14); L = ENEMY_BASE + OBJ_YH;
   CYC(b_+14, b_+15); A = mem_rd(gb, HL);
   CYC(b_+15, b_+17); alu_add(gb, 0x02);
-  CYC(b_+17, b_+19); alu_and(gb, 0xf8);
-  CYC(b_+19, b_+20); mem_wr(gb, HL, A); SET_HL(HL + 1);
+  CYC(b_+17, b_+19); ENEMY_AND(0xf8);
+  CYC(b_+19, b_+20); ENEMY_WRITE(HL, A); SET_HL(HL + 1);
   CYC(b_+20, b_+21); L = alu_inc8(gb, L);
   CYC(b_+21, b_+22); A = mem_rd(gb, HL);
   CYC(b_+22, b_+24); alu_add(gb, 0x02);
-  CYC(b_+24, b_+26); alu_and(gb, 0xf8);
-  CYC(b_+26, b_+27); mem_wr(gb, HL, A);
+  CYC(b_+24, b_+26); ENEMY_AND(0xf8);
+  CYC(b_+26, b_+27); ENEMY_WRITE(HL, A);
   CYC(b_+27, b_+29); L = ENEMY_BASE + OBJ_COUNTER1;
-  CYC(b_+29, b_+31); mem_wr(gb, HL, 0x10);
+  CYC(b_+29, b_+31); ENEMY_WRITE(HL, 0x10);
   RET(b_+31); return;
 }
 
@@ -236,36 +237,36 @@ void giantBladeTrap_commonState9_hook(GB *gb) {
 void giantBladeTrap_subid02_stateA_hook(GB *gb) {
   BASE(giantBladeTrap_subid02_stateA);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, ecom_decCounter1_b0d_hook, SYM(ecom_decCounter1_b0d), b_+3);
-  if (!(F & FZ)) { CYCT(b_+3, b_+4); ret_effect(gb); return; } // ret nz
+  ENEMY_CALL_C(b_+0, ecom_decCounter1_b0d_hook, SYM(ecom_decCounter1_b0d), b_+3);
+  if (!(ENEMY_FLAG(FZ))) { CYCT(b_+3, b_+4); ret_effect(gb); return; } // ret nz
   CYC(b_+3, b_+4);
   CYC(b_+4, b_+6); E = ENEMY_BASE + OBJ_ANGLE;
   CYC(b_+6, b_+7); A = mem_rd(gb, DE);
   CYC(b_+7, b_+9); alu_add(gb, 0x08);
-  CYC(b_+9, b_+11); alu_and(gb, 0x1f);
-  CYC(b_+11, b_+12); mem_wr(gb, DE, A);
-  CALL_C(b_+12, giantBladeTrap_checkCanMoveInDirection_hook, SYM(giantBladeTrap_checkCanMoveInDirection), b_+15);
-  if (F & FZ) { CYCT(b_+15, b_+17); goto canMove; } // jr z
+  CYC(b_+9, b_+11); ENEMY_AND(0x1f);
+  CYC(b_+11, b_+12); ENEMY_WRITE(DE, A);
+  ENEMY_CALL_C(b_+12, giantBladeTrap_checkCanMoveInDirection_hook, SYM(giantBladeTrap_checkCanMoveInDirection), b_+15);
+  if (ENEMY_FLAG(FZ)) { CYCT(b_+15, b_+17); goto canMove; } // jr z
   CYC(b_+15, b_+17);
   CYC(b_+17, b_+19); E = ENEMY_BASE + OBJ_ANGLE;
   CYC(b_+19, b_+20); A = mem_rd(gb, DE);
-  CYC(b_+20, b_+22); alu_xor(gb, 0x10);
-  CYC(b_+22, b_+23); mem_wr(gb, DE, A);
-  CALL_C(b_+23, giantBladeTrap_checkCanMoveInDirection_hook, SYM(giantBladeTrap_checkCanMoveInDirection), b_+26);
-  if (F & FZ) { CYCT(b_+26, b_+28); goto canMove; } // jr z
+  CYC(b_+20, b_+22); ENEMY_XOR(0x10);
+  CYC(b_+22, b_+23); ENEMY_WRITE(DE, A);
+  ENEMY_CALL_C(b_+23, giantBladeTrap_checkCanMoveInDirection_hook, SYM(giantBladeTrap_checkCanMoveInDirection), b_+26);
+  if (ENEMY_FLAG(FZ)) { CYCT(b_+26, b_+28); goto canMove; } // jr z
   CYC(b_+26, b_+28);
   CYC(b_+28, b_+30); E = ENEMY_BASE + OBJ_ANGLE;
   CYC(b_+30, b_+31); A = mem_rd(gb, DE);
   CYC(b_+31, b_+33); alu_sub(gb, 0x08);
-  CYC(b_+33, b_+35); alu_and(gb, 0x1f);
-  CYC(b_+35, b_+36); mem_wr(gb, DE, A);
+  CYC(b_+33, b_+35); ENEMY_AND(0x1f);
+  CYC(b_+35, b_+36); ENEMY_WRITE(DE, A);
 
 canMove:
   CYC(b_+36, b_+37); H = D;
   CYC(b_+37, b_+39); L = ENEMY_BASE + OBJ_STATE;
-  CYC(b_+39, b_+40); mem_wr(gb, HL, alu_dec8(gb, mem_rd(gb, HL)));
+  CYC(b_+39, b_+40); ENEMY_WRITE(HL, alu_dec8(gb, mem_rd(gb, HL)));
   CYC(b_+40, b_+42); L = ENEMY_BASE + OBJ_COUNTER1;
-  CYC(b_+42, b_+44); mem_wr(gb, HL, 90);
+  CYC(b_+42, b_+44); ENEMY_WRITE(HL, 90);
   RET(b_+44); return;
 }
 
@@ -276,8 +277,8 @@ void giantBladeTrap_subid03_hook(GB *gb) {
   CYC(b_+3, b_+4); push_effect(gb, b_+4);
   {
     uint16_t target = enemyCode2a_jump_table(gb);
-    if (target == SYM(giantBladeTrap_commonState9)) { giantBladeTrap_commonState9_hook(gb); return; }
-    if (target == SYM(giantBladeTrap_subid03_stateA)) { giantBladeTrap_subid03_stateA_hook(gb); return; }
+    if (target == SYM(giantBladeTrap_commonState9)) { ENEMY_LOCAL_CALL(giantBladeTrap_commonState9_hook(gb)); return; }
+    if (target == SYM(giantBladeTrap_subid03_stateA)) { ENEMY_LOCAL_CALL(giantBladeTrap_subid03_stateA_hook(gb)); return; }
     TAIL(giantBladeTrap_subid03_state8); // target == 0x6447
   }
 }
@@ -287,11 +288,11 @@ void giantBladeTrap_subid03_state8_hook(GB *gb) {
   BASE(giantBladeTrap_subid03_state8);
   CYC(b_+0, b_+1); H = D;
   CYC(b_+1, b_+2); L = E;
-  CYC(b_+2, b_+3); mem_wr(gb, HL, alu_inc8(gb, mem_rd(gb, HL)));
+  CYC(b_+2, b_+3); ENEMY_WRITE(HL, alu_inc8(gb, mem_rd(gb, HL)));
   CYC(b_+3, b_+5); L = ENEMY_BASE + OBJ_ANGLE;
-  CYC(b_+5, b_+7); mem_wr(gb, HL, 0x10);
+  CYC(b_+5, b_+7); ENEMY_WRITE(HL, 0x10);
   CYC(b_+7, b_+9); L = ENEMY_BASE + OBJ_COUNTER1;
-  CYC(b_+9, b_+11); mem_wr(gb, HL, 90);
+  CYC(b_+9, b_+11); ENEMY_WRITE(HL, 90);
   RET(b_+11); return;
 }
 
@@ -299,36 +300,36 @@ void giantBladeTrap_subid03_state8_hook(GB *gb) {
 void giantBladeTrap_subid03_stateA_hook(GB *gb) {
   BASE(giantBladeTrap_subid03_stateA);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, ecom_decCounter1_b0d_hook, SYM(ecom_decCounter1_b0d), b_+3);
-  if (!(F & FZ)) { CYCT(b_+3, b_+4); ret_effect(gb); return; } // ret nz
+  ENEMY_CALL_C(b_+0, ecom_decCounter1_b0d_hook, SYM(ecom_decCounter1_b0d), b_+3);
+  if (!(ENEMY_FLAG(FZ))) { CYCT(b_+3, b_+4); ret_effect(gb); return; } // ret nz
   CYC(b_+3, b_+4);
   CYC(b_+4, b_+6); E = ENEMY_BASE + OBJ_ANGLE;
   CYC(b_+6, b_+7); A = mem_rd(gb, DE);
   CYC(b_+7, b_+9); alu_sub(gb, 0x08);
-  CYC(b_+9, b_+11); alu_and(gb, 0x1f);
-  CYC(b_+11, b_+12); mem_wr(gb, DE, A);
-  CALL_C(b_+12, giantBladeTrap_checkCanMoveInDirection_hook, SYM(giantBladeTrap_checkCanMoveInDirection), b_+15);
-  if (F & FZ) { CYCT(b_+15, b_+17); goto canMove; } // jr z
+  CYC(b_+9, b_+11); ENEMY_AND(0x1f);
+  CYC(b_+11, b_+12); ENEMY_WRITE(DE, A);
+  ENEMY_CALL_C(b_+12, giantBladeTrap_checkCanMoveInDirection_hook, SYM(giantBladeTrap_checkCanMoveInDirection), b_+15);
+  if (ENEMY_FLAG(FZ)) { CYCT(b_+15, b_+17); goto canMove; } // jr z
   CYC(b_+15, b_+17);
   CYC(b_+17, b_+19); E = ENEMY_BASE + OBJ_ANGLE;
   CYC(b_+19, b_+20); A = mem_rd(gb, DE);
-  CYC(b_+20, b_+22); alu_xor(gb, 0x10);
-  CYC(b_+22, b_+23); mem_wr(gb, DE, A);
-  CALL_C(b_+23, giantBladeTrap_checkCanMoveInDirection_hook, SYM(giantBladeTrap_checkCanMoveInDirection), b_+26);
-  if (F & FZ) { CYCT(b_+26, b_+28); goto canMove; } // jr z
+  CYC(b_+20, b_+22); ENEMY_XOR(0x10);
+  CYC(b_+22, b_+23); ENEMY_WRITE(DE, A);
+  ENEMY_CALL_C(b_+23, giantBladeTrap_checkCanMoveInDirection_hook, SYM(giantBladeTrap_checkCanMoveInDirection), b_+26);
+  if (ENEMY_FLAG(FZ)) { CYCT(b_+26, b_+28); goto canMove; } // jr z
   CYC(b_+26, b_+28);
   CYC(b_+28, b_+30); E = ENEMY_BASE + OBJ_ANGLE;
   CYC(b_+30, b_+31); A = mem_rd(gb, DE);
   CYC(b_+31, b_+33); alu_add(gb, 0x08);
-  CYC(b_+33, b_+35); alu_and(gb, 0x1f);
-  CYC(b_+35, b_+36); mem_wr(gb, DE, A);
+  CYC(b_+33, b_+35); ENEMY_AND(0x1f);
+  CYC(b_+35, b_+36); ENEMY_WRITE(DE, A);
 
 canMove:
   CYC(b_+36, b_+37); H = D;
   CYC(b_+37, b_+39); L = ENEMY_BASE + OBJ_STATE;
-  CYC(b_+39, b_+40); mem_wr(gb, HL, alu_dec8(gb, mem_rd(gb, HL)));
+  CYC(b_+39, b_+40); ENEMY_WRITE(HL, alu_dec8(gb, mem_rd(gb, HL)));
   CYC(b_+40, b_+42); L = ENEMY_BASE + OBJ_COUNTER1;
-  CYC(b_+42, b_+44); mem_wr(gb, HL, 90);
+  CYC(b_+42, b_+44); ENEMY_WRITE(HL, 90);
   RET(b_+44); return;
 }
 
@@ -336,27 +337,27 @@ canMove:
 void giantBladeTrap_chooseInitialAngle_hook(GB *gb) {
   BASE(giantBladeTrap_chooseInitialAngle);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, giantBladeTrap_checkCanMoveInDirection_hook, SYM(giantBladeTrap_checkCanMoveInDirection), b_+3);
+  ENEMY_CALL_C(b_+0, giantBladeTrap_checkCanMoveInDirection_hook, SYM(giantBladeTrap_checkCanMoveInDirection), b_+3);
   CYC(b_+3, b_+5); A = 0x08; // ANGLE_RIGHT
-  if (!(F & FZ)) { CYCT(b_+5, b_+7); goto setAngle; } // jr nz
+  if (!(ENEMY_FLAG(FZ))) { CYCT(b_+5, b_+7); goto setAngle; } // jr nz
   CYC(b_+5, b_+7);
   CYC(b_+7, b_+9); E = ENEMY_BASE + OBJ_ANGLE;
-  CYC(b_+9, b_+10); mem_wr(gb, DE, A);
-  CALL_C(b_+10, giantBladeTrap_checkCanMoveInDirection_hook, SYM(giantBladeTrap_checkCanMoveInDirection), b_+13);
+  CYC(b_+9, b_+10); ENEMY_WRITE(DE, A);
+  ENEMY_CALL_C(b_+10, giantBladeTrap_checkCanMoveInDirection_hook, SYM(giantBladeTrap_checkCanMoveInDirection), b_+13);
   CYC(b_+13, b_+15); A = 0x10; // ANGLE_DOWN
-  if (!(F & FZ)) { CYCT(b_+15, b_+17); goto setAngle; } // jr nz
+  if (!(ENEMY_FLAG(FZ))) { CYCT(b_+15, b_+17); goto setAngle; } // jr nz
   CYC(b_+15, b_+17);
   CYC(b_+17, b_+19); E = ENEMY_BASE + OBJ_ANGLE;
-  CYC(b_+19, b_+20); mem_wr(gb, DE, A);
-  CALL_C(b_+20, giantBladeTrap_checkCanMoveInDirection_hook, SYM(giantBladeTrap_checkCanMoveInDirection), b_+23);
+  CYC(b_+19, b_+20); ENEMY_WRITE(DE, A);
+  ENEMY_CALL_C(b_+20, giantBladeTrap_checkCanMoveInDirection_hook, SYM(giantBladeTrap_checkCanMoveInDirection), b_+23);
   CYC(b_+23, b_+25); A = 0x18; // ANGLE_LEFT
-  if (!(F & FZ)) { CYCT(b_+25, b_+27); goto setAngle; } // jr nz
+  if (!(ENEMY_FLAG(FZ))) { CYCT(b_+25, b_+27); goto setAngle; } // jr nz
   CYC(b_+25, b_+27);
   CYC(b_+27, b_+28); alu_xor(gb, A);
 
 setAngle:
   CYC(b_+28, b_+30); E = ENEMY_BASE + OBJ_ANGLE;
-  CYC(b_+30, b_+31); mem_wr(gb, DE, A);
+  CYC(b_+30, b_+31); ENEMY_WRITE(DE, A);
   RET(b_+31); return;
 }
 
@@ -376,13 +377,13 @@ void giantBladeTrap_checkCanMoveInDirection_hook(GB *gb) {
   CYC(b_+10, b_+11); A = mem_rd(gb, DE);
   CYC(b_+11, b_+12); alu_rrca(gb);
   CYC(b_+12, b_+15); SET_HL(b_+45); // @positionOffsets
-  CYC(b_+15, b_+16); giantBladeTrap_addAToHl_from_rst(gb, b_+16);
+  CYC(b_+15, b_+16); ENEMY_LOCAL_CALL(giantBladeTrap_addAToHl_from_rst(gb, b_+16));
   CYC(b_+16, b_+17); push_effect(gb, DE);
   CYC(b_+17, b_+19); D = 0xce; // >wRoomCollisions
-  CYC(b_+19, b_+22); giantBladeTrap_checkTileAtOffsetSolid(gb, b_+22);
-  if (!(F & FZ)) { CYCT(b_+22, b_+24); goto skip; } // jr nz
+  CYC(b_+19, b_+22); ENEMY_LOCAL_CALL(giantBladeTrap_checkTileAtOffsetSolid(gb, b_+22));
+  if (!(ENEMY_FLAG(FZ))) { CYCT(b_+22, b_+24); goto skip; } // jr nz
   CYC(b_+22, b_+24);
-  CYC(b_+24, b_+27); giantBladeTrap_checkTileAtOffsetSolid(gb, b_+27);
+  CYC(b_+24, b_+27); ENEMY_LOCAL_CALL(giantBladeTrap_checkTileAtOffsetSolid(gb, b_+27));
 
 skip:
   CYC(b_+27, b_+28); SET_DE(pop_effect(gb));
@@ -394,18 +395,18 @@ void giantBladeTrap_updateSpeed_hook(GB *gb) {
   BASE(giantBladeTrap_updateSpeed);
   CYC(b_+0, b_+2); E = ENEMY_BASE + OBJ_COUNTER1;
   CYC(b_+2, b_+3); A = mem_rd(gb, DE);
-  CYC(b_+3, b_+4); alu_or(gb, A);
-  if (F & FZ) { CYCT(b_+4, b_+5); ret_effect(gb); return; } // ret z
+  CYC(b_+3, b_+4); ENEMY_OR(A);
+  if (ENEMY_FLAG(FZ)) { CYCT(b_+4, b_+5); ret_effect(gb); return; } // ret z
   CYC(b_+4, b_+5);
   CYC(b_+5, b_+6); A = mem_rd(gb, DE);
   CYC(b_+6, b_+7); A = alu_dec8(gb, A);
-  CYC(b_+7, b_+8); mem_wr(gb, DE, A);
-  CYC(b_+8, b_+10); alu_and(gb, 0xf0);
+  CYC(b_+7, b_+8); ENEMY_WRITE(DE, A);
+  CYC(b_+8, b_+10); ENEMY_AND(0xf0);
   CYC(b_+10, b_+12); A = alu_swap(gb, A);
   CYC(b_+12, b_+15); SET_HL(b_+21); // @speeds
-  CYC(b_+15, b_+16); giantBladeTrap_addAToHl_from_rst(gb, b_+16);
+  CYC(b_+15, b_+16); ENEMY_LOCAL_CALL(giantBladeTrap_addAToHl_from_rst(gb, b_+16));
   CYC(b_+16, b_+18); E = ENEMY_BASE + OBJ_SPEED;
   CYC(b_+18, b_+19); A = mem_rd(gb, HL);
-  CYC(b_+19, b_+20); mem_wr(gb, DE, A);
+  CYC(b_+19, b_+20); ENEMY_WRITE(DE, A);
   RET(b_+20); return;
 }

@@ -13,6 +13,16 @@
 #include "platform/switch_menu_boot.h"
 #include "ui/savefile.h"
 #include "game/game.h"
+#ifdef ORACLES_LUA_GAMEPLAY
+#include "script/gameplay.h"
+#include "script/block_rules.h"
+#include "script/colored_cube.h"
+#include "script/levers_lava.h"
+#include "script/doors.h"
+#include "script/items_shops.h"
+#include "script/npcs_events.h"
+#include "script/enemies.h"
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -22,7 +32,25 @@
 #include <errno.h>
 #include "platform/switch_status.h"
 
+#if defined(ORACLES_LUA_ENEMIES)
+#define DATA "sdmc:/switch/oracle-ages-lua-phase7/"
+#elif defined(ORACLES_LUA_NPCS_EVENTS)
+#define DATA "sdmc:/switch/oracle-ages-lua-phase6/"
+#elif defined(ORACLES_LUA_ITEMS_SHOPS)
+#define DATA "sdmc:/switch/oracle-ages-lua-phase5/"
+#elif defined(ORACLES_LUA_DOORS)
+#define DATA "sdmc:/switch/oracle-ages-lua-phase4/"
+#elif defined(ORACLES_LUA_LEVERS_LAVA)
+#define DATA "sdmc:/switch/oracle-ages-lua-phase3/"
+#elif defined(ORACLES_LUA_COLORED_CUBE)
+#define DATA "sdmc:/switch/oracle-ages-lua-phase2/"
+#elif defined(ORACLES_LUA_BLOCK_PUZZLES)
+#define DATA "sdmc:/switch/oracle-ages-lua-phase1/"
+#elif defined(ORACLES_LUA_GAMEPLAY)
+#define DATA "sdmc:/switch/oracle-ages-lua/"
+#else
 #define DATA "sdmc:/switch/oracle-ages-native/"
+#endif
 #define ROM DATA "ages.gbc"
 #define SRAM DATA "sram.sav"
 #define STATE DATA "quick.state"
@@ -176,7 +204,8 @@ static int replay(bool full) {
   uint64_t start = armGetSystemTick(), frames = 0;
   for (; frames < limit && !r.fail && !game->hung; ++frames) {
     if (frames && frames % 1013 == 0) reload_pending = true;
-    if (reload_pending && threads_parked(game)) {
+    // load_state resets the host sample ring: compare pending samples first.
+    if (reload_pending && !game->sample_count && threads_parked(game)) {
       if (!save_state(DATA "replay-reload.state") || !load_state(DATA "replay-reload.state")) { r.fail = true; break; }
       reload_pending = false; reloads++;
     }
@@ -202,6 +231,32 @@ static int replay(bool full) {
     fprintf(result, "build=%s\nstatus=%s\nframes=%llu\ncheckpoints=%llu\nexpected=%llu\nreloads=%u\nseconds=%.3f\nsizeof_GB=%zu\nsizeof_Apu=%zu\nreason=%s\n",
       ORACLES_SWITCH_BUILD, ok ? "PASS" : cancelled ? "CANCELLED" : "FAIL", (unsigned long long)frames,
       (unsigned long long)r.checked, (unsigned long long)expected, reloads, seconds, sizeof(GB), sizeof(Apu), gb_stop_reason);
+#ifdef ORACLES_LUA_GAMEPLAY
+    fprintf(result,"lua_changed=%llu\nlua_alternate=%llu\nlua_heap=%zu\n",(unsigned long long)gameplay_calls(0),(unsigned long long)gameplay_calls(1),gameplay_memory());
+    fprintf(result,"lua_scripts_sha256=%s\nlua_blocks=%llu/%llu/%llu/%llu\n", gameplay_revision(),
+      (unsigned long long)gameplay_block_calls(0), (unsigned long long)gameplay_block_calls(1),
+      (unsigned long long)gameplay_block_calls(2), (unsigned long long)gameplay_block_calls(3));
+#endif
+#ifdef ORACLES_LUA_GAMEPLAY
+    for(int r=0;r<GAMEPLAY_BLOCK_RULE_COUNT;++r)
+      fprintf(result,"lua_rule.%s=%llu\n",gameplay_block_rule_name(r),(unsigned long long)gameplay_block_rule_calls(r));
+    for(int r=0;r<GAMEPLAY_COLORED_CUBE_RULE_COUNT;++r)
+      fprintf(result,"lua_rule.%s=%llu\n",gameplay_colored_cube_rule_name(r),(unsigned long long)gameplay_colored_cube_calls(r));
+    for(int r=0;r<GAMEPLAY_LAVA_RULE_COUNT;++r)
+      fprintf(result,"lua_rule.%s=%llu\n",gameplay_lava_rule_name(r),(unsigned long long)gameplay_lava_calls(r));
+    for(int r=0;r<GAMEPLAY_DOOR_RULE_COUNT;++r)
+      fprintf(result,"lua_rule.%s=%llu\n",gameplay_door_rule_name(r),(unsigned long long)gameplay_door_calls(r));
+    for(int r=0;r<GAMEPLAY_NPCS_COUNT;++r)
+      fprintf(result,"lua_rule.%s=%llu\n",gameplay_npc_rule_name(r),(unsigned long long)gameplay_npc_calls(r));
+    for(int r=0;r<GAMEPLAY_EVENTS_COUNT;++r)
+      fprintf(result,"lua_rule.%s=%llu\n",gameplay_event_rule_name(r),(unsigned long long)gameplay_event_calls(r));
+    for(int r=0;r<GAMEPLAY_ENEMY_COUNT;++r)
+      fprintf(result,"lua_rule.%s=%llu\n",gameplay_enemy_rule_name(r),(unsigned long long)gameplay_enemy_calls(r));
+    for(int r=0;r<GAMEPLAY_ITEMS_COUNT;++r)
+      fprintf(result,"lua_rule.%s=%llu\n",gameplay_item_rule_name(r),(unsigned long long)gameplay_item_calls(r));
+    for(int r=0;r<GAMEPLAY_SHOPS_COUNT;++r)
+      fprintf(result,"lua_rule.%s=%llu\n",gameplay_shop_rule_name(r),(unsigned long long)gameplay_shop_calls(r));
+#endif
     fclose(result);
   }
   printf("\n%s: %llu/%llu checkpoints, %.2fs\n", ok ? "PASS" : "FAIL / CANCELLED",
@@ -404,6 +459,28 @@ static int play(void) {
   result = game->hung ? 1 : 0;
   fprintf(stderr, "frames=%llu late=%llu underruns=%llu reason=%s\n", (unsigned long long)frames,
           (unsigned long long)late, (unsigned long long)underruns, gb_stop_reason);
+#ifdef ORACLES_LUA_GAMEPLAY
+  fprintf(stderr,"Lua changed=%llu alternate=%llu heap=%zu\n",(unsigned long long)gameplay_calls(0),(unsigned long long)gameplay_calls(1),gameplay_memory());
+  fprintf(stderr,"Lua scripts SHA256: %s; blocks=%llu/%llu/%llu/%llu\n", gameplay_revision(),
+    (unsigned long long)gameplay_block_calls(0), (unsigned long long)gameplay_block_calls(1),
+    (unsigned long long)gameplay_block_calls(2), (unsigned long long)gameplay_block_calls(3));
+  for(int r=0;r<GAMEPLAY_COLORED_CUBE_RULE_COUNT;++r)
+    fprintf(stderr,"Lua rule %s=%llu\n",gameplay_colored_cube_rule_name(r),(unsigned long long)gameplay_colored_cube_calls(r));
+  for(int r=0;r<GAMEPLAY_LAVA_RULE_COUNT;++r)
+    fprintf(stderr,"Lua rule %s=%llu\n",gameplay_lava_rule_name(r),(unsigned long long)gameplay_lava_calls(r));
+  for(int r=0;r<GAMEPLAY_DOOR_RULE_COUNT;++r)
+    fprintf(stderr,"Lua rule %s=%llu\n",gameplay_door_rule_name(r),(unsigned long long)gameplay_door_calls(r));
+  for(int r=0;r<GAMEPLAY_NPCS_COUNT;++r)
+    fprintf(stderr,"Lua rule %s=%llu\n",gameplay_npc_rule_name(r),(unsigned long long)gameplay_npc_calls(r));
+  for(int r=0;r<GAMEPLAY_EVENTS_COUNT;++r)
+    fprintf(stderr,"Lua rule %s=%llu\n",gameplay_event_rule_name(r),(unsigned long long)gameplay_event_calls(r));
+  for(int r=0;r<GAMEPLAY_ENEMY_COUNT;++r)
+    fprintf(stderr,"Lua rule %s=%llu\n",gameplay_enemy_rule_name(r),(unsigned long long)gameplay_enemy_calls(r));
+  for(int r=0;r<GAMEPLAY_ITEMS_COUNT;++r)
+    fprintf(stderr,"Lua rule %s=%llu\n",gameplay_item_rule_name(r),(unsigned long long)gameplay_item_calls(r));
+  for(int r=0;r<GAMEPLAY_SHOPS_COUNT;++r)
+    fprintf(stderr,"Lua rule %s=%llu\n",gameplay_shop_rule_name(r),(unsigned long long)gameplay_shop_calls(r));
+#endif
   if (!save_sram()) { fprintf(stderr, "Final SRAM save failed\n"); result = 1; }
  done:
   if (result) fprintf(stderr, "SDL: %s; engine: %s\n", SDL_GetError(), gb_stop_reason);
@@ -424,6 +501,12 @@ int main(int argc, char **argv) {
   freopen(DATA "runtime.log", "w", stderr);
   hooks_init(); hook_mode = HOOK_MODE_REPLACE;
   printf("Oracle of Ages - Switch\nBuild: %s\nNative C / SDL2 / libnx\n\nA: Play\nX: Short replay + reload\nY: Full replay + reload\nPlus: Exit\n\nROM: %s\n", ORACLES_SWITCH_BUILD, ROM);
+#ifdef ORACLES_LUA_BLOCK_PUZZLES
+  printf("Experimental C + Lua phase 1: block puzzles enabled\n");
+#endif
+#ifdef ORACLES_LUA_GAMEPLAY
+  fprintf(stderr, "Build: %s\nLua scripts SHA256: %s\nData: %s\n", ORACLES_SWITCH_BUILD, gameplay_revision(), DATA);
+#endif
   int mode = -1;
   while (appletMainLoop()) {
     padUpdate(&pad); u64 down = padGetButtonsDown(&pad);

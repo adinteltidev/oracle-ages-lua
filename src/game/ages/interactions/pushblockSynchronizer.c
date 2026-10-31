@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/block_rules.h"
 
 #undef CYC
 #undef CYCT
@@ -36,7 +37,9 @@ static void interactionCodebd_pushBlockAt(GB *gb, uint16_t sp0_) {
   CYC(b_+49, b_+50); push_effect(gb, HL); // push hl
   CYC(b_+50, b_+52); A = H8(hFF8B);
   CYC(b_+52, b_+54); alu_cp(gb, 0xda); // TILEINDEX_SOMARIA_BLOCK
-  if (F & FZ) { CYCT(b_+54, b_+56); goto ret_label; } // jr z
+  bool phase1_choice_6 = (F & FZ) == 0;
+  BLOCK_DECIDE(phase1_choice_6, sync_eligible, A);
+  if (!phase1_choice_6) { CYCT(b_+54, b_+56); goto ret_label; } // jr z
   CYC(b_+54, b_+56);
   CYC(b_+56, b_+57); A = L;
   CYC(b_+57, b_+59); H8(hFF8D) = A;
@@ -73,6 +76,16 @@ ret_label: // interactionCodebd@return
 // ==================================================================================================
 // INTERAC_PUSHBLOCK_SYNCHRONIZER
 // ==================================================================================================
+static void sync_increment_state(GB *gb) {
+  uint16_t addr=SYM(interactionIncState);
+  burn_rom(gb,0,addr,addr+3,false); SET_HL((uint16_t)((D<<8) | (INTERACTION_BASE+OBJ_STATE)));
+  burn_rom(gb,0,addr+3,addr+4,false);
+  uint8_t current=mem_rd(gb,HL), next=alu_inc8(gb,current);
+  BLOCK_SYNC_STATE(next,current);
+  mem_wr(gb,HL,next);
+  burn_rom(gb,0,addr+4,addr+5,false); ret_effect(gb);
+}
+
 void interactionCodebd_hook(GB *gb) {
   BASE(interactionCodebd);
   uint16_t sp0_ = gb->sp;
@@ -81,7 +94,7 @@ void interactionCodebd_hook(GB *gb) {
   {
     CYC(b_+3, b_+4); push_effect(gb, b_+4);
     uint16_t target = interactionCodebd_jump_table(gb);
-    if (target == SYM(interactionIncState)) { interactionIncState_hook(gb); return; } // state list's 1st entry jumps straight into interactionIncState
+    if (target == SYM(interactionIncState)) { sync_increment_state(gb); return; }
     if (target == b_+43) goto state2;
     // target == 0x7077 falls through to state1
   }
@@ -89,29 +102,32 @@ void interactionCodebd_hook(GB *gb) {
   // interactionCodebd@state1
   CYC(b_+10, b_+13); A = W8(w1ReservedInteraction1_enabled);
   CYC(b_+13, b_+14); alu_or(gb, A);
-  if (F & FZ) { CYCT(b_+14, b_+15); ret_effect(gb); return; } // ret z
+  bool phase1_choice_7 = (F & FZ) == 0;
+  BLOCK_DECIDE(phase1_choice_7, sync_awake, A);
+  if (!phase1_choice_7) { CYCT(b_+14, b_+15); ret_effect(gb); return; } // ret z
   CYC(b_+14, b_+15);
   CYC(b_+15, b_+18); A = W8(w1ReservedInteraction1_var31); // Tile index of block being pushed
   CYC(b_+18, b_+20); H8(hFF8B) = A;
   CALL_C(b_+20, findTileInRoom_hook, SYM(findTileInRoom), b_+23);
   if (!(F & FZ)) { CYCT(b_+23, b_+25); goto incState; } // jr nz
   CYC(b_+23, b_+25);
-  CYC(b_+25, b_+28); interactionCodebd_pushBlockAt(gb, sp0_); // call
+  CYC(b_+25, b_+28); interactionCodebd_pushBlockAt(gb, sp0_); BLOCK_FAILED_RETURN(); // call
 
 l7089:
   CYC(b_+28, b_+30); A = H8(hFF8B);
   CALL_C(b_+30, backwardsSearch_hook, SYM(backwardsSearch), b_+33);
   if (!(F & FZ)) { CYCT(b_+33, b_+35); goto incState; } // jr nz
   CYC(b_+33, b_+35);
-  CYC(b_+35, b_+38); interactionCodebd_pushBlockAt(gb, sp0_); // call
+  CYC(b_+35, b_+38); interactionCodebd_pushBlockAt(gb, sp0_); BLOCK_FAILED_RETURN(); // call
   CYC(b_+38, b_+40); goto l7089; // jr
 
 incState: // interactionCodebd@incState
-  CYC(b_+40, b_+43); TAIL(interactionIncState); // jp
+  CYC(b_+40, b_+43); sync_increment_state(gb); return;
 
 state2: // interactionCodebd@state2
   CYC(b_+43, b_+45); E = INTERACTION_BASE + OBJ_STATE;
   CYC(b_+45, b_+47); A = 0x01;
+  BLOCK_SYNC_STATE(A,2);
   CYC(b_+47, b_+48); mem_wr(gb, DE, A);
   CYC(b_+48, b_+49); ret_effect(gb); return; // ret
 }

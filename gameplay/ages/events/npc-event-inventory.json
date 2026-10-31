@@ -1,0 +1,6558 @@
+{
+  "phase": 6,
+  "base_commit": "40cf271",
+  "sources": [
+    {
+      "source": "src/game/common/interactions/banana.c",
+      "family": "banana",
+      "status": "retained_c_service",
+      "owners": [
+        192
+      ],
+      "functions": 5,
+      "conditions": {
+        "cp": 2,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      }
+    },
+    {
+      "source": "src/game/common/interactions/bipin.c",
+      "family": "bipin",
+      "status": "npc_event_policy",
+      "owners": [
+        40
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 1,
+        "or": 0,
+        "and": 0,
+        "xor": 2,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 1,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 2,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 5
+      }
+    },
+    {
+      "source": "src/game/common/interactions/bipinBlossomFamilySpawner.c",
+      "family": "bipinBlossomFamilySpawner",
+      "status": "npc_event_policy",
+      "owners": [
+        172
+      ],
+      "functions": 13,
+      "conditions": {
+        "cp": 5,
+        "or": 4,
+        "and": 0,
+        "xor": 1,
+        "bit": 1
+      },
+      "native_policy_sites": {
+        "NPC_CP": 5,
+        "NPC_OR": 4,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 1,
+        "NPC_CALL_ZERO": 1,
+        "NPC_CALL_CARRY": 1,
+        "EVENT_WRITE": 12
+      }
+    },
+    {
+      "source": "src/game/common/interactions/blossom.c",
+      "family": "blossom",
+      "status": "npc_event_policy",
+      "owners": [
+        43
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 0
+      }
+    },
+    {
+      "source": "src/game/common/interactions/bombFlower.c",
+      "family": "bombFlower",
+      "status": "retained_c_service",
+      "owners": [
+        111
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      }
+    },
+    {
+      "source": "src/game/common/interactions/breakTileDebris.c",
+      "family": "breakTileDebris",
+      "status": "retained_c_service",
+      "owners": [
+        0
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 2,
+        "or": 3,
+        "and": 3,
+        "xor": 1,
+        "bit": 3
+      }
+    },
+    {
+      "source": "src/game/common/interactions/bubble.c",
+      "family": "bubble",
+      "status": "retained_c_service",
+      "owners": [
+        145
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 3,
+        "or": 4,
+        "and": 6,
+        "xor": 1,
+        "bit": 1
+      }
+    },
+    {
+      "source": "src/game/common/interactions/businessScrub.c",
+      "family": "businessScrub",
+      "status": "npc_event_policy",
+      "owners": [
+        206
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 9,
+        "or": 7,
+        "and": 2,
+        "xor": 2,
+        "bit": 4
+      },
+      "native_policy_sites": {
+        "NPC_CP": 9,
+        "NPC_OR": 7,
+        "NPC_AND": 2,
+        "NPC_XOR": 0,
+        "NPC_BIT": 4,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 1,
+        "EVENT_WRITE": 19
+      }
+    },
+    {
+      "source": "src/game/common/interactions/c1.c",
+      "family": "c1",
+      "status": "npc_event_policy",
+      "owners": [
+        193
+      ],
+      "functions": 11,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 1,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 0,
+        "NPC_AND": 1,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 10
+      }
+    },
+    {
+      "source": "src/game/common/interactions/cf.c",
+      "family": "cf",
+      "status": "npc_event_policy",
+      "owners": [
+        207
+      ],
+      "functions": 2,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 3
+      }
+    },
+    {
+      "source": "src/game/common/interactions/child.c",
+      "family": "child",
+      "status": "npc_event_policy",
+      "owners": [
+        53
+      ],
+      "functions": 29,
+      "conditions": {
+        "cp": 8,
+        "or": 5,
+        "and": 5,
+        "xor": 4,
+        "bit": 1
+      },
+      "native_policy_sites": {
+        "NPC_CP": 8,
+        "NPC_OR": 5,
+        "NPC_AND": 5,
+        "NPC_XOR": 4,
+        "NPC_BIT": 1,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 36
+      }
+    },
+    {
+      "source": "src/game/common/interactions/companionSpawner.c",
+      "family": "companionSpawner",
+      "status": "npc_event_policy",
+      "owners": [
+        103
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 4,
+        "or": 11,
+        "and": 5,
+        "xor": 2,
+        "bit": 3
+      },
+      "native_policy_sites": {
+        "NPC_CP": 4,
+        "NPC_OR": 11,
+        "NPC_AND": 5,
+        "NPC_XOR": 0,
+        "NPC_BIT": 3,
+        "NPC_CALL_ZERO": 5,
+        "NPC_CALL_CARRY": 2,
+        "EVENT_WRITE": 15
+      }
+    },
+    {
+      "source": "src/game/common/interactions/companionTutorial.c",
+      "family": "companionTutorial",
+      "status": "npc_event_policy",
+      "owners": [
+        208
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 12,
+        "or": 4,
+        "and": 0,
+        "xor": 1,
+        "bit": 1
+      },
+      "native_policy_sites": {
+        "NPC_CP": 12,
+        "NPC_OR": 4,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 1,
+        "NPC_CALL_ZERO": 1,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 3
+      }
+    },
+    {
+      "source": "src/game/common/interactions/createObjectAtEachTileindex.c",
+      "family": "createObjectAtEachTileindex",
+      "status": "retained_c_service",
+      "owners": [
+        199
+      ],
+      "functions": 4,
+      "conditions": {
+        "cp": 1,
+        "or": 1,
+        "and": 4,
+        "xor": 0,
+        "bit": 0
+      }
+    },
+    {
+      "source": "src/game/common/interactions/creditsTextHorizontal.c",
+      "family": "creditsTextHorizontal",
+      "status": "retained_c_service",
+      "owners": [
+        174
+      ],
+      "functions": 8,
+      "conditions": {
+        "cp": 1,
+        "or": 8,
+        "and": 2,
+        "xor": 2,
+        "bit": 0
+      }
+    },
+    {
+      "source": "src/game/common/interactions/creditsTextVertical.c",
+      "family": "creditsTextVertical",
+      "status": "retained_c_service",
+      "owners": [
+        175
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 5,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      }
+    },
+    {
+      "source": "src/game/common/interactions/doorController.c",
+      "family": "doorController",
+      "status": "retained_c_service",
+      "owners": [
+        30
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 5,
+        "or": 4,
+        "and": 5,
+        "xor": 2,
+        "bit": 0
+      }
+    },
+    {
+      "source": "src/game/common/interactions/doorController15.c",
+      "family": "doorController",
+      "status": "retained_c_service",
+      "owners": [],
+      "functions": 10,
+      "conditions": {
+        "cp": 5,
+        "or": 4,
+        "and": 6,
+        "xor": 3,
+        "bit": 0
+      }
+    },
+    {
+      "source": "src/game/common/interactions/dungeonKeySprite.c",
+      "family": "dungeonKeySprite",
+      "status": "retained_c_service",
+      "owners": [
+        23
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      }
+    },
+    {
+      "source": "src/game/common/interactions/dungeonStuff.c",
+      "family": "dungeonStuff",
+      "status": "retained_c_service",
+      "owners": [
+        18
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 4,
+        "or": 2,
+        "and": 1,
+        "xor": 0,
+        "bit": 1
+      }
+    },
+    {
+      "source": "src/game/common/interactions/endgameCutsceneBipsomFamily.c",
+      "family": "endgameCutsceneBipsomFamily",
+      "status": "npc_event_policy",
+      "owners": [
+        167
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 3,
+        "or": 1,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 3,
+        "NPC_OR": 1,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 1,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 7
+      }
+    },
+    {
+      "source": "src/game/common/interactions/eraOrSeasonInfo.c",
+      "family": "eraOrSeasonInfo",
+      "status": "npc_event_policy",
+      "owners": [
+        224
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 1,
+        "or": 0,
+        "and": 1,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 1,
+        "NPC_OR": 0,
+        "NPC_AND": 1,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 1,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 11
+      }
+    },
+    {
+      "source": "src/game/common/interactions/essence.c",
+      "family": "essence",
+      "status": "npc_event_policy",
+      "owners": [
+        127
+      ],
+      "functions": 4,
+      "conditions": {
+        "cp": 3,
+        "or": 4,
+        "and": 3,
+        "xor": 3,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 3,
+        "NPC_OR": 4,
+        "NPC_AND": 3,
+        "NPC_XOR": 1,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 4,
+        "NPC_CALL_CARRY": 1,
+        "EVENT_WRITE": 32
+      }
+    },
+    {
+      "source": "src/game/common/interactions/essence15.c",
+      "family": "essence",
+      "status": "npc_event_policy",
+      "owners": [],
+      "functions": 4,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 1
+      }
+    },
+    {
+      "source": "src/game/common/interactions/exclamationMark.c",
+      "family": "exclamationMark",
+      "status": "retained_c_service",
+      "owners": [
+        159
+      ],
+      "functions": 5,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      }
+    },
+    {
+      "source": "src/game/common/interactions/explosion.c",
+      "family": "explosion",
+      "status": "retained_c_service",
+      "owners": [
+        86
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      }
+    },
+    {
+      "source": "src/game/common/interactions/fallDownHole.c",
+      "family": "fallDownHole",
+      "status": "retained_c_service",
+      "owners": [
+        15
+      ],
+      "functions": 2,
+      "conditions": {
+        "cp": 4,
+        "or": 0,
+        "and": 2,
+        "xor": 1,
+        "bit": 2
+      }
+    },
+    {
+      "source": "src/game/common/interactions/farore.c",
+      "family": "farore",
+      "status": "npc_event_policy",
+      "owners": [
+        16
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 3
+      }
+    },
+    {
+      "source": "src/game/common/interactions/farore15.c",
+      "family": "farore",
+      "status": "npc_event_policy",
+      "owners": [],
+      "functions": 8,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 4,
+        "xor": 1,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 0,
+        "NPC_AND": 4,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 2,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 3
+      }
+    },
+    {
+      "source": "src/game/common/interactions/faroreGiveItem.c",
+      "family": "faroreGiveItem",
+      "status": "npc_event_policy",
+      "owners": [
+        217
+      ],
+      "functions": 7,
+      "conditions": {
+        "cp": 1,
+        "or": 4,
+        "and": 2,
+        "xor": 1,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 1,
+        "NPC_OR": 4,
+        "NPC_AND": 2,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 10,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 22
+      }
+    },
+    {
+      "source": "src/game/common/interactions/faroreMakeChest.c",
+      "family": "faroreMakeChest",
+      "status": "npc_event_policy",
+      "owners": [
+        17
+      ],
+      "functions": 5,
+      "conditions": {
+        "cp": 0,
+        "or": 2,
+        "and": 3,
+        "xor": 2,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 2,
+        "NPC_AND": 3,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 8,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 21
+      }
+    },
+    {
+      "source": "src/game/common/interactions/faroresMemory.c",
+      "family": "faroresMemory",
+      "status": "npc_event_policy",
+      "owners": [
+        28
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 3,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 0
+      }
+    },
+    {
+      "source": "src/game/common/interactions/finalDungeonEnergy.c",
+      "family": "finalDungeonEnergy",
+      "status": "npc_event_policy",
+      "owners": [
+        181
+      ],
+      "functions": 6,
+      "conditions": {
+        "cp": 0,
+        "or": 2,
+        "and": 0,
+        "xor": 2,
+        "bit": 1
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 2,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 1,
+        "NPC_CALL_ZERO": 2,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 11
+      }
+    },
+    {
+      "source": "src/game/common/interactions/floatingImage.c",
+      "family": "floatingImage",
+      "status": "retained_c_service",
+      "owners": [
+        160
+      ],
+      "functions": 3,
+      "conditions": {
+        "cp": 0,
+        "or": 2,
+        "and": 2,
+        "xor": 0,
+        "bit": 0
+      }
+    },
+    {
+      "source": "src/game/common/interactions/gameCompleteDialog.c",
+      "family": "gameCompleteDialog",
+      "status": "npc_event_policy",
+      "owners": [
+        209
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 1
+      }
+    },
+    {
+      "source": "src/game/common/interactions/gameCompleteDialog15.c",
+      "family": "gameCompleteDialog",
+      "status": "npc_event_policy",
+      "owners": [],
+      "functions": 2,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 1,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 4
+      }
+    },
+    {
+      "source": "src/game/common/interactions/gashaSpot.c",
+      "family": "gashaSpot",
+      "status": "retained_c_service",
+      "owners": [
+        182
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 13,
+        "or": 7,
+        "and": 3,
+        "xor": 5,
+        "bit": 2
+      }
+    },
+    {
+      "source": "src/game/common/interactions/horonDogCredits.c",
+      "family": "horonDogCredits",
+      "status": "retained_c_service",
+      "owners": [
+        185
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 2,
+        "or": 3,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      }
+    },
+    {
+      "source": "src/game/common/interactions/interactionMinecart.c",
+      "family": "interactionMinecart",
+      "status": "npc_event_policy",
+      "owners": [
+        22
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 1,
+        "or": 1,
+        "and": 1,
+        "xor": 2,
+        "bit": 1
+      },
+      "native_policy_sites": {
+        "NPC_CP": 1,
+        "NPC_OR": 1,
+        "NPC_AND": 1,
+        "NPC_XOR": 2,
+        "NPC_BIT": 1,
+        "NPC_CALL_ZERO": 1,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 16
+      }
+    },
+    {
+      "source": "src/game/common/interactions/introBird.c",
+      "family": "introBird",
+      "status": "npc_event_policy",
+      "owners": [
+        211
+      ],
+      "functions": 8,
+      "conditions": {
+        "cp": 3,
+        "or": 2,
+        "and": 1,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 3,
+        "NPC_OR": 2,
+        "NPC_AND": 1,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 1,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 12
+      }
+    },
+    {
+      "source": "src/game/common/interactions/introSprites1.c",
+      "family": "introSprites1",
+      "status": "npc_event_policy",
+      "owners": [
+        74
+      ],
+      "functions": 21,
+      "conditions": {
+        "cp": 9,
+        "or": 2,
+        "and": 4,
+        "xor": 2,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 9,
+        "NPC_OR": 2,
+        "NPC_AND": 4,
+        "NPC_XOR": 2,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 4,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 28
+      }
+    },
+    {
+      "source": "src/game/common/interactions/kissHeart.c",
+      "family": "kissHeart",
+      "status": "retained_c_service",
+      "owners": [
+        183
+      ],
+      "functions": 2,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      }
+    },
+    {
+      "source": "src/game/common/interactions/linkShip.c",
+      "family": "linkShip",
+      "status": "retained_c_service",
+      "owners": [
+        212
+      ],
+      "functions": 6,
+      "conditions": {
+        "cp": 1,
+        "or": 1,
+        "and": 6,
+        "xor": 0,
+        "bit": 0
+      }
+    },
+    {
+      "source": "src/game/common/interactions/minibossPortal.c",
+      "family": "minibossPortal",
+      "status": "retained_c_service",
+      "owners": [
+        126
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 1,
+        "or": 4,
+        "and": 6,
+        "xor": 3,
+        "bit": 1
+      }
+    },
+    {
+      "source": "src/game/common/interactions/movingPlatform.c",
+      "family": "movingPlatform",
+      "status": "retained_c_service",
+      "owners": [
+        121
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 3,
+        "or": 2,
+        "and": 2,
+        "xor": 1,
+        "bit": 0
+      }
+    },
+    {
+      "source": "src/game/common/interactions/movingPlatform15.c",
+      "family": "movingPlatform",
+      "status": "retained_c_service",
+      "owners": [],
+      "functions": 6,
+      "conditions": {
+        "cp": 1,
+        "or": 0,
+        "and": 0,
+        "xor": 2,
+        "bit": 0
+      }
+    },
+    {
+      "source": "src/game/common/interactions/movingSidescrollConveyor.c",
+      "family": "movingSidescrollConveyor",
+      "status": "retained_c_service",
+      "owners": [
+        162
+      ],
+      "functions": 2,
+      "conditions": {
+        "cp": 6,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      }
+    },
+    {
+      "source": "src/game/common/interactions/movingSidescrollPlatform.c",
+      "family": "movingSidescrollPlatform",
+      "status": "retained_c_service",
+      "owners": [
+        161
+      ],
+      "functions": 3,
+      "conditions": {
+        "cp": 7,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      }
+    },
+    {
+      "source": "src/game/common/interactions/nayruRalphCredits.c",
+      "family": "nayruRalphCredits",
+      "status": "npc_event_policy",
+      "owners": [
+        223
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 1,
+        "or": 5,
+        "and": 1,
+        "xor": 1,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 1,
+        "NPC_OR": 5,
+        "NPC_AND": 1,
+        "NPC_XOR": 1,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 5,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 19
+      }
+    },
+    {
+      "source": "src/game/common/interactions/overworldKeySprite.c",
+      "family": "overworldKeySprite",
+      "status": "retained_c_service",
+      "owners": [
+        24
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 1
+      }
+    },
+    {
+      "source": "src/game/common/interactions/pushblock.c",
+      "family": "pushblock",
+      "status": "retained_c_service",
+      "owners": [
+        20
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 4,
+        "or": 4,
+        "and": 3,
+        "xor": 2,
+        "bit": 3
+      }
+    },
+    {
+      "source": "src/game/common/interactions/pushblockTrigger.c",
+      "family": "pushblockTrigger",
+      "status": "retained_c_service",
+      "owners": [
+        19
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 2,
+        "or": 0,
+        "and": 0,
+        "xor": 1,
+        "bit": 0
+      }
+    },
+    {
+      "source": "src/game/common/interactions/ringHelpBook.c",
+      "family": "ringHelpBook",
+      "status": "npc_event_policy",
+      "owners": [
+        229
+      ],
+      "functions": 2,
+      "conditions": {
+        "cp": 0,
+        "or": 2,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 2,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 1
+      }
+    },
+    {
+      "source": "src/game/common/interactions/roller.c",
+      "family": "roller",
+      "status": "retained_c_service",
+      "owners": [
+        122
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 20,
+        "or": 5,
+        "and": 4,
+        "xor": 2,
+        "bit": 1
+      }
+    },
+    {
+      "source": "src/game/common/interactions/seasonsFairy.c",
+      "family": "seasonsFairy",
+      "status": "retained_c_service",
+      "owners": [
+        80
+      ],
+      "functions": 2,
+      "conditions": {
+        "cp": 5,
+        "or": 3,
+        "and": 4,
+        "xor": 0,
+        "bit": 0
+      }
+    },
+    {
+      "source": "src/game/common/interactions/shopItem.c",
+      "family": "shopItem",
+      "status": "retained_c_service",
+      "owners": [
+        71
+      ],
+      "functions": 22,
+      "conditions": {
+        "cp": 4,
+        "or": 3,
+        "and": 2,
+        "xor": 1,
+        "bit": 0
+      }
+    },
+    {
+      "source": "src/game/common/interactions/shopkeeper.c",
+      "family": "shopkeeper",
+      "status": "retained_c_service",
+      "owners": [
+        70
+      ],
+      "functions": 32,
+      "conditions": {
+        "cp": 5,
+        "or": 7,
+        "and": 1,
+        "xor": 13,
+        "bit": 2
+      }
+    },
+    {
+      "source": "src/game/common/interactions/shopkeeper15.c",
+      "family": "shopkeeper",
+      "status": "retained_c_service",
+      "owners": [],
+      "functions": 2,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      }
+    },
+    {
+      "source": "src/game/common/interactions/spinner.c",
+      "family": "spinner",
+      "status": "retained_c_service",
+      "owners": [
+        125
+      ],
+      "functions": 4,
+      "conditions": {
+        "cp": 1,
+        "or": 4,
+        "and": 2,
+        "xor": 5,
+        "bit": 1
+      }
+    },
+    {
+      "source": "src/game/common/interactions/statueEyeball.c",
+      "family": "statueEyeball",
+      "status": "retained_c_service",
+      "owners": [
+        226
+      ],
+      "functions": 4,
+      "conditions": {
+        "cp": 6,
+        "or": 3,
+        "and": 11,
+        "xor": 0,
+        "bit": 0
+      }
+    },
+    {
+      "source": "src/game/common/interactions/switchTileToggler.c",
+      "family": "switchTileToggler",
+      "status": "retained_c_service",
+      "owners": [
+        120
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 1,
+        "or": 0,
+        "and": 1,
+        "xor": 0,
+        "bit": 0
+      }
+    },
+    {
+      "source": "src/game/common/interactions/syrup.c",
+      "family": "syrup",
+      "status": "npc_event_policy",
+      "owners": [
+        95
+      ],
+      "functions": 3,
+      "conditions": {
+        "cp": 4,
+        "or": 3,
+        "and": 0,
+        "xor": 4,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 4,
+        "NPC_OR": 3,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 1,
+        "EVENT_WRITE": 15
+      }
+    },
+    {
+      "source": "src/game/common/interactions/syrupCucco.c",
+      "family": "syrupCucco",
+      "status": "npc_event_policy",
+      "owners": [
+        201
+      ],
+      "functions": 9,
+      "conditions": {
+        "cp": 5,
+        "or": 3,
+        "and": 0,
+        "xor": 8,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 5,
+        "NPC_OR": 3,
+        "NPC_AND": 0,
+        "NPC_XOR": 2,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 37
+      }
+    },
+    {
+      "source": "src/game/common/interactions/titlescreenClouds.c",
+      "family": "titlescreenClouds",
+      "status": "retained_c_service",
+      "owners": [
+        210
+      ],
+      "functions": 7,
+      "conditions": {
+        "cp": 2,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      }
+    },
+    {
+      "source": "src/game/common/interactions/treasureInteraction.c",
+      "family": "treasureInteraction",
+      "status": "retained_c_service",
+      "owners": [
+        96
+      ],
+      "functions": 9,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 6,
+        "bit": 0
+      }
+    },
+    {
+      "source": "src/game/common/interactions/twinrovaFlameInteraction.c",
+      "family": "twinrovaFlameInteraction",
+      "status": "retained_c_service",
+      "owners": [
+        169
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 2,
+        "or": 0,
+        "and": 2,
+        "xor": 0,
+        "bit": 0
+      }
+    },
+    {
+      "source": "src/game/common/interactions/vasu.c",
+      "family": "vasu",
+      "status": "npc_event_policy",
+      "owners": [
+        137
+      ],
+      "functions": 2,
+      "conditions": {
+        "cp": 2,
+        "or": 14,
+        "and": 2,
+        "xor": 7,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 2,
+        "NPC_OR": 14,
+        "NPC_AND": 2,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 3,
+        "NPC_CALL_CARRY": 1,
+        "EVENT_WRITE": 17
+      }
+    },
+    {
+      "source": "src/game/common/interactions/vasu15.c",
+      "family": "vasu",
+      "status": "npc_event_policy",
+      "owners": [],
+      "functions": 17,
+      "conditions": {
+        "cp": 0,
+        "or": 1,
+        "and": 0,
+        "xor": 2,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 1,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 2,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 13
+      }
+    },
+    {
+      "source": "src/game/common/interactions/woodenTunnel.c",
+      "family": "woodenTunnel",
+      "status": "retained_c_service",
+      "owners": [
+        152
+      ],
+      "functions": 6,
+      "conditions": {
+        "cp": 1,
+        "or": 2,
+        "and": 0,
+        "xor": 0,
+        "bit": 1
+      }
+    },
+    {
+      "source": "src/game/common/interactions/zeldaApproachTrigger.c",
+      "family": "zeldaApproachTrigger",
+      "status": "npc_event_policy",
+      "owners": [
+        218
+      ],
+      "functions": 3,
+      "conditions": {
+        "cp": 4,
+        "or": 1,
+        "and": 2,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 4,
+        "NPC_OR": 1,
+        "NPC_AND": 2,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 4
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/97.c",
+      "family": "97",
+      "status": "npc_event_policy",
+      "owners": [
+        151
+      ],
+      "functions": 5,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 4,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 0,
+        "NPC_AND": 4,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 4,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 13
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/a8.c",
+      "family": "a8",
+      "status": "npc_event_policy",
+      "owners": [
+        168
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 4,
+        "xor": 4,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 0,
+        "NPC_AND": 4,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 19
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/accessory.c",
+      "family": "accessory",
+      "status": "retained_c_service",
+      "owners": [
+        99
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 1,
+        "or": 3,
+        "and": 0,
+        "xor": 0,
+        "bit": 1
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/adlar.c",
+      "family": "adlar",
+      "status": "npc_event_policy",
+      "owners": [
+        41
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 1,
+        "bit": 2
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 2,
+        "NPC_CALL_ZERO": 3,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 1
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/ambi.c",
+      "family": "ambi",
+      "status": "npc_event_policy",
+      "owners": [
+        77
+      ],
+      "functions": 28,
+      "conditions": {
+        "cp": 5,
+        "or": 2,
+        "and": 0,
+        "xor": 4,
+        "bit": 4
+      },
+      "native_policy_sites": {
+        "NPC_CP": 5,
+        "NPC_OR": 2,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 4,
+        "NPC_CALL_ZERO": 4,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 12
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/ambi15.c",
+      "family": "ambi",
+      "status": "npc_event_policy",
+      "owners": [],
+      "functions": 4,
+      "conditions": {
+        "cp": 1,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 1,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 2
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/ambisPalaceButton.c",
+      "family": "ambisPalaceButton",
+      "status": "retained_c_service",
+      "owners": [
+        190
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 1,
+        "or": 1,
+        "and": 1,
+        "xor": 0,
+        "bit": 0
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/ballInteraction.c",
+      "family": "ballInteraction",
+      "status": "retained_c_service",
+      "owners": [
+        149
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 2,
+        "or": 1,
+        "and": 0,
+        "xor": 1,
+        "bit": 0
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/bear.c",
+      "family": "bear",
+      "status": "npc_event_policy",
+      "owners": [
+        93
+      ],
+      "functions": 34,
+      "conditions": {
+        "cp": 9,
+        "or": 4,
+        "and": 0,
+        "xor": 0,
+        "bit": 2
+      },
+      "native_policy_sites": {
+        "NPC_CP": 9,
+        "NPC_OR": 4,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 2,
+        "NPC_CALL_ZERO": 13,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 13
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/bipin15.c",
+      "family": "bipin",
+      "status": "npc_event_policy",
+      "owners": [],
+      "functions": 2,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 0
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/bird.c",
+      "family": "bird",
+      "status": "npc_event_policy",
+      "owners": [
+        76
+      ],
+      "functions": 36,
+      "conditions": {
+        "cp": 3,
+        "or": 3,
+        "and": 0,
+        "xor": 6,
+        "bit": 2
+      },
+      "native_policy_sites": {
+        "NPC_CP": 3,
+        "NPC_OR": 3,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 2,
+        "NPC_CALL_ZERO": 11,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 13
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/blackTowerDoorHandler.c",
+      "family": "blackTowerDoorHandler",
+      "status": "npc_event_policy",
+      "owners": [
+        198
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 1,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 0,
+        "NPC_AND": 1,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 2,
+        "NPC_CALL_CARRY": 1,
+        "EVENT_WRITE": 10
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/blossom15.c",
+      "family": "blossom",
+      "status": "npc_event_policy",
+      "owners": [],
+      "functions": 14,
+      "conditions": {
+        "cp": 0,
+        "or": 1,
+        "and": 1,
+        "xor": 1,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 1,
+        "NPC_AND": 1,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 1,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 5
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/bombUpgradeFairy.c",
+      "family": "bombUpgradeFairy",
+      "status": "npc_event_policy",
+      "owners": [
+        131
+      ],
+      "functions": 4,
+      "conditions": {
+        "cp": 3,
+        "or": 5,
+        "and": 1,
+        "xor": 4,
+        "bit": 3
+      },
+      "native_policy_sites": {
+        "NPC_CP": 3,
+        "NPC_OR": 5,
+        "NPC_AND": 1,
+        "NPC_XOR": 1,
+        "NPC_BIT": 3,
+        "NPC_CALL_ZERO": 3,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 22
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/bombUpgradeFairy15.c",
+      "family": "bombUpgradeFairy",
+      "status": "npc_event_policy",
+      "owners": [],
+      "functions": 9,
+      "conditions": {
+        "cp": 1,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 1,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 13
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/bookOfSealsPodium.c",
+      "family": "bookOfSealsPodium",
+      "status": "retained_c_service",
+      "owners": [
+        180
+      ],
+      "functions": 8,
+      "conditions": {
+        "cp": 1,
+        "or": 9,
+        "and": 0,
+        "xor": 2,
+        "bit": 1
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/boy.c",
+      "family": "boy",
+      "status": "npc_event_policy",
+      "owners": [
+        60
+      ],
+      "functions": 49,
+      "conditions": {
+        "cp": 12,
+        "or": 14,
+        "and": 4,
+        "xor": 10,
+        "bit": 4
+      },
+      "native_policy_sites": {
+        "NPC_CP": 12,
+        "NPC_OR": 14,
+        "NPC_AND": 4,
+        "NPC_XOR": 2,
+        "NPC_BIT": 4,
+        "NPC_CALL_ZERO": 21,
+        "NPC_CALL_CARRY": 1,
+        "EVENT_WRITE": 59
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/boy15.c",
+      "family": "boy",
+      "status": "npc_event_policy",
+      "owners": [],
+      "functions": 6,
+      "conditions": {
+        "cp": 1,
+        "or": 1,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 1,
+        "NPC_OR": 1,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 12
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/boy2.c",
+      "family": "boy2",
+      "status": "npc_event_policy",
+      "owners": [
+        63
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 2,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 1
+      },
+      "native_policy_sites": {
+        "NPC_CP": 2,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 1,
+        "NPC_CALL_ZERO": 6,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 4
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/carpenter.c",
+      "family": "carpenter",
+      "status": "npc_event_policy",
+      "owners": [
+        154
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 12,
+        "or": 2,
+        "and": 9,
+        "xor": 3,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 12,
+        "NPC_OR": 2,
+        "NPC_AND": 9,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 6,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 22
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/carpenter15.c",
+      "family": "carpenter",
+      "status": "npc_event_policy",
+      "owners": [],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 1
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/cheval.c",
+      "family": "cheval",
+      "status": "npc_event_policy",
+      "owners": [
+        106
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 1
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/cheval15.c",
+      "family": "cheval",
+      "status": "npc_event_policy",
+      "owners": [],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 0
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/child15.c",
+      "family": "child",
+      "status": "npc_event_policy",
+      "owners": [],
+      "functions": 16,
+      "conditions": {
+        "cp": 0,
+        "or": 1,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 1,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 3
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/childJabu.c",
+      "family": "childJabu",
+      "status": "npc_event_policy",
+      "owners": [
+        186
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 1,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 0
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/circularSidescrollPlatform.c",
+      "family": "circularSidescrollPlatform",
+      "status": "retained_c_service",
+      "owners": [
+        158,
+        164
+      ],
+      "functions": 27,
+      "conditions": {
+        "cp": 14,
+        "or": 6,
+        "and": 2,
+        "xor": 2,
+        "bit": 2
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/cloakedTwinrova.c",
+      "family": "cloakedTwinrova",
+      "status": "npc_event_policy",
+      "owners": [
+        141
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 1,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 1,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 1,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 6
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/coloredCube.c",
+      "family": "coloredCube",
+      "status": "retained_c_service",
+      "owners": [
+        25
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 2,
+        "or": 3,
+        "and": 2,
+        "xor": 2,
+        "bit": 0
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/coloredCubeFlame.c",
+      "family": "coloredCubeFlame",
+      "status": "retained_c_service",
+      "owners": [
+        26
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 2,
+        "and": 2,
+        "xor": 0,
+        "bit": 0
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/comedian.c",
+      "family": "comedian",
+      "status": "npc_event_policy",
+      "owners": [
+        101
+      ],
+      "functions": 4,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 1,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 0
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/comedian15.c",
+      "family": "comedian",
+      "status": "npc_event_policy",
+      "owners": [],
+      "functions": 8,
+      "conditions": {
+        "cp": 3,
+        "or": 0,
+        "and": 0,
+        "xor": 1,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 3,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 1,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 7
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/companionScript15.c",
+      "family": "companionScript",
+      "status": "npc_event_policy",
+      "owners": [],
+      "functions": 8,
+      "conditions": {
+        "cp": 0,
+        "or": 1,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 1,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 4
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/companionScripts.c",
+      "family": "companionScripts",
+      "status": "npc_event_policy",
+      "owners": [
+        113
+      ],
+      "functions": 28,
+      "conditions": {
+        "cp": 11,
+        "or": 7,
+        "and": 8,
+        "xor": 7,
+        "bit": 5
+      },
+      "native_policy_sites": {
+        "NPC_CP": 11,
+        "NPC_OR": 7,
+        "NPC_AND": 8,
+        "NPC_XOR": 2,
+        "NPC_BIT": 5,
+        "NPC_CALL_ZERO": 10,
+        "NPC_CALL_CARRY": 1,
+        "EVENT_WRITE": 34
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/decoration.c",
+      "family": "decoration",
+      "status": "retained_c_service",
+      "owners": [
+        128
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 1,
+        "and": 1,
+        "xor": 0,
+        "bit": 2
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/dekuScrub.c",
+      "family": "dekuScrub",
+      "status": "npc_event_policy",
+      "owners": [
+        214
+      ],
+      "functions": 2,
+      "conditions": {
+        "cp": 0,
+        "or": 2,
+        "and": 0,
+        "xor": 1,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 2,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 1,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 3
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/din.c",
+      "family": "din",
+      "status": "npc_event_policy",
+      "owners": [
+        170
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 1,
+        "or": 1,
+        "and": 0,
+        "xor": 1,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 1,
+        "NPC_OR": 1,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 2,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 6
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/disappearingSidescrollPlatform.c",
+      "family": "disappearingSidescrollPlatform",
+      "status": "retained_c_service",
+      "owners": [
+        163
+      ],
+      "functions": 5,
+      "conditions": {
+        "cp": 2,
+        "or": 0,
+        "and": 0,
+        "xor": 2,
+        "bit": 0
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/dumbellMan.c",
+      "family": "dumbellMan",
+      "status": "retained_c_service",
+      "owners": [
+        81
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/dungeonEvents.c",
+      "family": "dungeonEvents",
+      "status": "npc_event_policy",
+      "owners": [
+        33
+      ],
+      "functions": 75,
+      "conditions": {
+        "cp": 21,
+        "or": 9,
+        "and": 7,
+        "xor": 4,
+        "bit": 7
+      },
+      "native_policy_sites": {
+        "NPC_CP": 21,
+        "NPC_OR": 9,
+        "NPC_AND": 7,
+        "NPC_XOR": 0,
+        "NPC_BIT": 7,
+        "NPC_CALL_ZERO": 5,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 36
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/dungeonScript.c",
+      "family": "dungeonScript",
+      "status": "npc_event_policy",
+      "owners": [
+        32
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 1,
+        "or": 0,
+        "and": 0,
+        "xor": 1,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 1,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 3
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/explosionWithDebris.c",
+      "family": "explosionWithDebris",
+      "status": "retained_c_service",
+      "owners": [
+        153
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 2,
+        "and": 6,
+        "xor": 1,
+        "bit": 0
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/extendableBridge.c",
+      "family": "extendableBridge",
+      "status": "retained_c_service",
+      "owners": [
+        35
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 2,
+        "xor": 1,
+        "bit": 0
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/fairyHidingMinigame.c",
+      "family": "fairyHidingMinigame",
+      "status": "npc_event_policy",
+      "owners": [
+        108
+      ],
+      "functions": 7,
+      "conditions": {
+        "cp": 2,
+        "or": 2,
+        "and": 0,
+        "xor": 3,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 2,
+        "NPC_OR": 2,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 4,
+        "NPC_CALL_CARRY": 1,
+        "EVENT_WRITE": 8
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/fairyHidingMinigame15.c",
+      "family": "fairyHidingMinigame",
+      "status": "npc_event_policy",
+      "owners": [],
+      "functions": 3,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 6
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/fakeOctorok.c",
+      "family": "fakeOctorok",
+      "status": "retained_c_service",
+      "owners": [
+        50
+      ],
+      "functions": 3,
+      "conditions": {
+        "cp": 2,
+        "or": 0,
+        "and": 0,
+        "xor": 1,
+        "bit": 1
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/fallingRock.c",
+      "family": "fallingRock",
+      "status": "retained_c_service",
+      "owners": [
+        146
+      ],
+      "functions": 25,
+      "conditions": {
+        "cp": 2,
+        "or": 8,
+        "and": 3,
+        "xor": 0,
+        "bit": 0
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/femaleVillager.c",
+      "family": "femaleVillager",
+      "status": "npc_event_policy",
+      "owners": [
+        59
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 2,
+        "or": 1,
+        "and": 0,
+        "xor": 2,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 2,
+        "NPC_OR": 1,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 2,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 9
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/floorColorChanger.c",
+      "family": "floorColorChanger",
+      "status": "retained_c_service",
+      "owners": [
+        34
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 8,
+        "or": 0,
+        "and": 2,
+        "xor": 0,
+        "bit": 0
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/forestFairy.c",
+      "family": "forestFairy",
+      "status": "npc_event_policy",
+      "owners": [
+        73
+      ],
+      "functions": 53,
+      "conditions": {
+        "cp": 6,
+        "or": 7,
+        "and": 14,
+        "xor": 0,
+        "bit": 2
+      },
+      "native_policy_sites": {
+        "NPC_CP": 6,
+        "NPC_OR": 7,
+        "NPC_AND": 14,
+        "NPC_XOR": 0,
+        "NPC_BIT": 2,
+        "NPC_CALL_ZERO": 18,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 52
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/ghiniHarassingMoosh.c",
+      "family": "ghiniHarassingMoosh",
+      "status": "npc_event_policy",
+      "owners": [
+        115
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 1,
+        "or": 3,
+        "and": 3,
+        "xor": 1,
+        "bit": 2
+      },
+      "native_policy_sites": {
+        "NPC_CP": 1,
+        "NPC_OR": 3,
+        "NPC_AND": 3,
+        "NPC_XOR": 0,
+        "NPC_BIT": 2,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 4
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/ghiniHarassingMoosh15.c",
+      "family": "ghiniHarassingMoosh",
+      "status": "npc_event_policy",
+      "owners": [],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 2
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/ghostVeran.c",
+      "family": "ghostVeran",
+      "status": "npc_event_policy",
+      "owners": [
+        62
+      ],
+      "functions": 4,
+      "conditions": {
+        "cp": 6,
+        "or": 3,
+        "and": 2,
+        "xor": 2,
+        "bit": 1
+      },
+      "native_policy_sites": {
+        "NPC_CP": 6,
+        "NPC_OR": 3,
+        "NPC_AND": 2,
+        "NPC_XOR": 0,
+        "NPC_BIT": 1,
+        "NPC_CALL_ZERO": 4,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 29
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/ghostVeran15.c",
+      "family": "ghostVeran",
+      "status": "npc_event_policy",
+      "owners": [],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 1
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/goron.c",
+      "family": "goron",
+      "status": "npc_event_policy",
+      "owners": [
+        102
+      ],
+      "functions": 127,
+      "conditions": {
+        "cp": 22,
+        "or": 18,
+        "and": 10,
+        "xor": 8,
+        "bit": 4
+      },
+      "native_policy_sites": {
+        "NPC_CP": 22,
+        "NPC_OR": 18,
+        "NPC_AND": 10,
+        "NPC_XOR": 0,
+        "NPC_BIT": 4,
+        "NPC_CALL_ZERO": 18,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 62
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/goron15.c",
+      "family": "goron",
+      "status": "npc_event_policy",
+      "owners": [],
+      "functions": 35,
+      "conditions": {
+        "cp": 12,
+        "or": 3,
+        "and": 7,
+        "xor": 8,
+        "bit": 3
+      },
+      "native_policy_sites": {
+        "NPC_CP": 12,
+        "NPC_OR": 3,
+        "NPC_AND": 7,
+        "NPC_XOR": 2,
+        "NPC_BIT": 3,
+        "NPC_CALL_ZERO": 9,
+        "NPC_CALL_CARRY": 10,
+        "EVENT_WRITE": 38
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/goronBigBang15.c",
+      "family": "goronBigBang",
+      "status": "npc_event_policy",
+      "owners": [],
+      "functions": 20,
+      "conditions": {
+        "cp": 3,
+        "or": 1,
+        "and": 3,
+        "xor": 2,
+        "bit": 1
+      },
+      "native_policy_sites": {
+        "NPC_CP": 3,
+        "NPC_OR": 1,
+        "NPC_AND": 3,
+        "NPC_XOR": 0,
+        "NPC_BIT": 1,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 31
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/goronElder.c",
+      "family": "goronElder",
+      "status": "npc_event_policy",
+      "owners": [
+        139
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 1,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 1,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 2,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 0
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/goronTargetCarts15.c",
+      "family": "goronTargetCarts",
+      "status": "npc_event_policy",
+      "owners": [],
+      "functions": 21,
+      "conditions": {
+        "cp": 7,
+        "or": 1,
+        "and": 2,
+        "xor": 5,
+        "bit": 2
+      },
+      "native_policy_sites": {
+        "NPC_CP": 7,
+        "NPC_OR": 1,
+        "NPC_AND": 2,
+        "NPC_XOR": 0,
+        "NPC_BIT": 2,
+        "NPC_CALL_ZERO": 1,
+        "NPC_CALL_CARRY": 1,
+        "EVENT_WRITE": 36
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/greatFairy.c",
+      "family": "greatFairy",
+      "status": "npc_event_policy",
+      "owners": [
+        213
+      ],
+      "functions": 11,
+      "conditions": {
+        "cp": 1,
+        "or": 2,
+        "and": 5,
+        "xor": 0,
+        "bit": 1
+      },
+      "native_policy_sites": {
+        "NPC_CP": 1,
+        "NPC_OR": 2,
+        "NPC_AND": 5,
+        "NPC_XOR": 0,
+        "NPC_BIT": 1,
+        "NPC_CALL_ZERO": 5,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 14
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/greatFairy15.c",
+      "family": "greatFairy",
+      "status": "npc_event_policy",
+      "owners": [],
+      "functions": 2,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 1,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 0,
+        "NPC_AND": 1,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 1
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/greatFairyOctorok15.c",
+      "family": "greatFairyOctorok",
+      "status": "npc_event_policy",
+      "owners": [],
+      "functions": 2,
+      "conditions": {
+        "cp": 1,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 1,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 2
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/hardhatWorker.c",
+      "family": "hardhatWorker",
+      "status": "npc_event_policy",
+      "owners": [
+        88
+      ],
+      "functions": 2,
+      "conditions": {
+        "cp": 0,
+        "or": 2,
+        "and": 0,
+        "xor": 0,
+        "bit": 2
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 2,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 2,
+        "NPC_CALL_ZERO": 4,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 0
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/hardhatWorker15.c",
+      "family": "hardhatWorker",
+      "status": "retained_c_service",
+      "owners": [],
+      "functions": 11,
+      "conditions": {
+        "cp": 3,
+        "or": 0,
+        "and": 1,
+        "xor": 1,
+        "bit": 0
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/harpOfAgesSpawner.c",
+      "family": "harpOfAgesSpawner",
+      "status": "npc_event_policy",
+      "owners": [
+        179
+      ],
+      "functions": 7,
+      "conditions": {
+        "cp": 0,
+        "or": 3,
+        "and": 0,
+        "xor": 2,
+        "bit": 2
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 3,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 2,
+        "NPC_CALL_ZERO": 1,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 21
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/humanVeran.c",
+      "family": "humanVeran",
+      "status": "npc_event_policy",
+      "owners": [
+        187
+      ],
+      "functions": 4,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 1,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 1,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 1
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/impa15.c",
+      "family": "impa",
+      "status": "npc_event_policy",
+      "owners": [],
+      "functions": 8,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 1,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 8
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/impaInCutscene.c",
+      "family": "impaInCutscene",
+      "status": "npc_event_policy",
+      "owners": [
+        49
+      ],
+      "functions": 49,
+      "conditions": {
+        "cp": 24,
+        "or": 7,
+        "and": 4,
+        "xor": 10,
+        "bit": 4
+      },
+      "native_policy_sites": {
+        "NPC_CP": 24,
+        "NPC_OR": 7,
+        "NPC_AND": 4,
+        "NPC_XOR": 1,
+        "NPC_BIT": 4,
+        "NPC_CALL_ZERO": 14,
+        "NPC_CALL_CARRY": 1,
+        "EVENT_WRITE": 79
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/impaNpc.c",
+      "family": "impaNpc",
+      "status": "npc_event_policy",
+      "owners": [
+        79
+      ],
+      "functions": 21,
+      "conditions": {
+        "cp": 5,
+        "or": 0,
+        "and": 1,
+        "xor": 1,
+        "bit": 2
+      },
+      "native_policy_sites": {
+        "NPC_CP": 5,
+        "NPC_OR": 0,
+        "NPC_AND": 1,
+        "NPC_XOR": 0,
+        "NPC_BIT": 2,
+        "NPC_CALL_ZERO": 11,
+        "NPC_CALL_CARRY": 3,
+        "EVENT_WRITE": 11
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/interaction6b15.c",
+      "family": "interaction6b",
+      "status": "npc_event_policy",
+      "owners": [],
+      "functions": 8,
+      "conditions": {
+        "cp": 2,
+        "or": 3,
+        "and": 0,
+        "xor": 2,
+        "bit": 1
+      },
+      "native_policy_sites": {
+        "NPC_CP": 2,
+        "NPC_OR": 3,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 1,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 6
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/interactiondc15.c",
+      "family": "interactiondc",
+      "status": "npc_event_policy",
+      "owners": [],
+      "functions": 6,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 6
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/introSprite.c",
+      "family": "introSprite",
+      "status": "npc_event_policy",
+      "owners": [
+        117
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 5,
+        "and": 1,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 5,
+        "NPC_AND": 1,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 10
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/kingMoblinDefeated.c",
+      "family": "kingMoblinDefeated",
+      "status": "npc_event_policy",
+      "owners": [
+        114
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 4,
+        "and": 0,
+        "xor": 0,
+        "bit": 1
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 4,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 1,
+        "NPC_CALL_ZERO": 1,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 17
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/kingMoblinDefeated15.c",
+      "family": "kingMoblinDefeated",
+      "status": "npc_event_policy",
+      "owners": [],
+      "functions": 2,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 3
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/kingZora.c",
+      "family": "kingZora",
+      "status": "npc_event_policy",
+      "owners": [
+        156
+      ],
+      "functions": 3,
+      "conditions": {
+        "cp": 0,
+        "or": 3,
+        "and": 1,
+        "xor": 0,
+        "bit": 3
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 3,
+        "NPC_AND": 1,
+        "NPC_XOR": 0,
+        "NPC_BIT": 3,
+        "NPC_CALL_ZERO": 7,
+        "NPC_CALL_CARRY": 5,
+        "EVENT_WRITE": 2
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/knowItAllBird.c",
+      "family": "knowItAllBird",
+      "status": "npc_event_policy",
+      "owners": [
+        227
+      ],
+      "functions": 3,
+      "conditions": {
+        "cp": 0,
+        "or": 2,
+        "and": 2,
+        "xor": 1,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 2,
+        "NPC_AND": 2,
+        "NPC_XOR": 1,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 1,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 12
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/lever.c",
+      "family": "lever",
+      "status": "retained_c_service",
+      "owners": [
+        97
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 7,
+        "or": 4,
+        "and": 4,
+        "xor": 4,
+        "bit": 5
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/leverLavaFiller.c",
+      "family": "leverLavaFiller",
+      "status": "retained_c_service",
+      "owners": [
+        216
+      ],
+      "functions": 3,
+      "conditions": {
+        "cp": 1,
+        "or": 5,
+        "and": 1,
+        "xor": 0,
+        "bit": 1
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/librarian.c",
+      "family": "librarian",
+      "status": "npc_event_policy",
+      "owners": [
+        42
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 2,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 4
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/linkedGameGhini.c",
+      "family": "linkedGameGhini",
+      "status": "npc_event_policy",
+      "owners": [
+        203
+      ],
+      "functions": 3,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 1,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 2
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/linkedNpc15.c",
+      "family": "linkedNpc",
+      "status": "npc_event_policy",
+      "owners": [],
+      "functions": 8,
+      "conditions": {
+        "cp": 0,
+        "or": 2,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 2,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 1,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 2
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/makuConfetti.c",
+      "family": "makuConfetti",
+      "status": "retained_c_service",
+      "owners": [
+        98
+      ],
+      "functions": 13,
+      "conditions": {
+        "cp": 7,
+        "or": 4,
+        "and": 0,
+        "xor": 3,
+        "bit": 4
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/makuFlower.c",
+      "family": "makuFlower",
+      "status": "retained_c_service",
+      "owners": [
+        134
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 2,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/makuGateOpening.c",
+      "family": "makuGateOpening",
+      "status": "npc_event_policy",
+      "owners": [
+        118
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 1,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 1,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 3,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 10
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/makuSeed.c",
+      "family": "makuSeed",
+      "status": "npc_event_policy",
+      "owners": [
+        166
+      ],
+      "functions": 3,
+      "conditions": {
+        "cp": 1,
+        "or": 0,
+        "and": 2,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 1,
+        "NPC_OR": 0,
+        "NPC_AND": 2,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 10
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/makuSeedAndEssences.c",
+      "family": "makuSeedAndEssences",
+      "status": "npc_event_policy",
+      "owners": [
+        215
+      ],
+      "functions": 5,
+      "conditions": {
+        "cp": 0,
+        "or": 7,
+        "and": 7,
+        "xor": 2,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 7,
+        "NPC_AND": 7,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 10,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 46
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/makuSprout.c",
+      "family": "makuSprout",
+      "status": "npc_event_policy",
+      "owners": [
+        136
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 1,
+        "or": 0,
+        "and": 1,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 1,
+        "NPC_OR": 0,
+        "NPC_AND": 1,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 4,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 5
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/makuSprout15.c",
+      "family": "makuSprout",
+      "status": "npc_event_policy",
+      "owners": [],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 1
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/makuTree.c",
+      "family": "makuTree",
+      "status": "npc_event_policy",
+      "owners": [
+        135
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 1,
+        "or": 0,
+        "and": 0,
+        "xor": 2,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 1,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 9,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 10
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/makuTree15.c",
+      "family": "makuTree",
+      "status": "npc_event_policy",
+      "owners": [],
+      "functions": 19,
+      "conditions": {
+        "cp": 4,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 3
+      },
+      "native_policy_sites": {
+        "NPC_CP": 4,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 3,
+        "NPC_CALL_ZERO": 2,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 15
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/mamamuDog.c",
+      "family": "mamamuDog",
+      "status": "npc_event_policy",
+      "owners": [
+        84
+      ],
+      "functions": 21,
+      "conditions": {
+        "cp": 7,
+        "or": 1,
+        "and": 2,
+        "xor": 4,
+        "bit": 2
+      },
+      "native_policy_sites": {
+        "NPC_CP": 7,
+        "NPC_OR": 1,
+        "NPC_AND": 2,
+        "NPC_XOR": 1,
+        "NPC_BIT": 2,
+        "NPC_CALL_ZERO": 5,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 21
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/mamamuDog15.c",
+      "family": "mamamuDog",
+      "status": "npc_event_policy",
+      "owners": [],
+      "functions": 10,
+      "conditions": {
+        "cp": 1,
+        "or": 0,
+        "and": 1,
+        "xor": 4,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 1,
+        "NPC_OR": 0,
+        "NPC_AND": 1,
+        "NPC_XOR": 3,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 7
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/mamamuYan.c",
+      "family": "mamamuYan",
+      "status": "npc_event_policy",
+      "owners": [
+        83
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 1,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 0
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/mamamuYan15.c",
+      "family": "mamamuYan",
+      "status": "npc_event_policy",
+      "owners": [],
+      "functions": 1,
+      "conditions": {
+        "cp": 1,
+        "or": 0,
+        "and": 1,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 1,
+        "NPC_OR": 0,
+        "NPC_AND": 1,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 1
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/maskSalesman.c",
+      "family": "maskSalesman",
+      "status": "npc_event_policy",
+      "owners": [
+        92
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 1,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 0
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/masterDiver.c",
+      "family": "masterDiver",
+      "status": "npc_event_policy",
+      "owners": [
+        205
+      ],
+      "functions": 3,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 1,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 1
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/minecartGate.c",
+      "family": "minecartGate",
+      "status": "retained_c_service",
+      "owners": [
+        27
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 1,
+        "and": 6,
+        "xor": 1,
+        "bit": 0
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/miscMan.c",
+      "family": "miscMan",
+      "status": "npc_event_policy",
+      "owners": [
+        65
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 1,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 1,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 4,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 1
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/miscMan2.c",
+      "family": "miscMan2",
+      "status": "npc_event_policy",
+      "owners": [
+        68
+      ],
+      "functions": 34,
+      "conditions": {
+        "cp": 10,
+        "or": 1,
+        "and": 0,
+        "xor": 0,
+        "bit": 1
+      },
+      "native_policy_sites": {
+        "NPC_CP": 10,
+        "NPC_OR": 1,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 1,
+        "NPC_CALL_ZERO": 17,
+        "NPC_CALL_CARRY": 2,
+        "EVENT_WRITE": 0
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/miscPuzzles.c",
+      "family": "miscPuzzles",
+      "status": "mixed_npc_event_policy",
+      "owners": [
+        144
+      ],
+      "functions": 83,
+      "conditions": {
+        "cp": 30,
+        "or": 13,
+        "and": 27,
+        "xor": 9,
+        "bit": 8
+      },
+      "policy_functions": [
+        "miscPuzzles_subid07",
+        "miscPuzzles_subid11",
+        "miscPuzzles_subid12",
+        "miscPuzzles_subid13"
+      ],
+      "native_policy_sites": {
+        "NPC_CP": 9,
+        "NPC_OR": 0,
+        "NPC_AND": 4,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 4,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 5
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/miscPuzzles15.c",
+      "family": "miscPuzzles",
+      "status": "retained_c_service",
+      "owners": [],
+      "functions": 3,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/miscellaneous1.c",
+      "family": "miscellaneous1",
+      "status": "npc_event_policy",
+      "owners": [
+        107
+      ],
+      "functions": 24,
+      "conditions": {
+        "cp": 12,
+        "or": 11,
+        "and": 9,
+        "xor": 8,
+        "bit": 5
+      },
+      "native_policy_sites": {
+        "NPC_CP": 12,
+        "NPC_OR": 11,
+        "NPC_AND": 9,
+        "NPC_XOR": 0,
+        "NPC_BIT": 5,
+        "NPC_CALL_ZERO": 22,
+        "NPC_CALL_CARRY": 1,
+        "EVENT_WRITE": 38
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/miscellaneous2.c",
+      "family": "miscellaneous2",
+      "status": "npc_event_policy",
+      "owners": [
+        220
+      ],
+      "functions": 34,
+      "conditions": {
+        "cp": 10,
+        "or": 8,
+        "and": 20,
+        "xor": 7,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 10,
+        "NPC_OR": 8,
+        "NPC_AND": 20,
+        "NPC_XOR": 1,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 24,
+        "NPC_CALL_CARRY": 1,
+        "EVENT_WRITE": 61
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/moblin.c",
+      "family": "moblin",
+      "status": "npc_event_policy",
+      "owners": [
+        150
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 1,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 1,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 1,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 0
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/moblin15.c",
+      "family": "moblin",
+      "status": "npc_event_policy",
+      "owners": [],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 1
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/monkey15.c",
+      "family": "monkey",
+      "status": "npc_event_policy",
+      "owners": [],
+      "functions": 3,
+      "conditions": {
+        "cp": 1,
+        "or": 0,
+        "and": 1,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 1,
+        "NPC_OR": 0,
+        "NPC_AND": 1,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 1,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 1
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/monkeyMain.c",
+      "family": "monkeyMain",
+      "status": "npc_event_policy",
+      "owners": [],
+      "functions": 26,
+      "conditions": {
+        "cp": 17,
+        "or": 3,
+        "and": 5,
+        "xor": 2,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 17,
+        "NPC_OR": 3,
+        "NPC_AND": 5,
+        "NPC_XOR": 2,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 27,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 67
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/monkeyThunk.c",
+      "family": "monkeyThunk",
+      "status": "npc_event_policy",
+      "owners": [
+        57
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 0
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/mustacheMan.c",
+      "family": "mustacheMan",
+      "status": "npc_event_policy",
+      "owners": [
+        66
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 3,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 1
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/nayru.c",
+      "family": "nayru",
+      "status": "npc_event_policy",
+      "owners": [
+        54
+      ],
+      "functions": 47,
+      "conditions": {
+        "cp": 20,
+        "or": 8,
+        "and": 6,
+        "xor": 8,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 20,
+        "NPC_OR": 8,
+        "NPC_AND": 6,
+        "NPC_XOR": 3,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 19,
+        "NPC_CALL_CARRY": 3,
+        "EVENT_WRITE": 48
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/nayruSavedCutscene.c",
+      "family": "nayruSavedCutscene",
+      "status": "npc_event_policy",
+      "owners": [
+        110
+      ],
+      "functions": 8,
+      "conditions": {
+        "cp": 4,
+        "or": 4,
+        "and": 3,
+        "xor": 2,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 4,
+        "NPC_OR": 4,
+        "NPC_AND": 3,
+        "NPC_XOR": 2,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 4,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 37
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/nayruSavedCutscene15.c",
+      "family": "nayruSavedCutscene",
+      "status": "npc_event_policy",
+      "owners": [],
+      "functions": 10,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 7
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/npcFacingHelpers15.c",
+      "family": "npcFacingHelpers",
+      "status": "retained_c_service",
+      "owners": [],
+      "functions": 6,
+      "conditions": {
+        "cp": 1,
+        "or": 0,
+        "and": 1,
+        "xor": 0,
+        "bit": 0
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/octogonSplash.c",
+      "family": "octogonSplash",
+      "status": "retained_c_service",
+      "owners": [
+        142
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 1,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/oldLady.c",
+      "family": "oldLady",
+      "status": "npc_event_policy",
+      "owners": [
+        61
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 1,
+        "or": 3,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 1,
+        "NPC_OR": 3,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 5,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 11
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/oldMan.c",
+      "family": "oldMan",
+      "status": "npc_event_policy",
+      "owners": [
+        82
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 6,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 8
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/oldMan15.c",
+      "family": "oldMan",
+      "status": "npc_event_policy",
+      "owners": [],
+      "functions": 12,
+      "conditions": {
+        "cp": 1,
+        "or": 1,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 1,
+        "NPC_OR": 1,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 1,
+        "EVENT_WRITE": 5
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/oldManWithRupees.c",
+      "family": "oldManWithRupees",
+      "status": "npc_event_policy",
+      "owners": [
+        46
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 1,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 3
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/oldZora.c",
+      "family": "oldZora",
+      "status": "npc_event_policy",
+      "owners": [
+        90
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 1,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 0
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/pastGirl.c",
+      "family": "pastGirl",
+      "status": "npc_event_policy",
+      "owners": [
+        56
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 2,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 2,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 1
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/pastGuy.c",
+      "family": "pastGuy",
+      "status": "npc_event_policy",
+      "owners": [
+        67
+      ],
+      "functions": 48,
+      "conditions": {
+        "cp": 6,
+        "or": 9,
+        "and": 0,
+        "xor": 0,
+        "bit": 4
+      },
+      "native_policy_sites": {
+        "NPC_CP": 6,
+        "NPC_OR": 9,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 4,
+        "NPC_CALL_ZERO": 22,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 34
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/pastOldLady.c",
+      "family": "pastOldLady",
+      "status": "npc_event_policy",
+      "owners": [
+        69
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 1,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 1,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 3,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 0
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/patch.c",
+      "family": "patch",
+      "status": "npc_event_policy",
+      "owners": [
+        148
+      ],
+      "functions": 15,
+      "conditions": {
+        "cp": 10,
+        "or": 23,
+        "and": 3,
+        "xor": 6,
+        "bit": 1
+      },
+      "native_policy_sites": {
+        "NPC_CP": 10,
+        "NPC_OR": 23,
+        "NPC_AND": 3,
+        "NPC_XOR": 0,
+        "NPC_BIT": 1,
+        "NPC_CALL_ZERO": 5,
+        "NPC_CALL_CARRY": 3,
+        "EVENT_WRITE": 46
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/patch15.c",
+      "family": "patch",
+      "status": "npc_event_policy",
+      "owners": [],
+      "functions": 7,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 1,
+        "xor": 1,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 0,
+        "NPC_AND": 1,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 16
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/pickaxeWorker.c",
+      "family": "pickaxeWorker",
+      "status": "npc_event_policy",
+      "owners": [
+        87
+      ],
+      "functions": 46,
+      "conditions": {
+        "cp": 26,
+        "or": 24,
+        "and": 12,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 26,
+        "NPC_OR": 24,
+        "NPC_AND": 12,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 12,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 117
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/pickaxeWorker15.c",
+      "family": "pickaxeWorker",
+      "status": "npc_event_policy",
+      "owners": [],
+      "functions": 3,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 2,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 0,
+        "NPC_AND": 2,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 3
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/pirate.c",
+      "family": "pirate",
+      "status": "npc_event_policy",
+      "owners": [
+        196
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 2,
+        "and": 2,
+        "xor": 0,
+        "bit": 1
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 2,
+        "NPC_AND": 2,
+        "NPC_XOR": 0,
+        "NPC_BIT": 1,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 1,
+        "EVENT_WRITE": 4
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/pirate15.c",
+      "family": "pirate",
+      "status": "npc_event_policy",
+      "owners": [],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 0
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/pirateCaptain.c",
+      "family": "pirateCaptain",
+      "status": "npc_event_policy",
+      "owners": [
+        195
+      ],
+      "functions": 4,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 2,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 1
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/pirateCaptain15.c",
+      "family": "pirateCaptain",
+      "status": "npc_event_policy",
+      "owners": [],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 1,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 0
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/pirateShip.c",
+      "family": "pirateShip",
+      "status": "npc_event_policy",
+      "owners": [],
+      "functions": 11,
+      "conditions": {
+        "cp": 6,
+        "or": 5,
+        "and": 6,
+        "xor": 1,
+        "bit": 4
+      },
+      "native_policy_sites": {
+        "NPC_CP": 6,
+        "NPC_OR": 5,
+        "NPC_AND": 6,
+        "NPC_XOR": 0,
+        "NPC_BIT": 4,
+        "NPC_CALL_ZERO": 4,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 8
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/pirateShipInteraction.c",
+      "family": "pirateShipInteraction",
+      "status": "npc_event_policy",
+      "owners": [
+        194
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 2,
+        "or": 0,
+        "and": 3,
+        "xor": 3,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 2,
+        "NPC_OR": 0,
+        "NPC_AND": 3,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 6,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 7
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/playHarpSong.c",
+      "family": "playHarpSong",
+      "status": "retained_c_service",
+      "owners": [
+        197
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 1,
+        "xor": 0,
+        "bit": 0
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/playNayruMusic.c",
+      "family": "playNayruMusic",
+      "status": "retained_c_service",
+      "owners": [
+        47
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 1,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/plen.c",
+      "family": "plen",
+      "status": "npc_event_policy",
+      "owners": [
+        204
+      ],
+      "functions": 3,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 1,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 0
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/poe.c",
+      "family": "poe",
+      "status": "npc_event_policy",
+      "owners": [
+        89
+      ],
+      "functions": 5,
+      "conditions": {
+        "cp": 0,
+        "or": 2,
+        "and": 0,
+        "xor": 0,
+        "bit": 7
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 2,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 7,
+        "NPC_CALL_ZERO": 1,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 0
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/poe15.c",
+      "family": "poe",
+      "status": "npc_event_policy",
+      "owners": [],
+      "functions": 2,
+      "conditions": {
+        "cp": 0,
+        "or": 1,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 1,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 1
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/possessedNayru.c",
+      "family": "possessedNayru",
+      "status": "npc_event_policy",
+      "owners": [
+        109
+      ],
+      "functions": 3,
+      "conditions": {
+        "cp": 0,
+        "or": 1,
+        "and": 0,
+        "xor": 1,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 1,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 2,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 12
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/possessedNayru15.c",
+      "family": "possessedNayru",
+      "status": "npc_event_policy",
+      "owners": [],
+      "functions": 2,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 1,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 4
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/postman.c",
+      "family": "postman",
+      "status": "npc_event_policy",
+      "owners": [
+        85
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 1,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 1,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 1,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 0
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/pushblockSynchronizer.c",
+      "family": "pushblockSynchronizer",
+      "status": "retained_c_service",
+      "owners": [
+        189
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 1,
+        "or": 1,
+        "and": 1,
+        "xor": 0,
+        "bit": 0
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/rabbit.c",
+      "family": "rabbit",
+      "status": "npc_event_policy",
+      "owners": [
+        75
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 0
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/rabbitMain.c",
+      "family": "rabbitMain",
+      "status": "npc_event_policy",
+      "owners": [],
+      "functions": 14,
+      "conditions": {
+        "cp": 5,
+        "or": 6,
+        "and": 3,
+        "xor": 0,
+        "bit": 2
+      },
+      "native_policy_sites": {
+        "NPC_CP": 5,
+        "NPC_OR": 6,
+        "NPC_AND": 3,
+        "NPC_XOR": 0,
+        "NPC_BIT": 2,
+        "NPC_CALL_ZERO": 11,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 48
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/raftInteraction.c",
+      "family": "raftInteraction",
+      "status": "retained_c_service",
+      "owners": [
+        230
+      ],
+      "functions": 2,
+      "conditions": {
+        "cp": 3,
+        "or": 2,
+        "and": 1,
+        "xor": 1,
+        "bit": 2
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/rafton.c",
+      "family": "rafton",
+      "status": "npc_event_policy",
+      "owners": [
+        105
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 1,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 2
+      },
+      "native_policy_sites": {
+        "NPC_CP": 1,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 2,
+        "NPC_CALL_ZERO": 3,
+        "NPC_CALL_CARRY": 2,
+        "EVENT_WRITE": 2
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/raftwreckCutscene.c",
+      "family": "raftwreckCutscene",
+      "status": "npc_event_policy",
+      "owners": [
+        155
+      ],
+      "functions": 2,
+      "conditions": {
+        "cp": 4,
+        "or": 2,
+        "and": 3,
+        "xor": 0,
+        "bit": 1
+      },
+      "native_policy_sites": {
+        "NPC_CP": 4,
+        "NPC_OR": 2,
+        "NPC_AND": 3,
+        "NPC_XOR": 0,
+        "NPC_BIT": 1,
+        "NPC_CALL_ZERO": 3,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 17
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/raftwreckCutscene15.c",
+      "family": "raftwreckCutscene",
+      "status": "npc_event_policy",
+      "owners": [],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 2
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/raftwreckCutsceneHelper.c",
+      "family": "raftwreckCutsceneHelper",
+      "status": "npc_event_policy",
+      "owners": [
+        100
+      ],
+      "functions": 2,
+      "conditions": {
+        "cp": 3,
+        "or": 5,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 3,
+        "NPC_OR": 5,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 1,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 14
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/ralph.c",
+      "family": "ralph",
+      "status": "npc_event_policy",
+      "owners": [
+        55
+      ],
+      "functions": 53,
+      "conditions": {
+        "cp": 19,
+        "or": 10,
+        "and": 7,
+        "xor": 7,
+        "bit": 5
+      },
+      "native_policy_sites": {
+        "NPC_CP": 19,
+        "NPC_OR": 10,
+        "NPC_AND": 7,
+        "NPC_XOR": 1,
+        "NPC_BIT": 5,
+        "NPC_CALL_ZERO": 19,
+        "NPC_CALL_CARRY": 3,
+        "EVENT_WRITE": 66
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/ralph15.c",
+      "family": "ralph",
+      "status": "npc_event_policy",
+      "owners": [],
+      "functions": 11,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 1,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 0,
+        "NPC_AND": 1,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 13
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/remoteMakuCutscene.c",
+      "family": "remoteMakuCutscene",
+      "status": "npc_event_policy",
+      "owners": [
+        138
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 1,
+        "xor": 1,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 0,
+        "NPC_AND": 1,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 3,
+        "NPC_CALL_CARRY": 1,
+        "EVENT_WRITE": 4
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/remoteMakuCutscene15.c",
+      "family": "remoteMakuCutscene",
+      "status": "npc_event_policy",
+      "owners": [],
+      "functions": 3,
+      "conditions": {
+        "cp": 1,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 1,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 4
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/rickysGloveSpawner.c",
+      "family": "rickysGloveSpawner",
+      "status": "npc_event_policy",
+      "owners": [
+        116
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 1,
+        "xor": 0,
+        "bit": 1
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 0,
+        "NPC_AND": 1,
+        "NPC_XOR": 0,
+        "NPC_BIT": 1,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 1,
+        "EVENT_WRITE": 0
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/rosa.c",
+      "family": "rosa",
+      "status": "npc_event_policy",
+      "owners": [
+        104
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 2
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 2,
+        "NPC_CALL_ZERO": 3,
+        "NPC_CALL_CARRY": 1,
+        "EVENT_WRITE": 4
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/sarcophagus.c",
+      "family": "sarcophagus",
+      "status": "retained_c_service",
+      "owners": [
+        130
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 1,
+        "or": 2,
+        "and": 0,
+        "xor": 2,
+        "bit": 3
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/screenDistortion.c",
+      "family": "screenDistortion",
+      "status": "retained_c_service",
+      "owners": [
+        124
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/shootingGallery.c",
+      "family": "shootingGallery",
+      "status": "npc_event_policy",
+      "owners": [
+        48
+      ],
+      "functions": 21,
+      "conditions": {
+        "cp": 5,
+        "or": 3,
+        "and": 4,
+        "xor": 7,
+        "bit": 2
+      },
+      "native_policy_sites": {
+        "NPC_CP": 5,
+        "NPC_OR": 3,
+        "NPC_AND": 4,
+        "NPC_XOR": 0,
+        "NPC_BIT": 2,
+        "NPC_CALL_ZERO": 4,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 34
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/shootingGallery15.c",
+      "family": "shootingGallery",
+      "status": "npc_event_policy",
+      "owners": [],
+      "functions": 60,
+      "conditions": {
+        "cp": 2,
+        "or": 0,
+        "and": 1,
+        "xor": 3,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 2,
+        "NPC_OR": 0,
+        "NPC_AND": 1,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 2,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 27
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/slateSlot.c",
+      "family": "slateSlot",
+      "status": "npc_event_policy",
+      "owners": [
+        219
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 1,
+        "and": 1,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 1,
+        "NPC_AND": 1,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 4
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/slateSlot15.c",
+      "family": "slateSlot",
+      "status": "npc_event_policy",
+      "owners": [],
+      "functions": 2,
+      "conditions": {
+        "cp": 0,
+        "or": 2,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 2,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 3
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/smallKeyOnEnemy.c",
+      "family": "smallKeyOnEnemy",
+      "status": "retained_c_service",
+      "owners": [
+        119
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 2,
+        "or": 1,
+        "and": 1,
+        "xor": 0,
+        "bit": 0
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/smogBoss.c",
+      "family": "smogBoss",
+      "status": "retained_c_service",
+      "owners": [
+        51
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 12,
+        "or": 9,
+        "and": 3,
+        "xor": 2,
+        "bit": 2
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/soldier.c",
+      "family": "soldier",
+      "status": "npc_event_policy",
+      "owners": [
+        64
+      ],
+      "functions": 54,
+      "conditions": {
+        "cp": 5,
+        "or": 4,
+        "and": 0,
+        "xor": 4,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 5,
+        "NPC_OR": 4,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 22,
+        "NPC_CALL_CARRY": 2,
+        "EVENT_WRITE": 16
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/soldier15.c",
+      "family": "soldier",
+      "status": "npc_event_policy",
+      "owners": [],
+      "functions": 5,
+      "conditions": {
+        "cp": 0,
+        "or": 1,
+        "and": 1,
+        "xor": 1,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 1,
+        "NPC_AND": 1,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 7
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/sparkleInteraction.c",
+      "family": "sparkleInteraction",
+      "status": "retained_c_service",
+      "owners": [
+        132
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 4,
+        "or": 2,
+        "and": 0,
+        "xor": 0,
+        "bit": 2
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/specialWarp.c",
+      "family": "specialWarp",
+      "status": "retained_c_service",
+      "owners": [
+        31
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 3,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 1
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/stonePanel.c",
+      "family": "stonePanel",
+      "status": "retained_c_service",
+      "owners": [
+        123
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 2,
+        "and": 1,
+        "xor": 2,
+        "bit": 1
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/subrosian.c",
+      "family": "subrosian",
+      "status": "npc_event_policy",
+      "owners": [
+        78
+      ],
+      "functions": 23,
+      "conditions": {
+        "cp": 2,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 2,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 5,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 2
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/sword.c",
+      "family": "sword",
+      "status": "retained_c_service",
+      "owners": [
+        94
+      ],
+      "functions": 3,
+      "conditions": {
+        "cp": 1,
+        "or": 2,
+        "and": 4,
+        "xor": 1,
+        "bit": 1
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/symmetryNpc.c",
+      "family": "symmetryNpc",
+      "status": "npc_event_policy",
+      "owners": [
+        191
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 1
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 1,
+        "NPC_CALL_ZERO": 1,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 1
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/symmetryNpc15.c",
+      "family": "symmetryNpc",
+      "status": "npc_event_policy",
+      "owners": [],
+      "functions": 5,
+      "conditions": {
+        "cp": 1,
+        "or": 3,
+        "and": 1,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 1,
+        "NPC_OR": 3,
+        "NPC_AND": 1,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 2,
+        "EVENT_WRITE": 5
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/tileFiller.c",
+      "family": "tileFiller",
+      "status": "retained_c_service",
+      "owners": [
+        37
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 6,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/timeportal.c",
+      "family": "timeportal",
+      "status": "retained_c_service",
+      "owners": [
+        222
+      ],
+      "functions": 3,
+      "conditions": {
+        "cp": 2,
+        "or": 1,
+        "and": 2,
+        "xor": 0,
+        "bit": 0
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/timeportalSpawner.c",
+      "family": "timeportalSpawner",
+      "status": "retained_c_service",
+      "owners": [
+        225
+      ],
+      "functions": 3,
+      "conditions": {
+        "cp": 1,
+        "or": 1,
+        "and": 2,
+        "xor": 0,
+        "bit": 3
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/timewarp.c",
+      "family": "timewarp",
+      "status": "retained_c_service",
+      "owners": [
+        221
+      ],
+      "functions": 17,
+      "conditions": {
+        "cp": 2,
+        "or": 0,
+        "and": 2,
+        "xor": 2,
+        "bit": 0
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/tingle.c",
+      "family": "tingle",
+      "status": "npc_event_policy",
+      "owners": [
+        200
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 2,
+        "or": 1,
+        "and": 0,
+        "xor": 1,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 2,
+        "NPC_OR": 1,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 2,
+        "EVENT_WRITE": 13
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/tingle15.c",
+      "family": "tingle",
+      "status": "npc_event_policy",
+      "owners": [],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 3
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/toggleFloor.c",
+      "family": "toggleFloor",
+      "status": "retained_c_service",
+      "owners": [
+        21
+      ],
+      "functions": 2,
+      "conditions": {
+        "cp": 6,
+        "or": 4,
+        "and": 4,
+        "xor": 0,
+        "bit": 0
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/toiletHand.c",
+      "family": "toiletHand",
+      "status": "npc_event_policy",
+      "owners": [
+        91
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 2,
+        "and": 0,
+        "xor": 0,
+        "bit": 2
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 2,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 2,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 2
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/toiletHand15.c",
+      "family": "toiletHand",
+      "status": "npc_event_policy",
+      "owners": [],
+      "functions": 10,
+      "conditions": {
+        "cp": 2,
+        "or": 2,
+        "and": 2,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 2,
+        "NPC_OR": 2,
+        "NPC_AND": 2,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 2
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/tokay.c",
+      "family": "tokay",
+      "status": "npc_event_policy",
+      "owners": [
+        72
+      ],
+      "functions": 64,
+      "conditions": {
+        "cp": 13,
+        "or": 14,
+        "and": 2,
+        "xor": 4,
+        "bit": 10
+      },
+      "native_policy_sites": {
+        "NPC_CP": 13,
+        "NPC_OR": 14,
+        "NPC_AND": 2,
+        "NPC_XOR": 0,
+        "NPC_BIT": 10,
+        "NPC_CALL_ZERO": 7,
+        "NPC_CALL_CARRY": 2,
+        "EVENT_WRITE": 76
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/tokay15.c",
+      "family": "tokay",
+      "status": "npc_event_policy",
+      "owners": [],
+      "functions": 20,
+      "conditions": {
+        "cp": 6,
+        "or": 1,
+        "and": 2,
+        "xor": 4,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 6,
+        "NPC_OR": 1,
+        "NPC_AND": 2,
+        "NPC_XOR": 1,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 1,
+        "EVENT_WRITE": 35
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/tokayCutsceneEmberSeed.c",
+      "family": "tokayCutsceneEmberSeed",
+      "status": "retained_c_service",
+      "owners": [
+        143
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 1,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/tokayMeat.c",
+      "family": "tokayMeat",
+      "status": "retained_c_service",
+      "owners": [
+        140
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 1,
+        "and": 1,
+        "xor": 0,
+        "bit": 0
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/tokayShopItem.c",
+      "family": "tokayShopItem",
+      "status": "retained_c_service",
+      "owners": [
+        129
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 3,
+        "bit": 0
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/tokayShopItem15.c",
+      "family": "tokayShopItem",
+      "status": "retained_c_service",
+      "owners": [],
+      "functions": 22,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/tokkey.c",
+      "family": "tokkey",
+      "status": "npc_event_policy",
+      "owners": [
+        157
+      ],
+      "functions": 2,
+      "conditions": {
+        "cp": 2,
+        "or": 0,
+        "and": 2,
+        "xor": 0,
+        "bit": 2
+      },
+      "native_policy_sites": {
+        "NPC_CP": 2,
+        "NPC_OR": 0,
+        "NPC_AND": 2,
+        "NPC_XOR": 0,
+        "NPC_BIT": 2,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 0
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/tokkey15.c",
+      "family": "tokkey",
+      "status": "npc_event_policy",
+      "owners": [],
+      "functions": 3,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 3
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/torchesAndBridges15.c",
+      "family": "torchesAndBridges",
+      "status": "npc_event_policy",
+      "owners": [],
+      "functions": 18,
+      "conditions": {
+        "cp": 1,
+        "or": 0,
+        "and": 1,
+        "xor": 1,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 1,
+        "NPC_OR": 0,
+        "NPC_AND": 1,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 18
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/touchingBook.c",
+      "family": "touchingBook",
+      "status": "retained_c_service",
+      "owners": [
+        165
+      ],
+      "functions": 2,
+      "conditions": {
+        "cp": 3,
+        "or": 3,
+        "and": 2,
+        "xor": 4,
+        "bit": 0
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/triforceStone.c",
+      "family": "triforceStone",
+      "status": "npc_event_policy",
+      "owners": [
+        52
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 3,
+        "or": 2,
+        "and": 4,
+        "xor": 3,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 3,
+        "NPC_OR": 2,
+        "NPC_AND": 4,
+        "NPC_XOR": 1,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 2,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 17
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/triggerTranslator.c",
+      "family": "triggerTranslator",
+      "status": "retained_c_service",
+      "owners": [
+        36
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 1,
+        "or": 2,
+        "and": 5,
+        "xor": 0,
+        "bit": 0
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/troy.c",
+      "family": "troy",
+      "status": "npc_event_policy",
+      "owners": [
+        202
+      ],
+      "functions": 3,
+      "conditions": {
+        "cp": 0,
+        "or": 1,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 1,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 2,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 1
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/troy15.c",
+      "family": "troy",
+      "status": "npc_event_policy",
+      "owners": [],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 1,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 0,
+        "NPC_AND": 1,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 1
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/tuniNut.c",
+      "family": "tuniNut",
+      "status": "npc_event_policy",
+      "owners": [
+        177,
+        178
+      ],
+      "functions": 4,
+      "conditions": {
+        "cp": 1,
+        "or": 2,
+        "and": 3,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 1,
+        "NPC_OR": 2,
+        "NPC_AND": 3,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 2,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 9
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/tuniNutMain.c",
+      "family": "tuniNutMain",
+      "status": "npc_event_policy",
+      "owners": [],
+      "functions": 14,
+      "conditions": {
+        "cp": 2,
+        "or": 1,
+        "and": 0,
+        "xor": 2,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 2,
+        "NPC_OR": 1,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 5,
+        "NPC_CALL_CARRY": 1,
+        "EVENT_WRITE": 21
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/turnToFaceLink15.c",
+      "family": "turnToFaceLink",
+      "status": "retained_c_service",
+      "owners": [],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/twinrova15.c",
+      "family": "twinrova",
+      "status": "npc_event_policy",
+      "owners": [],
+      "functions": 3,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 1,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 3
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/twinrova3.c",
+      "family": "twinrova3",
+      "status": "npc_event_policy",
+      "owners": [
+        188
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 8,
+        "or": 1,
+        "and": 3,
+        "xor": 3,
+        "bit": 2
+      },
+      "native_policy_sites": {
+        "NPC_CP": 8,
+        "NPC_OR": 1,
+        "NPC_AND": 3,
+        "NPC_XOR": 1,
+        "NPC_BIT": 2,
+        "NPC_CALL_ZERO": 2,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 29
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/twinrovaInCutscene.c",
+      "family": "twinrovaInCutscene",
+      "status": "npc_event_policy",
+      "owners": [
+        176
+      ],
+      "functions": 7,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 1,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 3
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/twinrovaInteraction.c",
+      "family": "twinrovaInteraction",
+      "status": "npc_event_policy",
+      "owners": [
+        147
+      ],
+      "functions": 29,
+      "conditions": {
+        "cp": 6,
+        "or": 3,
+        "and": 2,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 6,
+        "NPC_OR": 3,
+        "NPC_AND": 2,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 2,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 25
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/veranCutsceneFace.c",
+      "family": "veranCutsceneFace",
+      "status": "npc_event_policy",
+      "owners": [
+        45
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 1,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 2
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/veranCutsceneWallmaster.c",
+      "family": "veranCutsceneWallmaster",
+      "status": "npc_event_policy",
+      "owners": [
+        44
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 1,
+        "or": 2,
+        "and": 0,
+        "xor": 1,
+        "bit": 1
+      },
+      "native_policy_sites": {
+        "NPC_CP": 1,
+        "NPC_OR": 2,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 1,
+        "NPC_CALL_ZERO": 1,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 7
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/villager.c",
+      "family": "villager",
+      "status": "npc_event_policy",
+      "owners": [
+        58
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 5,
+        "or": 5,
+        "and": 1,
+        "xor": 3,
+        "bit": 3
+      },
+      "native_policy_sites": {
+        "NPC_CP": 5,
+        "NPC_OR": 5,
+        "NPC_AND": 1,
+        "NPC_XOR": 2,
+        "NPC_BIT": 3,
+        "NPC_CALL_ZERO": 2,
+        "NPC_CALL_CARRY": 1,
+        "EVENT_WRITE": 26
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/villager15.c",
+      "family": "villager",
+      "status": "npc_event_policy",
+      "owners": [],
+      "functions": 3,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 6
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/vire.c",
+      "family": "vire",
+      "status": "npc_event_policy",
+      "owners": [
+        184
+      ],
+      "functions": 9,
+      "conditions": {
+        "cp": 5,
+        "or": 5,
+        "and": 1,
+        "xor": 5,
+        "bit": 4
+      },
+      "native_policy_sites": {
+        "NPC_CP": 5,
+        "NPC_OR": 5,
+        "NPC_AND": 1,
+        "NPC_XOR": 0,
+        "NPC_BIT": 4,
+        "NPC_CALL_ZERO": 3,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 23
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/vire15.c",
+      "family": "vire",
+      "status": "npc_event_policy",
+      "owners": [],
+      "functions": 1,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 1,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 1
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/waterPushblock.c",
+      "family": "waterPushblock",
+      "status": "retained_c_service",
+      "owners": [
+        158
+      ],
+      "functions": 9,
+      "conditions": {
+        "cp": 1,
+        "or": 1,
+        "and": 2,
+        "xor": 3,
+        "bit": 0
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/wildTokayController.c",
+      "family": "wildTokayController",
+      "status": "npc_event_policy",
+      "owners": [
+        112
+      ],
+      "functions": 1,
+      "conditions": {
+        "cp": 4,
+        "or": 9,
+        "and": 1,
+        "xor": 3,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 4,
+        "NPC_OR": 9,
+        "NPC_AND": 1,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 4,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 28
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/zelda.c",
+      "family": "zelda",
+      "status": "npc_event_policy",
+      "owners": [
+        173
+      ],
+      "functions": 4,
+      "conditions": {
+        "cp": 0,
+        "or": 2,
+        "and": 0,
+        "xor": 1,
+        "bit": 1
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 2,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 1,
+        "NPC_CALL_ZERO": 9,
+        "NPC_CALL_CARRY": 3,
+        "EVENT_WRITE": 7
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/zelda15.c",
+      "family": "zelda",
+      "status": "npc_event_policy",
+      "owners": [],
+      "functions": 2,
+      "conditions": {
+        "cp": 0,
+        "or": 0,
+        "and": 0,
+        "xor": 1,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 0,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 0,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 2
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/zora.c",
+      "family": "zora",
+      "status": "npc_event_policy",
+      "owners": [
+        171
+      ],
+      "functions": 28,
+      "conditions": {
+        "cp": 2,
+        "or": 1,
+        "and": 3,
+        "xor": 1,
+        "bit": 2
+      },
+      "native_policy_sites": {
+        "NPC_CP": 2,
+        "NPC_OR": 1,
+        "NPC_AND": 3,
+        "NPC_XOR": 0,
+        "NPC_BIT": 2,
+        "NPC_CALL_ZERO": 13,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 18
+      }
+    },
+    {
+      "source": "src/game/ages/interactions/zora15.c",
+      "family": "zora",
+      "status": "npc_event_policy",
+      "owners": [],
+      "functions": 11,
+      "conditions": {
+        "cp": 1,
+        "or": 0,
+        "and": 0,
+        "xor": 0,
+        "bit": 0
+      },
+      "native_policy_sites": {
+        "NPC_CP": 1,
+        "NPC_OR": 0,
+        "NPC_AND": 0,
+        "NPC_XOR": 0,
+        "NPC_BIT": 0,
+        "NPC_CALL_ZERO": 1,
+        "NPC_CALL_CARRY": 0,
+        "EVENT_WRITE": 5
+      }
+    }
+  ],
+  "script_policy_owners": [
+    16,
+    17,
+    22,
+    28,
+    32,
+    33,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    48,
+    49,
+    52,
+    53,
+    54,
+    55,
+    56,
+    57,
+    58,
+    59,
+    60,
+    61,
+    62,
+    63,
+    64,
+    65,
+    66,
+    67,
+    68,
+    69,
+    72,
+    73,
+    74,
+    75,
+    76,
+    77,
+    78,
+    79,
+    82,
+    83,
+    84,
+    85,
+    87,
+    88,
+    89,
+    90,
+    91,
+    92,
+    93,
+    95,
+    100,
+    101,
+    102,
+    103,
+    104,
+    105,
+    106,
+    107,
+    108,
+    109,
+    110,
+    112,
+    113,
+    115,
+    116,
+    117,
+    118,
+    127,
+    131,
+    135,
+    136,
+    137,
+    138,
+    139,
+    141,
+    147,
+    148,
+    150,
+    151,
+    154,
+    155,
+    156,
+    157,
+    166,
+    167,
+    168,
+    170,
+    171,
+    172,
+    173,
+    176,
+    177,
+    178,
+    179,
+    181,
+    184,
+    186,
+    187,
+    188,
+    191,
+    193,
+    194,
+    195,
+    196,
+    198,
+    200,
+    201,
+    202,
+    203,
+    204,
+    205,
+    206,
+    207,
+    208,
+    209,
+    211,
+    213,
+    214,
+    215,
+    217,
+    218,
+    219,
+    220,
+    223,
+    224,
+    227,
+    229
+  ],
+  "reserved_previous_phase_owners": [
+    19,
+    26,
+    27,
+    30,
+    70,
+    71,
+    96,
+    129,
+    216
+  ],
+  "policy_boundary": "C provides ROM bytes and physical facts; Lua decides predicates, state transitions, text variants and bytecode control; C retains effects, motion and timing",
+  "validation": "per-family coverage is recorded separately; an inventory entry alone is not executed coverage",
+  "validation_evidence": {
+    "bounded_rule_contracts": 20,
+    "directed_cases": 1947,
+    "npc_frame_families": 44,
+    "frames_per_npc_family": 80,
+    "save_load_operations": 264,
+    "story_gate_families": 6,
+    "frames_per_story_gate_family": 100,
+    "script_owner_dispatch_tested": 130,
+    "full_hardware_acceptance": false,
+    "note": "NPC source integration and primitive domain coverage do not imply every conversation/cutscene branch was visited; natural replay owners are reported separately."
+  },
+  "global_story_sources": [
+    {
+      "source": "src/game/cutscenes.c",
+      "status": "global_story_policy",
+      "state_storage": [
+        "existing cutscene state/substate",
+        "existing flags/timers/script addresses"
+      ],
+      "npc_owner_required": false,
+      "combat_ai_migrated": false
+    },
+    {
+      "source": "src/game/cutscenes2.c",
+      "status": "global_story_policy",
+      "state_storage": [
+        "existing cutscene state/substate",
+        "existing flags/timers/script addresses"
+      ],
+      "npc_owner_required": false,
+      "combat_ai_migrated": false
+    },
+    {
+      "source": "src/game/miscCutscenes.c",
+      "status": "global_story_policy",
+      "state_storage": [
+        "existing cutscene state/substate",
+        "existing flags/timers/script addresses"
+      ],
+      "npc_owner_required": false,
+      "combat_ai_migrated": false
+    },
+    {
+      "source": "src/game/bank3Cutscenes.c",
+      "status": "global_story_policy",
+      "state_storage": [
+        "existing cutscene state/substate",
+        "existing flags/timers/script addresses"
+      ],
+      "npc_owner_required": false,
+      "combat_ai_migrated": false
+    },
+    {
+      "source": "src/game/linkedGameCutscenes.c",
+      "status": "global_story_policy",
+      "state_storage": [
+        "existing cutscene state/substate",
+        "existing flags/timers/script addresses"
+      ],
+      "npc_owner_required": false,
+      "combat_ai_migrated": false
+    },
+    {
+      "source": "src/game/endgameCutscenes.c",
+      "status": "global_story_policy",
+      "state_storage": [
+        "existing cutscene state/substate",
+        "existing flags/timers/script addresses"
+      ],
+      "npc_owner_required": false,
+      "combat_ai_migrated": false
+    },
+    {
+      "source": "src/game/common/enemies/ganonRevivalCutscene.c",
+      "status": "global_story_policy",
+      "state_storage": [
+        "existing cutscene state/substate",
+        "existing flags/timers/script addresses"
+      ],
+      "npc_owner_required": false,
+      "combat_ai_migrated": false
+    }
+  ],
+  "retained_global_services": [
+    "player/companion cutscene movement in ages/specialObjects",
+    "palette, sound, graphics, warp and thread services",
+    "Seasons cutscene implementations"
+  ]
+}

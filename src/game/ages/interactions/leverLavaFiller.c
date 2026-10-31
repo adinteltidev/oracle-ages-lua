@@ -1,10 +1,33 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/levers_lava.h"
 
 #undef CYC
 #undef CYCT
 #define CYC(from, to) burn_rom(gb, bk_, (from), (to), false)
 #define CYCT(from, to) burn_rom(gb, bk_, (from), (to), true)
+
+#ifdef ORACLES_LUA_GAMEPLAY
+static void lava_increment_state(GB *gb) {
+  uint16_t address=SYM(interactionIncState);
+  burn_rom(gb,0,address,address+3,false); SET_HL((uint16_t)((D<<8)|(INTERACTION_BASE+OBJ_STATE)));
+  burn_rom(gb,0,address+3,address+4,false);
+  uint8_t current=mem_rd(gb,HL),next=alu_inc8(gb,current);
+  LAVA_BYTE(next,next_state,current);
+  mem_wr(gb,HL,next);
+  burn_rom(gb,0,address+4,address+5,false);ret_effect(gb);
+}
+#define LAVA_INC_CALL(address,ra) do { \
+  if(LAVA_ACTIVE) { CALL_L(address,lava_increment_state,ra); LAVA_FAILED_RETURN(); } \
+  else { CALL_C(address,interactionIncState_hook,SYM(interactionIncState),ra); } \
+} while(0)
+#define LAVA_INC_DIRECT() do { if(LAVA_ACTIVE) lava_increment_state(gb); else interactionIncState_hook(gb); } while(0)
+#define LAVA_INC_TAIL() do { if(LAVA_ACTIVE) { lava_increment_state(gb); return; } TAIL(interactionIncState); } while(0)
+#else
+#define LAVA_INC_CALL(address,ra) CALL_C(address,interactionIncState_hook,SYM(interactionIncState),ra)
+#define LAVA_INC_DIRECT() interactionIncState_hook(gb)
+#define LAVA_INC_TAIL() TAIL(interactionIncState)
+#endif
 
 static uint16_t interactionCoded8_jump_table(GB *gb) {
   burn_rom(gb, 0x00, 0x0000, 0x0001, false); alu_add(gb, A);
@@ -93,33 +116,42 @@ void interactionCoded8_toggleLavaSource_hook(GB *gb) {
   CYC(b_+57, b_+59); B = 0x06;
   CYC(b_+59, b_+61); A = 0xc3; // TILEINDEX_LAVA_SOURCE_UP_LEFT
   CALL_C(b_+61, findTileInRoom_hook, SYM(findTileInRoom), b_+64);
-  if (F & FZ) { CYCT(b_+64, b_+66); goto setOrUnsetLavaSource; } // jr z
+  bool found_64=(F & FZ)!=0;
+  LAVA_DECIDE(found_64,source_found,found_64);
+  if (found_64) { CYCT(b_+64, b_+66); goto setOrUnsetLavaSource; } // jr z
   CYC(b_+64, b_+66);
   CYC(b_+66, b_+68); A = 0xc6; // TILEINDEX_LAVA_SOURCE_DOWN_LEFT
   CALL_C(b_+68, findTileInRoom_hook, SYM(findTileInRoom), b_+71);
-  if (F & FZ) { CYCT(b_+71, b_+73); goto setOrUnsetLavaSource; } // jr z
+  bool found_71=(F & FZ)!=0;
+  LAVA_DECIDE(found_71,source_found,found_71);
+  if (found_71) { CYCT(b_+71, b_+73); goto setOrUnsetLavaSource; } // jr z
   CYC(b_+71, b_+73);
   CYC(b_+73, b_+75); B = 0xfa;
   CYC(b_+75, b_+77); A = 0xc9; // TILEINDEX_LAVA_SOURCE_UP_LEFT_EMPTY
   CALL_C(b_+77, findTileInRoom_hook, SYM(findTileInRoom), b_+80);
-  if (F & FZ) { CYCT(b_+80, b_+82); goto setOrUnsetLavaSource; } // jr z
+  bool found_80=(F & FZ)!=0;
+  LAVA_DECIDE(found_80,source_found,found_80);
+  if (found_80) { CYCT(b_+80, b_+82); goto setOrUnsetLavaSource; } // jr z
   CYC(b_+80, b_+82);
   CYC(b_+82, b_+84); A = 0xcc; // TILEINDEX_LAVA_SOURCE_DOWN_LEFT_EMPTY
   CALL_C(b_+84, findTileInRoom_hook, SYM(findTileInRoom), b_+87);
 
 setOrUnsetLavaSource:
   CYC(b_+87, b_+88); A = B;
+  LAVA_BYTE(A,source_delta,A==0xfa);
   CYC(b_+88, b_+90); mem_wr(gb, hFF8D, A); // ldh ($ff8d),a
-  CALL_L(b_+90, interactionCoded8_updateTile_hook, b_+93);
+  CALL_L(b_+90, interactionCoded8_updateTile_hook, b_+93); LAVA_FAILED_RETURN();
 
 tileLoop:
   CYC(b_+93, b_+94); L = alu_inc8(gb, L);
   CYC(b_+94, b_+95); A = mem_rd(gb, HL);
   CYC(b_+95, b_+97); alu_sub(gb, 0xc3); // TILEINDEX_LAVA_SOURCE_UP_LEFT
   CYC(b_+97, b_+99); alu_cp(gb, 0x0c);
-  if (!(F & FC)) { CYCT(b_+99, b_+100); ret_effect(gb); return; } // ret nc
+  bool segment=(F & FC)!=0;
+  LAVA_DECIDE(segment,source_segment,A);
+  if (!segment) { CYCT(b_+99, b_+100); ret_effect(gb); return; } // ret nc
   CYC(b_+99, b_+100);
-  CALL_L(b_+100, interactionCoded8_updateTile_hook, b_+103);
+  CALL_L(b_+100, interactionCoded8_updateTile_hook, b_+103); LAVA_FAILED_RETURN();
   CYC(b_+103, b_+105); goto tileLoop; // jr $7cc2
 }
 
@@ -153,16 +185,18 @@ state0:
   CYC(b_+21, b_+22); A = mem_rd(gb, HL);
   CYC(b_+22, b_+24); E = INTERACTION_BASE + OBJ_COUNTER2;
   CYC(b_+24, b_+25); mem_wr(gb, DE, A);
-  CYC(b_+25, b_+28); TAIL(interactionIncState); // jp
+  CYC(b_+25, b_+28); LAVA_INC_TAIL(); // jp
 
 state1:
   // Waiting for lever to be pulled
   CYC(b_+36, b_+39); A = mem_rd(gb, wLever1PullDistance);
   CYC(b_+39, b_+41); alu_bit(gb, 7, A);
-  if (F & FZ) { CYCT(b_+41, b_+42); ret_effect(gb); return; } // ret z
+  bool pulled=(F & FZ)==0;
+  LAVA_DECIDE(pulled,fully_pulled,A);
+  if (!pulled) { CYCT(b_+41, b_+42); ret_effect(gb); return; } // ret z
   CYC(b_+41, b_+42);
   // Lever has been pulled all the way.
-  CALL_C(b_+42, interactionIncState_hook, SYM(interactionIncState), b_+45);
+  LAVA_INC_CALL(b_+42,b_+45);
   CYC(b_+45, b_+47); L = INTERACTION_BASE + OBJ_COUNTER1;
   CYC(b_+47, b_+49); mem_wr(gb, HL, 30);
   CYC(b_+49, b_+51); A = 0x4d; // SND_SOLVEPUZZLE
@@ -174,7 +208,9 @@ state1:
 state2:
   // Floor is being filled
   CALL_C(b_+129, interactionDecCounter1_hook, SYM(interactionDecCounter1), b_+132);
-  if (!(F & FZ)) { CYCT(b_+132, b_+133); ret_effect(gb); return; } // ret nz
+  bool elapsed_2=(F & FZ)!=0;
+  LAVA_DECIDE(elapsed_2,timer_elapsed,elapsed_2);
+  if (!elapsed_2) { CYCT(b_+132, b_+133); ret_effect(gb); return; } // ret nz
   CYC(b_+132, b_+133);
   // Fill next group of tiles
   CYC(b_+133, b_+134); L = alu_inc8(gb, L);
@@ -183,18 +219,23 @@ state2:
   CALL_C(b_+136, interactionGetMiniScript_hook, SYM(interactionGetMiniScript), b_+139);
   CYC(b_+139, b_+140); A = mem_rd(gb, HL); SET_HL(HL + 1); // ldi a,(hl)
   CYC(b_+140, b_+141); alu_or(gb, A);
-  if (F & FZ) { CYCT(b_+141, b_+144); interactionIncState_hook(gb); return; } // jp z
+  bool has_2=(F & FZ)==0;
+  LAVA_DECIDE(has_2,has_tile,A);
+  if (!has_2) { CYCT(b_+141, b_+144); LAVA_INC_DIRECT(); return; } // jp z
   CYC(b_+141, b_+144);
 
 fillTilesLoop:
   CYC(b_+144, b_+145); C = A;
-  CYC(b_+145, b_+147); A = 0x01; // TILEINDEX_DRIED_LAVA
+  CYC(b_+145, b_+147); A = 0x01;
+  LAVA_FLOOR(A,2,0); // TILEINDEX_DRIED_LAVA
   CYC(b_+147, b_+148); push_effect(gb, HL);
   CALL_C(b_+148, setTileInAllBuffers_hook, SYM(setTileInAllBuffers), b_+151);
   CYC(b_+151, b_+152); SET_HL(pop_effect(gb));
   CYC(b_+152, b_+153); A = mem_rd(gb, HL); SET_HL(HL + 1); // ldi a,(hl)
   CYC(b_+153, b_+154); alu_or(gb, A);
-  if (!(F & FZ)) { CYCT(b_+154, b_+156); goto fillTilesLoop; } // jr nz
+  bool more_2=(F & FZ)==0;
+  LAVA_DECIDE(more_2,has_tile,A);
+  if (more_2) { CYCT(b_+154, b_+156); goto fillTilesLoop; } // jr nz
   CYC(b_+154, b_+156);
   CALL_C(b_+156, interactionSetMiniScript_hook, SYM(interactionSetMiniScript), b_+159);
   CYC(b_+159, b_+162); goto playRumbleSound; // jp $7d45
@@ -203,18 +244,22 @@ state3:
   // Tiles have been filled. Waiting for lever to revert to starting position.
   CYC(b_+162, b_+165); A = mem_rd(gb, wLever1PullDistance);
   CYC(b_+165, b_+166); alu_or(gb, A);
-  if (!(F & FZ)) { CYCT(b_+166, b_+167); ret_effect(gb); return; } // ret nz
+  bool released=(F & FZ)!=0;
+  LAVA_DECIDE(released,released,A);
+  if (!released) { CYCT(b_+166, b_+167); ret_effect(gb); return; } // ret nz
   CYC(b_+166, b_+167);
-  CALL_C(b_+167, interactionIncState_hook, SYM(interactionIncState), b_+170);
+  LAVA_INC_CALL(b_+167,b_+170);
   CALL_L(b_+170, interactionCoded8_loadScriptForSubid, b_+173);
-  CALL_L(b_+173, interactionCoded8_toggleLavaSource_hook, b_+176);
+  CALL_L(b_+173, interactionCoded8_toggleLavaSource_hook, b_+176); LAVA_FAILED_RETURN();
   CYC(b_+176, b_+178); A = 0x70; // SND_DOORCLOSE
   CYC(b_+178, b_+181); TAIL(playSound_b00); // jp
 
 state4:
   // Tiles are being filled with lava again.
   CALL_C(b_+181, interactionDecCounter1_hook, SYM(interactionDecCounter1), b_+184);
-  if (!(F & FZ)) { CYCT(b_+184, b_+185); ret_effect(gb); return; } // ret nz
+  bool elapsed_4=(F & FZ)!=0;
+  LAVA_DECIDE(elapsed_4,timer_elapsed,elapsed_4);
+  if (!elapsed_4) { CYCT(b_+184, b_+185); ret_effect(gb); return; } // ret nz
   CYC(b_+184, b_+185);
   CYC(b_+185, b_+186); L = alu_inc8(gb, L);
   CYC(b_+186, b_+187); A = mem_rd(gb, HL); SET_HL(HL - 1); // ldd a,(hl)
@@ -222,25 +267,34 @@ state4:
   CALL_C(b_+188, interactionGetMiniScript_hook, SYM(interactionGetMiniScript), b_+191);
   CYC(b_+191, b_+192); A = mem_rd(gb, HL); SET_HL(HL + 1); // ldi a,(hl)
   CYC(b_+192, b_+193); alu_or(gb, A);
-  if (!(F & FZ)) { CYCT(b_+193, b_+195); goto fillNextGroupWithLava; } // jr nz
+  bool has_4=(F & FZ)==0;
+  LAVA_DECIDE(has_4,has_tile,A);
+  if (has_4) { CYCT(b_+193, b_+195); goto fillNextGroupWithLava; } // jr nz
   CYC(b_+193, b_+195);
   // Done filling the lava back.
   CYC(b_+195, b_+197); E = INTERACTION_BASE + OBJ_STATE;
   CYC(b_+197, b_+199); A = 0x01;
+  LAVA_BYTE(A,next_state,4);
   CYC(b_+199, b_+200); mem_wr(gb, DE, A);
   RET(b_+200); return;
 
 fillNextGroupWithLava:
   CYC(b_+201, b_+202); C = A;
   CALL_C(b_+202, getRandomNumber_hook, SYM(getRandomNumber), b_+205);
+#ifdef ORACLES_LUA_GAMEPLAY
+  uint8_t random_byte=A;
+#endif
   CYC(b_+205, b_+207); alu_and(gb, 0x03);
-  CYC(b_+207, b_+209); alu_add(gb, 0x61); // TILEINDEX_DUNGEON_LAVA_1
+  CYC(b_+207, b_+209); alu_add(gb, 0x61);
+  LAVA_FLOOR(A,4,random_byte); // TILEINDEX_DUNGEON_LAVA_1
   CYC(b_+209, b_+210); push_effect(gb, HL);
   CALL_C(b_+210, setTileInAllBuffers_hook, SYM(setTileInAllBuffers), b_+213);
   CYC(b_+213, b_+214); SET_HL(pop_effect(gb));
   CYC(b_+214, b_+215); A = mem_rd(gb, HL); SET_HL(HL + 1); // ldi a,(hl)
   CYC(b_+215, b_+216); alu_or(gb, A);
-  if (!(F & FZ)) { CYCT(b_+216, b_+218); goto fillNextGroupWithLava; } // jr nz
+  bool more_4=(F & FZ)==0;
+  LAVA_DECIDE(more_4,has_tile,A);
+  if (more_4) { CYCT(b_+216, b_+218); goto fillNextGroupWithLava; } // jr nz
   CYC(b_+216, b_+218);
   CALL_C(b_+218, interactionSetMiniScript_hook, SYM(interactionSetMiniScript), b_+221);
   CYC(b_+221, b_+224); goto playRumbleSound; // jp $7d45

@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/npcs_events.h"
 
 #undef CYC
 #undef CYCT
@@ -28,18 +29,18 @@ static void hardhat_worker_add_double_index(GB *gb, uint16_t ra) {
 void hardhat_worker_load_script_and_init_graphics_hook(GB *gb) {
   BASE(interactionCode58);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+141, interactionInitGraphics_hook, SYM(interactionInitGraphics), b_+144);
-  CALL_C(b_+144, objectMarkSolidPosition_hook, SYM(objectMarkSolidPosition), b_+147);
+  NPC_CALL_C(b_+141, interactionInitGraphics_hook, SYM(interactionInitGraphics), b_+144);
+  NPC_CALL_C(b_+144, objectMarkSolidPosition_hook, SYM(objectMarkSolidPosition), b_+147);
   CYC(b_+147, b_+149); A = 0x10;
-  CALL_C(b_+149, interactionSetHighTextIndex_hook, SYM(interactionSetHighTextIndex), b_+152);
+  NPC_CALL_C(b_+149, interactionSetHighTextIndex_hook, SYM(interactionSetHighTextIndex), b_+152);
   CYC(b_+152, b_+154); E = INTERACTION_BASE + OBJ_SUBID;
   CYC(b_+154, b_+155); A = mem_rd(gb, DE);
   CYC(b_+155, b_+158); SET_HL(b_+168);
-  CYC(b_+158, b_+159); hardhat_worker_add_double_index(gb, b_+159);
+  CYC(b_+158, b_+159); NPC_LOCAL_CALL(hardhat_worker_add_double_index(gb, b_+159));
   CYC(b_+159, b_+160); A = mem_rd(gb, HL); SET_HL(HL + 1);
   CYC(b_+160, b_+161); H = mem_rd(gb, HL);
   CYC(b_+161, b_+162); L = A;
-  CALL_C(b_+162, interactionSetScript_hook, SYM(interactionSetScript), b_+165);
+  NPC_CALL_C(b_+162, interactionSetScript_hook, SYM(interactionSetScript), b_+165);
   CYC(b_+165, b_+168); TAIL(interactionIncState);
 }
 
@@ -55,25 +56,25 @@ void interactionCode58_hook(GB *gb) {
     else { HANDOFF(HL); }
   } while (0);
 subid00:
-  CALL_C(b_+12, checkInteractionState_hook, SYM(checkInteractionState), b_+15);
-  if (F & FZ) { CYC(b_+15, b_+17); CYC(b_+17, b_+20); push_effect(gb, b_+20); hardhat_worker_load_script_and_init_graphics_hook(gb); CALL_C(b_+20, interactionSetAlwaysUpdateBit_hook, SYM(interactionSetAlwaysUpdateBit), b_+23); CYC(b_+23, b_+25); A = 4; CALL_C(b_+25, interactionSetAnimation_hook, SYM(interactionSetAnimation), b_+28); } else CYCT(b_+15, b_+17);
-  CALL_C(b_+28, interactionRunScript_hook, SYM(interactionRunScript), b_+31);
+  NPC_CALL_ZERO(b_+12, checkInteractionState_hook, SYM(checkInteractionState), b_+15);
+  if (F & FZ) { CYC(b_+15, b_+17); CYC(b_+17, b_+20); push_effect(gb, b_+20); hardhat_worker_load_script_and_init_graphics_hook(gb); NPC_CALL_C(b_+20, interactionSetAlwaysUpdateBit_hook, SYM(interactionSetAlwaysUpdateBit), b_+23); CYC(b_+23, b_+25); A = 4; NPC_CALL_C(b_+25, interactionSetAnimation_hook, SYM(interactionSetAnimation), b_+28); } else CYCT(b_+15, b_+17);
+  NPC_CALL_C(b_+28, interactionRunScript_hook, SYM(interactionRunScript), b_+31);
   if (F & FC) { CYCT(b_+31, b_+34); interactionDelete_hook(gb); return; }
   CYC(b_+31, b_+34); CYC(b_+34, b_+37); interactionAnimateAsNpc_hook(gb); return;
 subid01:
-  CALL_C(b_+37, checkInteractionState_hook, SYM(checkInteractionState), b_+40);
-  if (F & FZ) { CYC(b_+40, b_+42); CYC(b_+42, b_+45); push_effect(gb, b_+45); hardhat_worker_load_script_and_init_graphics_hook(gb); CALL_C(b_+45, interactionRunScript_hook, SYM(interactionRunScript), b_+48); CALL_C(b_+48, interactionRunScript_hook, SYM(interactionRunScript), b_+51); } else CYCT(b_+40, b_+42);
-  CALL_C(b_+51, interactionRunScript_hook, SYM(interactionRunScript), b_+54);
+  NPC_CALL_ZERO(b_+37, checkInteractionState_hook, SYM(checkInteractionState), b_+40);
+  if (F & FZ) { CYC(b_+40, b_+42); CYC(b_+42, b_+45); push_effect(gb, b_+45); hardhat_worker_load_script_and_init_graphics_hook(gb); NPC_CALL_C(b_+45, interactionRunScript_hook, SYM(interactionRunScript), b_+48); NPC_CALL_C(b_+48, interactionRunScript_hook, SYM(interactionRunScript), b_+51); } else CYCT(b_+40, b_+42);
+  NPC_CALL_C(b_+51, interactionRunScript_hook, SYM(interactionRunScript), b_+54);
   if (F & FC) { CYCT(b_+54, b_+57); interactionDeleteAndUnmarkSolidPosition_hook(gb); return; }
   CYC(b_+54, b_+57); CYC(b_+57, b_+60); npcFaceLinkAndAnimate_hook(gb); return;
 subid02:
-  CALL_C(b_+60, checkInteractionState_hook, SYM(checkInteractionState), b_+63);
-  if (F & FZ) { CYC(b_+63, b_+65); CYC(b_+65, b_+68); A = W8(wEssencesObtained); CYC(b_+68, b_+70); alu_bit(gb, 3, A); if (!(F & FZ)) { CYCT(b_+70, b_+73); interactionDelete_hook(gb); return; } CYC(b_+70, b_+73); CALL_C(b_+73, getThisRoomFlags_hook, SYM(getThisRoomFlags), b_+76); CYC(b_+76, b_+78); alu_bit(gb, 7, A); if (F & FZ) CYCT(b_+78, b_+80); else { CYC(b_+78, b_+80); CYC(b_+80, b_+83); SET_BC(0x3858); CALL_C(b_+83, interactionSetPosition_hook, SYM(interactionSetPosition), b_+86); } CYC(b_+86, b_+89); push_effect(gb, b_+89); hardhat_worker_load_script_and_init_graphics_hook(gb); } else CYCT(b_+63, b_+65);
-  CALL_C(b_+89, interactionRunScript_hook, SYM(interactionRunScript), b_+92); CYC(b_+92, b_+94); E = INTERACTION_BASE + OBJ_VAR38; CYC(b_+94, b_+95); A = mem_rd(gb, DE); CYC(b_+95, b_+96); alu_or(gb, A); if (F & FZ) { CYCT(b_+96, b_+99); TAIL(npcFaceLinkAndAnimate); } CYC(b_+96, b_+99); CYC(b_+99, b_+102); TAIL(interactionAnimateAsNpc);
+  NPC_CALL_ZERO(b_+60, checkInteractionState_hook, SYM(checkInteractionState), b_+63);
+  if (F & FZ) { CYC(b_+63, b_+65); CYC(b_+65, b_+68); A = W8(wEssencesObtained); CYC(b_+68, b_+70); NPC_BIT(3, A); if (!(F & FZ)) { CYCT(b_+70, b_+73); interactionDelete_hook(gb); return; } CYC(b_+70, b_+73); NPC_CALL_C(b_+73, getThisRoomFlags_hook, SYM(getThisRoomFlags), b_+76); CYC(b_+76, b_+78); NPC_BIT(7, A); if (F & FZ) CYCT(b_+78, b_+80); else { CYC(b_+78, b_+80); CYC(b_+80, b_+83); SET_BC(0x3858); NPC_CALL_C(b_+83, interactionSetPosition_hook, SYM(interactionSetPosition), b_+86); } CYC(b_+86, b_+89); push_effect(gb, b_+89); hardhat_worker_load_script_and_init_graphics_hook(gb); } else CYCT(b_+63, b_+65);
+  NPC_CALL_C(b_+89, interactionRunScript_hook, SYM(interactionRunScript), b_+92); CYC(b_+92, b_+94); E = INTERACTION_BASE + OBJ_VAR38; CYC(b_+94, b_+95); A = mem_rd(gb, DE); CYC(b_+95, b_+96); NPC_OR(A); if (F & FZ) { CYCT(b_+96, b_+99); TAIL(npcFaceLinkAndAnimate); } CYC(b_+96, b_+99); CYC(b_+99, b_+102); TAIL(interactionAnimateAsNpc);
 subid03:
-  CALL_C(b_+102, checkInteractionState_hook, SYM(checkInteractionState), b_+105);
-  if (F & FZ) { CYC(b_+105, b_+107); CYC(b_+107, b_+110); push_effect(gb, b_+110); hardhat_worker_load_script_and_init_graphics_hook(gb); CALL_C(b_+110, interactionRunScript_hook, SYM(interactionRunScript), b_+113); } else CYCT(b_+105, b_+107);
-  CALL_C(b_+113, interactionRunScript_hook, SYM(interactionRunScript), b_+116);
+  NPC_CALL_ZERO(b_+102, checkInteractionState_hook, SYM(checkInteractionState), b_+105);
+  if (F & FZ) { CYC(b_+105, b_+107); CYC(b_+107, b_+110); push_effect(gb, b_+110); hardhat_worker_load_script_and_init_graphics_hook(gb); NPC_CALL_C(b_+110, interactionRunScript_hook, SYM(interactionRunScript), b_+113); } else CYCT(b_+105, b_+107);
+  NPC_CALL_C(b_+113, interactionRunScript_hook, SYM(interactionRunScript), b_+116);
   if (F & FC) { CYCT(b_+116, b_+119); interactionDelete_hook(gb); return; }
-  CYC(b_+116, b_+119); CYC(b_+119, b_+121); E = INTERACTION_BASE + OBJ_VAR3F; CYC(b_+121, b_+122); A = mem_rd(gb, DE); CYC(b_+122, b_+123); alu_or(gb, A); if (F & FZ) { CYCT(b_+123, b_+126); npcFaceLinkAndAnimate_hook(gb); return; } CYC(b_+123, b_+126); CALL_C(b_+126, interactionAnimateBasedOnSpeed_hook, SYM(interactionAnimateBasedOnSpeed), b_+129); CYC(b_+129, b_+132); interactionPushLinkAwayAndUpdateDrawPriority_hook(gb);
+  CYC(b_+116, b_+119); CYC(b_+119, b_+121); E = INTERACTION_BASE + OBJ_VAR3F; CYC(b_+121, b_+122); A = mem_rd(gb, DE); CYC(b_+122, b_+123); NPC_OR(A); if (F & FZ) { CYCT(b_+123, b_+126); npcFaceLinkAndAnimate_hook(gb); return; } CYC(b_+123, b_+126); NPC_CALL_C(b_+126, interactionAnimateBasedOnSpeed_hook, SYM(interactionAnimateBasedOnSpeed), b_+129); CYC(b_+129, b_+132); interactionPushLinkAwayAndUpdateDrawPriority_hook(gb);
 }

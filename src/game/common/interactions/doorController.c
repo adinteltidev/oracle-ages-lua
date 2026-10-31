@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/doors.h"
 
 #undef CYC
 #undef CYCT
@@ -80,7 +81,9 @@ static void doorController_checkRespawnLink(GB *gb) {
   CYC(b_+O(244), b_+OE(246)); E = INTERACTION_BASE + OBJ_VAR3E;
   CYC(b_+O(246), b_+OE(247)); A = mem_rd(gb, DE);
   CYC(b_+O(247), b_+OE(248)); alu_cp(gb, B);
-  if (!(F & FZ)) {
+  bool same_ = (F & FZ) != 0;
+  DOOR_DECIDE2(same_, same_position, A, B);
+  if (!same_) {
     CYCT(b_+O(248), b_+OE(249)); ret_effect(gb); return;
   }
   CYC(b_+O(248), b_+OE(249));
@@ -152,6 +155,7 @@ static void doorController_func_47f9(GB *gb) {
 static void doorController_state1(GB *gb, uint16_t sp0_) {
   BASE(interactionCode1e);
   CALL_C(b_+O(72), interactionRunScript_hook, SYM(interactionRunScript), b_+OE(75));
+  DOOR_FAILED_RETURN();
   if (F & FC) {
     CYCT(b_+O(75), b_+OE(78)); TAIL(interactionDelete);
   }
@@ -167,6 +171,7 @@ static void doorController_gotoState1(GB *gb, uint16_t sp0_) {
   BASE(interactionCode1e);
   CYC(b_+O(218), b_+OE(220)); E = INTERACTION_BASE + OBJ_STATE;
   CYC(b_+O(220), b_+OE(222)); A = 0x01;
+  DOOR_DECIDE(A, script_state, A);
   CYC(b_+O(222), b_+OE(223)); mem_wr(gb, DE, A);
   CYC(b_+O(223), b_+OE(224)); E = alu_inc8(gb, E);
   CYC(b_+O(224), b_+OE(225)); alu_xor(gb, A);
@@ -226,6 +231,7 @@ static void doorController_interleaveDoorTile(GB *gb, uint16_t sp0_) {
 static void doorController_state0(GB *gb, uint16_t sp0_) {
   BASE(interactionCode1e);
   CYC(b_+O(24), b_+OE(26)); A = 0x01;
+  DOOR_DECIDE(A, script_state, A);
   CYC(b_+O(26), b_+OE(27)); mem_wr(gb, DE, A);
   CYC(b_+O(27), b_+OE(28)); H = D;
   CYC(b_+O(28), b_+OE(30)); L = INTERACTION_BASE + OBJ_XH;
@@ -264,7 +270,9 @@ static void doorController_state2(GB *gb, uint16_t sp0_) {
   BASE(interactionCode1e);
   CYC(b_+O(83), b_+OE(86)); A = mem_rd(gb, wPaletteThread_mode);
   CYC(b_+O(86), b_+OE(87)); alu_or(gb, A);
-  if (!(F & FZ)) {
+  bool busy_ = (F & FZ) == 0;
+  DOOR_DECIDE(busy_, palette_busy, A);
+  if (busy_) {
     CYCT(b_+O(87), b_+OE(88)); ret_effect(gb); return;
   }
   CYC(b_+O(87), b_+OE(88));
@@ -280,7 +288,9 @@ static void doorController_state2(GB *gb, uint16_t sp0_) {
 substate0:
   // The tile at this position must be solid
   CALL_C(b_+O(96), objectCheckTileCollision_allowHoles_hook, SYM(objectCheckTileCollision_allowHoles), b_+OE(99));
-  if (!(F & FC)) {
+  bool open_ = (F & FC) != 0;
+  DOOR_DECIDE(open_, open_collision, (F & FC) != 0);
+  if (!open_) {
     CYCT(b_+O(99), b_+OE(101)); doorController_gotoState1(gb, sp0_); return;
   }
   CYC(b_+O(99), b_+OE(101));
@@ -289,7 +299,9 @@ substate0:
 
 substate1:
   CALL_C(b_+O(149), interactionDecCounter1_hook, SYM(interactionDecCounter1), b_+OE(152));
-  if (!(F & FZ)) {
+  bool elapsed_ = (F & FZ) != 0;
+  DOOR_DECIDE(elapsed_, timer_elapsed, (F & FZ) != 0);
+  if (!elapsed_) {
     CYCT(b_+O(152), b_+OE(153)); ret_effect(gb); return;
   }
   CYC(b_+O(152), b_+OE(153));
@@ -320,13 +332,17 @@ substate0:
   if (!game_seasons) {
     CALL_C(b_+173, objectGetTileAtPosition_hook, SYM(objectGetTileAtPosition), b_+176);
     CYC(b_+176, b_+178); alu_cp(gb, 0xda); // TILEINDEX_SOMARIA_BLOCK
-    if (F & FZ) {
+    bool somaria_ = (F & FZ) != 0;
+    DOOR_DECIDE(somaria_, somaria_tile, A);
+    if (somaria_) {
       CYCT(b_+178, b_+180); doorController_interleaveDoorTile(gb, sp0_); return;
     }
     CYC(b_+178, b_+180);
   }
   CALL_C(b_+O(180), objectCheckTileCollision_allowHoles_hook, SYM(objectCheckTileCollision_allowHoles), b_+OE(183));
-  if (F & FC) {
+  bool close_ = (F & FC) == 0;
+  DOOR_DECIDE(close_, close_collision, (F & FC) != 0);
+  if (!close_) {
     CYCT(b_+O(183), b_+OE(185)); doorController_gotoState1(gb, sp0_); return;
   }
   CYC(b_+O(183), b_+OE(185));
@@ -336,12 +352,15 @@ substate0:
 
 substate1:
   CALL_C(b_+O(187), interactionDecCounter1_hook, SYM(interactionDecCounter1), b_+OE(190));
-  if (!(F & FZ)) {
+  bool elapsed_ = (F & FZ) != 0;
+  DOOR_DECIDE(elapsed_, timer_elapsed, (F & FZ) != 0);
+  if (!elapsed_) {
     CYCT(b_+O(190), b_+OE(191)); ret_effect(gb); return;
   }
   CYC(b_+O(190), b_+OE(191));
   // Door will now close fully
   CYC(b_+O(191), b_+OE(194)); push_effect(gb, b_+OE(194)); doorController_checkRespawnLink(gb);
+  DOOR_FAILED_RETURN();
   CYC(b_+O(194), b_+OE(197)); push_effect(gb, b_+OE(197)); doorController_func_47f9(gb);
   CYC(b_+O(197), b_+OE(199)); E = INTERACTION_BASE + OBJ_ANGLE;
   CYC(b_+O(199), b_+OE(200)); A = mem_rd(gb, DE);
@@ -361,7 +380,9 @@ void interactionCode1e_hook(GB *gb) {
   if (!game_seasons) {
     CYC(b_+6, b_+9); A = mem_rd(gb, wSwitchHookState);
     CYC(b_+9, b_+11); alu_cp(gb, 0x02);
-    if (F & FZ) {
+    bool busy_ = (F & FZ) != 0;
+    DOOR_DECIDE(busy_, switch_hook_busy, A);
+    if (busy_) {
       CYCT(b_+11, b_+12); ret_effect(gb); return;
     }
     CYC(b_+11, b_+12);

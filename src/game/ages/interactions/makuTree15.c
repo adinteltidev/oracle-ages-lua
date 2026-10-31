@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/npcs_events.h"
 
 #undef CYC
 #undef CYCT
@@ -25,35 +26,35 @@ static void makuTree_add_a_to_hl(GB *gb, uint16_t return_address) {
 void makuTree_setAnimation_hook(GB *gb) {
   BASE(makuTree_setAnimation);
   CYC(b_+0, b_+2); E = 0x7b;
-  CYC(b_+2, b_+3); mem_wr(gb, DE, A);
+  CYC(b_+2, b_+3); EVENT_WRITE(DE, A);
   CYC(b_+3, b_+6); TAIL(interactionSetAnimation);
 }
 
 void makuTree_showTextWithOffsetAndUpdateMapText_hook(GB *gb) {
   BASE(makuTree_showTextWithOffsetAndUpdateMapText);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, makuTree_func_70a2_hook, SYM(makuTree_func_70a2), b_+3);
+  NPC_CALL_C(b_+0, makuTree_func_70a2_hook, SYM(makuTree_func_70a2), b_+3);
   CYC(b_+3, b_+5); TAIL(label_15_203);
 }
 
 void makuTree_showTextWithOffset_hook(GB *gb) {
   BASE(makuTree_showTextWithOffset);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, makuTree_func_709c_hook, SYM(makuTree_func_709c), b_+3);
+  NPC_CALL_C(b_+0, makuTree_func_709c_hook, SYM(makuTree_func_709c), b_+3);
   CYC(b_+3, b_+5); TAIL(label_15_203);
 }
 
 void makuTree_showTextAndUpdateMapText_hook(GB *gb) {
   BASE(makuTree_showTextAndUpdateMapText);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, makuTree_checkLinkedAndUpdateMapText_hook, SYM(makuTree_checkLinkedAndUpdateMapText), b_+3);
+  NPC_CALL_C(b_+0, makuTree_checkLinkedAndUpdateMapText_hook, SYM(makuTree_checkLinkedAndUpdateMapText), b_+3);
   CYC(b_+3, b_+5); TAIL(label_15_203);
 }
 
 void makuTree_showText_hook(GB *gb) {
   BASE(makuTree_showText);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, makuTree_modifyTextIndexForLinked_hook, SYM(makuTree_modifyTextIndexForLinked), b_+3);
+  NPC_CALL_C(b_+0, makuTree_modifyTextIndexForLinked_hook, SYM(makuTree_modifyTextIndexForLinked), b_+3);
   CYC(b_+3, b_+5); TAIL(label_15_203);
 }
 
@@ -82,12 +83,12 @@ void makuTree_func_70a2_hook(GB *gb) {
 void makuTree_checkLinkedAndUpdateMapText_hook(GB *gb) {
   BASE(makuTree_checkLinkedAndUpdateMapText);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, makuTree_modifyTextIndexForLinked_hook, SYM(makuTree_modifyTextIndexForLinked), b_+3);
+  NPC_CALL_C(b_+0, makuTree_modifyTextIndexForLinked_hook, SYM(makuTree_modifyTextIndexForLinked), b_+3);
   CYC(b_+3, b_+5); E = 0x7d;
   CYC(b_+5, b_+6); A = mem_rd(gb, DE);
   CYC(b_+6, b_+9); SET_HL(wMakuMapTextPresent);
-  CYC(b_+9, b_+10); makuTree_add_a_to_hl(gb, b_+10);
-  CYC(b_+10, b_+11); mem_wr(gb, HL, C);
+  CYC(b_+9, b_+10); NPC_LOCAL_CALL(makuTree_add_a_to_hl(gb, b_+10));
+  CYC(b_+10, b_+11); EVENT_WRITE(HL, C);
   CYC(b_+11, b_+12); ret_effect(gb);
 }
 
@@ -96,7 +97,7 @@ static void makuTree_getLinkedTextOffset(GB *gb) {
   CYC(b_+16, b_+17); H = D;
   CYC(b_+17, b_+19); L = 0x41;
   CYC(b_+19, b_+20); A = mem_rd(gb, HL);
-  CYC(b_+20, b_+22); alu_cp(gb, 0x8a);
+  CYC(b_+20, b_+22); NPC_CP(0x8a);
   if (!(F & FZ)) { CYCT(b_+22, b_+24); goto subtract; }
   CYC(b_+22, b_+24);
   CYC(b_+24, b_+25); A = alu_dec8(gb, A);
@@ -109,12 +110,12 @@ void makuTree_modifyTextIndexForLinked_hook(GB *gb) {
   BASE(makuTree_modifyTextIndexForLinked);
   uint16_t sp0_ = gb->sp;
   CYC(b_+0, b_+1); C = A;
-  CALL_C(b_+1, checkIsLinkedGame_hook, SYM(checkIsLinkedGame), b_+4);
+  NPC_CALL_ZERO(b_+1, checkIsLinkedGame_hook, SYM(checkIsLinkedGame), b_+4);
   if (F & FZ) { RET_TAKEN(b_+4); return; }
   CYC(b_+4, b_+5);
-  CYC(b_+5, b_+8); push_effect(gb, b_+8); makuTree_getLinkedTextOffset(gb);
+  CYC(b_+5, b_+8); push_effect(gb, b_+8); NPC_LOCAL_CALL(makuTree_getLinkedTextOffset(gb));
   CYC(b_+8, b_+11); SET_HL(SYM(makuTree_textOffsetsForLinked));
-  CYC(b_+11, b_+12); makuTree_add_a_to_hl(gb, b_+12);
+  CYC(b_+11, b_+12); NPC_LOCAL_CALL(makuTree_add_a_to_hl(gb, b_+12));
   CYC(b_+12, b_+13); A = mem_rd(gb, HL);
   CYC(b_+13, b_+14); alu_add(gb, C);
   CYC(b_+14, b_+15); C = A;
@@ -124,62 +125,62 @@ void makuTree_modifyTextIndexForLinked_hook(GB *gb) {
 void makuTree_dropSeedSatchel_hook(GB *gb) {
   BASE(makuTree_dropSeedSatchel);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, getThisRoomFlags_hook, SYM(getThisRoomFlags), b_+3);
-  CYC(b_+3, b_+5); alu_bit(gb, 7, A);
+  NPC_CALL_C(b_+0, getThisRoomFlags_hook, SYM(getThisRoomFlags), b_+3);
+  CYC(b_+3, b_+5); NPC_BIT(7, A);
   if (!(F & FZ)) { RET_TAKEN(b_+5); return; }
   CYC(b_+5, b_+6);
-  CYC(b_+6, b_+8); mem_wr(gb, HL, (uint8_t)(mem_rd(gb, HL) | (1 << 7)));
-  CALL_C(b_+8, getFreeInteractionSlot_hook, SYM(getFreeInteractionSlot), b_+11);
-  CYC(b_+11, b_+13); mem_wr(gb, HL, 0x60);
+  CYC(b_+6, b_+8); EVENT_WRITE(HL, (uint8_t)(mem_rd(gb, HL) | (1 << 7)));
+  NPC_CALL_C(b_+8, getFreeInteractionSlot_hook, SYM(getFreeInteractionSlot), b_+11);
+  CYC(b_+11, b_+13); EVENT_WRITE(HL, 0x60);
   CYC(b_+13, b_+14); L = alu_inc8(gb, L);
-  CYC(b_+14, b_+16); mem_wr(gb, HL, 0x19);
+  CYC(b_+14, b_+16); EVENT_WRITE(HL, 0x19);
   CYC(b_+16, b_+17); L = alu_inc8(gb, L);
-  CYC(b_+17, b_+19); mem_wr(gb, HL, 0x02);
+  CYC(b_+17, b_+19); EVENT_WRITE(HL, 0x02);
   CYC(b_+19, b_+21); L = 0x4b;
-  CYC(b_+21, b_+23); mem_wr(gb, HL, 0x60);
+  CYC(b_+21, b_+23); EVENT_WRITE(HL, 0x60);
   CYC(b_+23, b_+26); A = mem_rd(gb, w1Link_xh);
   CYC(b_+26, b_+28); B = 0x50;
-  CYC(b_+28, b_+30); alu_cp(gb, 0x64);
+  CYC(b_+28, b_+30); NPC_CP(0x64);
   if (!(F & FC)) { CYCT(b_+30, b_+32); goto setX; }
   CYC(b_+30, b_+32);
-  CYC(b_+32, b_+34); alu_cp(gb, 0x3c);
+  CYC(b_+32, b_+34); NPC_CP(0x3c);
   if (F & FC) { CYCT(b_+34, b_+36); goto setX; }
   CYC(b_+34, b_+36);
   CYC(b_+36, b_+38); B = 0x40;
-  CYC(b_+38, b_+40); alu_cp(gb, 0x50);
+  CYC(b_+38, b_+40); NPC_CP(0x50);
   if (!(F & FC)) { CYCT(b_+40, b_+42); goto setX; }
   CYC(b_+40, b_+42);
   CYC(b_+42, b_+44); B = 0x60;
 setX:
   CYC(b_+44, b_+46); L = 0x4d;
-  CYC(b_+46, b_+47); mem_wr(gb, HL, B);
+  CYC(b_+46, b_+47); EVENT_WRITE(HL, B);
   CYC(b_+47, b_+48); A = B;
-  CYC(b_+48, b_+51); mem_wr(gb, wMakuTreeSeedSatchelXPosition, A);
+  CYC(b_+48, b_+51); EVENT_WRITE(wMakuTreeSeedSatchelXPosition, A);
   CYC(b_+51, b_+52); ret_effect(gb);
 }
 
 void makuTree_checkSpawnSeedSatchel_hook(GB *gb) {
   BASE(makuTree_checkSpawnSeedSatchel);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, getThisRoomFlags_hook, SYM(getThisRoomFlags), b_+3);
-  CYC(b_+3, b_+5); alu_bit(gb, 5, A);
+  NPC_CALL_C(b_+0, getThisRoomFlags_hook, SYM(getThisRoomFlags), b_+3);
+  CYC(b_+3, b_+5); NPC_BIT(5, A);
   if (!(F & FZ)) { RET_TAKEN(b_+5); return; }
   CYC(b_+5, b_+6);
-  CYC(b_+6, b_+8); alu_bit(gb, 7, A);
+  CYC(b_+6, b_+8); NPC_BIT(7, A);
   if (F & FZ) { RET_TAKEN(b_+8); return; }
   CYC(b_+8, b_+9);
-  CALL_C(b_+9, getFreeInteractionSlot_hook, SYM(getFreeInteractionSlot), b_+12);
-  CYC(b_+12, b_+14); mem_wr(gb, HL, 0x60);
+  NPC_CALL_C(b_+9, getFreeInteractionSlot_hook, SYM(getFreeInteractionSlot), b_+12);
+  CYC(b_+12, b_+14); EVENT_WRITE(HL, 0x60);
   CYC(b_+14, b_+15); L = alu_inc8(gb, L);
-  CYC(b_+15, b_+17); mem_wr(gb, HL, 0x19);
+  CYC(b_+15, b_+17); EVENT_WRITE(HL, 0x19);
   CYC(b_+17, b_+18); L = alu_inc8(gb, L);
-  CYC(b_+18, b_+20); mem_wr(gb, HL, 0x03);
+  CYC(b_+18, b_+20); EVENT_WRITE(HL, 0x03);
   CYC(b_+20, b_+22); L = 0x4b;
   CYC(b_+22, b_+24); A = 0x58;
-  CYC(b_+24, b_+25); mem_wr(gb, HL, A); SET_HL(HL + 1);
+  CYC(b_+24, b_+25); EVENT_WRITE(HL, A); SET_HL(HL + 1);
   CYC(b_+25, b_+28); A = mem_rd(gb, wMakuTreeSeedSatchelXPosition);
   CYC(b_+28, b_+30); L = 0x4d;
-  CYC(b_+30, b_+31); mem_wr(gb, HL, A);
+  CYC(b_+30, b_+31); EVENT_WRITE(HL, A);
   CYC(b_+31, b_+32); ret_effect(gb);
 }
 
@@ -193,13 +194,13 @@ void makuTree_chooseTextAfterSeeingTwinrova_hook(GB *gb) {
   BASE(makuTree_chooseTextAfterSeeingTwinrova);
   uint16_t sp0_ = gb->sp;
   CYC(b_+0, b_+2); C = 0x5b;
-  CALL_C(b_+2, checkIsLinkedGame_hook, SYM(checkIsLinkedGame), b_+5);
+  NPC_CALL_ZERO(b_+2, checkIsLinkedGame_hook, SYM(checkIsLinkedGame), b_+5);
   if (F & FZ) { CYCT(b_+5, b_+7); goto setE; }
   CYC(b_+5, b_+7);
   CYC(b_+7, b_+9); C = 0x5f;
 setE:
   CYC(b_+9, b_+11); E = 0x72;
   CYC(b_+11, b_+12); A = C;
-  CYC(b_+12, b_+13); mem_wr(gb, DE, A);
+  CYC(b_+12, b_+13); EVENT_WRITE(DE, A);
   CYC(b_+13, b_+14); ret_effect(gb);
 }

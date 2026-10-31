@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/npcs_events.h"
 
 #undef CYC
 #undef CYCT
@@ -51,12 +52,12 @@ void interactionCode87_hook(GB *gb) {
   }
 
   // interactionCode87@subid00
-  CALL_C(b_+18, checkInteractionState_hook, SYM(checkInteractionState), b_+21);
+  NPC_CALL_ZERO(b_+18, checkInteractionState_hook, SYM(checkInteractionState), b_+21);
   if (!(F & FZ)) { CYCT(b_+21, b_+23); goto runScriptAndAnimate; } // jr nz
   CYC(b_+21, b_+23);
   CYC(b_+23, b_+24); alu_xor(gb, A);
   CYC(b_+24, b_+26); E = INTERACTION_BASE + OBJ_VAR3D;
-  CYC(b_+26, b_+27); mem_wr(gb, DE, A);
+  CYC(b_+26, b_+27); EVENT_WRITE(DE, A);
   CYC(b_+27, b_+30); push_effect(gb, b_+30); goto initSubid00; // call
 afterInitSubid00:
   CYC(b_+30, b_+33); push_effect(gb, b_+33); goto initializeMakuTree; // call
@@ -64,13 +65,13 @@ afterSpawnFlower_subid00:
   CYC(b_+33, b_+35); goto runScriptAndAnimate; // jr
 
 subid01:
-  CALL_C(b_+35, checkInteractionState_hook, SYM(checkInteractionState), b_+38);
+  NPC_CALL_ZERO(b_+35, checkInteractionState_hook, SYM(checkInteractionState), b_+38);
   if (!(F & FZ)) { CYCT(b_+38, b_+40); goto runScriptAndAnimate; } // jr nz
   CYC(b_+38, b_+40);
   CYC(b_+40, b_+43); push_effect(gb, b_+43); goto initializeMakuTree; // call
 
 afterSpawnFlower_subid0102:
-  CALL_C(b_+43, interactionRunScript_hook, SYM(interactionRunScript), b_+46);
+  NPC_CALL_C(b_+43, interactionRunScript_hook, SYM(interactionRunScript), b_+46);
   CYC(b_+46, b_+48); E = INTERACTION_BASE + OBJ_SUBID;
   CYC(b_+48, b_+49); A = mem_rd(gb, DE);
   CYC(b_+49, b_+50); A = alu_dec8(gb, A);
@@ -80,41 +81,41 @@ afterSpawnFlower_subid0102:
   // Subid 1 only: make Link move right/up to approach the maku tree, starting the
   // "maku tree disappearance" cutscene
   CYC(b_+52, b_+54); A = 0x8f; // PALH_8f
-  CALL_C(b_+54, loadPaletteHeader_hook, SYM(loadPaletteHeader), b_+57);
+  NPC_CALL_C(b_+54, loadPaletteHeader_hook, SYM(loadPaletteHeader), b_+57);
   CYC(b_+57, b_+60); SET_HL(b_+73); // @simulatedInput
   CYC(b_+60, b_+62); A = 0x0a; // bank of @simulatedInput
   CYC(b_+62, b_+63); push_effect(gb, DE);
-  CALL_C(b_+63, setSimulatedInputAddress_hook, SYM(setSimulatedInputAddress), b_+66);
+  NPC_CALL_C(b_+63, setSimulatedInputAddress_hook, SYM(setSimulatedInputAddress), b_+66);
   CYC(b_+66, b_+67); SET_DE(pop_effect(gb));
   CYC(b_+67, b_+68); alu_xor(gb, A);
   CYC(b_+68, b_+71); W8(w1Link_direction) = A;
   CYC(b_+71, b_+73); goto runScriptAndAnimate; // jr
 
 runScriptAndAnimate:
-  CALL_C(b_+90, interactionRunScript_hook, SYM(interactionRunScript), b_+93);
+  NPC_CALL_C(b_+90, interactionRunScript_hook, SYM(interactionRunScript), b_+93);
   CYC(b_+93, b_+96); TAIL(interactionAnimate); // jp
 
 subid03:
-  CALL_C(b_+96, checkInteractionState_hook, SYM(checkInteractionState), b_+99);
+  NPC_CALL_ZERO(b_+96, checkInteractionState_hook, SYM(checkInteractionState), b_+99);
   if (!(F & FZ)) { CYCT(b_+99, b_+101); goto runScriptAndAnimate; } // jr nz
   CYC(b_+99, b_+101);
   CYC(b_+101, b_+103); B = 0x01;
   CYC(b_+103, b_+106); A = W8(wTmpcfc0_genericCutscene_cfd0);
-  CYC(b_+106, b_+108); alu_cp(gb, 0x03);
+  CYC(b_+106, b_+108); NPC_CP(0x03);
   if (F & FZ) { CYCT(b_+108, b_+110); goto subid03Continue; } // jr z
   CYC(b_+108, b_+110);
-  CALL_C(b_+110, interactionLoadExtraGraphics_hook, SYM(interactionLoadExtraGraphics), b_+113);
+  NPC_CALL_C(b_+110, interactionLoadExtraGraphics_hook, SYM(interactionLoadExtraGraphics), b_+113);
   CYC(b_+113, b_+115); B = 0x00;
 
 subid03Continue:
   CYC(b_+115, b_+116); A = B;
-  CALL_C(b_+116, interactionSetAnimation_hook, SYM(interactionSetAnimation), b_+119);
-  CALL_C(b_+119, interactionInitGraphics_hook, SYM(interactionInitGraphics), b_+122);
+  NPC_CALL_C(b_+116, interactionSetAnimation_hook, SYM(interactionSetAnimation), b_+119);
+  NPC_CALL_C(b_+119, interactionInitGraphics_hook, SYM(interactionInitGraphics), b_+122);
   CYC(b_+122, b_+125); push_effect(gb, b_+125); goto loadScript; // call
   // interactionCode87@subid03 resumes at 0x6721 via loadScript's own exit check
 
 subid04:
-  CALL_C(b_+128, checkInteractionState_hook, SYM(checkInteractionState), b_+131);
+  NPC_CALL_ZERO(b_+128, checkInteractionState_hook, SYM(checkInteractionState), b_+131);
   if (!(F & FZ)) { CYCT(b_+131, b_+133); goto runScriptAndAnimate; } // jr nz
   CYC(b_+131, b_+133);
   CYC(b_+133, b_+136); push_effect(gb, b_+136); goto initializeMakuTree; // call
@@ -122,16 +123,16 @@ afterSpawnFlower_subid0405:
   CYC(b_+136, b_+138); goto runScriptAndAnimate; // jr
 
 subid06:
-  CALL_C(b_+138, checkInteractionState_hook, SYM(checkInteractionState), b_+141);
+  NPC_CALL_ZERO(b_+138, checkInteractionState_hook, SYM(checkInteractionState), b_+141);
   if (!(F & FZ)) { CYCT(b_+141, b_+143); goto runScriptAndAnimate; } // jr nz
   CYC(b_+141, b_+143);
   CYC(b_+143, b_+145); A = 0x13; // GLOBALFLAG_SAW_TWINROVA_BEFORE_ENDGAME
-  CALL_C(b_+145, checkGlobalFlag_hook, SYM(checkGlobalFlag), b_+148);
+  NPC_CALL_ZERO(b_+145, checkGlobalFlag_hook, SYM(checkGlobalFlag), b_+148);
   if (!(F & FZ)) { CYCT(b_+148, b_+151); goto initializeMakuTree; } // jp nz
   CYC(b_+148, b_+151);
   CYC(b_+151, b_+154); SET_HL(w1Link_direction);
-  CYC(b_+154, b_+156); mem_wr(gb, HL, 0x00);
-  CALL_C(b_+156, setLinkForceStateToState08_hook, SYM(setLinkForceStateToState08), b_+159);
+  CYC(b_+154, b_+156); EVENT_WRITE(HL, 0x00);
+  NPC_CALL_C(b_+156, setLinkForceStateToState08_hook, SYM(setLinkForceStateToState08), b_+159);
   CYC(b_+159, b_+162); push_effect(gb, b_+162); goto initGraphicsAndIncState; // call
 afterInitGraphicsAndIncState_subid06:
   CYC(b_+162, b_+165); push_effect(gb, b_+165); goto setVisibleAndSpawnFlower; // call
@@ -141,7 +142,7 @@ afterSpawnFlower_subid06:
   CYC(b_+167, b_+170); SET_HL(RV((SYM(presetInteractionAnglesAndCounters__data4) + 7), 0x7797)); // mainScripts.makuTree_subid06Script_part1
   CYC(b_+170, b_+172); A = 0x35; // GLOBALFLAG_GOT_MAKU_SEED
   CYC(b_+172, b_+173); push_effect(gb, HL);
-  CALL_C(b_+173, checkGlobalFlag_hook, SYM(checkGlobalFlag), b_+176);
+  NPC_CALL_ZERO(b_+173, checkGlobalFlag_hook, SYM(checkGlobalFlag), b_+176);
   CYC(b_+176, b_+177); SET_HL(pop_effect(gb));
   if (F & FZ) { CYCT(b_+177, b_+179); goto subid06SetScript; } // jr z
   CYC(b_+177, b_+179);
@@ -149,11 +150,11 @@ afterSpawnFlower_subid06:
   CYC(b_+181, b_+184); SET_HL(RV((SYM(presetInteractionAnglesAndCounters__data4) + 11), 0x779b)); // mainScripts.makuTree_subid06Script_part2
 
 subid06SetScript:
-  CALL_C(b_+184, interactionSetScript_hook, SYM(interactionSetScript), b_+187);
+  NPC_CALL_C(b_+184, interactionSetScript_hook, SYM(interactionSetScript), b_+187);
   CYC(b_+187, b_+189); A = 0x05; // >TX_0500
-  CALL_C(b_+189, interactionSetHighTextIndex_hook, SYM(interactionSetHighTextIndex), b_+192);
+  NPC_CALL_C(b_+189, interactionSetHighTextIndex_hook, SYM(interactionSetHighTextIndex), b_+192);
   CYC(b_+192, b_+193); A = B;
-  CALL_C(b_+193, interactionSetAnimation_hook, SYM(interactionSetAnimation), b_+196);
+  NPC_CALL_C(b_+193, interactionSetAnimation_hook, SYM(interactionSetAnimation), b_+196);
   CYC(b_+196, b_+199); goto runScriptAndAnimate; // jp
 
 initSubid00:
@@ -181,7 +182,7 @@ initSubid00:
 
   // interactionCode87@state00
   CYC(b_+237, b_+239); A = 0x0c; // GLOBALFLAG_0c
-  CALL_C(b_+239, checkGlobalFlag_hook, SYM(checkGlobalFlag), b_+242);
+  NPC_CALL_ZERO(b_+239, checkGlobalFlag_hook, SYM(checkGlobalFlag), b_+242);
   if (!(F & FZ)) { CYCT(b_+242, b_+244); goto initSubid00Ret; } // jr nz
   CYC(b_+242, b_+244);
   CYC(b_+244, b_+246); A = 0x01;
@@ -244,7 +245,7 @@ state0f:
   CYC(b_+314, b_+316); goto runSubid0ScriptMode; // jr
 
 state10:
-  CALL_C(b_+316, checkIsLinkedGame_hook, SYM(checkIsLinkedGame), b_+319);
+  NPC_CALL_ZERO(b_+316, checkIsLinkedGame_hook, SYM(checkIsLinkedGame), b_+319);
   if (F & FZ) { CYCT(b_+319, b_+321); goto state10Linked; } // jr z
   CYC(b_+319, b_+321);
   CYC(b_+321, b_+324); SET_BC(0x001a); // ldbc $00,<TX_051a
@@ -260,16 +261,16 @@ state01:
 
 runSubidCode:
   CYC(b_+335, b_+337); E = INTERACTION_BASE + OBJ_SUBID;
-  CYC(b_+337, b_+338); mem_wr(gb, DE, A);
+  CYC(b_+337, b_+338); EVENT_WRITE(DE, A);
   CYC(b_+338, b_+339); SET_AF(pop_effect(gb));
   CYC(b_+339, b_+342); TAIL(interactionCode87); // jp
 
 runSubid0ScriptMode:
   CYC(b_+342, b_+343); H = D;
   CYC(b_+343, b_+345); L = INTERACTION_BASE + OBJ_VAR3E;
-  CYC(b_+345, b_+346); mem_wr(gb, HL, B);
+  CYC(b_+345, b_+346); EVENT_WRITE(HL, B);
   CYC(b_+346, b_+347); L = alu_inc8(gb, L);
-  CYC(b_+347, b_+348); mem_wr(gb, HL, C);
+  CYC(b_+347, b_+348); EVENT_WRITE(HL, C);
 
 initSubid00Ret:
   RET(b_+348);
@@ -280,8 +281,8 @@ initializeMakuTree:
   CYC(b_+349, b_+352); push_effect(gb, b_+352); goto initGraphicsAndLoadScript; // call
 
 setVisibleAndSpawnFlower:
-  CALL_C(b_+352, objectSetVisible83_hook, SYM(objectSetVisible83), b_+355);
-  CALL_C(b_+355, interactionSetAlwaysUpdateBit_hook, SYM(interactionSetAlwaysUpdateBit), b_+358);
+  NPC_CALL_C(b_+352, objectSetVisible83_hook, SYM(objectSetVisible83), b_+355);
+  NPC_CALL_C(b_+355, interactionSetAlwaysUpdateBit_hook, SYM(interactionSetAlwaysUpdateBit), b_+358);
   CYC(b_+358, b_+361); goto spawnMakuFlower; // jp
 
 initGraphicsAndIncState:
@@ -305,7 +306,7 @@ afterInitGraphics_viaLoadScript:
 // subid01, or subid04's own outer push. Each edge's sp check must match its own nesting depth,
 // not sp0_ uniformly.
 initGraphics:
-  CALL_C(b_+372, interactionLoadExtraGraphics_hook, SYM(interactionLoadExtraGraphics), b_+375);
+  NPC_CALL_C(b_+372, interactionLoadExtraGraphics_hook, SYM(interactionLoadExtraGraphics), b_+375);
   CYC(b_+375, b_+378); interactionInitGraphics_hook(gb);
   if (gb->pc == b_+364 && gb->sp == (uint16_t)(sp0_ - 2)) goto afterInitGraphics_viaIncState;
   if (gb->pc == b_+370 && gb->sp == (uint16_t)(sp0_ - 4)) goto afterInitGraphics_viaLoadScript;
@@ -313,15 +314,15 @@ initGraphics:
 
 loadScript:
   CYC(b_+378, b_+380); A = 0x05; // >TX_0500
-  CALL_C(b_+380, interactionSetHighTextIndex_hook, SYM(interactionSetHighTextIndex), b_+383);
+  NPC_CALL_C(b_+380, interactionSetHighTextIndex_hook, SYM(interactionSetHighTextIndex), b_+383);
   CYC(b_+383, b_+385); E = INTERACTION_BASE + OBJ_SUBID;
   CYC(b_+385, b_+386); A = mem_rd(gb, DE);
   CYC(b_+386, b_+389); SET_HL(b_+422); // @scriptTable
-  CYC(b_+389, b_+390); makuTree_add_double_index(gb, b_+390);
+  CYC(b_+389, b_+390); NPC_LOCAL_CALL(makuTree_add_double_index(gb, b_+390));
   CYC(b_+390, b_+391); A = mem_rd(gb, HL); SET_HL(HL + 1); // ldi a,(hl)
   CYC(b_+391, b_+392); H = mem_rd(gb, HL);
   CYC(b_+392, b_+393); L = A;
-  CALL_C(b_+393, interactionSetScript_hook, SYM(interactionSetScript), b_+396);
+  NPC_CALL_C(b_+393, interactionSetScript_hook, SYM(interactionSetScript), b_+396);
   CYC(b_+396, b_+399); interactionIncState_hook(gb);
   if (gb->pc == b_+125 && gb->sp == sp0_) { CYC(b_+125, b_+128); goto setVisibleAndSpawnFlower; }
   // 0x6801 is pushed by @initializeMakuTree at sp0_-2, since one outer push from subid00, subid01,
@@ -330,7 +331,7 @@ loadScript:
   return; // jp
 
 spawnMakuFlower:
-  CALL_C(b_+399, getFreeInteractionSlot_hook, SYM(getFreeInteractionSlot), b_+402);
+  NPC_CALL_C(b_+399, getFreeInteractionSlot_hook, SYM(getFreeInteractionSlot), b_+402);
   if (!(F & FZ)) {
     RET_TAKEN(b_+402);
     if (gb->pc == b_+33 && gb->sp == sp0_) goto afterSpawnFlower_subid00;
@@ -340,17 +341,17 @@ spawnMakuFlower:
     return;
   } // ret nz
   CYC(b_+402, b_+403);
-  CYC(b_+403, b_+405); mem_wr(gb, HL, 0x86); // INTERAC_MAKU_FLOWER
+  CYC(b_+403, b_+405); EVENT_WRITE(HL, 0x86); // INTERAC_MAKU_FLOWER
   CYC(b_+405, b_+407); L = INTERACTION_BASE + OBJ_RELATED2; // Interaction.relatedObj2
   CYC(b_+407, b_+409); A = INTERACTION_BASE; // Interaction.start
-  CYC(b_+409, b_+410); mem_wr(gb, HL, A); SET_HL(HL + 1); // ldi (hl),a
-  CYC(b_+410, b_+411); mem_wr(gb, HL, D);
+  CYC(b_+409, b_+410); EVENT_WRITE(HL, A); SET_HL(HL + 1); // ldi (hl),a
+  CYC(b_+410, b_+411); EVENT_WRITE(HL, D);
   CYC(b_+411, b_+413); E = INTERACTION_BASE + OBJ_RELATED1; // Interaction.relatedObj1
   CYC(b_+413, b_+415); A = INTERACTION_BASE; // Interaction.start
-  CYC(b_+415, b_+416); mem_wr(gb, DE, A);
+  CYC(b_+415, b_+416); EVENT_WRITE(DE, A);
   CYC(b_+416, b_+417); E = alu_inc8(gb, E);
   CYC(b_+417, b_+418); A = H;
-  CYC(b_+418, b_+419); mem_wr(gb, DE, A);
+  CYC(b_+418, b_+419); EVENT_WRITE(DE, A);
   CYC(b_+419, b_+422); objectCopyPosition_hook(gb);
   if (gb->pc == b_+33 && gb->sp == sp0_) goto afterSpawnFlower_subid00;
   if (gb->pc == b_+43 && gb->sp == sp0_) goto afterSpawnFlower_subid0102;

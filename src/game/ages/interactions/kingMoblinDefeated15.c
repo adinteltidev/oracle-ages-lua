@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/npcs_events.h"
 
 #undef CYC
 #undef CYCT
@@ -20,10 +21,10 @@ static void kingMoblinDefeated_add_double_index(GB *gb, uint16_t return_address)
 void kingMoblinDefeated_setGoronDirection_hook(GB *gb) {
   BASE(kingMoblinDefeated_setGoronDirection);
   CYC(b_+0, b_+3); SET_HL(b_+12);
-  CYC(b_+3, b_+4); kingMoblinDefeated_add_double_index(gb, b_+4);
+  CYC(b_+3, b_+4); NPC_LOCAL_CALL(kingMoblinDefeated_add_double_index(gb, b_+4));
   CYC(b_+4, b_+6); E = 0x49;
   CYC(b_+6, b_+7); A = mem_rd(gb, HL); SET_HL(HL + 1);
-  CYC(b_+7, b_+8); mem_wr(gb, DE, A);
+  CYC(b_+7, b_+8); EVENT_WRITE(DE, A);
   CYC(b_+8, b_+9); A = mem_rd(gb, HL);
   CYC(b_+9, b_+12); TAIL(interactionSetAnimation);
 }
@@ -31,11 +32,11 @@ void kingMoblinDefeated_setGoronDirection_hook(GB *gb) {
 void kingMoblinDefeated_spawnInteraction8a_hook(GB *gb) {
   BASE(kingMoblinDefeated_spawnInteraction8a);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, getFreeInteractionSlot_hook, SYM(getFreeInteractionSlot), b_+3);
+  NPC_CALL_C(b_+0, getFreeInteractionSlot_hook, SYM(getFreeInteractionSlot), b_+3);
   if (!(F & FZ)) { RET_TAKEN(b_+3); return; }
   CYC(b_+3, b_+4);
-  CYC(b_+4, b_+6); mem_wr(gb, HL, 0x8a);
+  CYC(b_+4, b_+6); EVENT_WRITE(HL, 0x8a);
   CYC(b_+6, b_+8); L = 0x43;
-  CYC(b_+8, b_+10); mem_wr(gb, HL, 0x06);
+  CYC(b_+8, b_+10); EVENT_WRITE(HL, 0x06);
   CYC(b_+10, b_+11); ret_effect(gb);
 }

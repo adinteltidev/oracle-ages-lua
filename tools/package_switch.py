@@ -7,6 +7,27 @@ nro=(a.build/'oracles-switch.nro').read_bytes();audit=json.loads(a.audit.read_te
 assert hashlib.sha256(nro).hexdigest()==audit['nro_sha256']
 assert not audit['rom_header_embedded'] and not audit['interpreter_object']
 files={'switch/oracle-ages-native/oracles-switch.nro':nro,'LEIA-ME.txt':(root/'LEIA-ME-SWITCH.txt').read_bytes(),'SWITCH.md':(root/'SWITCH.md').read_bytes(),'LICENSE':(root/'LICENSE').read_bytes(),'build-audit.json':a.audit.read_bytes(),'sdk-lock.json':(root/'platform/switch/sdk-lock.json').read_bytes()}
+profile='oracle-ages-native'
+if b'sdmc:/switch/oracle-ages-lua-phase7/' in nro:profile='oracle-ages-lua-phase7'
+elif b'sdmc:/switch/oracle-ages-lua-phase6/' in nro:profile='oracle-ages-lua-phase6'
+elif b'sdmc:/switch/oracle-ages-lua-phase5/' in nro:profile='oracle-ages-lua-phase5'
+elif b'sdmc:/switch/oracle-ages-lua-phase4/' in nro:profile='oracle-ages-lua-phase4'
+elif b'sdmc:/switch/oracle-ages-lua-phase3/' in nro:profile='oracle-ages-lua-phase3'
+elif b'sdmc:/switch/oracle-ages-lua-phase2/' in nro:profile='oracle-ages-lua-phase2'
+elif b'sdmc:/switch/oracle-ages-lua-phase1/' in nro:profile='oracle-ages-lua-phase1'
+elif b'sdmc:/switch/oracle-ages-lua/' in nro:profile='oracle-ages-lua'
+if profile!='oracle-ages-native':
+ nro_name=profile.replace('oracle-ages-','oracles-')+'.nro' if profile in ('oracle-ages-lua-phase1','oracle-ages-lua-phase2','oracle-ages-lua-phase3','oracle-ages-lua-phase4','oracle-ages-lua-phase5','oracle-ages-lua-phase6','oracle-ages-lua-phase7') else 'oracles-switch.nro'
+ files['switch/'+profile+'/'+nro_name]=files.pop('switch/oracle-ages-native/oracles-switch.nro')
+ if profile=='oracle-ages-lua-phase7':files['LEIA-ME.txt']=(root/'LUA-PHASE-7-PLATFORM-TESTS.md').read_bytes()
+ elif profile=='oracle-ages-lua-phase6':files['LEIA-ME.txt']=(root/'LUA-PHASE-6-PLATFORM-TESTS.md').read_bytes()
+ elif profile=='oracle-ages-lua-phase5':files['LEIA-ME.txt']=(root/'LUA-PHASE-5-PLATFORM-TESTS.md').read_bytes()
+ elif profile=='oracle-ages-lua-phase4':files['LEIA-ME.txt']=(root/'LUA-PHASE-4-PLATFORM-TESTS.md').read_bytes()
+ elif profile=='oracle-ages-lua-phase3':files['LEIA-ME.txt']=(root/'LUA-PHASE-3-PLATFORM-TESTS.md').read_bytes()
+ elif profile=='oracle-ages-lua-phase2':files['LEIA-ME.txt']=(root/'LUA-PHASE-2-PLATFORM-TESTS.md').read_bytes()
+ elif profile=='oracle-ages-lua-phase1':files['LEIA-ME.txt']=(root/'LUA-PHASE-1-PLATFORM-TESTS.md').read_bytes()
+ else:files['LEIA-ME.txt']=b'Piloto C + Lua. Copie switch para a raiz do SD. ROM: sdmc:/switch/oracle-ages-lua/ages.gbc. Controles e detalhes em SWITCH.md.\n'
+ files['Licenses/Lua-MIT-header.txt']=(root/'third_party/lua/lua.h').read_bytes()
 verification=a.verification or root/'SWITCH-VERIFICATION.json'
 if __import__('os').environ.get('GITHUB_ACTIONS')=='true' and not a.verification:raise ValueError('CI requires a fresh build manifest')
 files['SWITCH-VERIFICATION.json']=verification.read_bytes()
@@ -14,7 +35,7 @@ if a.verification:
  manifest=json.loads(verification.read_text())
  assert manifest['binary']['sha256']==hashlib.sha256(nro).hexdigest(), 'Manifest does not match this NRO'
 for name in ['ages-boot.state','ages.ref','ages-consoleverified.inputs']:
- files['switch/oracle-ages-native/tests/'+name]=(root/'tas'/name).read_bytes()
+ files['switch/'+profile+'/tests/'+name]=(root/'tas'/name).read_bytes()
 for f in sorted((root/'platform/switch/licenses').iterdir()):
  if f.is_file():files['Licenses/'+f.name]=f.read_bytes()
 # Use the Git index plus explicit changed files, filtered through gitignore.

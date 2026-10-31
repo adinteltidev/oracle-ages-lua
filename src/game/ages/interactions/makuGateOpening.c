@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/npcs_events.h"
 
 #undef CYC
 #undef CYCT
@@ -49,12 +50,12 @@ void interactionCode76_hook(GB *gb) {
   // interactionCode76@state0
   CYC(b_+20, b_+21); H = D;
   CYC(b_+21, b_+23); L = INTERACTION_BASE + OBJ_STATE;
-  CYC(b_+23, b_+24); mem_wr(gb, HL, alu_inc8(gb, mem_rd(gb, HL))); // inc (hl)
+  CYC(b_+23, b_+24); EVENT_WRITE(HL, alu_inc8(gb, mem_rd(gb, HL))); // inc (hl)
   CYC(b_+24, b_+26); L = INTERACTION_BASE + OBJ_COUNTER1;
-  CYC(b_+26, b_+28); mem_wr(gb, HL, 30);
+  CYC(b_+26, b_+28); EVENT_WRITE(HL, 30);
   CYC(b_+28, b_+30); L = INTERACTION_BASE + OBJ_SUBID;
   CYC(b_+30, b_+31); A = mem_rd(gb, HL);
-  CYC(b_+31, b_+32); alu_or(gb, A);
+  CYC(b_+31, b_+32); NPC_OR(A);
   CYC(b_+32, b_+35); SET_HL(b_+142); // @frame0And1_subid0
   if (F & FZ) { CYCT(b_+35, b_+37); goto l5f2a; } // jr z
   CYC(b_+35, b_+37);
@@ -70,7 +71,7 @@ after1_loadPoofs:
 
 shakeScreen:
   CYC(b_+49, b_+51); A = 0x06;
-  CALL_C(b_+51, setScreenShakeCounter_hook, SYM(setScreenShakeCounter), b_+54);
+  NPC_CALL_C(b_+51, setScreenShakeCounter_hook, SYM(setScreenShakeCounter), b_+54);
   CYC(b_+54, b_+56); A = 0x70; // SND_DOORCLOSE
   CYC(b_+56, b_+59); playSound_b00_hook(gb);
   if (gb->pc == b_+78 && gb->sp == sp0_) goto after1_shakeScreen;
@@ -79,7 +80,7 @@ shakeScreen:
   return; // jp
 
 state1:
-  CALL_C(b_+59, interactionDecCounter1_hook, SYM(interactionDecCounter1), b_+62);
+  NPC_CALL_ZERO(b_+59, interactionDecCounter1_hook, SYM(interactionDecCounter1), b_+62);
   if (!(F & FZ)) { RET_TAKEN(b_+62); return; } // ret nz
   CYC(b_+62, b_+63);
   CYC(b_+63, b_+66); SET_HL(b_+142); // @frame0And1_subid0
@@ -92,13 +93,13 @@ after2_loadPoofs:
 after1_shakeScreen:
   CYC(b_+78, b_+79); H = D;
   CYC(b_+79, b_+81); L = INTERACTION_BASE + OBJ_STATE;
-  CYC(b_+81, b_+82); mem_wr(gb, HL, alu_inc8(gb, mem_rd(gb, HL))); // inc (hl)
+  CYC(b_+81, b_+82); EVENT_WRITE(HL, alu_inc8(gb, mem_rd(gb, HL))); // inc (hl)
   CYC(b_+82, b_+84); L = INTERACTION_BASE + OBJ_COUNTER1;
-  CYC(b_+84, b_+86); mem_wr(gb, HL, 30);
+  CYC(b_+84, b_+86); EVENT_WRITE(HL, 30);
   RET(b_+86); return; // ret
 
 state2:
-  CALL_C(b_+87, interactionDecCounter1_hook, SYM(interactionDecCounter1), b_+90);
+  NPC_CALL_ZERO(b_+87, interactionDecCounter1_hook, SYM(interactionDecCounter1), b_+90);
   if (!(F & FZ)) { RET_TAKEN(b_+90); return; } // ret nz
   CYC(b_+90, b_+91);
   CYC(b_+91, b_+94); SET_HL(b_+160); // @frame2And3
@@ -111,13 +112,13 @@ after3_loadPoofs:
 after2_shakeScreen:
   CYC(b_+106, b_+107); H = D;
   CYC(b_+107, b_+109); L = INTERACTION_BASE + OBJ_STATE;
-  CYC(b_+109, b_+110); mem_wr(gb, HL, alu_inc8(gb, mem_rd(gb, HL))); // inc (hl)
+  CYC(b_+109, b_+110); EVENT_WRITE(HL, alu_inc8(gb, mem_rd(gb, HL))); // inc (hl)
   CYC(b_+110, b_+112); L = INTERACTION_BASE + OBJ_COUNTER1;
-  CYC(b_+112, b_+114); mem_wr(gb, HL, 30);
+  CYC(b_+112, b_+114); EVENT_WRITE(HL, 30);
   RET(b_+114); return; // ret
 
 state3:
-  CALL_C(b_+115, interactionDecCounter1_hook, SYM(interactionDecCounter1), b_+118);
+  NPC_CALL_ZERO(b_+115, interactionDecCounter1_hook, SYM(interactionDecCounter1), b_+118);
   if (!(F & FZ)) { RET_TAKEN(b_+118); return; } // ret nz
   CYC(b_+118, b_+119);
   CYC(b_+119, b_+122); SET_HL(b_+160); // @frame2And3
@@ -128,8 +129,8 @@ after2_loadTiles:
 after4_loadPoofs:
   CYC(b_+131, b_+134); push_effect(gb, b_+134); goto shakeScreen; // call
 after3_shakeScreen:
-  CALL_C(b_+134, getThisRoomFlags_hook, SYM(getThisRoomFlags), b_+137);
-  CYC(b_+137, b_+139); mem_wr(gb, HL, mem_rd(gb, HL) | 0x80); // set 7,(hl)
+  NPC_CALL_C(b_+134, getThisRoomFlags_hook, SYM(getThisRoomFlags), b_+137);
+  CYC(b_+137, b_+139); EVENT_WRITE(HL, mem_rd(gb, HL) | 0x80); // set 7,(hl)
   CYC(b_+139, b_+142); TAIL(interactionDelete); // jp
 
 // @param hl Pointer to data
@@ -147,7 +148,7 @@ next_loadInterleavedTiles:
   CYC(b_+216, b_+217); A = mem_rd(gb, HL); SET_HL(HL + 1); // ldi a,(hl)
   CYC(b_+217, b_+218); push_effect(gb, HL);
   CYC(b_+218, b_+219); push_effect(gb, BC);
-  CALL_C(b_+219, setInterleavedTile_hook, SYM(setInterleavedTile), b_+222);
+  NPC_CALL_C(b_+219, setInterleavedTile_hook, SYM(setInterleavedTile), b_+222);
   CYC(b_+222, b_+223); SET_BC(pop_effect(gb));
   CYC(b_+223, b_+224); SET_HL(pop_effect(gb));
   CYC(b_+224, b_+225); B = alu_dec8(gb, B);
@@ -169,7 +170,7 @@ next_loadTiles:
   CYC(b_+232, b_+233); A = mem_rd(gb, HL); // ld a,(hl)
   CYC(b_+233, b_+234); push_effect(gb, HL);
   CYC(b_+234, b_+235); push_effect(gb, BC);
-  CALL_C(b_+235, setTile_hook, SYM(setTile), b_+238);
+  NPC_CALL_C(b_+235, setTile_hook, SYM(setTile), b_+238);
   CYC(b_+238, b_+239); SET_BC(pop_effect(gb));
   CYC(b_+239, b_+240); SET_HL(pop_effect(gb));
   CYC(b_+240, b_+241); SET_HL(HL + 1); // inc hl
@@ -190,7 +191,7 @@ loadPoofs:
 
 next_loadPoofs:
   CYC(b_+249, b_+251); H8(hFF8B) = A;
-  CALL_C(b_+251, getFreeInteractionSlot_hook, SYM(getFreeInteractionSlot), b_+254);
+  NPC_CALL_C(b_+251, getFreeInteractionSlot_hook, SYM(getFreeInteractionSlot), b_+254);
   if (!(F & FZ)) {
     RET_TAKEN(b_+254);
     if (gb->pc == b_+49 && gb->sp == sp0_) goto after1_loadPoofs;
@@ -200,14 +201,14 @@ next_loadPoofs:
     return;
   } // ret nz
   CYC(b_+254, b_+255);
-  CYC(b_+255, b_+257); mem_wr(gb, HL, 0x05); // INTERAC_PUFF
+  CYC(b_+255, b_+257); EVENT_WRITE(HL, 0x05); // INTERAC_PUFF
   CYC(b_+257, b_+259); L = INTERACTION_BASE + OBJ_YH;
   CYC(b_+259, b_+260); A = mem_rd(gb, BC);
-  CYC(b_+260, b_+261); mem_wr(gb, HL, A);
+  CYC(b_+260, b_+261); EVENT_WRITE(HL, A);
   CYC(b_+261, b_+262); SET_BC(BC + 1); // inc bc
   CYC(b_+262, b_+264); L = INTERACTION_BASE + OBJ_XH;
   CYC(b_+264, b_+265); A = mem_rd(gb, BC);
-  CYC(b_+265, b_+266); mem_wr(gb, HL, A);
+  CYC(b_+265, b_+266); EVENT_WRITE(HL, A);
   CYC(b_+266, b_+267); SET_BC(BC + 1); // inc bc
   CYC(b_+267, b_+269); A = H8(hFF8B);
   CYC(b_+269, b_+270); A = alu_dec8(gb, A);

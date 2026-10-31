@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/npcs_events.h"
 
 #undef CYC
 #undef CYCT
@@ -33,15 +34,15 @@ static void oldMan_add_double_index(GB *gb, uint16_t return_address) {
 
 static void oldMan_load_script(GB *gb, uint16_t sp0_) {
   BASE(interactionCode52);
-  CALL_C(b_+202, interactionInitGraphics_hook, SYM(interactionInitGraphics), b_+205);
+  NPC_CALL_C(b_+202, interactionInitGraphics_hook, SYM(interactionInitGraphics), b_+205);
   CYC(b_+205, b_+207); E = 0x42;
   CYC(b_+207, b_+208); A = mem_rd(gb, DE);
   CYC(b_+208, b_+211); SET_HL(b_+221);
-  CYC(b_+211, b_+212); oldMan_add_double_index(gb, b_+212);
+  CYC(b_+211, b_+212); NPC_LOCAL_CALL(oldMan_add_double_index(gb, b_+212));
   CYC(b_+212, b_+213); A = mem_rd(gb, HL); SET_HL(HL + 1);
   CYC(b_+213, b_+214); H = mem_rd(gb, HL);
   CYC(b_+214, b_+215); L = A;
-  CALL_C(b_+215, interactionSetScript_hook, SYM(interactionSetScript), b_+218);
+  NPC_CALL_C(b_+215, interactionSetScript_hook, SYM(interactionSetScript), b_+218);
   CYC(b_+218, b_+221); interactionIncState_hook(gb);
 }
 
@@ -59,59 +60,59 @@ void interactionCode52_hook(GB *gb) {
     else { HANDOFF(HL); }
   } while (0);
 subid0:
-  CALL_C(b_+18, checkInteractionState_hook, SYM(checkInteractionState), b_+21);
-  if (F & FZ) { CYC(b_+21, b_+23); CYC(b_+23, b_+26); push_effect(gb, b_+26); oldMan_load_script(gb, sp0_); }
+  NPC_CALL_ZERO(b_+18, checkInteractionState_hook, SYM(checkInteractionState), b_+21);
+  if (F & FZ) { CYC(b_+21, b_+23); CYC(b_+23, b_+26); push_effect(gb, b_+26); NPC_LOCAL_CALL(oldMan_load_script(gb, sp0_)); }
   else CYCT(b_+21, b_+23);
-  CALL_C(b_+26, interactionRunScript_hook, SYM(interactionRunScript), b_+29);
+  NPC_CALL_C(b_+26, interactionRunScript_hook, SYM(interactionRunScript), b_+29);
   if (F & FC) { CYCT(b_+29, b_+32); interactionDelete_hook(gb); return; }
   CYC(b_+29, b_+32); CYC(b_+32, b_+35); npcFaceLinkAndAnimate_hook(gb); return;
 subid1:
-  CALL_C(b_+35, checkInteractionState_hook, SYM(checkInteractionState), b_+38);
-  if (F & FZ) { CYCT(b_+38, b_+41); push_effect(gb, b_+41); oldMan_load_script(gb, sp0_); }
+  NPC_CALL_ZERO(b_+35, checkInteractionState_hook, SYM(checkInteractionState), b_+38);
+  if (F & FZ) { CYCT(b_+38, b_+41); push_effect(gb, b_+41); NPC_LOCAL_CALL(oldMan_load_script(gb, sp0_)); }
   else CYC(b_+38, b_+41);
-  CALL_C(b_+41, interactionRunScript_hook, SYM(interactionRunScript), b_+44);
+  NPC_CALL_C(b_+41, interactionRunScript_hook, SYM(interactionRunScript), b_+44);
   if (F & FC) { CYCT(b_+44, b_+47); interactionDelete_hook(gb); return; }
   CYC(b_+44, b_+47); CYC(b_+47, b_+50); interactionAnimateAsNpc_hook(gb); return;
 subid2:
-  CALL_C(b_+50, checkInteractionState_hook, SYM(checkInteractionState), b_+53);
+  NPC_CALL_ZERO(b_+50, checkInteractionState_hook, SYM(checkInteractionState), b_+53);
   if (F & FZ) {
     CYC(b_+53, b_+55); CYC(b_+55, b_+57); A = 0x14;
-    CALL_C(b_+57, checkGlobalFlag_hook, SYM(checkGlobalFlag), b_+60);
+    NPC_CALL_ZERO(b_+57, checkGlobalFlag_hook, SYM(checkGlobalFlag), b_+60);
     if (!(F & FZ)) { CYCT(b_+60, b_+63); interactionDelete_hook(gb); return; }
-    CYC(b_+60, b_+63); CYC(b_+63, b_+66); push_effect(gb, b_+66); oldMan_load_script(gb, sp0_);
+    CYC(b_+60, b_+63); CYC(b_+63, b_+66); push_effect(gb, b_+66); NPC_LOCAL_CALL(oldMan_load_script(gb, sp0_));
   } else CYCT(b_+53, b_+55);
-  CALL_C(b_+66, interactionAnimateAsNpc_hook, SYM(interactionAnimateAsNpc), b_+69);
-  CALL_C(b_+69, interactionRunScript_hook, SYM(interactionRunScript), b_+72);
+  NPC_CALL_C(b_+66, interactionAnimateAsNpc_hook, SYM(interactionAnimateAsNpc), b_+69);
+  NPC_CALL_C(b_+69, interactionRunScript_hook, SYM(interactionRunScript), b_+72);
   if (!(F & FC)) { CYCT(b_+72, b_+73); ret_effect(gb); return; }
   CYC(b_+72, b_+73); CYC(b_+73, b_+75); A = 0x8d;
-  CALL_C(b_+75, playSound_b00_hook, SYM(playSound_b00), b_+78);
+  NPC_CALL_C(b_+75, playSound_b00_hook, SYM(playSound_b00), b_+78);
   CYC(b_+78, b_+81); SET_HL(b_+84);
   CYC(b_+81, b_+84); TAIL(setWarpDestVariables);
 generic:
-  CALL_C(b_+89, checkInteractionState_hook, SYM(checkInteractionState), b_+92);
+  NPC_CALL_ZERO(b_+89, checkInteractionState_hook, SYM(checkInteractionState), b_+92);
   if (!(F & FZ)) { CYC(b_+92, b_+94); goto generic_state1; }
   CYCT(b_+92, b_+94);
-  CALL_C(b_+100, interactionInitGraphics_hook, SYM(interactionInitGraphics), b_+103);
-  CALL_C(b_+103, interactionIncState_hook, SYM(interactionIncState), b_+106);
-  CYC(b_+106, b_+108); L = 0x73; CYC(b_+108, b_+110); mem_wr(gb, HL, 0x33);
-  CYC(b_+110, b_+112); L = 0x67; CYC(b_+112, b_+114); mem_wr(gb, HL, 6);
-  CYC(b_+114, b_+116); L = 0x48; CYC(b_+116, b_+117); mem_wr(gb, HL, alu_dec8(gb, mem_rd(gb, HL)));
-  CYC(b_+117, b_+119); A = 0x30; CALL_C(b_+119, checkGlobalFlag_hook, SYM(checkGlobalFlag), b_+122);
+  NPC_CALL_C(b_+100, interactionInitGraphics_hook, SYM(interactionInitGraphics), b_+103);
+  NPC_CALL_C(b_+103, interactionIncState_hook, SYM(interactionIncState), b_+106);
+  CYC(b_+106, b_+108); L = 0x73; CYC(b_+108, b_+110); EVENT_WRITE(HL, 0x33);
+  CYC(b_+110, b_+112); L = 0x67; CYC(b_+112, b_+114); EVENT_WRITE(HL, 6);
+  CYC(b_+114, b_+116); L = 0x48; CYC(b_+116, b_+117); EVENT_WRITE(HL, alu_dec8(gb, mem_rd(gb, HL)));
+  CYC(b_+117, b_+119); A = 0x30; NPC_CALL_ZERO(b_+119, checkGlobalFlag_hook, SYM(checkGlobalFlag), b_+122);
   CYC(b_+122, b_+124); B = 0;
   if (F & FZ) CYCT(b_+124, b_+126); else { CYC(b_+124, b_+126); CYC(b_+126, b_+127); B = alu_inc8(gb, B); }
   CYC(b_+127, b_+129); E = 0x42; CYC(b_+129, b_+130); A = mem_rd(gb, DE);
   CYC(b_+130, b_+132); alu_sub(gb, 3); CYC(b_+132, b_+133); C = A;
   CYC(b_+133, b_+134); alu_add(gb, A); CYC(b_+134, b_+135); alu_add(gb, B);
-  CYC(b_+135, b_+138); SET_HL(b_+188); CYC(b_+138, b_+139); oldMan_add_double_index(gb, b_+139);
-  CYC(b_+139, b_+141); E = 0x72; CYC(b_+141, b_+142); A = mem_rd(gb, HL); CYC(b_+142, b_+143); mem_wr(gb, DE, A);
+  CYC(b_+135, b_+138); SET_HL(b_+188); CYC(b_+138, b_+139); NPC_LOCAL_CALL(oldMan_add_double_index(gb, b_+139));
+  CYC(b_+139, b_+141); E = 0x72; CYC(b_+141, b_+142); A = mem_rd(gb, HL); CYC(b_+142, b_+143); EVENT_WRITE(DE, A);
   CYC(b_+143, b_+144); A = C; CYC(b_+144, b_+145); alu_add(gb, A); CYC(b_+145, b_+146); alu_add(gb, C);
-  CYC(b_+146, b_+149); SET_HL(b_+176); CYC(b_+149, b_+150); oldMan_add_double_index(gb, b_+150);
-  CYC(b_+150, b_+152); E = 0x66; CYC(b_+152, b_+153); A = mem_rd(gb, HL); SET_HL(HL + 1); CYC(b_+153, b_+154); mem_wr(gb, DE, A);
-  CYC(b_+154, b_+156); E = 0x5b; CYC(b_+156, b_+157); A = mem_rd(gb, HL); SET_HL(HL + 1); CYC(b_+157, b_+158); mem_wr(gb, DE, A);
-  CYC(b_+158, b_+159); E = alu_inc8(gb, E); CYC(b_+159, b_+160); mem_wr(gb, DE, A);
-  CYC(b_+160, b_+162); E = 0x78; CYC(b_+162, b_+163); A = mem_rd(gb, HL); CYC(b_+163, b_+164); mem_wr(gb, DE, A);
-  CALL_C(b_+164, interactionSetAnimation_hook, SYM(interactionSetAnimation), b_+167); CALL_C(b_+167, objectSetVisiblec2_hook, SYM(objectSetVisiblec2), b_+170);
+  CYC(b_+146, b_+149); SET_HL(b_+176); CYC(b_+149, b_+150); NPC_LOCAL_CALL(oldMan_add_double_index(gb, b_+150));
+  CYC(b_+150, b_+152); E = 0x66; CYC(b_+152, b_+153); A = mem_rd(gb, HL); SET_HL(HL + 1); CYC(b_+153, b_+154); EVENT_WRITE(DE, A);
+  CYC(b_+154, b_+156); E = 0x5b; CYC(b_+156, b_+157); A = mem_rd(gb, HL); SET_HL(HL + 1); CYC(b_+157, b_+158); EVENT_WRITE(DE, A);
+  CYC(b_+158, b_+159); E = alu_inc8(gb, E); CYC(b_+159, b_+160); EVENT_WRITE(DE, A);
+  CYC(b_+160, b_+162); E = 0x78; CYC(b_+162, b_+163); A = mem_rd(gb, HL); CYC(b_+163, b_+164); EVENT_WRITE(DE, A);
+  NPC_CALL_C(b_+164, interactionSetAnimation_hook, SYM(interactionSetAnimation), b_+167); NPC_CALL_C(b_+167, objectSetVisiblec2_hook, SYM(objectSetVisiblec2), b_+170);
   CYC(b_+170, b_+173); SET_HL(RV((SYM(impaNpc_subid01) + 19), 0x64ff)); CYC(b_+173, b_+176); interactionSetScript_hook(gb); return;
 generic_state1:
-  CALL_C(b_+94, interactionRunScript_hook, SYM(interactionRunScript), b_+97); CYC(b_+97, b_+100); TAIL(interactionAnimateAsNpc);
+  NPC_CALL_C(b_+94, interactionRunScript_hook, SYM(interactionRunScript), b_+97); CYC(b_+97, b_+100); TAIL(interactionAnimateAsNpc);
 }

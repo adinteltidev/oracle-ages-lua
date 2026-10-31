@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/doors.h"
 
 #undef CYC
 #undef CYCT
@@ -43,7 +44,9 @@ static void minecartGate_setAnimationAndUpdateCollisions(GB *gb, uint16_t sp0_) 
   CYC(b_+66, b_+67); A = mem_rd(gb, DE);
   CYC(b_+67, b_+68); alu_and(gb, B);
   CYC(b_+68, b_+70); C = 0x00;
-  if (!(F & FZ)) {
+  bool open_ = (F & FZ) != 0;
+  DOOR_DECIDE(open_, gate_open, A);
+  if (!open_) {
     CYCT(b_+70, b_+72);
   } else {
     CYC(b_+70, b_+72);
@@ -78,7 +81,9 @@ static void minecartGate_setAnimationAndUpdateCollisions(GB *gb, uint16_t sp0_) 
   CYC(b_+109, b_+110); H = alu_inc8(gb, H);
   CYC(b_+110, b_+111); A = mem_rd(gb, DE);
   CYC(b_+111, b_+112); alu_rrca(gb);
-  if (F & FC) {
+  bool open_animation_ = (F & FC) != 0;
+  DOOR_DECIDE(open_animation_, gate_is_open, (F & FC) != 0);
+  if (open_animation_) {
     CYCT(b_+112, b_+114); goto open;
   }
   CYC(b_+112, b_+114);
@@ -113,11 +118,13 @@ static void minecartGate_state0(GB *gb, uint16_t sp0_) {
   CALL_C(b_+35, interactionInitGraphics_hook, SYM(interactionInitGraphics), b_+38);
   CALL_C(b_+38, objectSetVisible82_hook, SYM(objectSetVisible82), b_+41);
   CYC(b_+41, b_+44); push_effect(gb, b_+44); minecartGate_setAnimationAndUpdateCollisions(gb, sp0_);
+  DOOR_FAILED_RETURN();
   CYC(b_+44, b_+46); E = INTERACTION_BASE + OBJ_VAR30;
   CYC(b_+46, b_+47); A = mem_rd(gb, DE);
   CYC(b_+47, b_+48); B = A;
   CYC(b_+48, b_+50); alu_and(gb, 0x01);
   CYC(b_+50, b_+51); A = alu_inc8(gb, A);
+  DOOR_DECIDE(A, gate_state, B);
   CYC(b_+51, b_+53); E = INTERACTION_BASE + OBJ_STATE;
   CYC(b_+53, b_+54); mem_wr(gb, DE, A);
   CYC(b_+54, b_+55); A = B;
@@ -133,12 +140,15 @@ static void minecartGate_checkSwitch(GB *gb, uint16_t sp0_) {
   CYC(b_+148, b_+150); E = INTERACTION_BASE + OBJ_VAR03;
   CYC(b_+150, b_+151); A = mem_rd(gb, DE);
   CYC(b_+151, b_+152); alu_and(gb, B);
-  if (F & FZ) {
+  bool change_ = (F & FZ) == 0;
+  DOOR_DECIDE(change_, gate_switch, A);
+  if (!change_) {
     CYCT(b_+152, b_+153); ret_effect(gb); return;
   }
   CYC(b_+152, b_+153);
   CYC(b_+153, b_+155); E = INTERACTION_BASE + OBJ_STATE;
   CYC(b_+155, b_+157); A = 0x03;
+  DOOR_DECIDE(A, script_state, A);
   CYC(b_+157, b_+158); mem_wr(gb, DE, A);
   CYC(b_+158, b_+160); A = SND_OPEN_GATE;
   CALL_C(b_+160, playSound_b00_hook, SYM(playSound_b00), b_+163);
@@ -172,14 +182,19 @@ static void minecartGate_state3(GB *gb, uint16_t sp0_) {
   CYC(b_+172, b_+174); E = INTERACTION_BASE + OBJ_ANIM_PARAMETER;
   CYC(b_+174, b_+175); A = mem_rd(gb, DE);
   CYC(b_+175, b_+176); A = alu_inc8(gb, A);
-  if (!(F & FZ)) {
+  bool done_ = (F & FZ) != 0;
+  DOOR_DECIDE(done_, gate_animation_done, A);
+  if (!done_) {
     CYCT(b_+176, b_+177); ret_effect(gb); return;
   }
   CYC(b_+176, b_+177);
   CYC(b_+177, b_+179); E = INTERACTION_BASE + OBJ_VAR30;
   CYC(b_+179, b_+180); A = mem_rd(gb, DE);
+  uint8_t animation_ = A;
+  (void)animation_; // Snapshot is unused when the optional bridge is compiled out.
   CYC(b_+180, b_+182); alu_and(gb, 0x01);
   CYC(b_+182, b_+183); A = alu_inc8(gb, A);
+  DOOR_DECIDE(A, gate_state, animation_);
   CYC(b_+183, b_+185); E = INTERACTION_BASE + OBJ_STATE;
   CYC(b_+185, b_+186); mem_wr(gb, DE, A);
   CYC(b_+186, b_+187); ret_effect(gb);

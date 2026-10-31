@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/enemies.h"
 
 #undef CYC
 #undef CYCT
@@ -49,7 +50,7 @@ static void dekuScrub_addAToHl_from_rst(GB *gb, uint16_t return_address) {
   push_effect(gb, return_address);
   burn_rom(gb, 0x00, 0x0010, 0x0011, false); alu_add(gb, L);
   burn_rom(gb, 0x00, 0x0011, 0x0012, false); L = A;
-  if (F & FC) {
+  if ((F & FC)) {
     burn_rom(gb, 0x00, 0x0012, 0x0013, false);
     burn_rom(gb, 0x00, 0x0013, 0x0014, false); H = alu_inc8(gb, H);
     burn_rom(gb, 0x00, 0x0014, 0x0015, false);
@@ -72,26 +73,26 @@ static void dekuScrub_addAToHl_from_rst(GB *gb, uint16_t return_address) {
 void enemyCode27_hook(GB *gb) {
   BASE(enemyCode27);
   uint16_t sp0_ = gb->sp;
-  if (F & FZ) { CYCT(b_+0, b_+2); goto normalStatus; } // jr z
+  if (ENEMY_FLAG(FZ)) { CYCT(b_+0, b_+2); goto normalStatus; } // jr z
   CYC(b_+0, b_+2);
   CYC(b_+2, b_+4); alu_sub(gb, 0x03); // ENEMYSTATUS_NO_HEALTH
-  if (F & FC) { RET_TAKEN(b_+4); return; } // ret c
+  if (ENEMY_FLAG(FC)) { RET_TAKEN(b_+4); return; } // ret c
   CYC(b_+4, b_+5);
-  if (F & FZ) { CYCT(b_+5, b_+7); goto dead; } // jr z
+  if (ENEMY_FLAG(FZ)) { CYCT(b_+5, b_+7); goto dead; } // jr z
   CYC(b_+5, b_+7);
   CYC(b_+7, b_+8); A = alu_dec8(gb, A);
-  if (!(F & FZ)) { CYCT(b_+8, b_+10); goto normalStatus; } // jr nz
+  if (!(ENEMY_FLAG(FZ))) { CYCT(b_+8, b_+10); goto normalStatus; } // jr nz
   CYC(b_+8, b_+10);
 
   // ENEMYSTATUS_JUST_HIT
   CYC(b_+10, b_+12); E = ENEMY_BASE + 0x30; // Enemy.var30
   CYC(b_+12, b_+13); A = mem_rd(gb, DE);
-  CYC(b_+13, b_+14); alu_or(gb, A);
-  if (!(F & FZ)) { RET_TAKEN(b_+14); return; } // ret nz
+  CYC(b_+13, b_+14); ENEMY_OR(A);
+  if (!(ENEMY_FLAG(FZ))) { RET_TAKEN(b_+14); return; } // ret nz
   CYC(b_+14, b_+15);
   CYC(b_+15, b_+16); H = D;
   CYC(b_+16, b_+18); L = ENEMY_BASE + OBJ_STATE;
-  CYC(b_+18, b_+20); mem_wr(gb, HL, 0x0c);
+  CYC(b_+18, b_+20); ENEMY_WRITE(HL, 0x0c);
   CYC(b_+20, b_+22); L = ENEMY_BASE + 0x31; // Enemy.var31
   CYC(b_+22, b_+23); H = mem_rd(gb, HL);
   CYC(b_+23, b_+26); TAIL(ecom_killObjectH_b0d); // jp
@@ -100,7 +101,7 @@ dead:
   CYC(b_+26, b_+28); E = ENEMY_BASE + OBJ_SUBID;
   CYC(b_+28, b_+29); A = mem_rd(gb, DE);
   CYC(b_+29, b_+30); A = alu_dec8(gb, A);
-  if (!(F & FZ)) { CYCT(b_+30, b_+33); enemyDie_hook(gb); return; } // jp nz
+  if (!(ENEMY_FLAG(FZ))) { CYCT(b_+30, b_+33); ENEMY_LOCAL_CALL(enemyDie_hook(gb)); return; } // jp nz
   CYC(b_+30, b_+33);
 
 normalStatus:
@@ -109,14 +110,14 @@ normalStatus:
   {
     CYC(b_+36, b_+37); push_effect(gb, b_+37);
     uint16_t target = dekuScrub_jump_table(gb);
-    if (target == SYM(dekuScrub_state_uninitialized)) { dekuScrub_state_uninitialized_hook(gb); return; }
-    if (target == SYM(dekuScrub_state_stub)) { dekuScrub_state_stub_hook(gb); return; }
-    if (target == SYM(dekuScrub_state8)) { dekuScrub_state8_hook(gb); return; }
-    if (target == SYM(dekuScrub_state9)) { dekuScrub_state9_hook(gb); return; }
-    if (target == SYM(dekuScrub_stateA)) { dekuScrub_stateA_hook(gb); return; }
-    if (target == SYM(dekuScrub_stateB)) { dekuScrub_stateB_hook(gb); return; }
-    if (target == SYM(dekuScrub_stateC)) { dekuScrub_stateC_hook(gb); return; }
-    if (target == SYM(dekuScrub_stateD)) { dekuScrub_stateD_hook(gb); return; }
+    if (target == SYM(dekuScrub_state_uninitialized)) { ENEMY_LOCAL_CALL(dekuScrub_state_uninitialized_hook(gb)); return; }
+    if (target == SYM(dekuScrub_state_stub)) { ENEMY_LOCAL_CALL(dekuScrub_state_stub_hook(gb)); return; }
+    if (target == SYM(dekuScrub_state8)) { ENEMY_LOCAL_CALL(dekuScrub_state8_hook(gb)); return; }
+    if (target == SYM(dekuScrub_state9)) { ENEMY_LOCAL_CALL(dekuScrub_state9_hook(gb)); return; }
+    if (target == SYM(dekuScrub_stateA)) { ENEMY_LOCAL_CALL(dekuScrub_stateA_hook(gb)); return; }
+    if (target == SYM(dekuScrub_stateB)) { ENEMY_LOCAL_CALL(dekuScrub_stateB_hook(gb)); return; }
+    if (target == SYM(dekuScrub_stateC)) { ENEMY_LOCAL_CALL(dekuScrub_stateC_hook(gb)); return; }
+    if (target == SYM(dekuScrub_stateD)) { ENEMY_LOCAL_CALL(dekuScrub_stateD_hook(gb)); return; }
     HANDOFF(target);
   }
 }
@@ -125,24 +126,24 @@ normalStatus:
 void dekuScrub_state_uninitialized_hook(GB *gb) {
   BASE(dekuScrub_state_uninitialized);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, dekuScrub_spawnBush_hook, SYM(dekuScrub_spawnBush), b_+3);
-  if (!(F & FZ)) { RET_TAKEN(b_+3); return; } // ret nz
+  ENEMY_CALL_C(b_+0, dekuScrub_spawnBush_hook, SYM(dekuScrub_spawnBush), b_+3);
+  if (!(ENEMY_FLAG(FZ))) { RET_TAKEN(b_+3); return; } // ret nz
   CYC(b_+3, b_+4);
-  CALL_C(b_+4, objectMakeTileSolid_hook, SYM(objectMakeTileSolid), b_+7);
+  ENEMY_CALL_C(b_+4, objectMakeTileSolid_hook, SYM(objectMakeTileSolid), b_+7);
   CYC(b_+7, b_+9); H = 0xcf; // >wRoomLayout
-  CYC(b_+9, b_+11); mem_wr(gb, HL, 0x00);
+  CYC(b_+9, b_+11); ENEMY_WRITE(HL, 0x00);
   // The value of 'a' here depends on objectMakeTileSolid; it should be 0 if the enemy
   // spawned on an empty space. This enemy doesn't move, so it shouldn't matter either way.
-  CALL_C(b_+11, ecom_setSpeedAndState8_b0d_hook, SYM(ecom_setSpeedAndState8_b0d), b_+14);
+  ENEMY_CALL_C(b_+11, ecom_setSpeedAndState8_b0d_hook, SYM(ecom_setSpeedAndState8_b0d), b_+14);
   CYC(b_+14, b_+16); L = ENEMY_BASE + OBJ_COUNTER1;
-  CYC(b_+16, b_+17); mem_wr(gb, HL, alu_inc8(gb, mem_rd(gb, HL)));
+  CYC(b_+16, b_+17); ENEMY_WRITE(HL, alu_inc8(gb, mem_rd(gb, HL)));
   CYC(b_+17, b_+19); L = ENEMY_BASE + 0x30; // Enemy.var30
-  CYC(b_+19, b_+21); mem_wr(gb, HL, 0x02);
+  CYC(b_+19, b_+21); ENEMY_WRITE(HL, 0x02);
   CYC(b_+21, b_+23); L = ENEMY_BASE + OBJ_VAR03;
   CYC(b_+23, b_+24); A = mem_rd(gb, HL);
-  CYC(b_+24, b_+26); mem_wr(gb, HL, 0x00);
+  CYC(b_+24, b_+26); ENEMY_WRITE(HL, 0x00);
   CYC(b_+26, b_+28); L = ENEMY_BASE + 0x33; // Enemy.var33
-  CYC(b_+28, b_+29); mem_wr(gb, HL, A);
+  CYC(b_+28, b_+29); ENEMY_WRITE(HL, A);
   RET(b_+29); return; // ret
 }
 
@@ -158,19 +159,19 @@ void dekuScrub_state8_hook(GB *gb) {
   BASE(dekuScrub_state8);
   uint16_t sp0_ = gb->sp;
   CYC(b_+0, b_+2); C = 0x2c;
-  CALL_C(b_+2, objectCheckLinkWithinDistance_hook, SYM(objectCheckLinkWithinDistance), b_+5);
-  if (F & FC) { RET_TAKEN(b_+5); return; } // ret c
+  ENEMY_CALL_C(b_+2, objectCheckLinkWithinDistance_hook, SYM(objectCheckLinkWithinDistance), b_+5);
+  if (ENEMY_FLAG(FC)) { RET_TAKEN(b_+5); return; } // ret c
   CYC(b_+5, b_+6);
-  CALL_C(b_+6, ecom_decCounter1_b0d_hook, SYM(ecom_decCounter1_b0d), b_+9);
-  if (!(F & FZ)) { RET_TAKEN(b_+9); return; } // ret nz
+  ENEMY_CALL_C(b_+6, ecom_decCounter1_b0d_hook, SYM(ecom_decCounter1_b0d), b_+9);
+  if (!(ENEMY_FLAG(FZ))) { RET_TAKEN(b_+9); return; } // ret nz
   CYC(b_+9, b_+10);
-  CYC(b_+10, b_+12); mem_wr(gb, HL, 90);
+  CYC(b_+10, b_+12); ENEMY_WRITE(HL, 90);
   CYC(b_+12, b_+14); L = ENEMY_BASE + OBJ_STATE;
-  CYC(b_+14, b_+15); mem_wr(gb, HL, alu_inc8(gb, mem_rd(gb, HL)));
+  CYC(b_+14, b_+15); ENEMY_WRITE(HL, alu_inc8(gb, mem_rd(gb, HL)));
   CYC(b_+15, b_+17); L = ENEMY_BASE + OBJ_VAR03;
-  CYC(b_+17, b_+19); mem_wr(gb, HL, 0x02);
+  CYC(b_+17, b_+19); ENEMY_WRITE(HL, 0x02);
   CYC(b_+19, b_+20); alu_xor(gb, A);
-  CALL_C(b_+20, enemySetAnimation_hook, SYM(enemySetAnimation), b_+23);
+  ENEMY_CALL_C(b_+20, enemySetAnimation_hook, SYM(enemySetAnimation), b_+23);
   CYC(b_+23, b_+26); TAIL(objectSetVisiblec3); // jp
 }
 
@@ -180,36 +181,36 @@ void dekuScrub_state9_hook(GB *gb) {
   BASE(dekuScrub_state9);
   uint16_t sp0_ = gb->sp;
   CYC(b_+0, b_+2); C = 0x2c;
-  CALL_C(b_+2, objectCheckLinkWithinDistance_hook, SYM(objectCheckLinkWithinDistance), b_+5);
-  if (F & FC) { CYCT(b_+5, b_+8); dekuScrub_hideInBush_hook(gb); return; } // jp c
+  ENEMY_CALL_C(b_+2, objectCheckLinkWithinDistance_hook, SYM(objectCheckLinkWithinDistance), b_+5);
+  if (ENEMY_FLAG(FC)) { CYCT(b_+5, b_+8); ENEMY_LOCAL_CALL(dekuScrub_hideInBush_hook(gb)); return; } // jp c
   CYC(b_+5, b_+8);
-  CALL_C(b_+8, ecom_decCounter1_b0d_hook, SYM(ecom_decCounter1_b0d), b_+11);
-  if (!(F & FZ)) { CYCT(b_+11, b_+13); dekuScrub_animate_hook(gb); return; } // jr nz
+  ENEMY_CALL_C(b_+8, ecom_decCounter1_b0d_hook, SYM(ecom_decCounter1_b0d), b_+11);
+  if (!(ENEMY_FLAG(FZ))) { CYCT(b_+11, b_+13); ENEMY_LOCAL_CALL(dekuScrub_animate_hook(gb)); return; } // jr nz
   CYC(b_+11, b_+13);
 
   // Emerge from under the bush
   CYC(b_+13, b_+15); L = ENEMY_BASE + OBJ_STATE;
-  CYC(b_+15, b_+16); mem_wr(gb, HL, alu_inc8(gb, mem_rd(gb, HL)));
+  CYC(b_+15, b_+16); ENEMY_WRITE(HL, alu_inc8(gb, mem_rd(gb, HL)));
   CYC(b_+16, b_+18); L = ENEMY_BASE + OBJ_COLLISION_TYPE;
-  CYC(b_+18, b_+20); mem_wr(gb, HL, (uint8_t)(mem_rd(gb, HL) | (1 << 7))); // set 7,(hl)
+  CYC(b_+18, b_+20); ENEMY_WRITE(HL, (uint8_t)(mem_rd(gb, HL) | (1 << 7))); // set 7,(hl)
   CYC(b_+20, b_+22); L = ENEMY_BASE + OBJ_VAR03;
-  CYC(b_+22, b_+23); mem_wr(gb, HL, alu_inc8(gb, mem_rd(gb, HL)));
+  CYC(b_+22, b_+23); ENEMY_WRITE(HL, alu_inc8(gb, mem_rd(gb, HL)));
 
   // Calculate angle to shoot
-  CALL_C(b_+23, objectGetAngleTowardEnemyTarget_hook, SYM(objectGetAngleTowardEnemyTarget), b_+26);
+  ENEMY_CALL_C(b_+23, objectGetAngleTowardEnemyTarget_hook, SYM(objectGetAngleTowardEnemyTarget), b_+26);
   CYC(b_+26, b_+29); SET_HL(SYM(dekuScrub_targetAngles)); // dekuScrub_targetAngles (data)
-  CYC(b_+29, b_+30); dekuScrub_addAToHl_from_rst(gb, b_+30);
+  CYC(b_+29, b_+30); ENEMY_LOCAL_CALL(dekuScrub_addAToHl_from_rst(gb, b_+30));
   CYC(b_+30, b_+31); A = mem_rd(gb, HL);
-  CYC(b_+31, b_+32); alu_or(gb, A);
-  if (F & FZ) { CYCT(b_+32, b_+34); dekuScrub_hideInBush_hook(gb); return; } // jr z
+  CYC(b_+31, b_+32); ENEMY_OR(A);
+  if (ENEMY_FLAG(FZ)) { CYCT(b_+32, b_+34); ENEMY_LOCAL_CALL(dekuScrub_hideInBush_hook(gb)); return; } // jr z
   CYC(b_+32, b_+34);
   CYC(b_+34, b_+36); E = ENEMY_BASE + OBJ_ANGLE;
-  CYC(b_+36, b_+37); mem_wr(gb, DE, A);
+  CYC(b_+36, b_+37); ENEMY_WRITE(DE, A);
   CYC(b_+37, b_+38); alu_rrca(gb);
   CYC(b_+38, b_+39); alu_rrca(gb);
   CYC(b_+39, b_+41); alu_sub(gb, 0x02);
   CYC(b_+41, b_+44); SET_HL(SYM(dekuScrub_fireAnimations)); // dekuScrub_fireAnimations (data)
-  CYC(b_+44, b_+45); dekuScrub_addAToHl_from_rst(gb, b_+45);
+  CYC(b_+44, b_+45); ENEMY_LOCAL_CALL(dekuScrub_addAToHl_from_rst(gb, b_+45));
   CYC(b_+45, b_+46); A = mem_rd(gb, HL);
   CYC(b_+46, b_+49); TAIL(enemySetAnimation); // jp
 }
@@ -220,21 +221,21 @@ void dekuScrub_stateA_hook(GB *gb) {
   BASE(dekuScrub_stateA);
   uint16_t sp0_ = gb->sp;
   CYC(b_+0, b_+2); C = 0x2c;
-  CALL_C(b_+2, objectCheckLinkWithinDistance_hook, SYM(objectCheckLinkWithinDistance), b_+5);
-  if (F & FC) { CYCT(b_+5, b_+7); dekuScrub_hideInBush_hook(gb); return; } // jr c
+  ENEMY_CALL_C(b_+2, objectCheckLinkWithinDistance_hook, SYM(objectCheckLinkWithinDistance), b_+5);
+  if (ENEMY_FLAG(FC)) { CYCT(b_+5, b_+7); ENEMY_LOCAL_CALL(dekuScrub_hideInBush_hook(gb)); return; } // jr c
   CYC(b_+5, b_+7);
   CYC(b_+7, b_+9); E = ENEMY_BASE + OBJ_ANIM_PARAMETER;
   CYC(b_+9, b_+10); A = mem_rd(gb, DE);
   CYC(b_+10, b_+11); A = alu_inc8(gb, A);
-  if (F & FZ) { CYCT(b_+11, b_+13); dekuScrub_hideInBush_hook(gb); return; } // jr z
+  if (ENEMY_FLAG(FZ)) { CYCT(b_+11, b_+13); ENEMY_LOCAL_CALL(dekuScrub_hideInBush_hook(gb)); return; } // jr z
   CYC(b_+11, b_+13);
   CYC(b_+13, b_+14); A = mem_rd(gb, DE);
   CYC(b_+14, b_+15); A = alu_dec8(gb, A);
-  if (!(F & FZ)) { CYCT(b_+15, b_+17); dekuScrub_animate_hook(gb); return; } // jr nz
+  if (!(ENEMY_FLAG(FZ))) { CYCT(b_+15, b_+17); ENEMY_LOCAL_CALL(dekuScrub_animate_hook(gb)); return; } // jr nz
   CYC(b_+15, b_+17);
-  CYC(b_+17, b_+18); mem_wr(gb, DE, A);
+  CYC(b_+17, b_+18); ENEMY_WRITE(DE, A);
   CYC(b_+18, b_+20); B = 0x1e; // PART_DEKU_SCRUB_PROJECTILE
-  CALL_C(b_+20, ecom_spawnProjectile_b0d_hook, SYM(ecom_spawnProjectile_b0d), SYM(dekuScrub_animate));
+  ENEMY_CALL_C(b_+20, ecom_spawnProjectile_b0d_hook, SYM(ecom_spawnProjectile_b0d), SYM(dekuScrub_animate));
   TAIL(dekuScrub_animate); // fallthrough
 }
 
@@ -251,13 +252,13 @@ void dekuScrub_stateB_hook(GB *gb) {
   CYC(b_+0, b_+2); E = ENEMY_BASE + OBJ_ANIM_PARAMETER;
   CYC(b_+2, b_+3); A = mem_rd(gb, DE);
   CYC(b_+3, b_+4); A = alu_inc8(gb, A);
-  if (!(F & FZ)) { CYCT(b_+4, b_+6); dekuScrub_animate_hook(gb); return; } // jr nz
+  if (!(ENEMY_FLAG(FZ))) { CYCT(b_+4, b_+6); ENEMY_LOCAL_CALL(dekuScrub_animate_hook(gb)); return; } // jr nz
   CYC(b_+4, b_+6);
   CYC(b_+6, b_+7); H = D;
   CYC(b_+7, b_+9); L = ENEMY_BASE + OBJ_STATE;
-  CYC(b_+9, b_+11); mem_wr(gb, HL, 0x08);
+  CYC(b_+9, b_+11); ENEMY_WRITE(HL, 0x08);
   CYC(b_+11, b_+13); L = ENEMY_BASE + OBJ_VAR03;
-  CYC(b_+13, b_+15); mem_wr(gb, HL, 0x00);
+  CYC(b_+13, b_+15); ENEMY_WRITE(HL, 0x00);
   CYC(b_+15, b_+18); TAIL(objectSetInvisible); // jp
 }
 
@@ -268,13 +269,13 @@ void dekuScrub_stateC_hook(GB *gb) {
   uint16_t sp0_ = gb->sp;
   CYC(b_+0, b_+1); H = D;
   CYC(b_+1, b_+2); L = E;
-  CYC(b_+2, b_+3); mem_wr(gb, HL, alu_inc8(gb, mem_rd(gb, HL))); // [state] = $0d
+  CYC(b_+2, b_+3); ENEMY_WRITE(HL, alu_inc8(gb, mem_rd(gb, HL))); // [state] = $0d
   CYC(b_+3, b_+5); L = ENEMY_BASE + OBJ_COLLISION_TYPE;
-  CYC(b_+5, b_+7); mem_wr(gb, HL, (uint8_t)(mem_rd(gb, HL) & ~(1 << 7))); // res 7,(hl)
+  CYC(b_+5, b_+7); ENEMY_WRITE(HL, (uint8_t)(mem_rd(gb, HL) & ~(1 << 7))); // res 7,(hl)
   CYC(b_+7, b_+9); E = ENEMY_BASE + 0x32; // Enemy.var32
-  CALL_C(b_+9, objectAddToAButtonSensitiveObjectList_hook, SYM(objectAddToAButtonSensitiveObjectList), b_+12);
+  ENEMY_CALL_C(b_+9, objectAddToAButtonSensitiveObjectList_hook, SYM(objectAddToAButtonSensitiveObjectList), b_+12);
   CYC(b_+12, b_+14); A = 0x07;
-  CALL_C(b_+14, enemySetAnimation_hook, SYM(enemySetAnimation), SYM(dekuScrub_stateD));
+  ENEMY_CALL_C(b_+14, enemySetAnimation_hook, SYM(enemySetAnimation), SYM(dekuScrub_stateD));
   TAIL(dekuScrub_stateD); // fallthrough
 }
 
@@ -283,17 +284,17 @@ void dekuScrub_stateC_hook(GB *gb) {
 void dekuScrub_stateD_hook(GB *gb) {
   BASE(dekuScrub_stateD);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, objectSetPriorityRelativeToLink_withTerrainEffects_hook, SYM(objectSetPriorityRelativeToLink_withTerrainEffects), b_+3);
+  ENEMY_CALL_C(b_+0, objectSetPriorityRelativeToLink_withTerrainEffects_hook, SYM(objectSetPriorityRelativeToLink_withTerrainEffects), b_+3);
   CYC(b_+3, b_+5); E = ENEMY_BASE + 0x32; // Enemy.var32
   CYC(b_+5, b_+6); A = mem_rd(gb, DE);
-  CYC(b_+6, b_+7); alu_or(gb, A);
-  if (F & FZ) { CYCT(b_+7, b_+9); dekuScrub_animate_hook(gb); return; } // jr z
+  CYC(b_+6, b_+7); ENEMY_OR(A);
+  if (ENEMY_FLAG(FZ)) { CYCT(b_+7, b_+9); ENEMY_LOCAL_CALL(dekuScrub_animate_hook(gb)); return; } // jr z
   CYC(b_+7, b_+9);
 
   // Pressed A in front of deku scrub
   CYC(b_+9, b_+11); E = ENEMY_BASE + 0x32; // Enemy.var32
   CYC(b_+11, b_+12); alu_xor(gb, A);
-  CYC(b_+12, b_+13); mem_wr(gb, DE, A);
+  CYC(b_+12, b_+13); ENEMY_WRITE(DE, A);
 
   // Show text
   CYC(b_+13, b_+15); E = ENEMY_BASE + 0x33; // Enemy.var33
@@ -309,13 +310,13 @@ void dekuScrub_hideInBush_hook(GB *gb) {
   uint16_t sp0_ = gb->sp; (void)sp0_;
   CYC(b_+0, b_+1); H = D;
   CYC(b_+1, b_+3); L = ENEMY_BASE + OBJ_STATE;
-  CYC(b_+3, b_+5); mem_wr(gb, HL, 0x0b);
+  CYC(b_+3, b_+5); ENEMY_WRITE(HL, 0x0b);
   CYC(b_+5, b_+7); L = ENEMY_BASE + OBJ_COUNTER1;
-  CYC(b_+7, b_+9); mem_wr(gb, HL, 120);
+  CYC(b_+7, b_+9); ENEMY_WRITE(HL, 120);
   CYC(b_+9, b_+11); L = ENEMY_BASE + OBJ_COLLISION_TYPE;
-  CYC(b_+11, b_+13); mem_wr(gb, HL, (uint8_t)(mem_rd(gb, HL) & ~(1 << 7))); // res 7,(hl)
+  CYC(b_+11, b_+13); ENEMY_WRITE(HL, (uint8_t)(mem_rd(gb, HL) & ~(1 << 7))); // res 7,(hl)
   CYC(b_+13, b_+15); L = ENEMY_BASE + OBJ_VAR03;
-  CYC(b_+15, b_+17); mem_wr(gb, HL, 0x02);
+  CYC(b_+15, b_+17); ENEMY_WRITE(HL, 0x02);
   CYC(b_+17, b_+19); A = 0x06;
   CYC(b_+19, b_+22); TAIL(enemySetAnimation); // jp
 }
@@ -326,26 +327,26 @@ void dekuScrub_spawnBush_hook(GB *gb) {
   BASE(dekuScrub_spawnBush);
   uint16_t sp0_ = gb->sp;
   CYC(b_+0, b_+2); B = 0x58; // ENEMY_BUSH_OR_ROCK
-  CALL_C(b_+2, ecom_spawnUncountedEnemyWithSubid01_b0d_hook, SYM(ecom_spawnUncountedEnemyWithSubid01_b0d), b_+5);
-  if (!(F & FZ)) { RET_TAKEN(b_+5); return; } // ret nz
+  ENEMY_CALL_C(b_+2, ecom_spawnUncountedEnemyWithSubid01_b0d_hook, SYM(ecom_spawnUncountedEnemyWithSubid01_b0d), b_+5);
+  if (!(ENEMY_FLAG(FZ))) { RET_TAKEN(b_+5); return; } // ret nz
   CYC(b_+5, b_+6);
-  CALL_C(b_+6, objectCopyPosition_hook, SYM(objectCopyPosition), b_+9);
+  ENEMY_CALL_C(b_+6, objectCopyPosition_hook, SYM(objectCopyPosition), b_+9);
 
   // [child.relatedObj1] = this
   CYC(b_+9, b_+11); L = ENEMY_BASE + OBJ_RELATED1;
   CYC(b_+11, b_+13); A = ENEMY_BASE; // Enemy.start
-  CYC(b_+13, b_+14); mem_wr(gb, HL, A); SET_HL(HL + 1); // ldi
-  CYC(b_+14, b_+15); mem_wr(gb, HL, D);
+  CYC(b_+13, b_+14); ENEMY_WRITE(HL, A); SET_HL(HL + 1); // ldi
+  CYC(b_+14, b_+15); ENEMY_WRITE(HL, D);
 
   // Save projectile's index to var31
   CYC(b_+15, b_+17); E = ENEMY_BASE + 0x31; // Enemy.var31
   CYC(b_+17, b_+18); A = H;
-  CYC(b_+18, b_+19); mem_wr(gb, DE, A);
+  CYC(b_+18, b_+19); ENEMY_WRITE(DE, A);
 
   CYC(b_+19, b_+21); L = ENEMY_BASE + OBJ_SUBID;
   CYC(b_+21, b_+22); E = L;
   CYC(b_+22, b_+23); A = mem_rd(gb, DE);
-  CYC(b_+23, b_+24); mem_wr(gb, HL, A);
+  CYC(b_+23, b_+24); ENEMY_WRITE(HL, A);
   CYC(b_+24, b_+25); alu_xor(gb, A);
   RET(b_+25); return; // ret
 }

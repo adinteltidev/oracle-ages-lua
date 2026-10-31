@@ -1,0 +1,89 @@
+name: Experimental Lua gameplay
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'CMakeLists.txt'
+      - 'gameplay/**'
+      - 'src/script/**'
+      - 'src/platform/**'
+      - 'platform/switch/targets.cmake'
+      - 'platform/windows/*lua_phase*'
+      - 'tools/benchmark_gameplay.c'
+      - 'tools/package*.py'
+      - 'src/game/common/interactions/switchTileToggler.c'
+      - 'src/game/common/interactions/pushblockTrigger.c'
+      - 'src/game/common/interactions/pushblock.c'
+      - 'src/game/ages/interactions/pushblockSynchronizer.c'
+      - 'src/game/ages/interactions/waterPushblock.c'
+      - 'src/game/ages/interactions/stonePanel.c'
+      - 'src/game/ages/interactions/miscPuzzles.c'
+      - 'src/game/ages/interactions/coloredCubeFlame.c'
+      - 'src/game/ages/interactions/leverLavaFiller.c'
+      - 'cmake/LuaGameplay.cmake'
+      - 'tests/test_lua_gameplay*'
+      - 'tests/test_lua_colored_cube*'
+      - 'tests/test_lua_levers_lava*'
+      - 'tests/test_lua_doors*'
+      - 'tests/test_lua_npcs_events*'
+      - 'src/game/enemyPolicy.c'
+      - 'src/game/ages/enemies/**'
+      - 'src/game/common/enemies/**'
+      - 'tests/test_lua_enemies*'
+      - 'src/game/npcEventPolicy.c'
+      - 'src/game/cutscenes.c'
+      - 'src/game/cutscenes2.c'
+      - 'src/game/miscCutscenes.c'
+      - 'src/game/bank3Cutscenes.c'
+      - 'src/game/linkedGameCutscenes.c'
+      - 'src/game/endgameCutscenes.c'
+      - 'src/game/common/enemies/ganonRevivalCutscene.c'
+      - 'src/game/ages/interactions/**'
+      - 'src/game/common/interactions/**'
+      - 'tests/test_lua_items_shops*'
+      - 'tests/lua_items_catalog.h'
+      - 'src/game/common/interactions/shop*.c'
+      - 'src/game/common/interactions/treasureInteraction.c'
+      - 'src/game/ages/interactions/tokayShopItem*.c'
+      - 'src/game/treasureAndDrops.c'
+      - 'src/game/features.c'
+      - 'src/game/loadTreasureData.c'
+      - 'src/game/common/interactions/doorController*.c'
+      - 'src/game/ages/interactions/minecartGate.c'
+      - 'src/game/interactableTiles.c'
+      - 'src/game/scripting.c'
+      - 'src/game/bank0.c'
+      - 'tests/test_lua_blocks*'
+      - 'tests/test_lua_block_rules*'
+      - 'tests/test_lua_cube*'
+      - 'tests/lua_cube*'
+      - 'tests/test_lua_sync*'
+      - 'tests/lua_sync*'
+      - '.github/workflows/lua-gameplay.yml'
+      - '.github/workflows/build-platforms.yml'
+      - 'tools/ci/**'
+permissions:
+  contents: read
+jobs:
+  decisions:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-15-intel, windows-2022]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - name: Configure standalone bounded runtime
+        run: cmake -S . -B build-lua-ci -DORACLES_SDL=OFF -DORACLES_LUA_GAMEPLAY=ON -DORACLES_LUA_BLOCK_PUZZLES=ON -DORACLES_LUA_COLORED_CUBE=ON -DORACLES_LUA_LEVERS_LAVA=ON -DORACLES_LUA_DOORS=ON -DORACLES_LUA_ITEMS_SHOPS=ON -DORACLES_LUA_NPCS_EVENTS=ON -DORACLES_LUA_ENEMIES=ON
+      - name: Compile
+        run: cmake --build build-lua-ci --config Release --target test_lua_gameplay test_lua_cube_candidate test_lua_sync_candidate test_lua_block_rules test_lua_colored_cube test_lua_levers_lava test_lua_doors test_lua_items_shops test_lua_npcs_events test_lua_enemies --parallel 3
+      - name: Test (no commercial ROM)
+        run: ctest --test-dir build-lua-ci -C Release -R "^(lua_gameplay|lua_cube_candidate|lua_sync_candidate|lua_block_rules|lua_colored_cube|lua_levers_lava|lua_doors|lua_items_shops|lua_npcs_events|lua_enemies)$" --output-on-failure
+  artifacts:
+    if: github.event_name == 'workflow_dispatch'
+    uses: ./.github/workflows/build-platforms.yml
+    with:
+      lua-gameplay: true
+      retention-days: 7

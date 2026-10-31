@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/items_shops.h"
 
 #undef CYC
 #undef CYCT
@@ -55,24 +56,29 @@ void interactionCode81_hook(GB *gb) {
   CYC(b_+10, b_+11); mem_wr(gb, DE, A);
   CYC(b_+11, b_+13); A = 0x0a; // >TX_0a00
   CALL_C(b_+13, interactionSetHighTextIndex_hook, SYM(interactionSetHighTextIndex), b_+16);
+  TRADE_FAILED_RETURN();
   CALL_C(b_+16, interactionSetAlwaysUpdateBit_hook, SYM(interactionSetAlwaysUpdateBit), b_+19);
+  TRADE_FAILED_RETURN();
   CYC(b_+19, b_+21); A = 0x06;
   CALL_C(b_+21, objectSetCollideRadius_hook, SYM(objectSetCollideRadius), b_+24);
+  TRADE_FAILED_RETURN();
   CYC(b_+24, b_+26); L = INTERACTION_BASE + OBJ_SUBID;
   CYC(b_+26, b_+27); A = mem_rd(gb, HL); SET_HL(HL + 1); // ldi a,(hl)
   CYC(b_+27, b_+28); mem_wr(gb, HL, A); // [var03] = [subid]
-  CYC(b_+28, b_+30); alu_cp(gb, 0x04);
+  CYC(b_+28, b_+30); SHOP_CP(0x04);
   if (!(F & FZ)) { CYCT(b_+30, b_+32); goto initializeItem; } // jr nz
   CYC(b_+30, b_+32);
 
   // This is the shield; only appears if all other items retrieved.
   CYC(b_+32, b_+34); A = 0x37; // GLOBALFLAG_BOUGHT_BRACELET_FROM_TOKAY
   CALL_C(b_+34, checkGlobalFlag_hook, SYM(checkGlobalFlag), b_+37);
+  TRADE_FAILED_RETURN();
+  SHOP_FACT_ZERO();
   if (F & FZ) { CYCT(b_+37, b_+40); interactionDelete_hook(gb); return; } // jp z
   CYC(b_+37, b_+40);
 
   CYC(b_+40, b_+43); A = W8(wShieldLevel);
-  CYC(b_+43, b_+44); alu_or(gb, A);
+  CYC(b_+43, b_+44); SHOP_OR(A);
   if (F & FZ) { CYCT(b_+44, b_+46); goto initializeItem; } // jr z
   CYC(b_+44, b_+46);
 
@@ -93,17 +99,23 @@ after1_checkTransformItem:
   CYC(b_+58, b_+61);
   CYC(b_+61, b_+64); SET_HL(RV((SYM(interactionCode93__subid0Or1) + 8), 0x7616)); // mainScripts.tokayShopItemScript
   CALL_C(b_+64, interactionSetScript_hook, SYM(interactionSetScript), b_+67);
+  TRADE_FAILED_RETURN();
   CYC(b_+67, b_+69); E = INTERACTION_BASE + OBJ_PRESSED_A_BUTTON;
   CALL_C(b_+69, objectAddToAButtonSensitiveObjectList_hook, SYM(objectAddToAButtonSensitiveObjectList), b_+72);
+  TRADE_FAILED_RETURN();
   CALL_C(b_+72, interactionSetAlwaysUpdateBit_hook, SYM(interactionSetAlwaysUpdateBit), b_+75);
+  TRADE_FAILED_RETURN();
   CYC(b_+75, b_+78); TAIL(objectSetVisible82); // jp
 
 state1:
   CALL_C(b_+95, interactionAnimateAsNpc_hook, SYM(interactionAnimateAsNpc), b_+98);
+  TRADE_FAILED_RETURN();
   CYC(b_+98, b_+101); push_effect(gb, b_+101); goto checkTransformItem;
 after2_checkTransformItem:
   if (!(F & FZ)) CALL_C_CC(b_+101, objectSetInvisible_hook, SYM(objectSetInvisible), b_+104); else CYC(b_+101, b_+104); // call nz
+  TRADE_FAILED_RETURN();
   CALL_C(b_+104, interactionRunScript_hook, SYM(interactionRunScript), b_+107);
+  TRADE_FAILED_RETURN();
   if (!(F & FC)) { RET_TAKEN(b_+107); return; } // ret nc
   CYC(b_+107, b_+108);
   CYC(b_+108, b_+109); alu_xor(gb, A);
@@ -126,6 +138,8 @@ checkTransformItem:
   CYC(b_+126, b_+127); C = A;
   CYC(b_+127, b_+129); A = 0x19; // TREASURE_SEED_SATCHEL
   CALL_C(b_+129, checkTreasureObtained_hook, SYM(checkTreasureObtained), b_+132);
+  TRADE_FAILED_RETURN();
+  SHOP_CARRY();
   if (!(F & FC)) { CYCT(b_+132, b_+134); goto checkReplaceWithShovel; } // jr nc
   CYC(b_+132, b_+134);
 
@@ -135,13 +149,15 @@ checkTransformItem:
   CYC(b_+138, b_+139); tokayShopItem_addAToHl_from_rst(gb, b_+139);
   CYC(b_+139, b_+140); A = mem_rd(gb, HL);
   CALL_C(b_+140, checkTreasureObtained_hook, SYM(checkTreasureObtained), b_+143);
+  TRADE_FAILED_RETURN();
+  SHOP_CARRY();
   if (!(F & FC)) { CYCT(b_+143, b_+145); goto checkReplaceWithShovel; } // jr nc
   CYC(b_+143, b_+145);
 
   CYC(b_+145, b_+146); A = alu_inc8(gb, A);
   CYC(b_+146, b_+148); E = INTERACTION_BASE + OBJ_VAR39;
   CYC(b_+148, b_+149); mem_wr(gb, DE, A);
-  CYC(b_+149, b_+151); alu_cp(gb, 0x10);
+  CYC(b_+149, b_+151); SHOP_CP(0x10);
   if (F & FC) { CYCT(b_+151, b_+153); goto checkReplaceWithShovel; } // jr c
   CYC(b_+151, b_+153);
 
@@ -151,6 +167,8 @@ checkTransformItem:
 checkReplaceWithShovel:
   CYC(b_+156, b_+158); A = 0x15; // TREASURE_SHOVEL
   CALL_C(b_+158, checkTreasureObtained_hook, SYM(checkTreasureObtained), b_+161);
+  TRADE_FAILED_RETURN();
+  SHOP_CARRY();
   if (!(F & FC)) { CYCT(b_+161, b_+163); goto afterShovelCheck; } // jr nc
   CYC(b_+161, b_+163);
   CYC(b_+163, b_+165); E = INTERACTION_BASE + OBJ_VAR3A;
@@ -160,6 +178,8 @@ checkReplaceWithShovel:
 afterShovelCheck:
   CYC(b_+168, b_+170); A = 0x01; // TREASURE_SHIELD
   CALL_C(b_+170, checkTreasureObtained_hook, SYM(checkTreasureObtained), b_+173);
+  TRADE_FAILED_RETURN();
+  SHOP_CARRY();
   if (!(F & FC)) { CYCT(b_+173, b_+175); goto afterShieldCheck; } // jr nc
   CYC(b_+173, b_+175);
   CYC(b_+175, b_+177); E = INTERACTION_BASE + OBJ_VAR3D;
@@ -168,7 +188,7 @@ afterShovelCheck:
 
 afterShieldCheck:
   CYC(b_+180, b_+181); A = C;
-  CYC(b_+181, b_+183); alu_cp(gb, 0x04);
+  CYC(b_+181, b_+183); SHOP_CP(0x04);
   if (!(F & FC)) { CYCT(b_+183, b_+185); goto setSubidAndInitGraphics; } // jr nc
   CYC(b_+183, b_+185);
 
@@ -179,6 +199,8 @@ afterShieldCheck:
   CYC(b_+189, b_+190); tokayShopItem_addAToHl_from_rst(gb, b_+190);
   CYC(b_+190, b_+191); A = mem_rd(gb, HL);
   CALL_C(b_+191, checkGlobalFlag_hook, SYM(checkGlobalFlag), b_+194);
+  TRADE_FAILED_RETURN();
+  SHOP_FACT_ZERO();
   if (!(F & FZ)) {
     RET_TAKEN(b_+194);
     if (gb->pc == b_+58 && gb->sp == sp0_) goto after1_checkTransformItem;
@@ -196,6 +218,8 @@ afterShieldCheck:
   CYC(b_+203, b_+204); mem_wr(gb, DE, A);
 
   CALL_C(b_+204, checkTreasureObtained_hook, SYM(checkTreasureObtained), b_+207);
+  TRADE_FAILED_RETURN();
+  SHOP_CARRY();
   if (!(F & FC)) { CYCT(b_+207, b_+209); goto setSubidAndInitGraphics; } // jr nc
   CYC(b_+207, b_+209);
 
@@ -208,6 +232,7 @@ setSubidAndInitGraphics:
   CYC(b_+213, b_+214); A = C;
   CYC(b_+214, b_+215); mem_wr(gb, DE, A);
   CALL_C(b_+215, interactionInitGraphics_hook, SYM(interactionInitGraphics), b_+218);
+  TRADE_FAILED_RETURN();
   CYC(b_+218, b_+219); alu_xor(gb, A);
   RET(b_+219);
   if (gb->pc == b_+58 && gb->sp == sp0_) goto after1_checkTransformItem;

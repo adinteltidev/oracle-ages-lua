@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/npcs_events.h"
 
 #undef CYC
 #undef CYCT
@@ -15,15 +16,15 @@ void comedian_checkGameProgress_hook(GB *gb) {
   BASE(comedian_checkGameProgress);
   uint16_t sp0_ = gb->sp;
   CYC(b_+0, b_+3); A = mem_rd(gb, wEssencesObtained);
-  CALL_C(b_+3, getHighestSetBit_hook, SYM(getHighestSetBit), b_+6);
-  CYC(b_+6, b_+8); alu_cp(gb, 0x03);
+  NPC_CALL_C(b_+3, getHighestSetBit_hook, SYM(getHighestSetBit), b_+6);
+  CYC(b_+6, b_+8); NPC_CP(0x03);
   if (F & FC) { CYCT(b_+8, b_+10); goto write_progress; } // jr c
   CYC(b_+8, b_+10);
   CYC(b_+10, b_+12); A = 0x02;
 
 write_progress:
   CYC(b_+12, b_+14); E = INTERACTION_BASE + OBJ_VAR3F;
-  CYC(b_+14, b_+15); mem_wr(gb, DE, A);
+  CYC(b_+14, b_+15); EVENT_WRITE(DE, A);
   RET(b_+15); return;
 }
 
@@ -34,9 +35,9 @@ void checkEssenceNotObtained_hook(GB *gb);
 void checkEssenceObtained_hook(GB *gb) {
   BASE(checkEssenceObtained);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, checkEssenceNotObtained_hook, SYM(checkEssenceNotObtained), b_+3);
+  NPC_CALL_C(b_+0, checkEssenceNotObtained_hook, SYM(checkEssenceNotObtained), b_+3);
   CYC(b_+3, b_+4); alu_cpl(gb);
-  CYC(b_+4, b_+7); mem_wr(gb, wcddb, A);
+  CYC(b_+4, b_+7); EVENT_WRITE(wcddb, A);
   RET(b_+7); return;
 }
 
@@ -47,7 +48,7 @@ void checkEssenceNotObtained_hook(GB *gb) {
   uint16_t sp0_ = gb->sp;
   (void)sp0_;
   CYC(b_+0, b_+3); SET_HL(wEssencesObtained);
-  CALL_C(b_+3, checkFlag_hook, SYM(checkFlag), b_+6);
+  NPC_CALL_ZERO(b_+3, checkFlag_hook, SYM(checkFlag), b_+6);
   CYC(b_+6, b_+9); TAIL(writeFlagsTocddb); // jp
 }
 
@@ -59,9 +60,9 @@ void comedian_enableMustache_hook(GB *gb) {
   CYC((SYM(comedian_enableMustache) + 2), (SYM(comedian_enableMustache) + 4)); // jr $6280 -- shared tail duplicated below (matches comedian_disableMustache)
   CYC(b_+2, b_+3); H = D;
   CYC(b_+3, b_+5); L = INTERACTION_BASE + OBJ_VAR37; // animation base
-  CYC(b_+5, b_+6); mem_wr(gb, HL, A);
+  CYC(b_+5, b_+6); EVENT_WRITE(HL, A);
   CYC(b_+6, b_+8); L = INTERACTION_BASE + OBJ_VAR3E; // force animation refresh next time
-  CYC(b_+8, b_+10); mem_wr(gb, HL, 0xff);
+  CYC(b_+8, b_+10); EVENT_WRITE(HL, 0xff);
   RET(b_+10); return;
 }
 
@@ -72,9 +73,9 @@ void comedian_disableMustache_hook(GB *gb) {
   CYC(b_+0, b_+2); A = 0x00;
   CYC(b_+2, b_+3); H = D;
   CYC(b_+3, b_+5); L = INTERACTION_BASE + OBJ_VAR37;
-  CYC(b_+5, b_+6); mem_wr(gb, HL, A);
+  CYC(b_+5, b_+6); EVENT_WRITE(HL, A);
   CYC(b_+6, b_+8); L = INTERACTION_BASE + OBJ_VAR3E;
-  CYC(b_+8, b_+10); mem_wr(gb, HL, 0xff);
+  CYC(b_+8, b_+10); EVENT_WRITE(HL, 0xff);
   RET(b_+10); return;
 }
 
@@ -85,7 +86,7 @@ void comedian_turnToFaceLink_hook(GB *gb) {
   CYC(b_+0, b_+1); H = D;
   CYC(b_+1, b_+3); L = INTERACTION_BASE + OBJ_XH;
   CYC(b_+3, b_+6); A = W8(w1Link_xh);
-  CYC(b_+6, b_+7); alu_cp(gb, mem_rd(gb, HL));
+  CYC(b_+6, b_+7); NPC_CP(mem_rd(gb, HL));
   CYC(b_+7, b_+9); A = 0x01;
   if (!(F & FC)) { CYCT(b_+9, b_+11); goto compare_var3e; } // jr nc
   CYC(b_+9, b_+11);
@@ -93,10 +94,10 @@ void comedian_turnToFaceLink_hook(GB *gb) {
 
 compare_var3e:
   CYC(b_+12, b_+14); L = INTERACTION_BASE + OBJ_VAR3E;
-  CYC(b_+14, b_+15); alu_cp(gb, mem_rd(gb, HL));
+  CYC(b_+14, b_+15); NPC_CP(mem_rd(gb, HL));
   if (F & FZ) { RET_TAKEN(b_+15); return; }
   CYC(b_+15, b_+16);
-  CYC(b_+16, b_+17); mem_wr(gb, HL, A);
+  CYC(b_+16, b_+17); EVENT_WRITE(HL, A);
   CYC(b_+17, b_+19); L = INTERACTION_BASE + OBJ_VAR37; // "animation base"?
   CYC(b_+19, b_+20); alu_add(gb, mem_rd(gb, HL));
   CYC(b_+20, b_+23); TAIL(interactionSetAnimation); // jp

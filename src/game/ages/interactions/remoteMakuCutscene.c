@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/npcs_events.h"
 
 #undef CYC
 #undef CYCT
@@ -63,27 +64,27 @@ void interactionCode8a_hook(GB *gb) {
   }
 
 subid0:
-  CALL_C(b_+8, checkInteractionState_hook, SYM(checkInteractionState), b_+11);
+  NPC_CALL_ZERO(b_+8, checkInteractionState_hook, SYM(checkInteractionState), b_+11);
   if (!(F & FZ)) { CYCT(b_+11, b_+13); goto state1; } // jr nz
   CYC(b_+11, b_+13);
 
   // interactionCode8a@state0
-  CALL_C(b_+13, returnIfScrollMode01Unset_hook, SYM(returnIfScrollMode01Unset), b_+16);
+  NPC_CALL_C(b_+13, returnIfScrollMode01Unset_hook, SYM(returnIfScrollMode01Unset), b_+16);
   CYC(b_+16, b_+18); E = INTERACTION_BASE + OBJ_SUBID;
   CYC(b_+18, b_+19); A = mem_rd(gb, DE);
   CYC(b_+19, b_+21); E = INTERACTION_BASE + OBJ_VAR3D;
-  CYC(b_+21, b_+22); mem_wr(gb, DE, A);
+  CYC(b_+21, b_+22); EVENT_WRITE(DE, A);
   CYC(b_+22, b_+25); push_effect(gb, b_+25); goto checkConditionsAndSetText;
 afterCheckConditionsAndSetText:
-  CALL_C(b_+25, getThisRoomFlags_hook, SYM(getThisRoomFlags), b_+28);
-  CYC(b_+28, b_+30); alu_and(gb, 0x40);
+  NPC_CALL_C(b_+25, getThisRoomFlags_hook, SYM(getThisRoomFlags), b_+28);
+  CYC(b_+28, b_+30); NPC_AND(0x40);
   if (!(F & FZ)) { CYCT(b_+30, b_+33); interactionDelete_hook(gb); return; } // jp nz
   CYC(b_+30, b_+33);
 
   CYC(b_+33, b_+36); push_effect(gb, b_+36); goto loadScript;
 
 state1:
-  CALL_C(b_+36, interactionRunScript_hook, SYM(interactionRunScript), b_+39);
+  NPC_CALL_C(b_+36, interactionRunScript_hook, SYM(interactionRunScript), b_+39);
   if (F & FC) { CYCT(b_+39, b_+42); interactionDelete_hook(gb); return; } // jp c
   CYC(b_+39, b_+42);
   RET(b_+42); return; // ret
@@ -117,7 +118,7 @@ checkConditionsAndSetText:
 
 val00:
   CYC(b_+71, b_+72); alu_xor(gb, A); // xor a
-  CYC(b_+72, b_+75); interactionCode8a_checkEssenceObtained(gb, b_+75);
+  CYC(b_+72, b_+75); NPC_LOCAL_CALL(interactionCode8a_checkEssenceObtained(gb, b_+75));
   if (F & FZ) { CYCT(b_+75, b_+78); goto deleteSelfAndReturn; } // jp z
   CYC(b_+75, b_+78);
   CYC(b_+78, b_+81); SET_BC(0x00b0); // ldbc $00, <TX_05b0
@@ -129,7 +130,7 @@ val01:
 
 val02:
   CYC(b_+90, b_+92); A = 0x11; // TREASURE_HARP
-  CALL_C(b_+92, checkTreasureObtained_hook, SYM(checkTreasureObtained), b_+95);
+  NPC_CALL_CARRY(b_+92, checkTreasureObtained_hook, SYM(checkTreasureObtained), b_+95);
   if (!(F & FC)) { CYCT(b_+95, b_+98); goto deleteSelfAndReturn; } // jp nc
   CYC(b_+95, b_+98);
   CYC(b_+98, b_+101); SET_BC(0x00b2); // ldbc $00, <TX_05b2
@@ -137,7 +138,7 @@ val02:
 
 val03:
   CYC(b_+104, b_+106); A = 0x01;
-  CYC(b_+106, b_+109); interactionCode8a_checkEssenceObtained(gb, b_+109);
+  CYC(b_+106, b_+109); NPC_LOCAL_CALL(interactionCode8a_checkEssenceObtained(gb, b_+109));
   if (F & FZ) { CYCT(b_+109, b_+112); goto deleteSelfAndReturn; } // jp z
   CYC(b_+109, b_+112);
   CYC(b_+112, b_+115); SET_BC(0x00b3); // ldbc $00, <TX_05b3
@@ -145,20 +146,20 @@ val03:
 
 val04:
   CYC(b_+118, b_+120); A = 0x02;
-  CYC(b_+120, b_+123); interactionCode8a_checkEssenceObtained(gb, b_+123);
+  CYC(b_+120, b_+123); NPC_LOCAL_CALL(interactionCode8a_checkEssenceObtained(gb, b_+123));
   if (F & FZ) { CYCT(b_+123, b_+126); goto deleteSelfAndReturn; } // jp z
   CYC(b_+123, b_+126);
   CYC(b_+126, b_+129); SET_HL(wGroup1RoomFlags + 0x76); // wPastRoomFlags+$76
-  CYC(b_+129, b_+131); mem_wr(gb, HL, mem_rd(gb, HL) | (1 << 0)); // set 0,(hl)
-  CALL_C(b_+131, checkIsLinkedGame_hook, SYM(checkIsLinkedGame), b_+134);
+  CYC(b_+129, b_+131); EVENT_WRITE(HL, mem_rd(gb, HL) | (1 << 0)); // set 0,(hl)
+  NPC_CALL_ZERO(b_+131, checkIsLinkedGame_hook, SYM(checkIsLinkedGame), b_+134);
   CYC(b_+134, b_+136); A = 0x1d; // GLOBALFLAG_CAN_BUY_FLUTE
-  if (F & FZ) CALL_C_CC(b_+136, setGlobalFlag_hook, SYM(setGlobalFlag), b_+139); else CYC(b_+136, b_+139); // call z
+  if (F & FZ) NPC_CALL_C_CC(b_+136, setGlobalFlag_hook, SYM(setGlobalFlag), b_+139); else CYC(b_+136, b_+139); // call z
   CYC(b_+139, b_+142); SET_BC(0x00b4); // ldbc $00, <TX_05b4
   CYC(b_+142, b_+145); goto setTextForScript; // jp
 
 val05:
   CYC(b_+145, b_+147); A = 0x03;
-  CYC(b_+147, b_+150); interactionCode8a_checkEssenceObtained(gb, b_+150);
+  CYC(b_+147, b_+150); NPC_LOCAL_CALL(interactionCode8a_checkEssenceObtained(gb, b_+150));
   if (F & FZ) { CYCT(b_+150, b_+153); goto deleteSelfAndReturn; } // jp z
   CYC(b_+150, b_+153);
   CYC(b_+153, b_+156); SET_BC(0x00b5); // ldbc $00, <TX_05b5
@@ -166,7 +167,7 @@ val05:
 
 val06:
   CYC(b_+159, b_+161); A = 0x1a; // GLOBALFLAG_MOBLINS_KEEP_DESTROYED
-  CALL_C(b_+161, checkGlobalFlag_hook, SYM(checkGlobalFlag), b_+164);
+  NPC_CALL_ZERO(b_+161, checkGlobalFlag_hook, SYM(checkGlobalFlag), b_+164);
   if (F & FZ) { CYCT(b_+164, b_+167); goto deleteSelfAndReturn; } // jp z
   CYC(b_+164, b_+167);
   CYC(b_+167, b_+170); SET_BC(0x00b6); // ldbc $00, <TX_05b6
@@ -174,7 +175,7 @@ val06:
 
 val07:
   CYC(b_+173, b_+175); A = 0x04;
-  CYC(b_+175, b_+178); interactionCode8a_checkEssenceObtained(gb, b_+178);
+  CYC(b_+175, b_+178); NPC_LOCAL_CALL(interactionCode8a_checkEssenceObtained(gb, b_+178));
   if (F & FZ) { CYCT(b_+178, b_+181); goto deleteSelfAndReturn; } // jp z
   CYC(b_+178, b_+181);
   CYC(b_+181, b_+184); SET_BC(0x00b7); // ldbc $00, <TX_05b7
@@ -182,7 +183,7 @@ val07:
 
 val08:
   CYC(b_+187, b_+189); A = 0x05;
-  CYC(b_+189, b_+192); interactionCode8a_checkEssenceObtained(gb, b_+192);
+  CYC(b_+189, b_+192); NPC_LOCAL_CALL(interactionCode8a_checkEssenceObtained(gb, b_+192));
   if (F & FZ) { CYCT(b_+192, b_+195); goto deleteSelfAndReturn; } // jp z
   CYC(b_+192, b_+195);
   CYC(b_+195, b_+198); SET_BC(0x00b8); // ldbc $00, <TX_05b8
@@ -190,7 +191,7 @@ val08:
 
 val09:
   CYC(b_+201, b_+203); A = 0x06;
-  CYC(b_+203, b_+206); interactionCode8a_checkEssenceObtained(gb, b_+206);
+  CYC(b_+203, b_+206); NPC_LOCAL_CALL(interactionCode8a_checkEssenceObtained(gb, b_+206));
   if (F & FZ) { CYCT(b_+206, b_+209); goto deleteSelfAndReturn; } // jp z
   CYC(b_+206, b_+209);
   CYC(b_+209, b_+212); SET_BC(0x00b9); // ldbc $00, <TX_05b9
@@ -198,7 +199,7 @@ val09:
 
 val0a:
   CYC(b_+215, b_+217); A = 0x07;
-  CYC(b_+217, b_+220); interactionCode8a_checkEssenceObtained(gb, b_+220);
+  CYC(b_+217, b_+220); NPC_LOCAL_CALL(interactionCode8a_checkEssenceObtained(gb, b_+220));
   if (F & FZ) { CYCT(b_+220, b_+223); goto deleteSelfAndReturn; } // jp z
   CYC(b_+220, b_+223);
   CYC(b_+223, b_+226); SET_BC(0x00ba); // ldbc $00, <TX_05ba
@@ -215,9 +216,9 @@ deleteSelfAndReturn:
 setTextForScript:
   CYC(b_+239, b_+240); H = D;
   CYC(b_+240, b_+242); L = INTERACTION_BASE + OBJ_VAR3E;
-  CYC(b_+242, b_+243); mem_wr(gb, HL, B);
+  CYC(b_+242, b_+243); EVENT_WRITE(HL, B);
   CYC(b_+243, b_+244); L = alu_inc8(gb, L);
-  CYC(b_+244, b_+245); mem_wr(gb, HL, C);
+  CYC(b_+244, b_+245); EVENT_WRITE(HL, C);
   RET(b_+245);
   if (gb->pc == b_+25 && gb->sp == sp0_) goto afterCheckConditionsAndSetText;
   return; // ret
@@ -226,15 +227,15 @@ setTextForScript:
 // while sp == sp0_, and that address also happens to be @state1's own entry point in ROM.
 loadScript:
   CYC(b_+261, b_+263); A = 0x05; // >TX_0500
-  CALL_C(b_+263, interactionSetHighTextIndex_hook, SYM(interactionSetHighTextIndex), b_+266);
+  NPC_CALL_C(b_+263, interactionSetHighTextIndex_hook, SYM(interactionSetHighTextIndex), b_+266);
   CYC(b_+266, b_+268); E = INTERACTION_BASE + OBJ_SUBID;
   CYC(b_+268, b_+269); A = mem_rd(gb, DE);
   CYC(b_+269, b_+272); SET_HL(b_+282); // @scriptTable
-  CYC(b_+272, b_+273); interactionCode8a_add_double_index(gb, b_+273);
+  CYC(b_+272, b_+273); NPC_LOCAL_CALL(interactionCode8a_add_double_index(gb, b_+273));
   CYC(b_+273, b_+274); A = mem_rd(gb, HL); SET_HL(HL + 1); // ldi a,(hl)
   CYC(b_+274, b_+275); H = mem_rd(gb, HL);
   CYC(b_+275, b_+276); L = A;
-  CALL_C(b_+276, interactionSetScript_hook, SYM(interactionSetScript), b_+279);
+  NPC_CALL_C(b_+276, interactionSetScript_hook, SYM(interactionSetScript), b_+279);
   CYC(b_+279, b_+282); interactionIncState_hook(gb);
   if (gb->pc == b_+36 && gb->sp == sp0_) goto state1;
   return; // jp

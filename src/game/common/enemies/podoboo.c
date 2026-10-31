@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/enemies.h"
 
 #undef CYC
 #undef CYCT
@@ -28,7 +29,7 @@ static void podoboo_addAToHl_from_rst(GB *gb, uint16_t return_address) {
   push_effect(gb, return_address);
   burn_rom(gb, 0x00, 0x0010, 0x0011, false); alu_add(gb, L);
   burn_rom(gb, 0x00, 0x0011, 0x0012, false); L = A;
-  if (F & FC) {
+  if ((F & FC)) {
     burn_rom(gb, 0x00, 0x0012, 0x0013, false);
     burn_rom(gb, 0x00, 0x0013, 0x0014, false); H = alu_inc8(gb, H);
     burn_rom(gb, 0x00, 0x0014, 0x0015, false);
@@ -62,22 +63,22 @@ void podoboo_updatePosition_hook(GB *gb);
 void enemyCode29_hook(GB *gb) {
   BASE(enemyCode29);
   CYC(b_+0, b_+1); A = alu_dec8(gb, A);
-  if (F & FZ) { CYCT(b_+1, b_+2); ret_effect(gb); return; } // ret z
+  if (ENEMY_FLAG(FZ)) { CYCT(b_+1, b_+2); ret_effect(gb); return; } // ret z
   CYC(b_+1, b_+2);
   CYC(b_+2, b_+3); A = alu_dec8(gb, A);
-  if (F & FZ) { CYCT(b_+3, b_+4); ret_effect(gb); return; } // ret z
+  if (ENEMY_FLAG(FZ)) { CYCT(b_+3, b_+4); ret_effect(gb); return; } // ret z
   CYC(b_+3, b_+4);
   CYC(b_+4, b_+6); E = ENEMY_BASE + OBJ_STATE;
   CYC(b_+6, b_+7); A = mem_rd(gb, DE);
   CYC(b_+7, b_+8); push_effect(gb, b_+8);
   {
     uint16_t target = enemyCode29_jump_table(gb);
-    if (target == SYM(podoboo_state_uninitialized)) { podoboo_state_uninitialized_hook(gb); return; }
-    if (target == SYM(podoboo_state8)) { podoboo_state8_hook(gb); return; }
-    if (target == SYM(podoboo_state9)) { podoboo_state9_hook(gb); return; }
-    if (target == SYM(podoboo_stateA)) { podoboo_stateA_hook(gb); return; }
-    if (target == SYM(podoboo_stateB)) { podoboo_stateB_hook(gb); return; }
-    if (target == SYM(podoboo_stateC)) { podoboo_stateC_hook(gb); return; }
+    if (target == SYM(podoboo_state_uninitialized)) { ENEMY_LOCAL_CALL(podoboo_state_uninitialized_hook(gb)); return; }
+    if (target == SYM(podoboo_state8)) { ENEMY_LOCAL_CALL(podoboo_state8_hook(gb)); return; }
+    if (target == SYM(podoboo_state9)) { ENEMY_LOCAL_CALL(podoboo_state9_hook(gb)); return; }
+    if (target == SYM(podoboo_stateA)) { ENEMY_LOCAL_CALL(podoboo_stateA_hook(gb)); return; }
+    if (target == SYM(podoboo_stateB)) { ENEMY_LOCAL_CALL(podoboo_stateB_hook(gb)); return; }
+    if (target == SYM(podoboo_stateC)) { ENEMY_LOCAL_CALL(podoboo_stateC_hook(gb)); return; }
     TAIL(podoboo_state_stub); // states 1-7 all target 0x62be
   }
 }
@@ -85,19 +86,19 @@ void enemyCode29_hook(GB *gb) {
 void podoboo_state_uninitialized_hook(GB *gb) {
   BASE(podoboo_state_uninitialized);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, ecom_setSpeedAndState8_b0d_hook, SYM(ecom_setSpeedAndState8_b0d), b_+3);
+  ENEMY_CALL_C(b_+0, ecom_setSpeedAndState8_b0d_hook, SYM(ecom_setSpeedAndState8_b0d), b_+3);
   CYC(b_+3, b_+5); E = ENEMY_BASE + OBJ_SUBID;
   CYC(b_+5, b_+6); A = mem_rd(gb, DE);
-  CYC(b_+6, b_+7); alu_or(gb, A);
-  if (F & FZ) { CYCT(b_+7, b_+8); ret_effect(gb); return; } // ret z
+  CYC(b_+6, b_+7); ENEMY_OR(A);
+  if (ENEMY_FLAG(FZ)) { CYCT(b_+7, b_+8); ret_effect(gb); return; } // ret z
   CYC(b_+7, b_+8);
-  CYC(b_+8, b_+10); mem_wr(gb, HL, 0x0c); // [state] = $0c
+  CYC(b_+8, b_+10); ENEMY_WRITE(HL, 0x0c); // [state] = $0c
   CYC(b_+10, b_+12); L = ENEMY_BASE + OBJ_RELATED1 + 1;
   CYC(b_+12, b_+13); H = mem_rd(gb, HL);
   CYC(b_+13, b_+15); L = ENEMY_BASE + 0x30; // Enemy.var30
   CYC(b_+15, b_+16); A = mem_rd(gb, HL);
   CYC(b_+16, b_+17); A = alu_inc8(gb, A);
-  CALL_C(b_+17, enemySetAnimation_hook, SYM(enemySetAnimation), b_+20);
+  ENEMY_CALL_C(b_+17, enemySetAnimation_hook, SYM(enemySetAnimation), b_+20);
   CYC(b_+20, b_+23); TAIL(objectSetVisible83); // jp
 }
 
@@ -114,13 +115,13 @@ void podoboo_state8_hook(GB *gb) {
   CYC(b_+3, b_+5); A = mem_rd(gb, hEnemyTargetX); // hEnemyTargetX
   CYC(b_+5, b_+6); alu_sub(gb, mem_rd(gb, HL));
   CYC(b_+6, b_+8); alu_add(gb, 0x30);
-  CYC(b_+8, b_+10); alu_cp(gb, 0x61);
-  if (!(F & FC)) { CYCT(b_+10, b_+11); ret_effect(gb); return; } // ret nc
+  CYC(b_+8, b_+10); ENEMY_CP(0x61);
+  if (!(ENEMY_FLAG(FC))) { CYCT(b_+10, b_+11); ret_effect(gb); return; } // ret nc
   CYC(b_+10, b_+11);
   CYC(b_+11, b_+13); L = ENEMY_BASE + OBJ_YH;
   CYC(b_+13, b_+14); A = mem_rd(gb, HL);
   CYC(b_+14, b_+16); L = ENEMY_BASE + 0x31; // Enemy.var31
-  CYC(b_+16, b_+17); mem_wr(gb, HL, A);
+  CYC(b_+16, b_+17); ENEMY_WRITE(HL, A);
   CYC(b_+17, b_+19); TAIL(podoboo_beginMovingUp); // jr
 }
 
@@ -128,27 +129,27 @@ void podoboo_state8_hook(GB *gb) {
 void podoboo_state9_hook(GB *gb) {
   BASE(podoboo_state9);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, enemyAnimate_hook, SYM(enemyAnimate), b_+3);
-  CALL_C(b_+3, podoboo_updatePosition_hook, SYM(podoboo_updatePosition), b_+6);
-  if (F & FZ) { CYCT(b_+6, b_+8); goto doneLeaping; } // jr z
+  ENEMY_CALL_C(b_+0, enemyAnimate_hook, SYM(enemyAnimate), b_+3);
+  ENEMY_CALL_C(b_+3, podoboo_updatePosition_hook, SYM(podoboo_updatePosition), b_+6);
+  if (ENEMY_FLAG(FZ)) { CYCT(b_+6, b_+8); goto doneLeaping; } // jr z
   CYC(b_+6, b_+8);
   CYC(b_+8, b_+9); A = mem_rd(gb, HL); // hl == Enemy.speedZ+1
-  CYC(b_+9, b_+10); alu_or(gb, A);
-  if (!(F & FZ)) { CYCT(b_+10, b_+12); podoboo_spawnLavaParticleEvery16Frames_hook(gb); return; } // jr nz
+  CYC(b_+9, b_+10); ENEMY_OR(A);
+  if (!(ENEMY_FLAG(FZ))) { CYCT(b_+10, b_+12); ENEMY_LOCAL_CALL(podoboo_spawnLavaParticleEvery16Frames_hook(gb)); return; } // jr nz
   CYC(b_+10, b_+12);
   CYC(b_+12, b_+14); L = ENEMY_BASE + 0x30; // Enemy.var30
-  CYC(b_+14, b_+15); alu_cp(gb, mem_rd(gb, HL));
-  if (F & FZ) { CYCT(b_+15, b_+16); ret_effect(gb); return; } // ret z
+  CYC(b_+14, b_+15); ENEMY_CP(mem_rd(gb, HL));
+  if (ENEMY_FLAG(FZ)) { CYCT(b_+15, b_+16); ret_effect(gb); return; } // ret z
   CYC(b_+15, b_+16);
-  CYC(b_+16, b_+17); mem_wr(gb, HL, A);
-  CALL_C(b_+17, enemySetAnimation_hook, SYM(enemySetAnimation), b_+20);
+  CYC(b_+16, b_+17); ENEMY_WRITE(HL, A);
+  ENEMY_CALL_C(b_+17, enemySetAnimation_hook, SYM(enemySetAnimation), b_+20);
   CYC(b_+20, b_+22); TAIL(podoboo_spawnLavaParticle); // jr
 
 doneLeaping:
   CYC(b_+22, b_+24); L = ENEMY_BASE + OBJ_STATE;
-  CYC(b_+24, b_+25); mem_wr(gb, HL, alu_inc8(gb, mem_rd(gb, HL)));
+  CYC(b_+24, b_+25); ENEMY_WRITE(HL, alu_inc8(gb, mem_rd(gb, HL)));
   CYC(b_+25, b_+27); L = ENEMY_BASE + OBJ_COLLISION_TYPE;
-  CYC(b_+27, b_+29); mem_wr(gb, HL, (uint8_t)(mem_rd(gb, HL) & ~(1 << 7)));
+  CYC(b_+27, b_+29); ENEMY_WRITE(HL, (uint8_t)(mem_rd(gb, HL) & ~(1 << 7)));
   TAIL(podoboo_stateA); // falls through
 }
 
@@ -156,17 +157,17 @@ doneLeaping:
 void podoboo_stateA_hook(GB *gb) {
   BASE(podoboo_stateA);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, podoboo_makeLavaSplash_hook, SYM(podoboo_makeLavaSplash), b_+3);
-  if (!(F & FZ)) { CYCT(b_+3, b_+4); ret_effect(gb); return; } // ret nz
+  ENEMY_CALL_C(b_+0, podoboo_makeLavaSplash_hook, SYM(podoboo_makeLavaSplash), b_+3);
+  if (!(ENEMY_FLAG(FZ))) { CYCT(b_+3, b_+4); ret_effect(gb); return; } // ret nz
   CYC(b_+3, b_+4);
-  CALL_C(b_+4, getRandomNumber_noPreserveVars_hook, SYM(getRandomNumber_noPreserveVars), b_+7);
-  CYC(b_+7, b_+9); alu_and(gb, 0x03);
+  ENEMY_CALL_C(b_+4, getRandomNumber_noPreserveVars_hook, SYM(getRandomNumber_noPreserveVars), b_+7);
+  CYC(b_+7, b_+9); ENEMY_AND(0x03);
   CYC(b_+9, b_+12); SET_HL(SYM(podoboo_counter1Vals)); // podoboo_counter1Vals
-  CYC(b_+12, b_+13); podoboo_addAToHl_from_rst(gb, b_+13);
+  CYC(b_+12, b_+13); ENEMY_LOCAL_CALL(podoboo_addAToHl_from_rst(gb, b_+13));
   CYC(b_+13, b_+15); E = ENEMY_BASE + OBJ_COUNTER1;
   CYC(b_+15, b_+16); A = mem_rd(gb, HL);
-  CYC(b_+16, b_+17); mem_wr(gb, DE, A);
-  CALL_C(b_+17, ecom_incState_b0d_hook, SYM(ecom_incState_b0d), b_+20);
+  CYC(b_+16, b_+17); ENEMY_WRITE(DE, A);
+  ENEMY_CALL_C(b_+17, ecom_incState_b0d_hook, SYM(ecom_incState_b0d), b_+20);
   CYC(b_+20, b_+23); TAIL(objectSetInvisible); // jp
 }
 
@@ -174,10 +175,10 @@ void podoboo_stateA_hook(GB *gb) {
 void podoboo_stateB_hook(GB *gb) {
   BASE(podoboo_stateB);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, ecom_decCounter1_b0d_hook, SYM(ecom_decCounter1_b0d), b_+3);
-  if (!(F & FZ)) { CYCT(b_+3, b_+4); ret_effect(gb); return; } // ret nz
+  ENEMY_CALL_C(b_+0, ecom_decCounter1_b0d_hook, SYM(ecom_decCounter1_b0d), b_+3);
+  if (!(ENEMY_FLAG(FZ))) { CYCT(b_+3, b_+4); ret_effect(gb); return; } // ret nz
   CYC(b_+3, b_+4);
-  CYC(b_+4, b_+5); mem_wr(gb, HL, alu_inc8(gb, mem_rd(gb, HL)));
+  CYC(b_+4, b_+5); ENEMY_WRITE(HL, alu_inc8(gb, mem_rd(gb, HL)));
   CYC(b_+5, b_+7); TAIL(podoboo_beginMovingUp); // jr
 }
 
@@ -185,14 +186,14 @@ void podoboo_stateB_hook(GB *gb) {
 void podoboo_stateC_hook(GB *gb) {
   BASE(podoboo_stateC);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, enemyAnimate_hook, SYM(enemyAnimate), b_+3);
+  ENEMY_CALL_C(b_+0, enemyAnimate_hook, SYM(enemyAnimate), b_+3);
   CYC(b_+3, b_+5); E = ENEMY_BASE + OBJ_ANIM_PARAMETER;
   CYC(b_+5, b_+6); A = mem_rd(gb, DE);
   CYC(b_+6, b_+7); A = alu_inc8(gb, A);
-  if (F & FZ) { CYCT(b_+7, b_+10); enemyDelete_hook(gb); return; } // jp z
+  if (ENEMY_FLAG(FZ)) { CYCT(b_+7, b_+10); ENEMY_LOCAL_CALL(enemyDelete_hook(gb)); return; } // jp z
   CYC(b_+7, b_+10);
   CYC(b_+10, b_+11); A = alu_dec8(gb, A);
-  if (!(F & FZ)) { CYCT(b_+11, b_+14); objectSetInvisible_hook(gb); return; } // jp nz
+  if (!(ENEMY_FLAG(FZ))) { CYCT(b_+11, b_+14); ENEMY_LOCAL_CALL(objectSetInvisible_hook(gb)); return; } // jp nz
   CYC(b_+11, b_+14);
   CYC(b_+14, b_+17); TAIL(ecom_flickerVisibility_b0d); // jp
 }
@@ -200,10 +201,10 @@ void podoboo_stateC_hook(GB *gb) {
 void podoboo_spawnLavaParticleEvery16Frames_hook(GB *gb) {
   BASE(podoboo_spawnLavaParticleEvery16Frames);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, ecom_decCounter1_b0d_hook, SYM(ecom_decCounter1_b0d), b_+3);
+  ENEMY_CALL_C(b_+0, ecom_decCounter1_b0d_hook, SYM(ecom_decCounter1_b0d), b_+3);
   CYC(b_+3, b_+4); A = mem_rd(gb, HL);
-  CYC(b_+4, b_+6); alu_and(gb, 0x0f);
-  if (!(F & FZ)) { CYCT(b_+6, b_+7); ret_effect(gb); return; } // ret nz
+  CYC(b_+4, b_+6); ENEMY_AND(0x0f);
+  if (!(ENEMY_FLAG(FZ))) { CYCT(b_+6, b_+7); ret_effect(gb); return; } // ret nz
   CYC(b_+6, b_+7);
   TAIL(podoboo_spawnLavaParticle); // falls through
 }
@@ -212,14 +213,14 @@ void podoboo_spawnLavaParticle_hook(GB *gb) {
   BASE(podoboo_spawnLavaParticle);
   uint16_t sp0_ = gb->sp;
   CYC(b_+0, b_+2); B = 0x29; // ENEMY_PODOBOO
-  CALL_C(b_+2, ecom_spawnUncountedEnemyWithSubid01_b0d_hook, SYM(ecom_spawnUncountedEnemyWithSubid01_b0d), b_+5);
-  if (!(F & FZ)) { CYCT(b_+5, b_+6); ret_effect(gb); return; } // ret nz
+  ENEMY_CALL_C(b_+2, ecom_spawnUncountedEnemyWithSubid01_b0d_hook, SYM(ecom_spawnUncountedEnemyWithSubid01_b0d), b_+5);
+  if (!(ENEMY_FLAG(FZ))) { CYCT(b_+5, b_+6); ret_effect(gb); return; } // ret nz
   CYC(b_+5, b_+6);
-  CALL_C(b_+6, objectCopyPosition_hook, SYM(objectCopyPosition), b_+9);
+  ENEMY_CALL_C(b_+6, objectCopyPosition_hook, SYM(objectCopyPosition), b_+9);
   CYC(b_+9, b_+11); L = ENEMY_BASE + OBJ_RELATED1;
   CYC(b_+11, b_+13); A = ENEMY_BASE; // Enemy.start
-  CYC(b_+13, b_+14); mem_wr(gb, HL, A); SET_HL(HL + 1);
-  CYC(b_+14, b_+15); mem_wr(gb, HL, D);
+  CYC(b_+13, b_+14); ENEMY_WRITE(HL, A); SET_HL(HL + 1);
+  CYC(b_+14, b_+15); ENEMY_WRITE(HL, D);
   RET(b_+15); return;
 }
 
@@ -228,20 +229,20 @@ void podoboo_spawnLavaParticle_hook(GB *gb) {
 void podoboo_beginMovingUp_hook(GB *gb) {
   BASE(podoboo_beginMovingUp);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, podoboo_makeLavaSplash_hook, SYM(podoboo_makeLavaSplash), b_+3);
-  if (!(F & FZ)) { CYCT(b_+3, b_+4); ret_effect(gb); return; } // ret nz
+  ENEMY_CALL_C(b_+0, podoboo_makeLavaSplash_hook, SYM(podoboo_makeLavaSplash), b_+3);
+  if (!(ENEMY_FLAG(FZ))) { CYCT(b_+3, b_+4); ret_effect(gb); return; } // ret nz
   CYC(b_+3, b_+4);
-  CALL_C(b_+4, objectSetVisible82_hook, SYM(objectSetVisible82), b_+7);
+  ENEMY_CALL_C(b_+4, objectSetVisible82_hook, SYM(objectSetVisible82), b_+7);
   CYC(b_+7, b_+9); E = ENEMY_BASE + 0x30; // Enemy.var30
   CYC(b_+9, b_+11); A = 0x02;
-  CYC(b_+11, b_+12); mem_wr(gb, DE, A);
-  CALL_C(b_+12, enemySetAnimation_hook, SYM(enemySetAnimation), b_+15);
+  CYC(b_+11, b_+12); ENEMY_WRITE(DE, A);
+  ENEMY_CALL_C(b_+12, enemySetAnimation_hook, SYM(enemySetAnimation), b_+15);
   CYC(b_+15, b_+18); SET_BC(0xfbc0); // -$440
-  CALL_C(b_+18, objectSetSpeedZ_hook, SYM(objectSetSpeedZ), b_+21);
+  ENEMY_CALL_C(b_+18, objectSetSpeedZ_hook, SYM(objectSetSpeedZ), b_+21);
   CYC(b_+21, b_+23); L = ENEMY_BASE + OBJ_STATE;
-  CYC(b_+23, b_+25); mem_wr(gb, HL, 0x09);
+  CYC(b_+23, b_+25); ENEMY_WRITE(HL, 0x09);
   CYC(b_+25, b_+27); L = ENEMY_BASE + OBJ_COLLISION_TYPE;
-  CYC(b_+27, b_+29); mem_wr(gb, HL, (uint8_t)(mem_rd(gb, HL) | (1 << 7)));
+  CYC(b_+27, b_+29); ENEMY_WRITE(HL, (uint8_t)(mem_rd(gb, HL) | (1 << 7)));
   CYC(b_+29, b_+30); alu_xor(gb, A);
   RET(b_+30); return;
 }
@@ -264,27 +265,27 @@ void podoboo_updatePosition_hook(GB *gb) {
   CYC(b_+0, b_+1); H = D;
   CYC(b_+1, b_+3); L = ENEMY_BASE + OBJ_SPEED_Z;
   CYC(b_+3, b_+5); E = ENEMY_BASE + OBJ_Y;
-  CALL_C(b_+5, add16BitRefs_hook, SYM(add16BitRefs), b_+8);
+  ENEMY_CALL_C(b_+5, add16BitRefs_hook, SYM(add16BitRefs), b_+8);
   CYC(b_+8, b_+9); B = A;
   CYC(b_+9, b_+11); E = ENEMY_BASE + 0x31; // Enemy.var31
   CYC(b_+11, b_+12); A = mem_rd(gb, DE);
-  CYC(b_+12, b_+13); alu_cp(gb, B);
-  if (F & FC) { CYCT(b_+13, b_+15); goto reachedOriginalPosition; } // jr c
+  CYC(b_+12, b_+13); ENEMY_CP(B);
+  if (ENEMY_FLAG(FC)) { CYCT(b_+13, b_+15); goto reachedOriginalPosition; } // jr c
   CYC(b_+13, b_+15);
   CYC(b_+15, b_+16); L = alu_dec8(gb, L);
   CYC(b_+16, b_+18); A = 0x1c;
   CYC(b_+18, b_+19); alu_add(gb, mem_rd(gb, HL));
-  CYC(b_+19, b_+20); mem_wr(gb, HL, A); SET_HL(HL + 1);
+  CYC(b_+19, b_+20); ENEMY_WRITE(HL, A); SET_HL(HL + 1);
   CYC(b_+20, b_+22); A = 0x00;
   CYC(b_+22, b_+23); alu_adc(gb, mem_rd(gb, HL));
-  CYC(b_+23, b_+24); mem_wr(gb, HL, A);
-  CYC(b_+24, b_+25); alu_or(gb, D);
+  CYC(b_+23, b_+24); ENEMY_WRITE(HL, A);
+  CYC(b_+24, b_+25); ENEMY_OR(D);
   RET(b_+25); return;
 
 reachedOriginalPosition:
   CYC(b_+26, b_+28); L = ENEMY_BASE + OBJ_YH;
-  CYC(b_+28, b_+29); mem_wr(gb, HL, A); SET_HL(HL - 1);
-  CYC(b_+29, b_+31); mem_wr(gb, HL, 0x00);
+  CYC(b_+28, b_+29); ENEMY_WRITE(HL, A); SET_HL(HL - 1);
+  CYC(b_+29, b_+31); ENEMY_WRITE(HL, 0x00);
   CYC(b_+31, b_+32); alu_xor(gb, A);
   RET(b_+32); return;
 }

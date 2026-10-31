@@ -1,5 +1,8 @@
 #include "game/game.h"
 #include "game/gen.h"
+#ifdef ORACLES_LUA_BLOCK_PUZZLES
+#include "script/gameplay.h"
+#endif
 
 #undef CYC
 #undef CYCT
@@ -30,9 +33,18 @@ static uint16_t pushblockTrigger_jumpTable(GB *gb) {
 // remembering the original tile in var19, and count it as an "enemy".
 static void pushblockTrigger_state0(GB *gb, uint16_t sp0_) {
   BASE(interactionCode13);
+  uint8_t next_state = 1;
+#ifdef ORACLES_LUA_BLOCK_PUZZLES
+  if (!game_seasons) {
+    GameplayBlockInput input = {.state = GAMEPLAY_BLOCK_INITIALIZE};
+    GameplayBlockOutput output;
+    if (!gameplay_block_step(&input, &output)) { gb_stop(gb, gameplay_error()); return; }
+    next_state = (uint8_t)output.next;
+  }
+#endif
   CYC(b_+18, b_+19); H = D;
   CYC(b_+19, b_+21); L = INTERACTION_BASE + OBJ_STATE;
-  CYC(b_+21, b_+23); mem_wr(gb, HL, 0x01);
+  CYC(b_+21, b_+23); mem_wr(gb, HL, next_state);
   CALL_C(b_+23, objectGetShortPosition_hook, SYM(objectGetShortPosition), b_+26);
   CYC(b_+26, b_+28); L = INTERACTION_BASE + OBJ_VAR18;
   CYC(b_+28, b_+29); mem_wr(gb, HL, A);
@@ -56,12 +68,22 @@ static void pushblockTrigger_state1(GB *gb) {
   CYC(b_+47, b_+49); E = INTERACTION_BASE + OBJ_SUBID;
   CYC(b_+49, b_+50); A = mem_rd(gb, DE);
   CYC(b_+50, b_+51); alu_cp(gb, B);
-  if (F & FC) {
+  uint8_t next_state = (F & FC) ? 1 : 2;
+#ifdef ORACLES_LUA_BLOCK_PUZZLES
+  if (!game_seasons) {
+    GameplayBlockInput input = {.state = GAMEPLAY_BLOCK_WAIT_RELEASE,
+      .input.release = {.threshold = A, .enemies = B}};
+    GameplayBlockOutput output;
+    if (!gameplay_block_step(&input, &output)) { gb_stop(gb, gameplay_error()); return; }
+    next_state = (uint8_t)output.next;
+  }
+#endif
+  if (next_state == 1) {
     CYCT(b_+51, b_+52); ret_effect(gb); return;
   }
   CYC(b_+51, b_+52);
   CYC(b_+52, b_+54); E = INTERACTION_BASE + OBJ_STATE;
-  CYC(b_+54, b_+56); A = 0x02;
+  CYC(b_+54, b_+56); A = next_state;
   CYC(b_+56, b_+57); mem_wr(gb, DE, A);
   CYC(b_+57, b_+59); E = INTERACTION_BASE + OBJ_VAR18;
   CYC(b_+59, b_+60); A = mem_rd(gb, DE);
@@ -82,13 +104,23 @@ static void pushblockTrigger_state2(GB *gb) {
   CYC(b_+71, b_+72); E = alu_inc8(gb, E);
   CYC(b_+72, b_+73); A = mem_rd(gb, DE);
   CYC(b_+73, b_+75); H = wRoomLayout >> 8;
-  CYC(b_+75, b_+76); alu_cp(gb, mem_rd(gb, HL));
-  if (F & FZ) {
+  CYC(b_+75, b_+76); uint8_t current_tile = mem_rd(gb, HL); alu_cp(gb, current_tile);
+  uint8_t next_state = (F & FZ) ? 2 : 3;
+#ifdef ORACLES_LUA_BLOCK_PUZZLES
+  if (!game_seasons) {
+    GameplayBlockInput input = {.state = GAMEPLAY_BLOCK_WAIT_MOVED,
+      .input.tile = {.previous = A, .current = current_tile}};
+    GameplayBlockOutput output;
+    if (!gameplay_block_step(&input, &output)) { gb_stop(gb, gameplay_error()); return; }
+    next_state = (uint8_t)output.next;
+  }
+#endif
+  if (next_state == 2) {
     CYCT(b_+76, b_+77); ret_effect(gb); return;
   }
   CYC(b_+76, b_+77);
   CYC(b_+77, b_+79); E = INTERACTION_BASE + OBJ_STATE;
-  CYC(b_+79, b_+81); A = 0x03;
+  CYC(b_+79, b_+81); A = next_state;
   CYC(b_+81, b_+82); mem_wr(gb, DE, A);
   CYC(b_+82, b_+84); E = INTERACTION_BASE + OBJ_COUNTER1;
   CYC(b_+84, b_+86); A = 0x1e;
@@ -100,7 +132,16 @@ static void pushblockTrigger_state2(GB *gb) {
 static void pushblockTrigger_state3(GB *gb, uint16_t sp0_) {
   BASE(interactionCode13);
   CALL_C(b_+88, interactionDecCounter1_hook, SYM(interactionDecCounter1), b_+91);
-  if (!(F & FZ)) {
+  bool finished = (F & FZ) != 0;
+#ifdef ORACLES_LUA_BLOCK_PUZZLES
+  if (!game_seasons) {
+    GameplayBlockInput input = {.state = GAMEPLAY_BLOCK_WAIT_DELAY, .input.delay_elapsed = finished};
+    GameplayBlockOutput output;
+    if (!gameplay_block_step(&input, &output)) { gb_stop(gb, gameplay_error()); return; }
+    finished = output.next == GAMEPLAY_BLOCK_FINISH;
+  }
+#endif
+  if (!finished) {
     CYCT(b_+91, b_+92); ret_effect(gb); return;
   }
   CYC(b_+91, b_+92);

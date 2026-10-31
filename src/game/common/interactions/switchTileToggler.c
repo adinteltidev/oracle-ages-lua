@@ -1,5 +1,8 @@
 #include "game/game.h"
 #include "game/gen.h"
+#ifdef ORACLES_LUA_GAMEPLAY
+#include "script/gameplay.h"
+#endif
 
 #undef CYC
 #undef CYCT
@@ -63,7 +66,15 @@ state1:
   CYC(b_+21, b_+23); E = INTERACTION_BASE + OBJ_VAR03;
   CYC(b_+23, b_+24); A = mem_rd(gb, DE);
   CYC(b_+24, b_+25); alu_cp(gb, B);
-  if (F & FZ) { RET_TAKEN(b_+25); return; } // ret z
+  bool unchanged=(F & FZ)!=0;
+#ifdef ORACLES_LUA_GAMEPLAY
+  if (!game_seasons) {
+    bool changed;
+    if (!gameplay_decide(0,A,B,&changed)) { gb_stop(gb,gameplay_error()); return; }
+    unchanged=!changed;
+  }
+#endif
+  if (unchanged) { RET_TAKEN(b_+25); return; } // ret z
   CYC(b_+25, b_+26);
   CYC(b_+26, b_+27); A = B;
   CYC(b_+27, b_+28); mem_wr(gb, DE, A);
@@ -73,8 +84,16 @@ state1:
   CYC(b_+34, b_+35); interactionCode78_addDoubleIndexToHl_from_rst(gb, b_+35);
   CYC(b_+35, b_+37); E = INTERACTION_BASE + OBJ_SUBID;
   CYC(b_+37, b_+38); A = mem_rd(gb, DE);
-  CYC(b_+38, b_+39); alu_and(gb, B);
-  if (F & FZ) { CYCT(b_+39, b_+41); goto afterTileOffset; } // jr z
+  CYC(b_+38, b_+39);
+#ifdef ORACLES_LUA_GAMEPLAY
+  uint8_t switch_mask=A;
+#endif
+  alu_and(gb, B);
+  bool alternate=(F & FZ)==0;
+#ifdef ORACLES_LUA_GAMEPLAY
+  if (!game_seasons && !gameplay_decide(1,switch_mask,B,&alternate)) { gb_stop(gb,gameplay_error()); return; }
+#endif
+  if (!alternate) { CYCT(b_+39, b_+41); goto afterTileOffset; } // jr z
   CYC(b_+39, b_+41);
   CYC(b_+41, b_+42); SET_HL(HL + 1);
 

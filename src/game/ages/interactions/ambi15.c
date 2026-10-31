@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/npcs_events.h"
 
 #undef CYC
 #undef CYCT
@@ -24,7 +25,7 @@ void ambiDecVar3f_hook(GB *gb) {
   (void)sp0_;
   CYC(b_+0, b_+1); H = D;
   CYC(b_+1, b_+3); L = INTERACTION_BASE + OBJ_VAR3F;
-  CYC(b_+3, b_+4); mem_wr(gb, HL, alu_dec8(gb, mem_rd(gb, HL)));
+  CYC(b_+3, b_+4); EVENT_WRITE(HL, alu_dec8(gb, mem_rd(gb, HL)));
   CYC(b_+4, b_+7); TAIL(writeFlagsTocddb); // jp
 }
 
@@ -36,7 +37,7 @@ void ambiRiseUntilOffScreen_hook(GB *gb) {
   CYC(b_+0, b_+2); E = INTERACTION_BASE + OBJ_ZH;
   CYC(b_+2, b_+3); A = mem_rd(gb, DE);
   CYC(b_+3, b_+5); alu_sub(gb, 0x04);
-  CYC(b_+5, b_+6); mem_wr(gb, DE, A);
-  CYC(b_+6, b_+8); alu_cp(gb, 0xc0);
+  CYC(b_+5, b_+6); EVENT_WRITE(DE, A);
+  CYC(b_+6, b_+8); NPC_CP(0xc0);
   CYC(b_+8, b_+11); TAIL(writeFlagsTocddb); // jp
 }

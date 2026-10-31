@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/npcs_events.h"
 
 #undef CYC
 #undef CYCT
@@ -22,10 +23,10 @@ static uint16_t mustache_man_jump_table(GB *gb) {
 
 static void mustache_man_init(GB *gb, uint16_t sp0_) {
   BASE(interactionCode42);
-  CALL_C(b_+58, interactionInitGraphics_hook, SYM(interactionInitGraphics), b_+61);
-  CALL_C(b_+61, objectMarkSolidPosition_hook, SYM(objectMarkSolidPosition), b_+64);
+  NPC_CALL_C(b_+58, interactionInitGraphics_hook, SYM(interactionInitGraphics), b_+61);
+  NPC_CALL_C(b_+61, objectMarkSolidPosition_hook, SYM(objectMarkSolidPosition), b_+64);
   CYC(b_+64, b_+66); A = 0x0f;
-  CALL_C(b_+66, interactionSetHighTextIndex_hook, SYM(interactionSetHighTextIndex), b_+69);
+  NPC_CALL_C(b_+66, interactionSetHighTextIndex_hook, SYM(interactionSetHighTextIndex), b_+69);
   CYC(b_+69, b_+71); E = 0x42;
   CYC(b_+71, b_+72); A = mem_rd(gb, DE);
   CYC(b_+72, b_+75); SET_HL(b_+85);
@@ -40,7 +41,7 @@ static void mustache_man_init(GB *gb, uint16_t sp0_) {
   CYC(b_+76, b_+77); A = mem_rd(gb, HL); SET_HL(HL + 1);
   CYC(b_+77, b_+78); H = mem_rd(gb, HL);
   CYC(b_+78, b_+79); L = A;
-  CALL_C(b_+79, interactionSetScript_hook, SYM(interactionSetScript), b_+82);
+  NPC_CALL_C(b_+79, interactionSetScript_hook, SYM(interactionSetScript), b_+82);
   CYC(b_+82, b_+85); interactionIncState_hook(gb);
 }
 
@@ -56,27 +57,27 @@ void interactionCode42_hook(GB *gb) {
     else { HANDOFF(HL); }
   } while (0);
 subid0:
-  CALL_C(b_+8, checkInteractionState_hook, SYM(checkInteractionState), b_+11);
+  NPC_CALL_ZERO(b_+8, checkInteractionState_hook, SYM(checkInteractionState), b_+11);
   if (!(F & FZ)) { CYCT(b_+11, b_+13); goto run0; }
   CYC(b_+11, b_+13);
   CYC(b_+13, b_+15); A = 0x14;
-  CALL_C(b_+15, checkGlobalFlag_hook, SYM(checkGlobalFlag), b_+18);
+  NPC_CALL_ZERO(b_+15, checkGlobalFlag_hook, SYM(checkGlobalFlag), b_+18);
   if (!(F & FZ)) { CYCT(b_+18, b_+21); interactionDelete_hook(gb); return; }
   CYC(b_+18, b_+21);
-  CYC(b_+21, b_+24); push_effect(gb, b_+24); mustache_man_init(gb, sp0_);
+  CYC(b_+21, b_+24); push_effect(gb, b_+24); NPC_LOCAL_CALL(mustache_man_init(gb, sp0_));
 run0:
-  CALL_C(b_+24, interactionRunScript_hook, SYM(interactionRunScript), b_+27);
+  NPC_CALL_C(b_+24, interactionRunScript_hook, SYM(interactionRunScript), b_+27);
   CYC(b_+27, b_+30); interactionAnimateAsNpc_hook(gb);
   return;
 subid1:
-  CALL_C(b_+30, checkInteractionState_hook, SYM(checkInteractionState), b_+33);
+  NPC_CALL_ZERO(b_+30, checkInteractionState_hook, SYM(checkInteractionState), b_+33);
   if (!(F & FZ)) { CYCT(b_+33, b_+35); goto run1; }
   CYC(b_+33, b_+35);
   CYC(b_+35, b_+37); E = 0x72;
   CYC(b_+37, b_+39); A = 2;
-  CYC(b_+39, b_+40); mem_wr(gb, DE, A);
-  CYC(b_+40, b_+43); push_effect(gb, b_+43); mustache_man_init(gb, sp0_);
+  CYC(b_+39, b_+40); EVENT_WRITE(DE, A);
+  CYC(b_+40, b_+43); push_effect(gb, b_+43); NPC_LOCAL_CALL(mustache_man_init(gb, sp0_));
 run1:
-  CALL_C(b_+43, interactionRunScript_hook, SYM(interactionRunScript), b_+46);
+  NPC_CALL_C(b_+43, interactionRunScript_hook, SYM(interactionRunScript), b_+46);
   CYC(b_+46, b_+49); TAIL(interactionAnimateAsNpc);
 }

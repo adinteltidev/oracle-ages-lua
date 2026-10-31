@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/block_rules.h"
 
 #undef CYC
 #undef CYCT
@@ -93,13 +94,17 @@ static void pushblock_checkRotatingCubePermitsPushing(GB *gb) {
   AGES_ONLY();
   CYC(b_+194, b_+197); A = mem_rd(gb, wRotatingCubePos);
   CYC(b_+197, b_+198); alu_or(gb, A);
-  if (F & FZ) {
+  bool phase1_choice_1 = (F & FZ) != 0;
+  BLOCK_DECIDE(phase1_choice_1, cube_absent, A);
+  if (phase1_choice_1) {
     CYCT(b_+198, b_+199); ret_effect(gb); return;
   }
   CYC(b_+198, b_+199);
   CYC(b_+199, b_+202); A = mem_rd(gb, wRotatingCubeColor);
   CYC(b_+202, b_+204); alu_bit(gb, 7, A);
-  if (F & FZ) {
+  bool phase1_choice_2 = (F & FZ) == 0;
+  BLOCK_DECIDE(phase1_choice_2, cube_active, A);
+  if (!phase1_choice_2) {
     CYCT(b_+204, b_+206); goto deny;
   }
   CYC(b_+204, b_+206);
@@ -109,7 +114,9 @@ static void pushblock_checkRotatingCubePermitsPushing(GB *gb) {
   CYC(b_+211, b_+212); A = mem_rd(gb, DE);
   CYC(b_+212, b_+214); alu_sub(gb, TILEINDEX_RED_PUSHABLE_BLOCK);
   CYC(b_+214, b_+215); alu_cp(gb, B);
-  if (F & FZ) {
+  bool phase1_choice_3 = (F & FZ) != 0;
+  BLOCK_DECIDE(phase1_choice_3, cube_match, A, B);
+  if (phase1_choice_3) {
     CYCT(b_+215, b_+216); ret_effect(gb); return;
   }
   CYC(b_+215, b_+216);
@@ -174,7 +181,9 @@ static void pushblock_func_449d(GB *gb, uint16_t sp0_) {
   CYC(b_+O(121), b_+OE(123)); E = INTERACTION_BASE + OBJ_VAR33;
   CYC(b_+O(123), b_+OE(124)); A = mem_rd(gb, DE);
   CYC(b_+O(124), b_+OE(125)); alu_or(gb, A);
-  if (F & FZ) {
+  bool phase1_choice_4 = (F & FZ) == 0;
+  BLOCK_DECIDE(phase1_choice_4, block_has_replacement, A);
+  if (!phase1_choice_4) {
     CYCT(b_+O(125), b_+OE(127)); goto checkSound;
   }
   CYC(b_+O(125), b_+OE(127));
@@ -188,7 +197,9 @@ checkSound:
   CYC(b_+O(136), b_+OE(138)); E = INTERACTION_BASE + OBJ_VAR34;
   CYC(b_+O(138), b_+OE(139)); A = mem_rd(gb, DE);
   CYC(b_+O(139), b_+OE(140)); alu_rlca(gb);
-  if (!(F & FC)) {
+  bool phase1_choice_5 = (F & FC) != 0;
+  BLOCK_DECIDE(phase1_choice_5, block_finishes_puzzle, A);
+  if (!phase1_choice_5) {
     CYCT(b_+O(140), b_+OE(142)); goto delete;
   }
   CYC(b_+O(140), b_+OE(142));
@@ -269,7 +280,7 @@ static void pushblock_state0(GB *gb, uint16_t sp0_) {
   CYC(b_+O(23), b_+OE(24)); mem_wr(gb, DE, A);
   CALL_C(b_+O(24), objectMimicBgTile_hook, SYM(objectMimicBgTile), b_+OE(27));
   if (!game_seasons) {
-    CYC(b_+27, b_+30); push_effect(gb, b_+30); pushblock_checkRotatingCubePermitsPushing(gb);
+    CYC(b_+27, b_+30); push_effect(gb, b_+30); pushblock_checkRotatingCubePermitsPushing(gb); BLOCK_FAILED_RETURN();
     if (F & FC) {
       CYCT(b_+30, b_+33); TAIL(interactionDelete);
     }

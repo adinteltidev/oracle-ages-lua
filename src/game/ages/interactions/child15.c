@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/npcs_events.h"
 
 #undef CYC
 #undef CYCT
@@ -19,16 +20,16 @@ void child_addValueToChildStatus_hook(GB *gb) {
   BASE(child_addValueToChildStatus);
   CYC(b_+0, b_+3); SET_HL(wChildStatus);
   CYC(b_+3, b_+4); alu_add(gb, mem_rd(gb, HL));
-  CYC(b_+4, b_+5); mem_wr(gb, HL, A);
+  CYC(b_+4, b_+5); EVENT_WRITE(HL, A);
   RET(b_+5);
 }
 
 void child_checkHasRupees_hook(GB *gb) {
   BASE(child_checkHasRupees);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, cpRupeeValue_hook, SYM(cpRupeeValue), b_+3);
+  NPC_CALL_C(b_+0, cpRupeeValue_hook, SYM(cpRupeeValue), b_+3);
   CYC(b_+3, b_+5); E = INTERACTION_BASE + OBJ_VAR3C;
-  CYC(b_+5, b_+6); mem_wr(gb, DE, A);
+  CYC(b_+5, b_+6); EVENT_WRITE(DE, A);
   RET(b_+6);
 }
 
@@ -41,14 +42,14 @@ void child_setStage8ResponseToSelectedTextOption_hook(GB *gb) {
 
 void child_setStage8Response_hook(GB *gb) {
   BASE(child_setStage8Response);
-  CYC(b_+0, b_+3); mem_wr(gb, wChildStage8Response, A);
+  CYC(b_+0, b_+3); EVENT_WRITE(wChildStage8Response, A);
   RET(b_+3);
 }
 
 void child_playMusic_hook(GB *gb) {
   BASE(child_playMusic);
   CYC(b_+0, b_+3); A = mem_rd(gb, wChildStage8Response);
-  CYC(b_+3, b_+4); alu_or(gb, A);
+  CYC(b_+3, b_+4); NPC_OR(A);
   if (!(F & FZ)) {
     CYCT(b_+4, b_+6);
     goto playHigh;
@@ -73,13 +74,13 @@ void child_giveHeartRefill_hook(GB *gb) {
   BASE(child_giveHeartRefill);
   CYC(b_+0, b_+2); C = 0x40;
   CYC(b_+2, b_+4);
-  child_giveHealthFromC(gb);
+  NPC_LOCAL_CALL(child_giveHealthFromC(gb));
 }
 
 void child_giveOneHeart_hook(GB *gb) {
   BASE(child_giveOneHeart);
   CYC(b_+0, b_+2); C = 0x04;
-  child_giveHealthFromC(gb);
+  NPC_LOCAL_CALL(child_giveHealthFromC(gb));
 }
 
 void child_giveRupees_hook(GB *gb) {

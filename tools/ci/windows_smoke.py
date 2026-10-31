@@ -25,6 +25,9 @@ with tempfile.TemporaryDirectory(prefix='oracles-ci-') as tmp:
                 (['oracles-native-run.exe'], 2, 'usage:'),
                 (['oracles-native-run.exe', '--rom', str(stage / 'missing.gbc')], 2, 'cannot read'),
                 (['Oracles.exe', '--cache', str(stage / 'cache')], 0, None)]
+    for name in ['test_lua_gameplay.exe', 'test_lua_block_rules.exe', 'test_lua_colored_cube.exe', 'test_lua_levers_lava.exe', 'test_lua_doors.exe','test_lua_items_shops.exe','test_lua_npcs_events.exe','test_lua_enemies.exe']:
+        if (stage / name).is_file():
+            commands.append(([name], 0, None))
     for arguments, expected, text in commands:
         run = subprocess.run([str(stage / arguments[0]), *arguments[1:]], env=env,
                              capture_output=True, text=True, timeout=90)

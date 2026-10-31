@@ -53,6 +53,16 @@ macro(oracles_fetch_sdl)
   set(ORACLES_SDL_TARGET SDL3::SDL3-static)
 endmacro()
 
+include(cmake/LuaGameplay.cmake)
+
+# Enemy policies: per-source opt-in is needed by the scoped Switch native build.
+file(GLOB ORACLES_ENEMY_POLICY_SOURCES CONFIGURE_DEPENDS
+  "${CMAKE_SOURCE_DIR}/src/game/ages/enemies/*.c"
+  "${CMAKE_SOURCE_DIR}/src/game/common/enemies/*.c")
+if(ORACLES_LUA_GAMEPLAY)
+  set_property(SOURCE ${ORACLES_ENEMY_POLICY_SOURCES} src/game/enemyPolicy.c
+    APPEND PROPERTY COMPILE_DEFINITIONS ORACLES_LUA_GAMEPLAY=1)
+endif()
 file(GLOB_RECURSE ORACLES_GAME_SRC CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/src/game/*.c")
 set(ORACLES_SHARED_SRC ${ORACLES_GAME_SRC}
   src/core/gb.c
@@ -80,6 +90,257 @@ if(ORACLES_SWITCH OR CMAKE_SYSTEM_NAME STREQUAL "NintendoSwitch")
   add_library(oraclesnative STATIC ${ORACLES_SHARED_SRC} src/rt/native.c)
   target_include_directories(oraclesnative PUBLIC src)
   target_compile_definitions(oraclesnative PRIVATE ORACLES_SWITCH_FIBERS=1)
+  if(ORACLES_LUA_GAMEPLAY)
+    set_source_files_properties(src/game/common/interactions/switchTileToggler.c
+      src/game/ages/interactions/coloredCubeFlame.c
+      src/game/ages/interactions/leverLavaFiller.c
+      src/game/common/interactions/doorController.c
+      src/game/common/interactions/doorController15.c
+      src/game/ages/interactions/minecartGate.c
+      src/game/interactableTiles.c src/game/scripting.c src/game/bank0.c
+      PROPERTIES COMPILE_DEFINITIONS ORACLES_LUA_GAMEPLAY=1)
+    target_compile_definitions(oraclesnative INTERFACE ORACLES_LUA_GAMEPLAY=1)
+    target_link_libraries(oraclesnative PUBLIC oraclesgameplay)
+    set_property(SOURCE src/game/common/interactions/shopItem.c src/game/common/interactions/shopkeeper.c
+      src/game/ages/interactions/tokayShopItem.c src/game/common/interactions/treasureInteraction.c
+      src/game/treasureAndDrops.c src/game/features.c src/game/loadTreasureData.c
+      APPEND PROPERTY COMPILE_DEFINITIONS ORACLES_LUA_GAMEPLAY=1)
+    if(ORACLES_LUA_ENEMIES)
+      target_compile_definitions(oraclesnative INTERFACE ORACLES_LUA_ENEMIES=1)
+    endif()
+    if(ORACLES_LUA_NPCS_EVENTS)
+      target_compile_definitions(oraclesnative INTERFACE ORACLES_LUA_NPCS_EVENTS=1)
+    endif()
+    set_property(SOURCE
+      src/game/npcEventPolicy.c
+      src/game/cutscenes.c
+      src/game/cutscenes2.c
+      src/game/miscCutscenes.c
+      src/game/bank3Cutscenes.c
+      src/game/linkedGameCutscenes.c
+      src/game/endgameCutscenes.c
+      src/game/common/enemies/ganonRevivalCutscene.c
+      src/game/common/interactions/eraOrSeasonInfo.c
+      src/game/common/interactions/essence.c
+      src/game/common/interactions/essence15.c
+      src/game/ages/interactions/harpOfAgesSpawner.c
+      src/game/ages/interactions/makuSeed.c
+      src/game/ages/interactions/makuSeedAndEssences.c
+      src/game/ages/interactions/rickysGloveSpawner.c
+      src/game/ages/interactions/slateSlot.c
+      src/game/ages/interactions/slateSlot15.c
+      src/game/ages/interactions/triforceStone.c
+      src/game/common/interactions/bipin.c
+      src/game/common/interactions/bipinBlossomFamilySpawner.c
+      src/game/common/interactions/blossom.c
+      src/game/common/interactions/businessScrub.c
+      src/game/common/interactions/c1.c
+      src/game/common/interactions/cf.c
+      src/game/common/interactions/child.c
+      src/game/common/interactions/companionSpawner.c
+      src/game/common/interactions/companionTutorial.c
+      src/game/common/interactions/endgameCutsceneBipsomFamily.c
+      src/game/common/interactions/farore.c
+      src/game/common/interactions/farore15.c
+      src/game/common/interactions/faroreGiveItem.c
+      src/game/common/interactions/faroreMakeChest.c
+      src/game/common/interactions/faroresMemory.c
+      src/game/common/interactions/finalDungeonEnergy.c
+      src/game/common/interactions/gameCompleteDialog.c
+      src/game/common/interactions/gameCompleteDialog15.c
+      src/game/common/interactions/interactionMinecart.c
+      src/game/common/interactions/introBird.c
+      src/game/common/interactions/introSprites1.c
+      src/game/common/interactions/nayruRalphCredits.c
+      src/game/common/interactions/ringHelpBook.c
+      src/game/common/interactions/syrup.c
+      src/game/common/interactions/syrupCucco.c
+      src/game/common/interactions/vasu.c
+      src/game/common/interactions/vasu15.c
+      src/game/common/interactions/zeldaApproachTrigger.c
+      src/game/ages/interactions/97.c
+      src/game/ages/interactions/a8.c
+      src/game/ages/interactions/adlar.c
+      src/game/ages/interactions/ambi.c
+      src/game/ages/interactions/ambi15.c
+      src/game/ages/interactions/bear.c
+      src/game/ages/interactions/bipin15.c
+      src/game/ages/interactions/bird.c
+      src/game/ages/interactions/blackTowerDoorHandler.c
+      src/game/ages/interactions/blossom15.c
+      src/game/ages/interactions/bombUpgradeFairy.c
+      src/game/ages/interactions/bombUpgradeFairy15.c
+      src/game/ages/interactions/boy.c
+      src/game/ages/interactions/boy15.c
+      src/game/ages/interactions/boy2.c
+      src/game/ages/interactions/carpenter.c
+      src/game/ages/interactions/carpenter15.c
+      src/game/ages/interactions/cheval.c
+      src/game/ages/interactions/cheval15.c
+      src/game/ages/interactions/child15.c
+      src/game/ages/interactions/childJabu.c
+      src/game/ages/interactions/cloakedTwinrova.c
+      src/game/ages/interactions/comedian.c
+      src/game/ages/interactions/comedian15.c
+      src/game/ages/interactions/companionScript15.c
+      src/game/ages/interactions/companionScripts.c
+      src/game/ages/interactions/dekuScrub.c
+      src/game/ages/interactions/din.c
+      src/game/ages/interactions/dungeonEvents.c
+      src/game/ages/interactions/dungeonScript.c
+      src/game/ages/interactions/fairyHidingMinigame.c
+      src/game/ages/interactions/fairyHidingMinigame15.c
+      src/game/ages/interactions/femaleVillager.c
+      src/game/ages/interactions/forestFairy.c
+      src/game/ages/interactions/ghiniHarassingMoosh.c
+      src/game/ages/interactions/ghiniHarassingMoosh15.c
+      src/game/ages/interactions/ghostVeran.c
+      src/game/ages/interactions/ghostVeran15.c
+      src/game/ages/interactions/goron.c
+      src/game/ages/interactions/goron15.c
+      src/game/ages/interactions/goronBigBang15.c
+      src/game/ages/interactions/goronElder.c
+      src/game/ages/interactions/goronTargetCarts15.c
+      src/game/ages/interactions/greatFairy.c
+      src/game/ages/interactions/greatFairy15.c
+      src/game/ages/interactions/greatFairyOctorok15.c
+      src/game/ages/interactions/hardhatWorker.c
+      src/game/ages/interactions/humanVeran.c
+      src/game/ages/interactions/impa15.c
+      src/game/ages/interactions/impaInCutscene.c
+      src/game/ages/interactions/impaNpc.c
+      src/game/ages/interactions/interaction6b15.c
+      src/game/ages/interactions/interactiondc15.c
+      src/game/ages/interactions/introSprite.c
+      src/game/ages/interactions/kingMoblinDefeated.c
+      src/game/ages/interactions/kingMoblinDefeated15.c
+      src/game/ages/interactions/kingZora.c
+      src/game/ages/interactions/knowItAllBird.c
+      src/game/ages/interactions/librarian.c
+      src/game/ages/interactions/linkedGameGhini.c
+      src/game/ages/interactions/linkedNpc15.c
+      src/game/ages/interactions/makuGateOpening.c
+      src/game/ages/interactions/makuSprout.c
+      src/game/ages/interactions/makuSprout15.c
+      src/game/ages/interactions/makuTree.c
+      src/game/ages/interactions/makuTree15.c
+      src/game/ages/interactions/mamamuDog.c
+      src/game/ages/interactions/mamamuDog15.c
+      src/game/ages/interactions/mamamuYan.c
+      src/game/ages/interactions/mamamuYan15.c
+      src/game/ages/interactions/maskSalesman.c
+      src/game/ages/interactions/masterDiver.c
+      src/game/ages/interactions/miscMan.c
+      src/game/ages/interactions/miscMan2.c
+      src/game/ages/interactions/miscellaneous1.c
+      src/game/ages/interactions/miscellaneous2.c
+      src/game/ages/interactions/moblin.c
+      src/game/ages/interactions/moblin15.c
+      src/game/ages/interactions/monkey15.c
+      src/game/ages/interactions/monkeyMain.c
+      src/game/ages/interactions/monkeyThunk.c
+      src/game/ages/interactions/mustacheMan.c
+      src/game/ages/interactions/nayru.c
+      src/game/ages/interactions/nayruSavedCutscene.c
+      src/game/ages/interactions/nayruSavedCutscene15.c
+      src/game/ages/interactions/oldLady.c
+      src/game/ages/interactions/oldMan.c
+      src/game/ages/interactions/oldMan15.c
+      src/game/ages/interactions/oldManWithRupees.c
+      src/game/ages/interactions/oldZora.c
+      src/game/ages/interactions/pastGirl.c
+      src/game/ages/interactions/pastGuy.c
+      src/game/ages/interactions/pastOldLady.c
+      src/game/ages/interactions/patch.c
+      src/game/ages/interactions/patch15.c
+      src/game/ages/interactions/pickaxeWorker.c
+      src/game/ages/interactions/pickaxeWorker15.c
+      src/game/ages/interactions/pirate.c
+      src/game/ages/interactions/pirate15.c
+      src/game/ages/interactions/pirateCaptain.c
+      src/game/ages/interactions/pirateCaptain15.c
+      src/game/ages/interactions/pirateShip.c
+      src/game/ages/interactions/pirateShipInteraction.c
+      src/game/ages/interactions/plen.c
+      src/game/ages/interactions/poe.c
+      src/game/ages/interactions/poe15.c
+      src/game/ages/interactions/possessedNayru.c
+      src/game/ages/interactions/possessedNayru15.c
+      src/game/ages/interactions/postman.c
+      src/game/ages/interactions/rabbit.c
+      src/game/ages/interactions/rabbitMain.c
+      src/game/ages/interactions/rafton.c
+      src/game/ages/interactions/raftwreckCutscene.c
+      src/game/ages/interactions/raftwreckCutscene15.c
+      src/game/ages/interactions/raftwreckCutsceneHelper.c
+      src/game/ages/interactions/ralph.c
+      src/game/ages/interactions/ralph15.c
+      src/game/ages/interactions/remoteMakuCutscene.c
+      src/game/ages/interactions/remoteMakuCutscene15.c
+      src/game/ages/interactions/rosa.c
+      src/game/ages/interactions/shootingGallery.c
+      src/game/ages/interactions/shootingGallery15.c
+      src/game/ages/interactions/soldier.c
+      src/game/ages/interactions/soldier15.c
+      src/game/ages/interactions/subrosian.c
+      src/game/ages/interactions/symmetryNpc.c
+      src/game/ages/interactions/symmetryNpc15.c
+      src/game/ages/interactions/tingle.c
+      src/game/ages/interactions/tingle15.c
+      src/game/ages/interactions/toiletHand.c
+      src/game/ages/interactions/toiletHand15.c
+      src/game/ages/interactions/tokay.c
+      src/game/ages/interactions/tokay15.c
+      src/game/ages/interactions/tokkey.c
+      src/game/ages/interactions/tokkey15.c
+      src/game/ages/interactions/torchesAndBridges15.c
+      src/game/ages/interactions/troy.c
+      src/game/ages/interactions/troy15.c
+      src/game/ages/interactions/tuniNut.c
+      src/game/ages/interactions/tuniNutMain.c
+      src/game/ages/interactions/twinrova15.c
+      src/game/ages/interactions/twinrova3.c
+      src/game/ages/interactions/twinrovaInCutscene.c
+      src/game/ages/interactions/twinrovaInteraction.c
+      src/game/ages/interactions/veranCutsceneFace.c
+      src/game/ages/interactions/veranCutsceneWallmaster.c
+      src/game/ages/interactions/villager.c
+      src/game/ages/interactions/villager15.c
+      src/game/ages/interactions/vire.c
+      src/game/ages/interactions/vire15.c
+      src/game/ages/interactions/wildTokayController.c
+      src/game/ages/interactions/zelda.c
+      src/game/ages/interactions/zelda15.c
+      src/game/ages/interactions/zora.c
+      src/game/ages/interactions/zora15.c
+      APPEND PROPERTY COMPILE_DEFINITIONS ORACLES_LUA_GAMEPLAY=1)
+    if(ORACLES_LUA_ITEMS_SHOPS)
+      target_compile_definitions(oraclesnative INTERFACE ORACLES_LUA_ITEMS_SHOPS=1)
+    endif()
+
+    if(ORACLES_LUA_DOORS)
+      target_compile_definitions(oraclesnative INTERFACE ORACLES_LUA_DOORS=1)
+    endif()
+    if(ORACLES_LUA_LEVERS_LAVA)
+      target_compile_definitions(oraclesnative INTERFACE ORACLES_LUA_LEVERS_LAVA=1)
+    endif()
+    if(ORACLES_LUA_COLORED_CUBE)
+      target_compile_definitions(oraclesnative INTERFACE ORACLES_LUA_COLORED_CUBE=1)
+    endif()
+    if(ORACLES_LUA_BLOCK_PUZZLES)
+      set_source_files_properties(src/game/common/interactions/pushblockTrigger.c
+        src/game/common/interactions/pushblock.c
+        src/game/ages/interactions/pushblockSynchronizer.c
+        src/game/ages/interactions/waterPushblock.c
+        src/game/ages/interactions/stonePanel.c
+        src/game/ages/interactions/miscPuzzles.c
+        PROPERTIES COMPILE_DEFINITIONS ORACLES_LUA_BLOCK_PUZZLES=1)
+      target_compile_definitions(oraclesnative INTERFACE ORACLES_LUA_BLOCK_PUZZLES=1)
+    endif()
+  endif()
+  if(ORACLES_LUA_GAMEPLAY)
+    set_property(SOURCE src/game/ages/interactions/miscPuzzles.c APPEND PROPERTY COMPILE_DEFINITIONS ORACLES_LUA_GAMEPLAY=1)
+  endif()
   include(platform/switch/targets.cmake)
   return()
 endif()
@@ -87,6 +348,25 @@ add_library(oraclescore STATIC ${ORACLES_SHARED_SRC} src/core/cpu.c)
 target_include_directories(oraclescore PUBLIC src)
 add_library(oraclesnative STATIC ${ORACLES_SHARED_SRC} src/rt/native.c)
 target_include_directories(oraclesnative PUBLIC src)
+if(ORACLES_LUA_GAMEPLAY)
+  target_compile_definitions(oraclesnative PUBLIC ORACLES_LUA_GAMEPLAY=1)
+  target_link_libraries(oraclesnative PUBLIC oraclesgameplay)
+  if(ORACLES_LUA_ITEMS_SHOPS)
+    target_compile_definitions(oraclesnative INTERFACE ORACLES_LUA_ITEMS_SHOPS=1)
+  endif()
+  if(ORACLES_LUA_DOORS)
+    target_compile_definitions(oraclesnative INTERFACE ORACLES_LUA_DOORS=1)
+  endif()
+  if(ORACLES_LUA_LEVERS_LAVA)
+    target_compile_definitions(oraclesnative INTERFACE ORACLES_LUA_LEVERS_LAVA=1)
+  endif()
+  if(ORACLES_LUA_COLORED_CUBE)
+    target_compile_definitions(oraclesnative INTERFACE ORACLES_LUA_COLORED_CUBE=1)
+  endif()
+  if(ORACLES_LUA_BLOCK_PUZZLES)
+    target_compile_definitions(oraclesnative PUBLIC ORACLES_LUA_BLOCK_PUZZLES=1)
+  endif()
+endif()
 
 add_executable(oracles-run src/platform/headless.c)
 target_link_libraries(oracles-run oraclescore)
@@ -191,18 +471,9 @@ if(ORACLES_SDL OR ANDROID)
   endif()
 endif()
 
-add_library(oraclesmods STATIC src/mods/overlay.c src/mods/mods.c src/mods/api.c src/mods/sandbox.c src/mods/treasures.c
-  third_party/lua/lapi.c third_party/lua/lauxlib.c third_party/lua/lbaselib.c
-  third_party/lua/lcode.c third_party/lua/lcorolib.c third_party/lua/lctype.c third_party/lua/ldblib.c
-  third_party/lua/ldebug.c third_party/lua/ldo.c third_party/lua/ldump.c third_party/lua/lfunc.c
-  third_party/lua/lgc.c third_party/lua/linit.c third_party/lua/liolib.c third_party/lua/llex.c
-  third_party/lua/lmathlib.c third_party/lua/lmem.c third_party/lua/loadlib.c third_party/lua/lobject.c
-  third_party/lua/lopcodes.c third_party/lua/loslib.c third_party/lua/lparser.c third_party/lua/lstate.c
-  third_party/lua/lstring.c third_party/lua/lstrlib.c third_party/lua/ltable.c third_party/lua/ltablib.c
-  third_party/lua/ltm.c third_party/lua/lundump.c third_party/lua/lutf8lib.c third_party/lua/lvm.c
-  third_party/lua/lzio.c)
+add_library(oraclesmods STATIC src/mods/overlay.c src/mods/mods.c src/mods/api.c src/mods/sandbox.c src/mods/treasures.c)
 target_include_directories(oraclesmods PUBLIC src PRIVATE third_party/lua)
-target_link_libraries(oraclesmods PUBLIC oraclesui oraclesitem)
+target_link_libraries(oraclesmods PUBLIC oraclesui oraclesitem oracleslua)
 if(NOT WIN32)
   target_compile_definitions(oraclesmods PRIVATE LUA_USE_POSIX)
 endif()
@@ -221,9 +492,165 @@ if(ANDROID)
 endif()
 
 enable_testing()
+if(ORACLES_LUA_GAMEPLAY)
+  if(ORACLES_LUA_ENEMIES)
+    target_compile_definitions(oraclesnative INTERFACE ORACLES_LUA_ENEMIES=1)
+    add_executable(test_lua_enemies tests/test_lua_enemies.c)
+    target_include_directories(test_lua_enemies PRIVATE tests)
+    target_link_libraries(test_lua_enemies PRIVATE oraclesgameplay)
+    add_test(NAME lua_enemies COMMAND test_lua_enemies)
+    add_executable(test_lua_enemies_rom tests/test_lua_enemies_rom.c)
+    target_include_directories(test_lua_enemies_rom PRIVATE tests)
+    target_link_libraries(test_lua_enemies_rom PRIVATE oraclesnative)
+    target_compile_definitions(test_lua_enemies_rom PRIVATE GAME_ROM_DIR="${CMAKE_SOURCE_DIR}/roms")
+    add_test(NAME lua_enemies_rom COMMAND test_lua_enemies_rom)
+    set_tests_properties(lua_enemies_rom PROPERTIES SKIP_RETURN_CODE 77 LABELS "rom" TIMEOUT 900)
+  endif()
+  if(ORACLES_LUA_NPCS_EVENTS)
+    target_compile_definitions(oraclesnative INTERFACE ORACLES_LUA_NPCS_EVENTS=1)
+  endif()
+  if(ORACLES_LUA_NPCS_EVENTS)
+    add_executable(test_lua_npcs_events tests/test_lua_npcs_events.c)
+    target_include_directories(test_lua_npcs_events PRIVATE tests)
+    target_link_libraries(test_lua_npcs_events PRIVATE oraclesgameplay)
+    add_test(NAME lua_npcs_events COMMAND test_lua_npcs_events)
+    add_executable(test_lua_npcs_events_rom tests/test_lua_npcs_events_rom.c)
+    target_include_directories(test_lua_npcs_events_rom PRIVATE tests)
+    target_link_libraries(test_lua_npcs_events_rom PRIVATE oraclesnative)
+    target_compile_definitions(test_lua_npcs_events_rom PRIVATE GAME_ROM_DIR="${CMAKE_SOURCE_DIR}/roms")
+    add_test(NAME lua_npcs_events_rom COMMAND test_lua_npcs_events_rom)
+    set_tests_properties(lua_npcs_events_rom PROPERTIES SKIP_RETURN_CODE 77 LABELS "rom" TIMEOUT 600)
+  endif()
+  if(ORACLES_LUA_ITEMS_SHOPS)
+    add_executable(test_lua_items_shops tests/test_lua_items_shops.c)
+    target_include_directories(test_lua_items_shops PRIVATE tests)
+    target_link_libraries(test_lua_items_shops PRIVATE oraclesgameplay)
+    add_test(NAME lua_items_shops COMMAND test_lua_items_shops)
+    add_executable(test_lua_items_shops_rom tests/test_lua_items_shops_rom.c)
+    target_include_directories(test_lua_items_shops_rom PRIVATE tests)
+    target_link_libraries(test_lua_items_shops_rom PRIVATE oraclesnative)
+    target_compile_definitions(test_lua_items_shops_rom PRIVATE GAME_ROM_DIR="${CMAKE_SOURCE_DIR}/roms")
+    add_test(NAME lua_items_shops_rom COMMAND test_lua_items_shops_rom)
+    set_tests_properties(lua_items_shops_rom PROPERTIES SKIP_RETURN_CODE 77 LABELS "rom" TIMEOUT 600)
+  endif()
+  if(ORACLES_LUA_DOORS)
+    add_executable(test_lua_doors tests/test_lua_doors.c)
+    target_include_directories(test_lua_doors PRIVATE tests)
+    target_link_libraries(test_lua_doors PRIVATE oraclesgameplay)
+    add_test(NAME lua_doors COMMAND test_lua_doors)
+    add_executable(test_lua_doors_rom tests/test_lua_doors_rom.c)
+    target_include_directories(test_lua_doors_rom PRIVATE tests)
+    target_link_libraries(test_lua_doors_rom PRIVATE oraclesnative)
+    target_compile_definitions(test_lua_doors_rom PRIVATE GAME_ROM_DIR="${CMAKE_SOURCE_DIR}/roms")
+    add_test(NAME lua_doors_rom COMMAND test_lua_doors_rom)
+    set_tests_properties(lua_doors_rom PROPERTIES SKIP_RETURN_CODE 77 LABELS "rom" TIMEOUT 300)
+  endif()
+  add_executable(test_lua_gameplay tests/test_lua_gameplay.c)
+  target_include_directories(test_lua_gameplay PRIVATE tests)
+  target_link_libraries(test_lua_gameplay PRIVATE oraclesgameplay)
+  add_test(NAME lua_gameplay COMMAND test_lua_gameplay)
+  if(ORACLES_LUA_LEVERS_LAVA)
+    add_executable(test_lua_levers_lava tests/test_lua_levers_lava.c)
+    target_include_directories(test_lua_levers_lava PRIVATE tests)
+    target_link_libraries(test_lua_levers_lava PRIVATE oraclesgameplay)
+    add_test(NAME lua_levers_lava COMMAND test_lua_levers_lava)
+    add_executable(test_lua_levers_lava_rom tests/test_lua_levers_lava_rom.c)
+    target_include_directories(test_lua_levers_lava_rom PRIVATE tests)
+    target_link_libraries(test_lua_levers_lava_rom PRIVATE oraclesnative)
+    target_compile_definitions(test_lua_levers_lava_rom PRIVATE GAME_ROM_DIR="${CMAKE_SOURCE_DIR}/roms")
+    add_test(NAME lua_levers_lava_rom COMMAND test_lua_levers_lava_rom)
+    set_tests_properties(lua_levers_lava_rom PROPERTIES SKIP_RETURN_CODE 77 LABELS "rom" TIMEOUT 300)
+  endif()
+  if(ORACLES_LUA_COLORED_CUBE)
+    add_executable(test_lua_colored_cube tests/test_lua_colored_cube.c)
+    target_include_directories(test_lua_colored_cube PRIVATE tests)
+    target_link_libraries(test_lua_colored_cube PRIVATE oraclesgameplay)
+    add_test(NAME lua_colored_cube COMMAND test_lua_colored_cube)
+    add_executable(test_lua_colored_cube_rom tests/test_lua_colored_cube_rom.c)
+    target_include_directories(test_lua_colored_cube_rom PRIVATE tests)
+    target_link_libraries(test_lua_colored_cube_rom PRIVATE oraclesnative)
+    target_compile_definitions(test_lua_colored_cube_rom PRIVATE GAME_ROM_DIR="${CMAKE_SOURCE_DIR}/roms")
+    add_test(NAME lua_colored_cube_rom COMMAND test_lua_colored_cube_rom)
+    set_tests_properties(lua_colored_cube_rom PROPERTIES SKIP_RETURN_CODE 77 LABELS "rom" TIMEOUT 300)
+    add_test(NAME lua_colored_cube_invalid COMMAND python3 ${CMAKE_SOURCE_DIR}/tests/test_lua_colored_cube_invalid.py
+      $<TARGET_FILE:test_lua_colored_cube_rom> "${CMAKE_SOURCE_DIR}/roms/Legend of Zelda, The - Oracle of Ages (USA, Australia).gbc")
+    set_tests_properties(lua_colored_cube_invalid PROPERTIES SKIP_RETURN_CODE 77 LABELS "rom" TIMEOUT 300)
+  endif()
+  add_executable(test_lua_gameplay_rom tests/test_lua_gameplay_rom.c)
+  target_include_directories(test_lua_gameplay_rom PRIVATE tests)
+  target_link_libraries(test_lua_gameplay_rom PRIVATE oraclesnative)
+  target_compile_definitions(test_lua_gameplay_rom PRIVATE GAME_ROM_DIR="${CMAKE_SOURCE_DIR}/roms")
+  add_test(NAME lua_gameplay_rom COMMAND test_lua_gameplay_rom)
+  set_tests_properties(lua_gameplay_rom PROPERTIES SKIP_RETURN_CODE 77 LABELS "rom" TIMEOUT 120)
+  if(ORACLES_LUA_BLOCK_PUZZLES)
+    add_executable(test_lua_block_rules tests/test_lua_block_rules.c)
+    target_include_directories(test_lua_block_rules PRIVATE tests)
+    target_link_libraries(test_lua_block_rules PRIVATE oraclesgameplay)
+    add_test(NAME lua_block_rules COMMAND test_lua_block_rules)
+    add_executable(test_lua_block_rules_rom tests/test_lua_block_rules_rom.c)
+    target_include_directories(test_lua_block_rules_rom PRIVATE tests)
+    target_link_libraries(test_lua_block_rules_rom PRIVATE oraclesnative)
+    target_compile_definitions(test_lua_block_rules_rom PRIVATE GAME_ROM_DIR="${CMAKE_SOURCE_DIR}/roms")
+    add_test(NAME lua_block_rules_rom COMMAND test_lua_block_rules_rom)
+    set_tests_properties(lua_block_rules_rom PROPERTIES SKIP_RETURN_CODE 77 LABELS "rom" TIMEOUT 300)
+    add_executable(test_lua_blocks_rom tests/test_lua_blocks_rom.c)
+    target_include_directories(test_lua_blocks_rom PRIVATE tests)
+    target_link_libraries(test_lua_blocks_rom PRIVATE oraclesnative)
+    target_compile_definitions(test_lua_blocks_rom PRIVATE GAME_ROM_DIR="${CMAKE_SOURCE_DIR}/roms")
+    add_test(NAME lua_blocks_rom COMMAND test_lua_blocks_rom)
+    set_tests_properties(lua_blocks_rom PROPERTIES SKIP_RETURN_CODE 77 LABELS "rom" TIMEOUT 120)
+    # Prepare the next block rule without adding it to any production module or hook.
+    set(cube_candidate "${CMAKE_SOURCE_DIR}/gameplay/candidates/ages/block_cube_permission.lua")
+    set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${cube_candidate}")
+    file(SHA256 "${cube_candidate}" cube_candidate_hash)
+    set(cube_embedded "${CMAKE_BINARY_DIR}/ages_cube_candidate_lua.c")
+    add_custom_command(OUTPUT "${cube_embedded}"
+      COMMAND ${CMAKE_COMMAND} -DIN=${cube_candidate} -DOUT=${cube_embedded}
+        -DNAME=ages_cube_candidate_lua -P ${CMAKE_SOURCE_DIR}/cmake/embed.cmake
+      DEPENDS "${cube_candidate}" cmake/embed.cmake VERBATIM)
+    add_library(oracles_cube_candidate_fixture STATIC tests/lua_cube_candidate.c "${cube_embedded}")
+    target_include_directories(oracles_cube_candidate_fixture PUBLIC tests)
+    target_compile_definitions(oracles_cube_candidate_fixture PRIVATE ORACLES_CUBE_CANDIDATE_REVISION="${cube_candidate_hash}")
+    target_link_libraries(oracles_cube_candidate_fixture PUBLIC oraclesgameplay)
+    add_executable(test_lua_cube_candidate tests/test_lua_cube_candidate.c)
+    target_link_libraries(test_lua_cube_candidate PRIVATE oracles_cube_candidate_fixture)
+    add_test(NAME lua_cube_candidate COMMAND test_lua_cube_candidate)
+    set_tests_properties(lua_cube_candidate PROPERTIES TIMEOUT 120)
+    add_executable(test_lua_cube_candidate_rom tests/test_lua_cube_candidate_rom.c)
+    target_link_libraries(test_lua_cube_candidate_rom PRIVATE oracles_cube_candidate_fixture oraclesnative)
+    target_compile_definitions(test_lua_cube_candidate_rom PRIVATE GAME_ROM_DIR="${CMAKE_SOURCE_DIR}/roms")
+    add_test(NAME lua_cube_candidate_rom COMMAND test_lua_cube_candidate_rom)
+    set_tests_properties(lua_cube_candidate_rom PROPERTIES SKIP_RETURN_CODE 77 LABELS "rom" TIMEOUT 180)
+    # Synchronizer policies are also candidates, linked only into test executables.
+    set(sync_candidate "${CMAKE_SOURCE_DIR}/gameplay/candidates/ages/block_synchronizer.lua")
+    set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${sync_candidate}")
+    file(SHA256 "${sync_candidate}" sync_candidate_hash)
+    set(sync_embedded "${CMAKE_BINARY_DIR}/ages_sync_candidate_lua.c")
+    add_custom_command(OUTPUT "${sync_embedded}"
+      COMMAND ${CMAKE_COMMAND} -DIN=${sync_candidate} -DOUT=${sync_embedded}
+        -DNAME=ages_sync_candidate_lua -P ${CMAKE_SOURCE_DIR}/cmake/embed.cmake
+      DEPENDS "${sync_candidate}" cmake/embed.cmake VERBATIM)
+    add_library(oracles_sync_candidate_fixture STATIC tests/lua_sync_candidate.c "${sync_embedded}")
+    target_include_directories(oracles_sync_candidate_fixture PUBLIC tests)
+    target_compile_definitions(oracles_sync_candidate_fixture PRIVATE ORACLES_SYNC_CANDIDATE_REVISION="${sync_candidate_hash}")
+    target_link_libraries(oracles_sync_candidate_fixture PUBLIC oraclesgameplay)
+    add_executable(test_lua_sync_candidate tests/test_lua_sync_candidate.c)
+    target_link_libraries(test_lua_sync_candidate PRIVATE oracles_sync_candidate_fixture)
+    add_test(NAME lua_sync_candidate COMMAND test_lua_sync_candidate)
+    set_tests_properties(lua_sync_candidate PROPERTIES TIMEOUT 120)
+    add_executable(test_lua_sync_candidate_rom tests/test_lua_sync_candidate_rom.c)
+    target_link_libraries(test_lua_sync_candidate_rom PRIVATE oracles_sync_candidate_fixture oraclesnative)
+    target_compile_definitions(test_lua_sync_candidate_rom PRIVATE GAME_ROM_DIR="${CMAKE_SOURCE_DIR}/roms")
+    add_test(NAME lua_sync_candidate_rom COMMAND test_lua_sync_candidate_rom)
+    set_tests_properties(lua_sync_candidate_rom PROPERTIES SKIP_RETURN_CODE 77 LABELS "rom" TIMEOUT 180)
+  endif()
+endif()
 set(TEST_ROM_DIR ${CMAKE_SOURCE_DIR}/tests/roms)
 set(GAME_ROM_DIR "${CMAKE_SOURCE_DIR}/roms" CACHE PATH "Game ROM directory used by tests")
 set(ORACLES_TAS_DIR "${CMAKE_SOURCE_DIR}/tas" CACHE PATH "TAS data directory used by native tests")
+add_executable(benchmark-gameplay tools/benchmark_gameplay.c)
+target_link_libraries(benchmark-gameplay PRIVATE oraclesnative)
+target_compile_definitions(benchmark-gameplay PRIVATE GAME_ROM_DIR="${GAME_ROM_DIR}" TAS_DIR="${ORACLES_TAS_DIR}")
 add_executable(test_ui tests/test_ui.c)
 target_link_libraries(test_ui oraclesui)
 add_test(NAME ui COMMAND test_ui)

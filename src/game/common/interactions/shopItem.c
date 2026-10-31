@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/items_shops.h"
 
 #undef CYC
 #undef CYCT
@@ -121,19 +122,23 @@ void shopItemState0_hook(GB *gb) {
   BASE(shopItemState0);
   uint16_t sp0_ = gb->sp; (void)sp0_;
   CYC(b_+O(0), b_+OE(3)); A = mem_rd(gb, wInShop);
-  CYC(b_+O(3), b_+OE(5)); alu_and(gb, 2);
+  CYC(b_+O(3), b_+OE(5)); SHOP_AND(2);
   if (F & FZ) { CYCT(b_+O(5), b_+OE(6)); ret_effect(gb); return; } CYC(b_+O(5), b_+OE(6));
   CYC(b_+O(6), b_+OE(8)); A = 1;
   CYC(b_+O(8), b_+OE(9)); mem_wr(gb, DE, A);
   if (game_seasons) {
     CYC(b_+S(9), b_+S(11)); A = 0x05;
     CALL_C(b_+S(11), checkTreasureObtained_hook, SYM(checkTreasureObtained), b_+S(14));
+    TRADE_FAILED_RETURN();
+    SHOP_CARRY();
     if (!(F & FC)) { CYCT(b_+S(14), b_+S(17)); shopItemPopStackAndDeleteSelf_hook(gb); return; } CYC(b_+S(14), b_+S(17));
     CYC(b_+S(17), b_+S(19)); E = 0x42;
     CYC(b_+S(19), b_+S(20)); A = mem_rd(gb, DE);
-    CYC(b_+S(20), b_+S(22)); alu_cp(gb, 3);
+    CYC(b_+S(20), b_+S(22)); SHOP_CP(3);
     if (!(F & FZ)) { CYCT(b_+S(22), b_+S(24)); goto L_4327; } CYC(b_+S(22), b_+S(24));
     CALL_C(b_+S(24), checkIsLinkedGame_hook, SYM(checkIsLinkedGame), b_+S(27));
+    TRADE_FAILED_RETURN();
+    SHOP_FACT_ZERO();
     if (F & FZ) { CYCT(b_+S(27), b_+S(29)); goto L_4327; } CYC(b_+S(27), b_+S(29));
     CYC(b_+S(29), b_+S(31)); A = 0x13;
     CYC(b_+S(31), b_+S(32)); mem_wr(gb, DE, A);
@@ -142,10 +147,12 @@ void shopItemState0_hook(GB *gb) {
   if (!game_seasons) {
     CYC(b_+9, b_+11); E = 0x42;
     CYC(b_+11, b_+12); A = mem_rd(gb, DE);
-    CYC(b_+12, b_+14); alu_cp(gb, 0);
+    CYC(b_+12, b_+14); SHOP_CP(0);
     if (!(F & FZ)) { CYCT(b_+14, b_+16); goto L_430c; } CYC(b_+14, b_+16);
     CYC(b_+16, b_+18); A = 0x2c;
     CALL_C(b_+18, checkTreasureObtained_hook, SYM(checkTreasureObtained), b_+21);
+    TRADE_FAILED_RETURN();
+    SHOP_CARRY();
     if (!(F & FC)) { CYCT(b_+21, b_+23); goto L_430c; } CYC(b_+21, b_+23);
     CYC(b_+23, b_+26); A = mem_rd(gb, wRingBoxLevel);
     CYC(b_+26, b_+27); A = alu_dec8(gb, A);
@@ -154,16 +161,20 @@ void shopItemState0_hook(GB *gb) {
     CYC(b_+31, b_+32); mem_wr(gb, DE, A);
 L_430c:
     CYC(b_+32, b_+33); A = mem_rd(gb, DE);
-    CYC(b_+33, b_+35); alu_cp(gb, 4);
+    CYC(b_+33, b_+35); SHOP_CP(4);
     if (!(F & FZ)) { CYCT(b_+35, b_+37); goto L_431b; } CYC(b_+35, b_+37);
     CYC(b_+37, b_+39); A = 3;
     CALL_C(b_+39, checkTreasureObtained_hook, SYM(checkTreasureObtained), b_+42);
+    TRADE_FAILED_RETURN();
+    SHOP_CARRY();
     if (!(F & FC)) { CYCT(b_+42, b_+45); shopItemPopStackAndDeleteSelf_hook(gb); return; } CYC(b_+42, b_+45);
     CYC(b_+45, b_+47); goto L_4327;
 L_431b:
-    CYC(b_+47, b_+49); alu_cp(gb, 3);
+    CYC(b_+47, b_+49); SHOP_CP(3);
     if (!(F & FZ)) { CYCT(b_+49, b_+51); goto L_4327; } CYC(b_+49, b_+51);
     CALL_C(b_+51, checkIsLinkedGame_hook, SYM(checkIsLinkedGame), b_+54);
+    TRADE_FAILED_RETURN();
+    SHOP_FACT_ZERO();
     if (F & FZ) { CYCT(b_+54, b_+56); goto L_4327; } CYC(b_+54, b_+56);
     CYC(b_+56, b_+58); A = 0x13;
     CYC(b_+58, b_+59); mem_wr(gb, DE, A);
@@ -171,19 +182,25 @@ L_431b:
 L_4327:
   CYC(b_+O(59), b_+OE(61)); A = 0x0e;
   CALL_C(b_+O(61), checkTreasureObtained_hook, SYM(checkTreasureObtained), b_+OE(64));
+  TRADE_FAILED_RETURN();
+  SHOP_CARRY();
   if (F & FC) { CYCT(b_+O(64), b_+OE(66)); goto L_4339; } CYC(b_+O(64), b_+OE(66));
   if (!game_seasons) {
     CYC(b_+66, b_+68); A = 0x1d;
     CALL_C(b_+68, checkGlobalFlag_hook, SYM(checkGlobalFlag), b_+71);
+    TRADE_FAILED_RETURN();
+    SHOP_FACT_ZERO();
     if (F & FZ) { CYCT(b_+71, b_+73); goto L_4339; } CYC(b_+71, b_+73);
   } else {
     CYC(b_+S(39), b_+S(42)); A = W8(wRickyState);
-    CYC(b_+S(42), b_+S(44)); alu_bit(gb, 5, A);
+    CYC(b_+S(42), b_+S(44)); SHOP_BIT(5,A);
     if (!(F & FZ)) { CYCT(b_+S(44), b_+S(46)); goto L_4339; } CYC(b_+S(44), b_+S(46));
     CYC(b_+S(46), b_+S(49)); A = W8(wEssencesObtained);
-    CYC(b_+S(49), b_+S(51)); alu_bit(gb, 1, A);
+    CYC(b_+S(49), b_+S(51)); SHOP_BIT(1,A);
     if (F & FZ) { CYCT(b_+S(51), b_+S(53)); goto L_4339; } CYC(b_+S(51), b_+S(53));
     CALL_C(b_+S(53), checkIsLinkedGame_hook, SYM(checkIsLinkedGame), b_+S(56));
+    TRADE_FAILED_RETURN();
+    SHOP_FACT_ZERO();
     if (!(F & FZ)) { CYCT(b_+S(56), b_+S(58)); goto L_4339; } CYC(b_+S(56), b_+S(58));
   }
   CYC(b_+O(73), b_+OE(75)); C = 8;
@@ -192,18 +209,20 @@ L_4339:
   CYC(b_+O(77), b_+OE(79)); C = 0;
 L_433b:
   CYC(b_+O(79), b_+OE(82)); A = mem_rd(gb, wBoughtShopItems2);
-  CYC(b_+O(82), b_+OE(84)); alu_and(gb, 0xf7);
-  CYC(b_+O(84), b_+OE(85)); alu_or(gb, C);
+  CYC(b_+O(82), b_+OE(84)); SHOP_AND(0xf7);
+  CYC(b_+O(84), b_+OE(85)); SHOP_OR(C);
   CYC(b_+O(85), b_+OE(88)); mem_wr(gb, wBoughtShopItems2, A);
   CYC(b_+O(88), b_+OE(90)); A = 0x0d;
   CALL_C(b_+O(90), checkTreasureObtained_hook, SYM(checkTreasureObtained), b_+OE(93));
+  TRADE_FAILED_RETURN();
+  SHOP_CARRY();
   CYC(b_+O(93), b_+OE(95)); C = 0x10;
   if (F & FC) { CYCT(b_+O(95), b_+OE(97)); goto L_434f; } CYC(b_+O(95), b_+OE(97));
   CYC(b_+O(97), b_+OE(99)); C = 0x20;
 L_434f:
   CYC(b_+O(99), b_+OE(102)); A = mem_rd(gb, wBoughtShopItems2);
-  CYC(b_+O(102), b_+OE(104)); alu_and(gb, 0xcf);
-  CYC(b_+O(104), b_+OE(105)); alu_or(gb, C);
+  CYC(b_+O(102), b_+OE(104)); SHOP_AND(0xcf);
+  CYC(b_+O(104), b_+OE(105)); SHOP_OR(C);
   CYC(b_+O(105), b_+OE(108)); mem_wr(gb, wBoughtShopItems2, A);
 L_4358:
   CYC(b_+O(108), b_+OE(110)); E = 0x42;
@@ -215,11 +234,11 @@ L_4358:
   CYC(b_+O(117), b_+OE(118)); C = A;
   CYC(b_+O(118), b_+OE(120)); B = 0xc6;
   CYC(b_+O(120), b_+OE(121)); A = mem_rd(gb, BC);
-  CYC(b_+O(121), b_+OE(122)); alu_and(gb, mem_rd(gb, HL));
+  CYC(b_+O(121), b_+OE(122)); SHOP_AND(mem_rd(gb, HL));
   if (F & FZ) { CYCT(b_+O(122), b_+OE(124)); goto L_4376; } CYC(b_+O(122), b_+OE(124));
   CYC(b_+O(124), b_+OE(125)); SET_HL(HL + 1);
   CYC(b_+O(125), b_+OE(126)); A = mem_rd(gb, HL); SET_HL(HL + 1);
-  CYC(b_+O(126), b_+OE(128)); alu_bit(gb, 7, A);
+  CYC(b_+O(126), b_+OE(128)); SHOP_BIT(7,A);
   if (!(F & FZ)) { CYCT(b_+O(128), b_+OE(130)); shopItemPopStackAndDeleteSelf_hook(gb); return; } CYC(b_+O(128), b_+OE(130));
   CYC(b_+O(130), b_+OE(131)); mem_wr(gb, DE, A);
   CYC(b_+O(131), b_+OE(133)); E = 0x4d;
@@ -229,8 +248,10 @@ L_4358:
   CYC(b_+O(136), b_+OE(138)); goto L_4358;
 L_4376:
   CALL_C(b_+O(138), interactionInitGraphics_hook, SYM(interactionInitGraphics), b_+OE(141));
+  TRADE_FAILED_RETURN();
   CYC(b_+O(141), b_+OE(143)); A = 7;
   CALL_C(b_+O(143), objectSetCollideRadius_hook, SYM(objectSetCollideRadius), b_+OE(146));
+  TRADE_FAILED_RETURN();
   CYC(b_+O(146), b_+OE(148)); L = 0x70;
   CYC(b_+O(148), b_+OE(150)); E = 0x4b;
   CYC(b_+O(150), b_+OE(151)); A = mem_rd(gb, DE);
@@ -239,6 +260,7 @@ L_4376:
   CYC(b_+O(154), b_+OE(155)); A = mem_rd(gb, DE);
   CYC(b_+O(155), b_+OE(156)); mem_wr(gb, HL, A); SET_HL(HL + 1);
   CALL_C(b_+O(156), objectSetVisible83_hook, SYM(objectSetVisible83), b_+OE(159));
+  TRADE_FAILED_RETURN();
   CYC(b_+O(159), b_+OE(161)); TAIL(shopItemUpdateRupeeDisplay);
 }
 
@@ -292,22 +314,27 @@ void shopItemState3_hook(GB *gb) {
   CYC(b_+O(6), b_+OE(7)); shopItem_addAToHl(gb, b_+O(7));
   CYC(b_+O(7), b_+OE(8)); A = mem_rd(gb, HL); SET_HL(HL + 1);
   CALL_C(b_+O(8), removeRupeeValue_hook, SYM(removeRupeeValue), b_+OE(11));
+  TRADE_FAILED_RETURN();
   CYC(b_+O(11), b_+OE(13)); E = 0x42;
   CYC(b_+O(13), b_+OE(14)); A = mem_rd(gb, DE);
   CYC(b_+O(14), b_+OE(17)); SET_HL(SYM(shopItemTreasureToGive));
   CYC(b_+O(17), b_+OE(18)); shopItem_addDoubleIndex(gb, b_+O(18));
   CYC(b_+O(18), b_+OE(19)); A = mem_rd(gb, HL); SET_HL(HL + 1);
   CYC(b_+O(19), b_+OE(20)); C = mem_rd(gb, HL);
-  CYC(b_+O(20), b_+OE(22)); alu_cp(gb, 0);
+  CYC(b_+O(20), b_+OE(22)); SHOP_CP(0);
   if (!(F & FZ)) { CYCT(b_+O(22), b_+OE(24)); goto L_4425; } CYC(b_+O(22), b_+OE(24));
   CALL_C(b_+O(24), getRandomRingOfGivenTier_hook, SYM(getRandomRingOfGivenTier), b_+OE(27));
+  TRADE_FAILED_RETURN();
 L_4425:
+  if(A<0x63) SHOP_BYTE(A,reward_id);
   CALL_C(b_+O(27), giveTreasure_hook, SYM(giveTreasure), b_+OE(30));
+  TRADE_FAILED_RETURN();
   if (game_seasons) {
     CYC(b_+S(30), b_+S(32)); E = 0x42;
     CYC(b_+S(32), b_+S(33)); A = mem_rd(gb, DE);
-    CYC(b_+S(33), b_+S(34)); alu_or(gb, A);
+    CYC(b_+S(33), b_+S(34)); SHOP_OR(A);
     if (F & FZ) CALL_C_CC(b_+S(34), refillSeedSatchel_hook, SYM(refillSeedSatchel), b_+S(37)); else CYC(b_+S(34), b_+S(37));
+    TRADE_FAILED_RETURN();
   }
   CYC(b_+O(30), b_+OE(32)); E = 0x44;
   CYC(b_+O(32), b_+OE(34)); A = 5;
@@ -322,7 +349,7 @@ L_4425:
   CYC(b_+O(51), b_+OE(52)); shopItem_addAToHl(gb, b_+O(52));
   CYC(b_+O(52), b_+OE(53)); A = mem_rd(gb, HL);
   CYC(b_+O(53), b_+OE(54)); C = A;
-  CYC(b_+O(54), b_+OE(55)); alu_or(gb, A);
+  CYC(b_+O(54), b_+OE(55)); SHOP_OR(A);
   CYC(b_+O(55), b_+OE(57)); B = 0;
   if (!(F & FZ)) { CYCT(b_+O(57), b_+OE(60)); showText_hook(gb); return; } CYC(b_+O(57), b_+OE(60));
   CYC(b_+O(60), b_+OE(61)); ret_effect(gb);

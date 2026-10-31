@@ -11,6 +11,16 @@
 #include "hooks/hooks.h"
 #include "rt/fibers.h"
 #include "core/hash.h"
+#ifdef ORACLES_LUA_GAMEPLAY
+#include "script/gameplay.h"
+#include "script/block_rules.h"
+#include "script/colored_cube.h"
+#include "script/levers_lava.h"
+#include "script/doors.h"
+#include "script/items_shops.h"
+#include "script/npcs_events.h"
+#include "script/enemies.h"
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -161,6 +171,9 @@ static void on_frame(GB *gb, const GBSample *sm, void *ctx) {
 }
 
 int main(int argc, char **argv) {
+#ifdef ORACLES_LUA_GAMEPLAY
+  fprintf(stderr, "Lua scripts SHA256: %s\n", gameplay_revision());
+#endif
   const char *rom_path = arg_value(argc, argv, "--rom");
   if (!rom_path) { fprintf(stderr, "usage: oracles-run --rom FILE [options]\n"); return 2; }
   size_t rom_size, boot_size = 0;
@@ -339,7 +352,7 @@ int main(int argc, char **argv) {
     }
     if (getenv("INTLOG")) dbg_log_ints = (frame >= il_a && frame <= il_b);
     if (reload_every && frame && frame % reload_every == 0) reload_pending = true;
-    if ((reload_at && frame == reload_at) || (reload_pending && threads_parked(gb))) {
+    if ((reload_at && frame == reload_at) || (reload_pending && !gb->sample_count && threads_parked(gb))) {
       reload_pending = false;
       // a save state round trip: every thread fiber is dropped, as when the app loads a state
       if (!oracles_save_boot_state(gb, reload_path) || !oracles_load_boot_state(gb, reload_path)) return 2;
@@ -373,5 +386,29 @@ int main(int argc, char **argv) {
   if ((p = arg_value(argc, argv, "--state-out")) && !oracles_save_boot_state(gb, p)) { fprintf(stderr, "cannot write %s\n", p); return 2; }
   printf("done: %llu frames, state %016llx\n", (unsigned long long)GRID_FRAME(gb->cycles),
          (unsigned long long)gb_state_hash(gb));
+#ifdef ORACLES_LUA_GAMEPLAY
+  GameplayMemoryStats lua_stats = gameplay_memory_stats();
+  fprintf(stderr, "Lua blocks=%llu/%llu/%llu/%llu; heap=%zu; peak=%zu\n",
+    (unsigned long long)gameplay_block_calls(0), (unsigned long long)gameplay_block_calls(1),
+    (unsigned long long)gameplay_block_calls(2), (unsigned long long)gameplay_block_calls(3), lua_stats.current, lua_stats.peak);
+  for(int r=0;r<GAMEPLAY_BLOCK_RULE_COUNT;++r)
+    fprintf(stderr,"Lua rule %s=%llu\n",gameplay_block_rule_name(r),(unsigned long long)gameplay_block_rule_calls(r));
+  for(int r=0;r<GAMEPLAY_COLORED_CUBE_RULE_COUNT;++r)
+    fprintf(stderr,"Lua rule %s=%llu\n",gameplay_colored_cube_rule_name(r),(unsigned long long)gameplay_colored_cube_calls(r));
+  for(int r=0;r<GAMEPLAY_LAVA_RULE_COUNT;++r)
+    fprintf(stderr,"Lua rule %s=%llu\n",gameplay_lava_rule_name(r),(unsigned long long)gameplay_lava_calls(r));
+  for(int r=0;r<GAMEPLAY_DOOR_RULE_COUNT;++r)
+    fprintf(stderr,"Lua rule %s=%llu\n",gameplay_door_rule_name(r),(unsigned long long)gameplay_door_calls(r));
+  for(int r=0;r<GAMEPLAY_NPCS_COUNT;++r)
+    fprintf(stderr,"Lua rule %s=%llu\n",gameplay_npc_rule_name(r),(unsigned long long)gameplay_npc_calls(r));
+  for(int r=0;r<GAMEPLAY_EVENTS_COUNT;++r)
+    fprintf(stderr,"Lua rule %s=%llu\n",gameplay_event_rule_name(r),(unsigned long long)gameplay_event_calls(r));
+  for(int r=0;r<GAMEPLAY_ENEMY_COUNT;++r)
+    fprintf(stderr,"Lua rule %s=%llu\n",gameplay_enemy_rule_name(r),(unsigned long long)gameplay_enemy_calls(r));
+  for(int r=0;r<GAMEPLAY_ITEMS_COUNT;++r)
+    fprintf(stderr,"Lua rule %s=%llu\n",gameplay_item_rule_name(r),(unsigned long long)gameplay_item_calls(r));
+  for(int r=0;r<GAMEPLAY_SHOPS_COUNT;++r)
+    fprintf(stderr,"Lua rule %s=%llu\n",gameplay_shop_rule_name(r),(unsigned long long)gameplay_shop_calls(r));
+#endif
   return 0;
 }

@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/npcs_events.h"
 
 #undef CYC
 #undef CYCT
@@ -12,7 +13,7 @@ void essence_stopEnergySwirl_hook(GB *gb);
 void essence_createEnergySwirl_hook(GB *gb) {
   BASE(essence_createEnergySwirl);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, objectGetPosition_hook, SYM(objectGetPosition), b_+3);
+  NPC_CALL_C(b_+0, objectGetPosition_hook, SYM(objectGetPosition), b_+3);
   CYC(b_+3, b_+5); A = 0xff;
   CYC(b_+5, b_+8); TAIL(createEnergySwirlGoingIn);
 }
@@ -20,6 +21,6 @@ void essence_createEnergySwirl_hook(GB *gb) {
 void essence_stopEnergySwirl_hook(GB *gb) {
   BASE(essence_stopEnergySwirl);
   CYC(b_+0, b_+2); A = 0x01;
-  CYC(b_+2, b_+5); mem_wr(gb, wDeleteEnergyBeads, A);
+  CYC(b_+2, b_+5); EVENT_WRITE(wDeleteEnergyBeads, A);
   RET(b_+5);
 }

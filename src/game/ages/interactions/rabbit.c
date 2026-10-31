@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/npcs_events.h"
 
 #undef CYC
 #define CYC(from, to) burn_rom(gb, bk_, (from), (to), false)

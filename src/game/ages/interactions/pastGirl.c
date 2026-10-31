@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/npcs_events.h"
 
 #undef CYC
 #undef CYCT
@@ -55,11 +56,11 @@ void interactionCode38_hook(GB *gb) {
 
 state0:
   CYC(b_+8, b_+10); A = 0x01;
-  CYC(b_+10, b_+11); mem_wr(gb, DE, A);
-  CALL_C(b_+11, interactionInitGraphics_hook, SYM(interactionInitGraphics), b_+14);
-  CALL_C(b_+14, objectSetVisiblec2_hook, SYM(objectSetVisiblec2), b_+17);
+  CYC(b_+10, b_+11); EVENT_WRITE(DE, A);
+  NPC_CALL_C(b_+11, interactionInitGraphics_hook, SYM(interactionInitGraphics), b_+14);
+  NPC_CALL_C(b_+14, objectSetVisiblec2_hook, SYM(objectSetVisiblec2), b_+17);
   CYC(b_+17, b_+19); A = 0x1a; // >TX_1a00
-  CALL_C(b_+19, interactionSetHighTextIndex_hook, SYM(interactionSetHighTextIndex), b_+22);
+  NPC_CALL_C(b_+19, interactionSetHighTextIndex_hook, SYM(interactionSetHighTextIndex), b_+22);
   CYC(b_+22, b_+24); E = INTERACTION_BASE + OBJ_SUBID;
   CYC(b_+24, b_+25); A = mem_rd(gb, DE);
   CYC(b_+25, b_+26); push_effect(gb, b_+26);
@@ -72,27 +73,27 @@ subid0Init:
   // callab agesInteractionsBank09.getGameProgress_2
   CYC(b_+28, b_+31); SET_HL(getGameProgress_2_bank09);
   CYC(b_+31, b_+33); E = 0x09;
-  CALL_C(b_+33, interBankCall_hook, 0x008a, b_+36);
+  NPC_CALL_C(b_+33, interBankCall_hook, 0x008a, b_+36);
   // NPC doesn't exist between beating d2 and saving Nayru
   CYC(b_+36, b_+37); A = B;
-  CYC(b_+37, b_+39); alu_cp(gb, 0x01);
+  CYC(b_+37, b_+39); NPC_CP(0x01);
   if (F & FZ) {
     CYCT(b_+39, b_+42); TAIL(interactionDelete);
   }
   CYC(b_+39, b_+42);
-  CYC(b_+42, b_+44); alu_cp(gb, 0x02);
+  CYC(b_+42, b_+44); NPC_CP(0x02);
   if (F & FZ) {
     CYCT(b_+44, b_+47); TAIL(interactionDelete);
   }
   CYC(b_+44, b_+47);
   CYC(b_+47, b_+48); A = B;
   CYC(b_+48, b_+51); SET_HL(interactionCode38_scriptTable_bank08);
-  CYC(b_+51, b_+52); pastGirl_addDoubleIndex(gb, b_+52);
+  CYC(b_+51, b_+52); NPC_LOCAL_CALL(pastGirl_addDoubleIndex(gb, b_+52));
   CYC(b_+52, b_+53); A = mem_rd(gb, HL); SET_HL(HL + 1);
   CYC(b_+53, b_+54); H = mem_rd(gb, HL);
   CYC(b_+54, b_+55); L = A;
-  CALL_C(b_+55, interactionSetScript_hook, SYM(interactionSetScript), b_+58);
-  CALL_C(b_+58, objectMarkSolidPosition_hook, SYM(objectMarkSolidPosition), b_+61);
+  NPC_CALL_C(b_+55, interactionSetScript_hook, SYM(interactionSetScript), b_+58);
+  NPC_CALL_C(b_+58, objectMarkSolidPosition_hook, SYM(objectMarkSolidPosition), b_+61);
   CYC(b_+61, b_+63);
 
 state1:
@@ -105,6 +106,6 @@ state1:
   } while (0);
 
 subid0:
-  CALL_C(b_+69, interactionRunScript_hook, SYM(interactionRunScript), b_+72);
+  NPC_CALL_C(b_+69, interactionRunScript_hook, SYM(interactionRunScript), b_+72);
   CYC(b_+72, b_+75); TAIL(interactionAnimateAsNpc);
 }

@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/enemies.h"
 
 #undef CYC
 #undef CYCT
@@ -28,7 +29,7 @@ static void ironMask_addAToHl_from_rst(GB *gb, uint16_t return_address) {
   push_effect(gb, return_address);
   burn_rom(gb, 0x00, 0x0010, 0x0011, false); alu_add(gb, L);
   burn_rom(gb, 0x00, 0x0011, 0x0012, false); L = A;
-  if (F & FC) {
+  if ((F & FC)) {
     burn_rom(gb, 0x00, 0x0012, 0x0013, false);
     burn_rom(gb, 0x00, 0x0013, 0x0014, false); H = alu_inc8(gb, H);
     burn_rom(gb, 0x00, 0x0014, 0x0015, false);
@@ -46,8 +47,8 @@ static void ironMask_chooseAngle(GB *gb, uint16_t return_address) {
   BASE(ironMask_chooseRandomAngleAndCounter1);
   push_effect(gb, return_address);
   CYC(b_+37, b_+38); A = C;
-  CYC(b_+38, b_+39); alu_or(gb, A);
-  if (F & FZ) { CYCT(b_+39, b_+42); ecom_updateCardinalAngleTowardTarget_b0d_hook(gb); return; } // jp z
+  CYC(b_+38, b_+39); ENEMY_OR(A);
+  if (ENEMY_FLAG(FZ)) { CYCT(b_+39, b_+42); ENEMY_LOCAL_CALL(ecom_updateCardinalAngleTowardTarget_b0d_hook(gb)); return; } // jp z
   CYC(b_+39, b_+42);
   CYC(b_+42, b_+45); TAIL(ecom_setRandomCardinalAngle_b0d); // jp
 }
@@ -67,24 +68,24 @@ void ironMask_chooseAmountOfTimeToStand_hook(GB *gb);
 void enemyCode1c_hook(GB *gb) {
   BASE(enemyCode1c);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, ecom_checkHazards_b0d_hook, SYM(ecom_checkHazards_b0d), b_+3);
-  if (F & FZ) { CYCT(b_+3, b_+5); goto normalStatus; } // jr z
+  ENEMY_CALL_C(b_+0, ecom_checkHazards_b0d_hook, SYM(ecom_checkHazards_b0d), b_+3);
+  if (ENEMY_FLAG(FZ)) { CYCT(b_+3, b_+5); goto normalStatus; } // jr z
   CYC(b_+3, b_+5);
   CYC(b_+5, b_+7); alu_sub(gb, 0x03); // ENEMYSTATUS_NO_HEALTH
-  if (F & FC) { CYCT(b_+7, b_+8); ret_effect(gb); return; } // ret c
+  if (ENEMY_FLAG(FC)) { CYCT(b_+7, b_+8); ret_effect(gb); return; } // ret c
   CYC(b_+7, b_+8);
-  if (F & FZ) { CYCT(b_+8, b_+11); enemyDie_hook(gb); return; } // jp z
+  if (ENEMY_FLAG(FZ)) { CYCT(b_+8, b_+11); ENEMY_LOCAL_CALL(enemyDie_hook(gb)); return; } // jp z
   CYC(b_+8, b_+11);
   CYC(b_+11, b_+12); A = alu_dec8(gb, A);
-  if (!(F & FZ)) { CYCT(b_+12, b_+15); ecom_updateKnockbackAndCheckHazards_b0d_hook(gb); return; } // jp nz
+  if (!(ENEMY_FLAG(FZ))) { CYCT(b_+12, b_+15); ENEMY_LOCAL_CALL(ecom_updateKnockbackAndCheckHazards_b0d_hook(gb)); return; } // jp nz
   CYC(b_+12, b_+15);
 
 normalStatus:
-  CALL_C(b_+15, ecom_getSubidAndCpStateTo08_b0d_hook, SYM(ecom_getSubidAndCpStateTo08_b0d), b_+18);
-  if (F & FC) { CYCT(b_+18, b_+20); goto commonState; } // jr c
+  ENEMY_CALL_C(b_+15, ecom_getSubidAndCpStateTo08_b0d_hook, SYM(ecom_getSubidAndCpStateTo08_b0d), b_+18);
+  if (ENEMY_FLAG(FC)) { CYCT(b_+18, b_+20); goto commonState; } // jr c
   CYC(b_+18, b_+20);
-  CYC(b_+20, b_+22); alu_bit(gb, 0, B);
-  if (F & FZ) { CYCT(b_+22, b_+25); ironMask_subid00_hook(gb); return; } // jp z
+  CYC(b_+20, b_+22); ENEMY_BIT(0, B);
+  if (ENEMY_FLAG(FZ)) { CYCT(b_+22, b_+25); ENEMY_LOCAL_CALL(ironMask_subid00_hook(gb)); return; } // jp z
   CYC(b_+22, b_+25);
   CYC(b_+25, b_+28); TAIL(ironMask_subid01); // jp
 
@@ -92,9 +93,9 @@ commonState:
   CYC(b_+28, b_+29); push_effect(gb, b_+29);
   {
     uint16_t target = enemyCode1c_jump_table(gb);
-    if (target == SYM(ironMask_state_switchHook)) { ironMask_state_switchHook_hook(gb); return; }
-    if (target == SYM(ecom_blownByGaleSeedState_b0d)) { ecom_blownByGaleSeedState_b0d_hook(gb); return; }
-    if (target == SYM(ironMask_state_uninitialized)) { ironMask_state_uninitialized_hook(gb); return; }
+    if (target == SYM(ironMask_state_switchHook)) { ENEMY_LOCAL_CALL(ironMask_state_switchHook_hook(gb)); return; }
+    if (target == SYM(ecom_blownByGaleSeedState_b0d)) { ENEMY_LOCAL_CALL(ecom_blownByGaleSeedState_b0d_hook(gb)); return; }
+    if (target == SYM(ironMask_state_uninitialized)) { ENEMY_LOCAL_CALL(ironMask_state_uninitialized_hook(gb)); return; }
     TAIL(ironMask_state_stub); // states 1, 2, 4, 6, 7 all target 0x6bb0
   }
 }
@@ -103,19 +104,19 @@ void ironMask_state_uninitialized_hook(GB *gb) {
   BASE(ironMask_state_uninitialized);
   uint16_t sp0_ = gb->sp;
   CYC(b_+0, b_+2); A = 0x14; // SPEED_80
-  CALL_C(b_+2, ecom_setSpeedAndState8AndVisible_b0d_hook, SYM(ecom_setSpeedAndState8AndVisible_b0d), b_+5);
+  ENEMY_CALL_C(b_+2, ecom_setSpeedAndState8AndVisible_b0d_hook, SYM(ecom_setSpeedAndState8AndVisible_b0d), b_+5);
   CYC(b_+5, b_+7); L = ENEMY_BASE + OBJ_COUNTER1;
-  CYC(b_+7, b_+8); mem_wr(gb, HL, alu_inc8(gb, mem_rd(gb, HL)));
-  CYC(b_+8, b_+10); alu_bit(gb, 0, B);
-  if (F & FZ) { CYCT(b_+10, b_+11); ret_effect(gb); return; } // ret z
+  CYC(b_+7, b_+8); ENEMY_WRITE(HL, alu_inc8(gb, mem_rd(gb, HL)));
+  CYC(b_+8, b_+10); ENEMY_BIT(0, B);
+  if (ENEMY_FLAG(FZ)) { CYCT(b_+10, b_+11); ret_effect(gb); return; } // ret z
   CYC(b_+10, b_+11);
   // Subid 1 only
   CYC(b_+11, b_+13); L = ENEMY_BASE + OBJ_ENEMY_COLLISION_MODE;
-  CYC(b_+13, b_+15); mem_wr(gb, HL, 0x53); // ENEMYCOLLISION_UNMASKED_IRON_MASK
+  CYC(b_+13, b_+15); ENEMY_WRITE(HL, 0x53); // ENEMYCOLLISION_UNMASKED_IRON_MASK
   CYC(b_+15, b_+17); L = ENEMY_BASE + OBJ_KNOCKBACK_COUNTER;
-  CYC(b_+17, b_+19); mem_wr(gb, HL, 0x10);
+  CYC(b_+17, b_+19); ENEMY_WRITE(HL, 0x10);
   CYC(b_+19, b_+21); L = ENEMY_BASE + OBJ_INVINCIBILITY_COUNTER;
-  CYC(b_+21, b_+23); mem_wr(gb, HL, 0xe8);
+  CYC(b_+21, b_+23); ENEMY_WRITE(HL, 0xe8);
   CYC(b_+23, b_+25); A = 0x04;
   CYC(b_+25, b_+28); TAIL(enemySetAnimation); // jp
 }
@@ -137,32 +138,32 @@ substate0:
   // Using switch hook may cause this enemy's mask to be removed.
   CYC(b_+11, b_+13); E = ENEMY_BASE + OBJ_SUBID;
   CYC(b_+13, b_+14); A = mem_rd(gb, DE);
-  CYC(b_+14, b_+15); alu_or(gb, A);
-  if (!(F & FZ)) { CYCT(b_+15, b_+17); goto dontRemoveMask; } // jr nz
+  CYC(b_+14, b_+15); ENEMY_OR(A);
+  if (!(ENEMY_FLAG(FZ))) { CYCT(b_+15, b_+17); goto dontRemoveMask; } // jr nz
   CYC(b_+15, b_+17);
   CYC(b_+17, b_+19); E = ENEMY_BASE + OBJ_ENEMY_COLLISION_MODE;
   CYC(b_+19, b_+20); A = mem_rd(gb, DE);
-  CYC(b_+20, b_+22); alu_cp(gb, 0x53); // ENEMYCOLLISION_UNMASKED_IRON_MASK
-  if (F & FZ) { CYCT(b_+22, b_+24); goto dontRemoveMask; } // jr z
+  CYC(b_+20, b_+22); ENEMY_CP(0x53); // ENEMYCOLLISION_UNMASKED_IRON_MASK
+  if (ENEMY_FLAG(FZ)) { CYCT(b_+22, b_+24); goto dontRemoveMask; } // jr z
   CYC(b_+22, b_+24);
   CYC(b_+24, b_+26); B = 0x1c; // ENEMY_IRON_MASK
-  CALL_C(b_+26, ecom_spawnUncountedEnemyWithSubid01_b0d_hook, SYM(ecom_spawnUncountedEnemyWithSubid01_b0d), b_+29);
-  if (!(F & FZ)) { CYCT(b_+29, b_+31); goto dontRemoveMask; } // jr nz
+  ENEMY_CALL_C(b_+26, ecom_spawnUncountedEnemyWithSubid01_b0d_hook, SYM(ecom_spawnUncountedEnemyWithSubid01_b0d), b_+29);
+  if (!(ENEMY_FLAG(FZ))) { CYCT(b_+29, b_+31); goto dontRemoveMask; } // jr nz
   CYC(b_+29, b_+31);
   // Transfer "index" from enabled byte to new enemy
   CYC(b_+31, b_+33); L = ENEMY_BASE + OBJ_ENABLED;
   CYC(b_+33, b_+34); E = L;
   CYC(b_+34, b_+35); A = mem_rd(gb, DE);
-  CYC(b_+35, b_+36); mem_wr(gb, HL, A);
+  CYC(b_+35, b_+36); ENEMY_WRITE(HL, A);
   CYC(b_+36, b_+38); L = ENEMY_BASE + OBJ_KNOCKBACK_ANGLE;
   CYC(b_+38, b_+39); E = L;
   CYC(b_+39, b_+40); A = mem_rd(gb, DE);
-  CYC(b_+40, b_+41); mem_wr(gb, HL, A);
-  CALL_C(b_+41, objectCopyPosition_hook, SYM(objectCopyPosition), b_+44);
+  CYC(b_+40, b_+41); ENEMY_WRITE(HL, A);
+  ENEMY_CALL_C(b_+41, objectCopyPosition_hook, SYM(objectCopyPosition), b_+44);
   CYC(b_+44, b_+46); A = 0x05;
-  CALL_C(b_+46, enemySetAnimation_hook, SYM(enemySetAnimation), b_+49);
+  ENEMY_CALL_C(b_+46, enemySetAnimation_hook, SYM(enemySetAnimation), b_+49);
   CYC(b_+49, b_+51); A = 0x52; // SND_BOMB_LAND
-  CALL_C(b_+51, playSound_b00_hook, SYM(playSound_b00), b_+54);
+  ENEMY_CALL_C(b_+51, playSound_b00_hook, SYM(playSound_b00), b_+54);
   CYC(b_+54, b_+56); A = 60;
   CYC(b_+56, b_+58); goto haveCounterValue; // jr
 
@@ -171,24 +172,24 @@ dontRemoveMask:
 
 haveCounterValue:
   CYC(b_+60, b_+62); E = ENEMY_BASE + OBJ_COUNTER1;
-  CYC(b_+62, b_+63); mem_wr(gb, DE, A);
+  CYC(b_+62, b_+63); ENEMY_WRITE(DE, A);
   CYC(b_+63, b_+66); TAIL(ecom_incSubstate_b0d); // jp
 
 substate3:
   CYC(b_+67, b_+69); E = ENEMY_BASE + OBJ_SUBID;
   CYC(b_+69, b_+70); A = mem_rd(gb, DE);
-  CYC(b_+70, b_+71); alu_or(gb, A);
-  if (!(F & FZ)) { CYCT(b_+71, b_+74); ecom_fallToGroundAndSetState8_b0d_hook(gb); return; } // jp nz
+  CYC(b_+70, b_+71); ENEMY_OR(A);
+  if (!(ENEMY_FLAG(FZ))) { CYCT(b_+71, b_+74); ENEMY_LOCAL_CALL(ecom_fallToGroundAndSetState8_b0d_hook(gb)); return; } // jp nz
   CYC(b_+71, b_+74);
   CYC(b_+74, b_+76); E = ENEMY_BASE + OBJ_ENEMY_COLLISION_MODE;
   CYC(b_+76, b_+77); A = mem_rd(gb, DE);
-  CYC(b_+77, b_+79); alu_cp(gb, 0x1d); // ENEMYCOLLISION_IRON_MASK
-  if (!(F & FZ)) { CYCT(b_+79, b_+82); ecom_fallToGroundAndSetState8_b0d_hook(gb); return; } // jp nz
+  CYC(b_+77, b_+79); ENEMY_CP(0x1d); // ENEMYCOLLISION_IRON_MASK
+  if (!(ENEMY_FLAG(FZ))) { CYCT(b_+79, b_+82); ENEMY_LOCAL_CALL(ecom_fallToGroundAndSetState8_b0d_hook(gb)); return; } // jp nz
   CYC(b_+79, b_+82);
   CYC(b_+82, b_+84); B = 0x0a;
-  CALL_C(b_+84, ecom_fallToGroundAndSetState_b0d_hook, SYM(ecom_fallToGroundAndSetState_b0d), b_+87);
+  ENEMY_CALL_C(b_+84, ecom_fallToGroundAndSetState_b0d_hook, SYM(ecom_fallToGroundAndSetState_b0d), b_+87);
   CYC(b_+87, b_+89); L = ENEMY_BASE + OBJ_COLLISION_TYPE;
-  CYC(b_+89, b_+91); mem_wr(gb, HL, (uint8_t)(mem_rd(gb, HL) & ~(1 << 7)));
+  CYC(b_+89, b_+91); ENEMY_WRITE(HL, (uint8_t)(mem_rd(gb, HL) & ~(1 << 7)));
   RET(b_+91); return;
 }
 
@@ -213,33 +214,33 @@ void ironMask_subid00_hook(GB *gb) {
 
   // Standing in place
 state8:
-  CALL_C(b_+10, ecom_decCounter1_b0d_hook, SYM(ecom_decCounter1_b0d), b_+13);
-  if (!(F & FZ)) { CYCT(b_+13, b_+16); ironMask_updateCollisionsFromLinkRelativeAngle_hook(gb); return; } // jp nz
+  ENEMY_CALL_C(b_+10, ecom_decCounter1_b0d_hook, SYM(ecom_decCounter1_b0d), b_+13);
+  if (!(ENEMY_FLAG(FZ))) { CYCT(b_+13, b_+16); ENEMY_LOCAL_CALL(ironMask_updateCollisionsFromLinkRelativeAngle_hook(gb)); return; } // jp nz
   CYC(b_+13, b_+16);
   CYC(b_+16, b_+17); L = E;
-  CYC(b_+17, b_+18); mem_wr(gb, HL, alu_inc8(gb, mem_rd(gb, HL))); // [state]
-  CALL_C(b_+18, ironMask_chooseRandomAngleAndCounter1_hook, SYM(ironMask_chooseRandomAngleAndCounter1), b_+21);
+  CYC(b_+17, b_+18); ENEMY_WRITE(HL, alu_inc8(gb, mem_rd(gb, HL))); // [state]
+  ENEMY_CALL_C(b_+18, ironMask_chooseRandomAngleAndCounter1_hook, SYM(ironMask_chooseRandomAngleAndCounter1), b_+21);
   // falls through to state9
 
   // Moving in some direction for [counter1] frames
 state9:
-  CALL_C(b_+21, ecom_decCounter1_b0d_hook, SYM(ecom_decCounter1_b0d), b_+24);
-  if (!(F & FZ)) { CYCT(b_+24, b_+26); goto afterCounter1Check; } // jr nz
+  ENEMY_CALL_C(b_+21, ecom_decCounter1_b0d_hook, SYM(ecom_decCounter1_b0d), b_+24);
+  if (!(ENEMY_FLAG(FZ))) { CYCT(b_+24, b_+26); goto afterCounter1Check; } // jr nz
   CYC(b_+24, b_+26);
   CYC(b_+26, b_+27); L = E;
-  CYC(b_+27, b_+28); mem_wr(gb, HL, alu_dec8(gb, mem_rd(gb, HL))); // [state]
-  CALL_C(b_+28, ironMask_chooseAmountOfTimeToStand_hook, SYM(ironMask_chooseAmountOfTimeToStand), b_+31);
+  CYC(b_+27, b_+28); ENEMY_WRITE(HL, alu_dec8(gb, mem_rd(gb, HL))); // [state]
+  ENEMY_CALL_C(b_+28, ironMask_chooseAmountOfTimeToStand_hook, SYM(ironMask_chooseAmountOfTimeToStand), b_+31);
 
 afterCounter1Check:
-  CALL_C(b_+31, ecom_applyVelocityForSideviewEnemyNoHoles_b0d_hook, SYM(ecom_applyVelocityForSideviewEnemyNoHoles_b0d), b_+34);
-  CALL_C(b_+34, ironMask_updateCollisionsFromLinkRelativeAngle_hook, SYM(ironMask_updateCollisionsFromLinkRelativeAngle), b_+37);
+  ENEMY_CALL_C(b_+31, ecom_applyVelocityForSideviewEnemyNoHoles_b0d_hook, SYM(ecom_applyVelocityForSideviewEnemyNoHoles_b0d), b_+34);
+  ENEMY_CALL_C(b_+34, ironMask_updateCollisionsFromLinkRelativeAngle_hook, SYM(ironMask_updateCollisionsFromLinkRelativeAngle), b_+37);
   CYC(b_+37, b_+40); TAIL(enemyAnimate); // jp
 
   // This enemy has turned into the mask that was removed; will delete self after [counter1]
   // frames.
 stateA:
-  CALL_C(b_+40, ecom_decCounter1_b0d_hook, SYM(ecom_decCounter1_b0d), b_+43);
-  if (!(F & FZ)) { CYCT(b_+43, b_+46); ecom_flickerVisibility_b0d_hook(gb); return; } // jp nz
+  ENEMY_CALL_C(b_+40, ecom_decCounter1_b0d_hook, SYM(ecom_decCounter1_b0d), b_+43);
+  if (!(ENEMY_FLAG(FZ))) { CYCT(b_+43, b_+46); ENEMY_LOCAL_CALL(ecom_flickerVisibility_b0d_hook(gb)); return; } // jp nz
   CYC(b_+43, b_+46);
   CYC(b_+46, b_+49); TAIL(enemyDelete); // jp
 }
@@ -248,9 +249,9 @@ stateA:
 void ironMask_subid01_hook(GB *gb) {
   BASE(ironMask_subid01);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, ecom_decCounter1_b0d_hook, SYM(ecom_decCounter1_b0d), b_+3);
-  if (F & FZ) CALL_C_CC(b_+3, ironMask_chooseRandomAngleAndCounter1_hook, SYM(ironMask_chooseRandomAngleAndCounter1), b_+6); else CYC(b_+3, b_+6); // call z
-  CALL_C(b_+6, ecom_applyVelocityForSideviewEnemyNoHoles_b0d_hook, SYM(ecom_applyVelocityForSideviewEnemyNoHoles_b0d), b_+9);
+  ENEMY_CALL_C(b_+0, ecom_decCounter1_b0d_hook, SYM(ecom_decCounter1_b0d), b_+3);
+  if (ENEMY_FLAG(FZ)) ENEMY_CALL_C_CC(b_+3, ironMask_chooseRandomAngleAndCounter1_hook, SYM(ironMask_chooseRandomAngleAndCounter1), b_+6); else CYC(b_+3, b_+6); // call z
+  ENEMY_CALL_C(b_+6, ecom_applyVelocityForSideviewEnemyNoHoles_b0d_hook, SYM(ecom_applyVelocityForSideviewEnemyNoHoles_b0d), b_+9);
   CYC(b_+9, b_+12); TAIL(enemyAnimate); // jp
 }
 
@@ -259,21 +260,21 @@ void ironMask_subid01_hook(GB *gb) {
 void ironMask_updateCollisionsFromLinkRelativeAngle_hook(GB *gb) {
   BASE(ironMask_updateCollisionsFromLinkRelativeAngle);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, objectGetAngleTowardEnemyTarget_hook, SYM(objectGetAngleTowardEnemyTarget), b_+3);
+  ENEMY_CALL_C(b_+0, objectGetAngleTowardEnemyTarget_hook, SYM(objectGetAngleTowardEnemyTarget), b_+3);
   CYC(b_+3, b_+4); H = D;
   CYC(b_+4, b_+6); L = ENEMY_BASE + OBJ_ANGLE;
   CYC(b_+6, b_+7); alu_sub(gb, mem_rd(gb, HL));
-  CYC(b_+7, b_+9); alu_and(gb, 0x1f);
+  CYC(b_+7, b_+9); ENEMY_AND(0x1f);
   CYC(b_+9, b_+11); alu_sub(gb, 0x0c);
-  CYC(b_+11, b_+13); alu_cp(gb, 0x09);
+  CYC(b_+11, b_+13); ENEMY_CP(0x09);
   CYC(b_+13, b_+15); L = ENEMY_BASE + OBJ_ENEMY_COLLISION_MODE;
-  if (F & FC) { CYCT(b_+15, b_+17); goto unmasked; } // jr c
+  if (ENEMY_FLAG(FC)) { CYCT(b_+15, b_+17); goto unmasked; } // jr c
   CYC(b_+15, b_+17);
-  CYC(b_+17, b_+19); mem_wr(gb, HL, GV(0x1d, 0x1c)); // ENEMYCOLLISION_IRON_MASK
+  CYC(b_+17, b_+19); ENEMY_WRITE(HL, GV(0x1d, 0x1c)); // ENEMYCOLLISION_IRON_MASK
   RET(b_+19); return;
 
 unmasked:
-  CYC(b_+20, b_+22); mem_wr(gb, HL, GV(0x53, 0x50)); // ENEMYCOLLISION_UNMASKED_IRON_MASK
+  CYC(b_+20, b_+22); ENEMY_WRITE(HL, GV(0x53, 0x50)); // ENEMYCOLLISION_UNMASKED_IRON_MASK
   RET(b_+22); return;
 }
 
@@ -281,29 +282,29 @@ void ironMask_chooseRandomAngleAndCounter1_hook(GB *gb) {
   BASE(ironMask_chooseRandomAngleAndCounter1);
   uint16_t sp0_ = gb->sp;
   CYC(b_+0, b_+3); SET_BC(SYM(_label_00_062));
-  CALL_C(b_+3, ecom_randomBitwiseAndBCE_b0d_hook, SYM(ecom_randomBitwiseAndBCE_b0d), b_+6);
+  ENEMY_CALL_C(b_+3, ecom_randomBitwiseAndBCE_b0d_hook, SYM(ecom_randomBitwiseAndBCE_b0d), b_+6);
   CYC(b_+6, b_+7); A = B;
   CYC(b_+7, b_+10); SET_HL(b_+45); // @counter1Vals
-  CYC(b_+10, b_+11); ironMask_addAToHl_from_rst(gb, b_+11);
+  CYC(b_+10, b_+11); ENEMY_LOCAL_CALL(ironMask_addAToHl_from_rst(gb, b_+11));
   CYC(b_+11, b_+13); E = ENEMY_BASE + OBJ_COUNTER1;
   CYC(b_+13, b_+14); A = mem_rd(gb, HL);
-  CYC(b_+14, b_+15); mem_wr(gb, DE, A);
+  CYC(b_+14, b_+15); ENEMY_WRITE(DE, A);
   CYC(b_+15, b_+17); E = ENEMY_BASE + OBJ_SUBID;
   CYC(b_+17, b_+18); A = mem_rd(gb, DE);
-  CYC(b_+18, b_+19); alu_or(gb, A);
-  if (!(F & FZ)) { CYCT(b_+19, b_+22); ecom_setRandomCardinalAngle_b0d_hook(gb); return; } // jp nz
+  CYC(b_+18, b_+19); ENEMY_OR(A);
+  if (!(ENEMY_FLAG(FZ))) { CYCT(b_+19, b_+22); ENEMY_LOCAL_CALL(ecom_setRandomCardinalAngle_b0d_hook(gb)); return; } // jp nz
   CYC(b_+19, b_+22);
   // Subid 0 only: 1 in 4 chance of turning directly toward Link, otherwise just
   // choose a random angle
-  CYC(b_+22, b_+25); ironMask_chooseAngle(gb, b_+25);
+  CYC(b_+22, b_+25); ENEMY_LOCAL_CALL(ironMask_chooseAngle(gb, b_+25));
   CYC(b_+25, b_+27); A = alu_swap(gb, A);
   CYC(b_+27, b_+28); alu_rlca(gb);
   CYC(b_+28, b_+29); H = D;
   CYC(b_+29, b_+31); L = ENEMY_BASE + OBJ_DIRECTION;
-  CYC(b_+31, b_+32); alu_cp(gb, mem_rd(gb, HL));
-  if (F & FZ) { CYCT(b_+32, b_+33); ret_effect(gb); return; } // ret z
+  CYC(b_+31, b_+32); ENEMY_CP(mem_rd(gb, HL));
+  if (ENEMY_FLAG(FZ)) { CYCT(b_+32, b_+33); ret_effect(gb); return; } // ret z
   CYC(b_+32, b_+33);
-  CYC(b_+33, b_+34); mem_wr(gb, HL, A);
+  CYC(b_+33, b_+34); ENEMY_WRITE(HL, A);
   CYC(b_+34, b_+37); TAIL(enemySetAnimation); // jp
 }
 
@@ -313,13 +314,13 @@ void ironMask_chooseRandomAngleAndCounter1_hook(GB *gb) {
 void ironMask_chooseAmountOfTimeToStand_hook(GB *gb) {
   BASE(ironMask_chooseAmountOfTimeToStand);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, getRandomNumber_noPreserveVars_hook, SYM(getRandomNumber_noPreserveVars), b_+3);
-  CYC(b_+3, b_+5); alu_and(gb, 0x03);
+  ENEMY_CALL_C(b_+0, getRandomNumber_noPreserveVars_hook, SYM(getRandomNumber_noPreserveVars), b_+3);
+  CYC(b_+3, b_+5); ENEMY_AND(0x03);
   CYC(b_+5, b_+8); SET_HL(b_+14); // @counter1Vals
-  CYC(b_+8, b_+9); ironMask_addAToHl_from_rst(gb, b_+9);
+  CYC(b_+8, b_+9); ENEMY_LOCAL_CALL(ironMask_addAToHl_from_rst(gb, b_+9));
   CYC(b_+9, b_+11); E = ENEMY_BASE + OBJ_COUNTER1;
   CYC(b_+11, b_+12); A = mem_rd(gb, HL);
-  CYC(b_+12, b_+13); mem_wr(gb, DE, A);
+  CYC(b_+12, b_+13); ENEMY_WRITE(DE, A);
   RET(b_+13); return;
 }
 

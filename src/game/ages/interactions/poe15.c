@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/npcs_events.h"
 
 #undef CYC
 #undef CYCT
@@ -16,11 +17,11 @@ void poe_decCounterAndFlickerVisibility_hook(GB *gb) {
   CYC(b_+0, b_+1); H = D;
   CYC(b_+1, b_+3); L = INTERACTION_BASE + OBJ_VAR3E;
   CYC(b_+3, b_+4); A = mem_rd(gb, HL);
-  CYC(b_+4, b_+5); alu_or(gb, A);
-  CALL_C(b_+5, writeFlagsTocddb_hook, SYM(writeFlagsTocddb), b_+8);
+  CYC(b_+4, b_+5); NPC_OR(A);
+  NPC_CALL_C(b_+5, writeFlagsTocddb_hook, SYM(writeFlagsTocddb), b_+8);
   if (F & FZ) { CYCT(b_+8, b_+10); goto set_visible; } // jr z
   CYC(b_+8, b_+10);
-  CYC(b_+10, b_+11); mem_wr(gb, HL, alu_dec8(gb, mem_rd(gb, HL)));
+  CYC(b_+10, b_+11); EVENT_WRITE(HL, alu_dec8(gb, mem_rd(gb, HL)));
   CYC(b_+11, b_+14); A = mem_rd(gb, wFrameCounter);
   CYC(b_+14, b_+15); alu_rrca(gb);
   CYC(b_+15, b_+16); alu_rrca(gb);

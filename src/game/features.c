@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/features.h"
+#include "script/items_shops.h"
 
 Features features;
 
@@ -90,8 +91,29 @@ void features_treasure_object(GB *gb, uint8_t id, uint8_t subid, uint8_t out[4])
 }
 
 void features_treasure_loaded(GB *gb, uint16_t obj) {
+#ifdef ORACLES_LUA_GAMEPLAY
+  uint8_t original_id_=0, original_subid_=0;
+  bool policy_=TRADE_ACTIVE;
+  if(policy_) {
+    original_id_=mem_rd(gb,(uint16_t)(obj+OBJ_VAR30));original_subid_=mem_rd(gb,(uint16_t)(obj+OBJ_VAR03));
+    uint8_t selected_=original_id_;
+    if(selected_<0x63 && !gameplay_item_reward_id(selected_,&selected_)) {gb_stop(gb,gameplay_error());return;}
+    if(selected_!=original_id_) {
+      uint8_t data_[4];features_treasure_object(gb,selected_,0,data_);
+      mem_wr(gb,(uint16_t)(obj+OBJ_VAR03),0);
+      mem_wr(gb,(uint16_t)(obj+OBJ_VAR30),selected_);mem_wr(gb,(uint16_t)(obj+OBJ_VAR32),data_[0]&7);
+      mem_wr(gb,(uint16_t)(obj+OBJ_VAR34),data_[1]);mem_wr(gb,(uint16_t)(obj+OBJ_VAR35),data_[2]);
+      mem_wr(gb,(uint16_t)(obj+OBJ_SUBID),data_[3]);mem_wr(gb,(uint16_t)(obj+OBJ_VAR38),0);
+    }
+  }
+#endif
   if (!features.treasure_swap) return;
   uint8_t new_id, new_subid, t[4];
+#ifdef ORACLES_LUA_GAMEPLAY
+  if(policy_) {
+    if(!features.treasure_swap(W8(wActiveGroup),W8(wActiveRoom),original_id_,original_subid_,&new_id,&new_subid))return;
+  } else
+#endif
   if (!features.treasure_swap(W8(wActiveGroup), W8(wActiveRoom), mem_rd(gb, (uint16_t)(obj + OBJ_VAR30)),
                               mem_rd(gb, (uint16_t)(obj + OBJ_VAR03)), &new_id, &new_subid)) return;
   features_treasure_object(gb, new_id, new_subid, t);

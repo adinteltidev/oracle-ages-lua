@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/enemies.h"
 
 #undef CYC
 #undef CYCT
@@ -46,24 +47,24 @@ static uint16_t candle_jump_table(GB *gb) {
 void enemyCode55_hook(GB *gb) {
   BASE(enemyCode55);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, ecom_checkHazards_b0e_hook, SYM(ecom_checkHazards_b0e), b_+3);
-  if (F & FZ) { CYCT(b_+3, b_+5); goto normalStatus; } // jr z
+  ENEMY_CALL_C(b_+0, ecom_checkHazards_b0e_hook, SYM(ecom_checkHazards_b0e), b_+3);
+  if (ENEMY_FLAG(FZ)) { CYCT(b_+3, b_+5); goto normalStatus; } // jr z
   CYC(b_+3, b_+5);
   CYC(b_+5, b_+7); alu_sub(gb, 0x03); // ENEMYSTATUS_NO_HEALTH
-  if (F & FC) { RET_TAKEN(b_+7); return; } // ret c
+  if (ENEMY_FLAG(FC)) { RET_TAKEN(b_+7); return; } // ret c
   CYC(b_+7, b_+8);
   CYC(b_+8, b_+10); E = ENEMY_BASE + OBJ_VAR2A;
   CYC(b_+10, b_+11); A = mem_rd(gb, DE);
-  CYC(b_+11, b_+13); alu_cp(gb, 0x9b); // $80|ITEMCOLLISION_EMBER_SEED
-  if (!(F & FZ)) { CYCT(b_+13, b_+15); goto normalStatus; } // jr nz
+  CYC(b_+11, b_+13); ENEMY_CP(0x9b); // $80|ITEMCOLLISION_EMBER_SEED
+  if (!(ENEMY_FLAG(FZ))) { CYCT(b_+13, b_+15); goto normalStatus; } // jr nz
   CYC(b_+13, b_+15);
   CYC(b_+15, b_+17); E = ENEMY_BASE + OBJ_STATE;
   CYC(b_+17, b_+18); A = mem_rd(gb, DE);
-  CYC(b_+18, b_+20); alu_cp(gb, 0x0a);
-  if (!(F & FC)) { CYCT(b_+20, b_+22); goto normalStatus; } // jr nc
+  CYC(b_+18, b_+20); ENEMY_CP(0x0a);
+  if (!(ENEMY_FLAG(FC))) { CYCT(b_+20, b_+22); goto normalStatus; } // jr nc
   CYC(b_+20, b_+22);
   CYC(b_+22, b_+24); A = 0x0a;
-  CYC(b_+24, b_+25); mem_wr(gb, DE, A);
+  CYC(b_+24, b_+25); ENEMY_WRITE(DE, A);
 
 normalStatus:
   CYC(b_+25, b_+27); E = ENEMY_BASE + OBJ_STATE;
@@ -71,15 +72,15 @@ normalStatus:
   {
     CYC(b_+28, b_+29); push_effect(gb, b_+29);
     uint16_t target = candle_jump_table(gb);
-    if (target == SYM(candle_state_uninitialized)) { candle_state_uninitialized_hook(gb); return; }
-    if (target == SYM(candle_state_stub)) { candle_state_stub_hook(gb); return; }
-    if (target == SYM(candle_state8)) { candle_state8_hook(gb); return; }
-    if (target == SYM(candle_state9)) { candle_state9_hook(gb); return; }
-    if (target == SYM(candle_stateA)) { candle_stateA_hook(gb); return; }
-    if (target == SYM(candle_stateB)) { candle_stateB_hook(gb); return; }
-    if (target == SYM(candle_stateC)) { candle_stateC_hook(gb); return; }
-    if (target == SYM(candle_stateD)) { candle_stateD_hook(gb); return; }
-    if (target == SYM(candle_stateE)) { candle_stateE_hook(gb); return; }
+    if (target == SYM(candle_state_uninitialized)) { ENEMY_LOCAL_CALL(candle_state_uninitialized_hook(gb)); return; }
+    if (target == SYM(candle_state_stub)) { ENEMY_LOCAL_CALL(candle_state_stub_hook(gb)); return; }
+    if (target == SYM(candle_state8)) { ENEMY_LOCAL_CALL(candle_state8_hook(gb)); return; }
+    if (target == SYM(candle_state9)) { ENEMY_LOCAL_CALL(candle_state9_hook(gb)); return; }
+    if (target == SYM(candle_stateA)) { ENEMY_LOCAL_CALL(candle_stateA_hook(gb)); return; }
+    if (target == SYM(candle_stateB)) { ENEMY_LOCAL_CALL(candle_stateB_hook(gb)); return; }
+    if (target == SYM(candle_stateC)) { ENEMY_LOCAL_CALL(candle_stateC_hook(gb)); return; }
+    if (target == SYM(candle_stateD)) { ENEMY_LOCAL_CALL(candle_stateD_hook(gb)); return; }
+    if (target == SYM(candle_stateE)) { ENEMY_LOCAL_CALL(candle_stateE_hook(gb)); return; }
     HANDOFF(target);
   }
 }
@@ -90,7 +91,7 @@ void candle_state_uninitialized_hook(GB *gb) {
   uint16_t sp0_ = gb->sp; (void)sp0_;
   CYC(b_+0, b_+2); E = ENEMY_BASE + OBJ_COUNTER1;
   CYC(b_+2, b_+4); A = 0x1e; // 30
-  CYC(b_+4, b_+5); mem_wr(gb, DE, A);
+  CYC(b_+4, b_+5); ENEMY_WRITE(DE, A);
   CYC(b_+5, b_+7); A = 0x0a; // SPEED_40
   CYC(b_+7, b_+10); TAIL(ecom_setSpeedAndState8AndVisible_b0e); // jp
 }
@@ -106,18 +107,18 @@ void candle_state_stub_hook(GB *gb) {
 void candle_state8_hook(GB *gb) {
   BASE(candle_state8);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, ecom_decCounter1_b0e_hook, SYM(ecom_decCounter1_b0e), b_+3);
-  if (!(F & FZ)) { RET_TAKEN(b_+3); return; } // ret nz
+  ENEMY_CALL_C(b_+0, ecom_decCounter1_b0e_hook, SYM(ecom_decCounter1_b0e), b_+3);
+  if (!(ENEMY_FLAG(FZ))) { RET_TAKEN(b_+3); return; } // ret nz
   CYC(b_+3, b_+4);
   CYC(b_+4, b_+5); L = E;
-  CYC(b_+5, b_+6); mem_wr(gb, HL, alu_inc8(gb, mem_rd(gb, HL))); // [state]
+  CYC(b_+5, b_+6); ENEMY_WRITE(HL, alu_inc8(gb, mem_rd(gb, HL))); // [state]
   CYC(b_+6, b_+8); L = ENEMY_BASE + OBJ_COUNTER1;
-  CYC(b_+8, b_+10); mem_wr(gb, HL, 0x5a); // 90
-  CALL_C(b_+10, getRandomNumber_noPreserveVars_hook, SYM(getRandomNumber_noPreserveVars), b_+13);
-  CYC(b_+13, b_+15); alu_and(gb, 0x18);
+  CYC(b_+8, b_+10); ENEMY_WRITE(HL, 0x5a); // 90
+  ENEMY_CALL_C(b_+10, getRandomNumber_noPreserveVars_hook, SYM(getRandomNumber_noPreserveVars), b_+13);
+  CYC(b_+13, b_+15); ENEMY_AND(0x18);
   CYC(b_+15, b_+17); alu_add(gb, 0x04);
   CYC(b_+17, b_+19); E = ENEMY_BASE + OBJ_ANGLE;
-  CYC(b_+19, b_+20); mem_wr(gb, DE, A);
+  CYC(b_+19, b_+20); ENEMY_WRITE(DE, A);
   CYC(b_+20, b_+22); A = 0x01;
   CYC(b_+22, b_+25); TAIL(enemySetAnimation); // jp $282b
 }
@@ -127,17 +128,17 @@ void candle_state8_hook(GB *gb) {
 void candle_state9_hook(GB *gb) {
   BASE(candle_state9);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, ecom_decCounter1_b0e_hook, SYM(ecom_decCounter1_b0e), b_+3);
-  if (!(F & FZ)) { CYCT(b_+3, b_+5); goto applySpeed; } // jr nz
+  ENEMY_CALL_C(b_+0, ecom_decCounter1_b0e_hook, SYM(ecom_decCounter1_b0e), b_+3);
+  if (!(ENEMY_FLAG(FZ))) { CYCT(b_+3, b_+5); goto applySpeed; } // jr nz
   CYC(b_+3, b_+5);
-  CYC(b_+5, b_+7); mem_wr(gb, HL, 0x1e); // [counter1] = 30
+  CYC(b_+5, b_+7); ENEMY_WRITE(HL, 0x1e); // [counter1] = 30
   CYC(b_+7, b_+8); L = E;
-  CYC(b_+8, b_+9); mem_wr(gb, HL, alu_dec8(gb, mem_rd(gb, HL))); // [state]
+  CYC(b_+8, b_+9); ENEMY_WRITE(HL, alu_dec8(gb, mem_rd(gb, HL))); // [state]
   CYC(b_+9, b_+10); alu_xor(gb, A);
-  CALL_C(b_+10, enemySetAnimation_hook, SYM(enemySetAnimation), b_+13);
+  ENEMY_CALL_C(b_+10, enemySetAnimation_hook, SYM(enemySetAnimation), b_+13);
 
 applySpeed:
-  CALL_C(b_+13, ecom_applyVelocityForSideviewEnemyNoHoles_b0e_hook, SYM(ecom_applyVelocityForSideviewEnemyNoHoles_b0e), b_+16);
+  ENEMY_CALL_C(b_+13, ecom_applyVelocityForSideviewEnemyNoHoles_b0e_hook, SYM(ecom_applyVelocityForSideviewEnemyNoHoles_b0e), b_+16);
   CYC(b_+16, b_+18); TAIL(candle_animate); // jr
 }
 
@@ -146,14 +147,14 @@ void candle_stateA_hook(GB *gb) {
   BASE(candle_stateA);
   uint16_t sp0_ = gb->sp;
   CYC(b_+0, b_+2); B = 0x36; // PART_CANDLE_FLAME
-  CALL_C(b_+2, ecom_spawnProjectile_b0e_hook, SYM(ecom_spawnProjectile_b0e), b_+5);
-  if (!(F & FZ)) { RET_TAKEN(b_+5); return; } // ret nz
+  ENEMY_CALL_C(b_+2, ecom_spawnProjectile_b0e_hook, SYM(ecom_spawnProjectile_b0e), b_+5);
+  if (!(ENEMY_FLAG(FZ))) { RET_TAKEN(b_+5); return; } // ret nz
   CYC(b_+5, b_+6);
-  CALL_C(b_+6, ecom_incState_b0e_hook, SYM(ecom_incState_b0e), b_+9);
+  ENEMY_CALL_C(b_+6, ecom_incState_b0e_hook, SYM(ecom_incState_b0e), b_+9);
   CYC(b_+9, b_+11); L = ENEMY_BASE + OBJ_COUNTER1;
-  CYC(b_+11, b_+13); mem_wr(gb, HL, 0x78); // 120
+  CYC(b_+11, b_+13); ENEMY_WRITE(HL, 0x78); // 120
   CYC(b_+13, b_+15); L = ENEMY_BASE + OBJ_SPEED;
-  CYC(b_+15, b_+17); mem_wr(gb, HL, 0x28); // SPEED_100
+  CYC(b_+15, b_+17); ENEMY_WRITE(HL, 0x28); // SPEED_100
   CYC(b_+17, b_+19); A = 0x02;
   CYC(b_+19, b_+22); TAIL(enemySetAnimation); // jp $282b
 }
@@ -162,16 +163,16 @@ void candle_stateA_hook(GB *gb) {
 void candle_stateB_hook(GB *gb) {
   BASE(candle_stateB);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, ecom_decCounter1_b0e_hook, SYM(ecom_decCounter1_b0e), b_+3);
-  if (!(F & FZ)) { CYCT(b_+3, b_+5); candle_applySpeed_hook(gb); return; } // jr nz
+  ENEMY_CALL_C(b_+0, ecom_decCounter1_b0e_hook, SYM(ecom_decCounter1_b0e), b_+3);
+  if (!(ENEMY_FLAG(FZ))) { CYCT(b_+3, b_+5); ENEMY_LOCAL_CALL(candle_applySpeed_hook(gb)); return; } // jr nz
   CYC(b_+3, b_+5);
-  CYC(b_+5, b_+7); mem_wr(gb, HL, 0x78); // [counter1] = 120
+  CYC(b_+5, b_+7); ENEMY_WRITE(HL, 0x78); // [counter1] = 120
   CYC(b_+7, b_+8); L = E;
-  CYC(b_+8, b_+9); mem_wr(gb, HL, alu_inc8(gb, mem_rd(gb, HL))); // [state]
+  CYC(b_+8, b_+9); ENEMY_WRITE(HL, alu_inc8(gb, mem_rd(gb, HL))); // [state]
   CYC(b_+9, b_+11); L = ENEMY_BASE + OBJ_SPEED;
-  CYC(b_+11, b_+13); mem_wr(gb, HL, 0x50); // SPEED_200
+  CYC(b_+11, b_+13); ENEMY_WRITE(HL, 0x50); // SPEED_200
   CYC(b_+13, b_+15); A = 0x03;
-  CALL_C(b_+15, enemySetAnimation_hook, SYM(enemySetAnimation), SYM(candle_applySpeed));
+  ENEMY_CALL_C(b_+15, enemySetAnimation_hook, SYM(enemySetAnimation), SYM(candle_applySpeed));
   TAIL(candle_applySpeed); // fallthrough
 }
 
@@ -180,8 +181,8 @@ void candle_stateB_hook(GB *gb) {
 void candle_applySpeed_hook(GB *gb) {
   BASE(candle_applySpeed);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, objectApplySpeed_hook, SYM(objectApplySpeed), b_+3);
-  CALL_C(b_+3, ecom_bounceOffWallsAndHoles_b0e_hook, SYM(ecom_bounceOffWallsAndHoles_b0e), SYM(candle_animate));
+  ENEMY_CALL_C(b_+0, objectApplySpeed_hook, SYM(objectApplySpeed), b_+3);
+  ENEMY_CALL_C(b_+3, ecom_bounceOffWallsAndHoles_b0e_hook, SYM(ecom_bounceOffWallsAndHoles_b0e), SYM(candle_animate));
   TAIL(candle_animate); // fallthrough
 }
 
@@ -196,12 +197,12 @@ void candle_animate_hook(GB *gb) {
 void candle_stateC_hook(GB *gb) {
   BASE(candle_stateC);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, ecom_decCounter1_b0e_hook, SYM(ecom_decCounter1_b0e), b_+3);
-  if (!(F & FZ)) { CYCT(b_+3, b_+5); candle_applySpeed_hook(gb); return; } // jr nz
+  ENEMY_CALL_C(b_+0, ecom_decCounter1_b0e_hook, SYM(ecom_decCounter1_b0e), b_+3);
+  if (!(ENEMY_FLAG(FZ))) { CYCT(b_+3, b_+5); ENEMY_LOCAL_CALL(candle_applySpeed_hook(gb)); return; } // jr nz
   CYC(b_+3, b_+5);
-  CYC(b_+5, b_+7); mem_wr(gb, HL, 0x3c); // [counter1] = 60
+  CYC(b_+5, b_+7); ENEMY_WRITE(HL, 0x3c); // [counter1] = 60
   CYC(b_+7, b_+8); L = E;
-  CYC(b_+8, b_+9); mem_wr(gb, HL, alu_inc8(gb, mem_rd(gb, HL))); // [state]
+  CYC(b_+8, b_+9); ENEMY_WRITE(HL, alu_inc8(gb, mem_rd(gb, HL))); // [state]
   TAIL(candle_stateD); // fallthrough
 }
 
@@ -210,24 +211,24 @@ void candle_stateC_hook(GB *gb) {
 void candle_stateD_hook(GB *gb) {
   BASE(candle_stateD);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, ecom_flickerVisibility_b0e_hook, SYM(ecom_flickerVisibility_b0e), b_+3);
-  CALL_C(b_+3, ecom_decCounter1_b0e_hook, SYM(ecom_decCounter1_b0e), b_+6);
-  if (!(F & FZ)) { CYCT(b_+6, b_+8); candle_applySpeed_hook(gb); return; } // jr nz
+  ENEMY_CALL_C(b_+0, ecom_flickerVisibility_b0e_hook, SYM(ecom_flickerVisibility_b0e), b_+3);
+  ENEMY_CALL_C(b_+3, ecom_decCounter1_b0e_hook, SYM(ecom_decCounter1_b0e), b_+6);
+  if (!(ENEMY_FLAG(FZ))) { CYCT(b_+6, b_+8); ENEMY_LOCAL_CALL(candle_applySpeed_hook(gb)); return; } // jr nz
   CYC(b_+6, b_+8);
-  CYC(b_+8, b_+9); mem_wr(gb, HL, alu_inc8(gb, mem_rd(gb, HL))); // [counter1] = 1
+  CYC(b_+8, b_+9); ENEMY_WRITE(HL, alu_inc8(gb, mem_rd(gb, HL))); // [counter1] = 1
   CYC(b_+9, b_+11); B = 0x56; // INTERAC_EXPLOSION
-  CALL_C(b_+11, objectCreateInteractionWithSubid00_hook, SYM(objectCreateInteractionWithSubid00), b_+14);
-  if (!(F & FZ)) { RET_TAKEN(b_+14); return; } // ret nz
+  ENEMY_CALL_C(b_+11, objectCreateInteractionWithSubid00_hook, SYM(objectCreateInteractionWithSubid00), b_+14);
+  if (!(ENEMY_FLAG(FZ))) { RET_TAKEN(b_+14); return; } // ret nz
   CYC(b_+14, b_+15);
   CYC(b_+15, b_+16); A = H;
   CYC(b_+16, b_+17); H = D;
   CYC(b_+17, b_+19); L = ENEMY_BASE + OBJ_RELATED1 + 1; // Enemy.relatedObj1+1
-  CYC(b_+19, b_+20); mem_wr(gb, HL, A); SET_HL(HL - 1); // ld (hl-),a
-  CYC(b_+20, b_+22); mem_wr(gb, HL, 0x40); // Interaction.start == INTERACTION_BASE
+  CYC(b_+19, b_+20); ENEMY_WRITE(HL, A); SET_HL(HL - 1); // ld (hl-),a
+  CYC(b_+20, b_+22); ENEMY_WRITE(HL, 0x40); // Interaction.start == INTERACTION_BASE
   CYC(b_+22, b_+24); L = ENEMY_BASE + OBJ_STATE;
-  CYC(b_+24, b_+25); mem_wr(gb, HL, alu_inc8(gb, mem_rd(gb, HL)));
+  CYC(b_+24, b_+25); ENEMY_WRITE(HL, alu_inc8(gb, mem_rd(gb, HL)));
   CYC(b_+25, b_+27); L = ENEMY_BASE + OBJ_ENEMY_COLLISION_MODE;
-  CYC(b_+27, b_+29); mem_wr(gb, HL, 0x04); // ENEMYCOLLISION_PODOBOO
+  CYC(b_+27, b_+29); ENEMY_WRITE(HL, 0x04); // ENEMYCOLLISION_PODOBOO
   CYC(b_+29, b_+32); TAIL(objectSetInvisible); // jp
 }
 
@@ -237,23 +238,23 @@ void candle_stateE_hook(GB *gb) {
   BASE(candle_stateE);
   uint16_t sp0_ = gb->sp;
   CYC(b_+0, b_+2); A = 0x21; // Object.animParameter
-  CALL_C(b_+2, objectGetRelatedObject1Var_hook, SYM(objectGetRelatedObject1Var), b_+5);
+  ENEMY_CALL_C(b_+2, objectGetRelatedObject1Var_hook, SYM(objectGetRelatedObject1Var), b_+5);
   CYC(b_+5, b_+6); A = mem_rd(gb, HL);
-  CYC(b_+6, b_+7); alu_or(gb, A);
-  if (F & FZ) { RET_TAKEN(b_+7); return; } // ret z
+  CYC(b_+6, b_+7); ENEMY_OR(A);
+  if (ENEMY_FLAG(FZ)) { RET_TAKEN(b_+7); return; } // ret z
   CYC(b_+7, b_+8);
   CYC(b_+8, b_+9); alu_rlca(gb);
-  if (F & FC) { CYCT(b_+9, b_+11); goto done; } // jr c
+  if (ENEMY_FLAG(FC)) { CYCT(b_+9, b_+11); goto done; } // jr c
   CYC(b_+9, b_+11);
-  CYC(b_+11, b_+13); mem_wr(gb, HL, 0x00); // [child.animParameter] = 0
+  CYC(b_+11, b_+13); ENEMY_WRITE(HL, 0x00); // [child.animParameter] = 0
   CYC(b_+13, b_+15); L = ENEMY_BASE + OBJ_COLLISION_RADIUS_Y;
   CYC(b_+15, b_+17); A = 0x0c;
-  CYC(b_+17, b_+18); mem_wr(gb, HL, A); SET_HL(HL + 1); // ldi (hl),a
-  CYC(b_+18, b_+19); mem_wr(gb, HL, A);
+  CYC(b_+17, b_+18); ENEMY_WRITE(HL, A); SET_HL(HL + 1); // ldi (hl),a
+  CYC(b_+18, b_+19); ENEMY_WRITE(HL, A);
   RET(b_+19); return; // ret
 
 done:
-  CALL_C(b_+20, markEnemyAsKilledInRoom_b00_hook, SYM(markEnemyAsKilledInRoom_b00), b_+23);
-  CALL_C(b_+23, decNumEnemies_hook, SYM(decNumEnemies), b_+26);
+  ENEMY_CALL_C(b_+20, markEnemyAsKilledInRoom_b00_hook, SYM(markEnemyAsKilledInRoom_b00), b_+23);
+  ENEMY_CALL_C(b_+23, decNumEnemies_hook, SYM(decNumEnemies), b_+26);
   CYC(b_+26, b_+29); TAIL(enemyDelete); // jp
 }

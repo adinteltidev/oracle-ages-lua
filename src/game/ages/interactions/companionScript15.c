@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/npcs_events.h"
 
 #undef CYC
 #undef CYCT
@@ -13,10 +14,10 @@ void companionScript_noticeLink_hook(GB *gb) {
   uint16_t sp0_ = gb->sp; (void)sp0_;
   CYC(b_+0, b_+2); E = 0x78;
   CYC(b_+2, b_+3); A = mem_rd(gb, DE);
-  CYC(b_+3, b_+4); alu_or(gb, A);
+  CYC(b_+3, b_+4); NPC_OR(A);
   if (F & FZ) { CYCT(b_+4, b_+6); companionScript_makeExclamationMark_hook(gb); return; }
   CYC(b_+4, b_+6);
-  CYC(b_+6, b_+9); mem_wr(gb, w1Companion_var3f, A);
+  CYC(b_+6, b_+9); EVENT_WRITE(w1Companion_var3f, A);
   TAIL(companionScript_makeExclamationMark);
 }
 
@@ -31,11 +32,11 @@ void companionScript_makeExclamationMark_hook(GB *gb) {
 void companionScript_writeAngleTowardLinkToCompanionVar3f_hook(GB *gb) {
   BASE(companionScript_writeAngleTowardLinkToCompanionVar3f);
   uint16_t sp0_ = gb->sp; (void)sp0_;
-  CALL_C(b_+0, objectGetAngleTowardLink_hook, SYM(objectGetAngleTowardLink), b_+3);
+  NPC_CALL_C(b_+0, objectGetAngleTowardLink_hook, SYM(objectGetAngleTowardLink), b_+3);
   CYC(b_+3, b_+5); E = 0x49;
-  CALL_C(b_+5, convertAngleToDirection_hook, SYM(convertAngleToDirection), b_+8);
+  NPC_CALL_C(b_+5, convertAngleToDirection_hook, SYM(convertAngleToDirection), b_+8);
   CYC(b_+8, b_+10); alu_add(gb, 0x01);
-  CYC(b_+10, b_+13); mem_wr(gb, w1Companion_var3f, A);
+  CYC(b_+10, b_+13); EVENT_WRITE(w1Companion_var3f, A);
   CYC(b_+13, b_+14); ret_effect(gb);
 }
 
@@ -43,7 +44,7 @@ void companionScript_restoreMusic_hook(GB *gb) {
   BASE(companionScript_restoreMusic);
   uint16_t sp0_ = gb->sp; (void)sp0_;
   CYC(b_+0, b_+3); A = mem_rd(gb, wActiveMusic2);
-  CYC(b_+3, b_+6); mem_wr(gb, wActiveMusic, A);
+  CYC(b_+3, b_+6); EVENT_WRITE(wActiveMusic, A);
   CYC(b_+6, b_+9); TAIL(playSound_b00);
 }
 
@@ -51,9 +52,9 @@ void companionScript_spawnFairyAfterFindingCompanionInForest_hook(GB *gb) {
   BASE(companionScript_spawnFairyAfterFindingCompanionInForest);
   uint16_t sp0_ = gb->sp; (void)sp0_;
   CYC(b_+0, b_+3); SET_BC((SYM(group2ObjectDataTable) + 456));
-  CALL_C(b_+3, objectCreateInteraction_hook, SYM(objectCreateInteraction), b_+6);
+  NPC_CALL_C(b_+3, objectCreateInteraction_hook, SYM(objectCreateInteraction), b_+6);
   CYC(b_+6, b_+8); L = 0x43;
-  CYC(b_+8, b_+10); mem_wr(gb, HL, 0x0f);
+  CYC(b_+8, b_+10); EVENT_WRITE(HL, 0x0f);
   CYC(b_+10, b_+11); ret_effect(gb);
 }
 

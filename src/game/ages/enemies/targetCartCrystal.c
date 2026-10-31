@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/enemies.h"
 
 #undef CYC
 #undef CYCT
@@ -37,7 +38,7 @@ static void targetCartCrystal_addAToHl_from_rst(GB *gb, uint16_t return_address)
   push_effect(gb, return_address);
   burn_rom(gb, 0x00, 0x0010, 0x0011, false); alu_add(gb, L);
   burn_rom(gb, 0x00, 0x0011, 0x0012, false); L = A;
-  if (F & FC) {
+  if ((F & FC)) {
     burn_rom(gb, 0x00, 0x0012, 0x0013, false);
     burn_rom(gb, 0x00, 0x0013, 0x0014, false); H = alu_inc8(gb, H);
     burn_rom(gb, 0x00, 0x0014, 0x0015, false);
@@ -68,11 +69,11 @@ static void targetCartCrystal_addDoubleIndexToHl_from_rst(GB *gb, uint16_t retur
 void enemyCode63_hook(GB *gb) {
   BASE(enemyCode63);
   uint16_t sp0_ = gb->sp;
-  if (F & FZ) { CYCT(b_+0, b_+2); goto normalStatus; } // jr z
+  if (ENEMY_FLAG(FZ)) { CYCT(b_+0, b_+2); goto normalStatus; } // jr z
   CYC(b_+0, b_+2);
   CYC(b_+2, b_+4); E = ENEMY_BASE + OBJ_STATE;
   CYC(b_+4, b_+6); A = 0x02;
-  CYC(b_+6, b_+7); mem_wr(gb, DE, A);
+  CYC(b_+6, b_+7); ENEMY_WRITE(DE, A);
 
 normalStatus:
   CYC(b_+7, b_+9); E = ENEMY_BASE + OBJ_STATE;
@@ -80,9 +81,9 @@ normalStatus:
   {
     CYC(b_+10, b_+11); push_effect(gb, b_+11);
     uint16_t target = targetCartCrystal_jump_table(gb);
-    if (target == SYM(targetCartCrystal_state0)) { targetCartCrystal_state0_hook(gb); return; }
-    if (target == SYM(targetCartCrystal_state1)) { targetCartCrystal_state1_hook(gb); return; }
-    if (target == SYM(targetCartCrystal_state2)) { targetCartCrystal_state2_hook(gb); return; }
+    if (target == SYM(targetCartCrystal_state0)) { ENEMY_LOCAL_CALL(targetCartCrystal_state0_hook(gb)); return; }
+    if (target == SYM(targetCartCrystal_state1)) { ENEMY_LOCAL_CALL(targetCartCrystal_state1_hook(gb)); return; }
+    if (target == SYM(targetCartCrystal_state2)) { ENEMY_LOCAL_CALL(targetCartCrystal_state2_hook(gb)); return; }
     HANDOFF(target);
   }
 }
@@ -92,12 +93,12 @@ void targetCartCrystal_state0_hook(GB *gb) {
   BASE(targetCartCrystal_state0);
   uint16_t sp0_ = gb->sp;
   CYC(b_+0, b_+2); A = 0x01;
-  CYC(b_+2, b_+3); mem_wr(gb, DE, A); // [state]
-  CALL_C(b_+3, targetCartCrystal_loadPosition_hook, SYM(targetCartCrystal_loadPosition), b_+6);
-  CALL_C(b_+6, targetCartCrystal_loadBehaviour_hook, SYM(targetCartCrystal_loadBehaviour), b_+9);
-  if (F & FZ) { CYCT(b_+9, b_+11); goto skipInitSpeed; } // jr z
+  CYC(b_+2, b_+3); ENEMY_WRITE(DE, A); // [state]
+  ENEMY_CALL_C(b_+3, targetCartCrystal_loadPosition_hook, SYM(targetCartCrystal_loadPosition), b_+6);
+  ENEMY_CALL_C(b_+6, targetCartCrystal_loadBehaviour_hook, SYM(targetCartCrystal_loadBehaviour), b_+9);
+  if (ENEMY_FLAG(FZ)) { CYCT(b_+9, b_+11); goto skipInitSpeed; } // jr z
   CYC(b_+9, b_+11);
-  CALL_C(b_+11, targetCartCrystal_initSpeed_hook, SYM(targetCartCrystal_initSpeed), b_+14);
+  ENEMY_CALL_C(b_+11, targetCartCrystal_initSpeed_hook, SYM(targetCartCrystal_initSpeed), b_+14);
 
 skipInitSpeed:
   CYC(b_+14, b_+17); TAIL(objectSetVisible80); // jp
@@ -110,20 +111,20 @@ void targetCartCrystal_state1_hook(GB *gb) {
   uint16_t sp0_ = gb->sp;
   CYC(b_+0, b_+2); E = ENEMY_BASE + OBJ_VAR03;
   CYC(b_+2, b_+3); A = mem_rd(gb, DE);
-  CYC(b_+3, b_+4); alu_or(gb, A);
-  if (F & FZ) { CYCT(b_+4, b_+6); goto checkDeleteInFirstRoom; } // jr z
+  CYC(b_+3, b_+4); ENEMY_OR(A);
+  if (ENEMY_FLAG(FZ)) { CYCT(b_+4, b_+6); goto checkDeleteInFirstRoom; } // jr z
   CYC(b_+4, b_+6);
-  CALL_C(b_+6, targetCartCrystal_updateMovement_hook, SYM(targetCartCrystal_updateMovement), b_+9);
+  ENEMY_CALL_C(b_+6, targetCartCrystal_updateMovement_hook, SYM(targetCartCrystal_updateMovement), b_+9);
 
 checkDeleteInFirstRoom:
   CYC(b_+9, b_+11); E = ENEMY_BASE + OBJ_SUBID;
   CYC(b_+11, b_+12); A = mem_rd(gb, DE);
-  CYC(b_+12, b_+14); alu_cp(gb, 0x05);
-  if (!(F & FC)) { CYCT(b_+14, b_+16); goto animate; } // jr nc
+  CYC(b_+12, b_+14); ENEMY_CP(0x05);
+  if (!(ENEMY_FLAG(FC))) { CYCT(b_+14, b_+16); goto animate; } // jr nc
   CYC(b_+14, b_+16);
   CYC(b_+16, b_+19); A = mem_rd(gb, wTmpcfc0_targetCarts_cfdf);
-  CYC(b_+19, b_+20); alu_or(gb, A);
-  if (!(F & FZ)) { CYCT(b_+20, b_+23); enemyDelete_hook(gb); return; } // jp nz
+  CYC(b_+19, b_+20); ENEMY_OR(A);
+  if (!(ENEMY_FLAG(FZ))) { CYCT(b_+20, b_+23); ENEMY_LOCAL_CALL(enemyDelete_hook(gb)); return; } // jp nz
   CYC(b_+20, b_+23);
 
 animate:
@@ -135,31 +136,31 @@ void targetCartCrystal_state2_hook(GB *gb) {
   BASE(targetCartCrystal_state2);
   uint16_t sp0_ = gb->sp;
   CYC(b_+0, b_+3); SET_HL(wTmpcfc0_targetCarts_numTargetsHit);
-  CYC(b_+3, b_+4); mem_wr(gb, HL, alu_inc8(gb, mem_rd(gb, HL)));
+  CYC(b_+3, b_+4); ENEMY_WRITE(HL, alu_inc8(gb, mem_rd(gb, HL)));
   CYC(b_+4, b_+6); E = ENEMY_BASE + OBJ_SUBID;
   CYC(b_+6, b_+7); A = mem_rd(gb, DE);
-  CYC(b_+7, b_+9); alu_cp(gb, 0x05);
-  if (!(F & FC)) { CYCT(b_+9, b_+11); goto playSoundAndSpawn; } // jr nc
+  CYC(b_+7, b_+9); ENEMY_CP(0x05);
+  if (!(ENEMY_FLAG(FC))) { CYCT(b_+9, b_+11); goto playSoundAndSpawn; } // jr nc
   CYC(b_+9, b_+11);
   CYC(b_+11, b_+14); SET_HL(wTmpcfc0_targetCarts_crystalsHitInFirstRoom);
-  CALL_C(b_+14, setFlag_hook, SYM(setFlag), b_+17);
+  ENEMY_CALL_C(b_+14, setFlag_hook, SYM(setFlag), b_+17);
 
 playSoundAndSpawn:
   CYC(b_+17, b_+19); A = 0x90; // SND_GALE_SEED
-  CALL_C(b_+19, playSound_b00_hook, SYM(playSound_b00), b_+22);
+  ENEMY_CALL_C(b_+19, playSound_b00_hook, SYM(playSound_b00), b_+22);
   CYC(b_+22, b_+24); A = 0x04;
 
 spawnNext:
-  CYC(b_+24, b_+26); mem_wr(gb, hFF8B, A); // hFF8B
+  CYC(b_+24, b_+26); ENEMY_WRITE(hFF8B, A); // hFF8B
   CYC(b_+26, b_+29); SET_BC(0x9203); // INTERAC_FALLING_ROCK, $03
-  CALL_C(b_+29, objectCreateInteraction_hook, SYM(objectCreateInteraction), b_+32);
-  if (!(F & FZ)) { CYCT(b_+32, b_+34); goto delete; } // jr nz
+  ENEMY_CALL_C(b_+29, objectCreateInteraction_hook, SYM(objectCreateInteraction), b_+32);
+  if (!(ENEMY_FLAG(FZ))) { CYCT(b_+32, b_+34); goto delete; } // jr nz
   CYC(b_+32, b_+34);
   CYC(b_+34, b_+36); L = INTERACTION_BASE + OBJ_ANGLE; // Interaction.angle
   CYC(b_+36, b_+38); A = mem_rd(gb, hFF8B); // hFF8B
   CYC(b_+38, b_+39); A = alu_dec8(gb, A);
-  CYC(b_+39, b_+40); mem_wr(gb, HL, A);
-  if (!(F & FZ)) { CYCT(b_+40, b_+42); goto spawnNext; } // jr nz
+  CYC(b_+39, b_+40); ENEMY_WRITE(HL, A);
+  if (!(ENEMY_FLAG(FZ))) { CYCT(b_+40, b_+42); goto spawnNext; } // jr nz
   CYC(b_+40, b_+42);
 
 delete:
@@ -175,14 +176,14 @@ void targetCartCrystal_loadBehaviour_hook(GB *gb) {
   CYC(b_+0, b_+3); A = mem_rd(gb, wTmpcfc0_targetCarts_targetConfiguration);
   CYC(b_+3, b_+5); A = alu_swap(gb, A);
   CYC(b_+5, b_+8); SET_HL(b_+18); // @behaviourTable
-  CYC(b_+8, b_+9); targetCartCrystal_addAToHl_from_rst(gb, b_+9);
+  CYC(b_+8, b_+9); ENEMY_LOCAL_CALL(targetCartCrystal_addAToHl_from_rst(gb, b_+9));
   CYC(b_+9, b_+11); E = ENEMY_BASE + OBJ_SUBID;
   CYC(b_+11, b_+12); A = mem_rd(gb, DE);
-  CYC(b_+12, b_+13); targetCartCrystal_addAToHl_from_rst(gb, b_+13);
+  CYC(b_+12, b_+13); ENEMY_LOCAL_CALL(targetCartCrystal_addAToHl_from_rst(gb, b_+13));
   CYC(b_+13, b_+14); A = mem_rd(gb, HL);
   CYC(b_+14, b_+15); E = alu_inc8(gb, E);
-  CYC(b_+15, b_+16); mem_wr(gb, DE, A); // [var03]
-  CYC(b_+16, b_+17); alu_or(gb, A);
+  CYC(b_+15, b_+16); ENEMY_WRITE(DE, A); // [var03]
+  CYC(b_+16, b_+17); ENEMY_OR(A);
   RET(b_+17); return; // ret
 }
 
@@ -193,18 +194,18 @@ void targetCartCrystal_loadPosition_hook(GB *gb) {
   uint16_t sp0_ = gb->sp; (void)sp0_;
   CYC(b_+0, b_+3); A = mem_rd(gb, wTmpcfc0_targetCarts_targetConfiguration);
   CYC(b_+3, b_+6); SET_HL(b_+22); // @configurationTable
-  CYC(b_+6, b_+7); targetCartCrystal_addAToHl_from_rst(gb, b_+7);
+  CYC(b_+6, b_+7); ENEMY_LOCAL_CALL(targetCartCrystal_addAToHl_from_rst(gb, b_+7));
   CYC(b_+7, b_+8); A = mem_rd(gb, HL);
-  CYC(b_+8, b_+9); targetCartCrystal_addAToHl_from_rst(gb, b_+9);
+  CYC(b_+8, b_+9); ENEMY_LOCAL_CALL(targetCartCrystal_addAToHl_from_rst(gb, b_+9));
   CYC(b_+9, b_+11); E = ENEMY_BASE + OBJ_SUBID;
   CYC(b_+11, b_+12); A = mem_rd(gb, DE);
-  CYC(b_+12, b_+13); targetCartCrystal_addDoubleIndexToHl_from_rst(gb, b_+13);
+  CYC(b_+12, b_+13); ENEMY_LOCAL_CALL(targetCartCrystal_addDoubleIndexToHl_from_rst(gb, b_+13));
   CYC(b_+13, b_+14); A = mem_rd(gb, HL); SET_HL(HL + 1); // ldi a,(hl)
   CYC(b_+14, b_+16); E = ENEMY_BASE + OBJ_YH;
-  CYC(b_+16, b_+17); mem_wr(gb, DE, A);
+  CYC(b_+16, b_+17); ENEMY_WRITE(DE, A);
   CYC(b_+17, b_+18); A = mem_rd(gb, HL);
   CYC(b_+18, b_+20); E = ENEMY_BASE + OBJ_XH;
-  CYC(b_+20, b_+21); mem_wr(gb, DE, A);
+  CYC(b_+20, b_+21); ENEMY_WRITE(DE, A);
   RET(b_+21); return; // ret
 }
 
@@ -214,21 +215,21 @@ void targetCartCrystal_initSpeed_hook(GB *gb) {
   uint16_t sp0_ = gb->sp; (void)sp0_;
   CYC(b_+0, b_+1); H = D;
   CYC(b_+1, b_+3); L = ENEMY_BASE + OBJ_SPEED;
-  CYC(b_+3, b_+5); mem_wr(gb, HL, 0x14); // SPEED_80
+  CYC(b_+3, b_+5); ENEMY_WRITE(HL, 0x14); // SPEED_80
   CYC(b_+5, b_+7); L = ENEMY_BASE + OBJ_COUNTER1;
-  CYC(b_+7, b_+9); mem_wr(gb, HL, 0x20);
+  CYC(b_+7, b_+9); ENEMY_WRITE(HL, 0x20);
   CYC(b_+9, b_+11); L = ENEMY_BASE + OBJ_VAR03;
   CYC(b_+11, b_+12); A = mem_rd(gb, HL);
-  CYC(b_+12, b_+14); alu_cp(gb, 0x02);
-  if (F & FZ) { CYCT(b_+14, b_+16); goto facingLeft; } // jr z
+  CYC(b_+12, b_+14); ENEMY_CP(0x02);
+  if (ENEMY_FLAG(FZ)) { CYCT(b_+14, b_+16); goto facingLeft; } // jr z
   CYC(b_+14, b_+16);
   CYC(b_+16, b_+18); L = ENEMY_BASE + OBJ_ANGLE;
-  CYC(b_+18, b_+20); mem_wr(gb, HL, 0x00); // ANGLE_UP
+  CYC(b_+18, b_+20); ENEMY_WRITE(HL, 0x00); // ANGLE_UP
   RET(b_+20); return; // ret
 
 facingLeft:
   CYC(b_+21, b_+23); L = ENEMY_BASE + OBJ_ANGLE;
-  CYC(b_+23, b_+25); mem_wr(gb, HL, 0x18); // ANGLE_LEFT
+  CYC(b_+23, b_+25); ENEMY_WRITE(HL, 0x18); // ANGLE_LEFT
   RET(b_+25); return; // ret
 }
 
@@ -237,14 +238,14 @@ facingLeft:
 void targetCartCrystal_updateMovement_hook(GB *gb) {
   BASE(targetCartCrystal_updateMovement);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, ecom_decCounter1_b0e_hook, SYM(ecom_decCounter1_b0e), b_+3);
-  if (!(F & FZ)) { CYCT(b_+3, b_+5); goto applySpeed; } // jr nz
+  ENEMY_CALL_C(b_+0, ecom_decCounter1_b0e_hook, SYM(ecom_decCounter1_b0e), b_+3);
+  if (!(ENEMY_FLAG(FZ))) { CYCT(b_+3, b_+5); goto applySpeed; } // jr nz
   CYC(b_+3, b_+5);
-  CYC(b_+5, b_+7); mem_wr(gb, HL, 0x40); // [counter1] = 64
+  CYC(b_+5, b_+7); ENEMY_WRITE(HL, 0x40); // [counter1] = 64
   CYC(b_+7, b_+9); L = ENEMY_BASE + OBJ_ANGLE;
   CYC(b_+9, b_+10); A = mem_rd(gb, HL);
-  CYC(b_+10, b_+12); alu_xor(gb, 0x10);
-  CYC(b_+12, b_+13); mem_wr(gb, HL, A);
+  CYC(b_+10, b_+12); ENEMY_XOR(0x10);
+  CYC(b_+12, b_+13); ENEMY_WRITE(HL, A);
 
 applySpeed:
   CYC(b_+13, b_+16); TAIL(objectApplySpeed); // jp

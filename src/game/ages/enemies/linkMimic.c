@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/enemies.h"
 
 #undef CYC
 #undef CYCT
@@ -38,15 +39,15 @@ static uint16_t linkMimic_jump_table(GB *gb) {
 void enemyCode64_hook(GB *gb) {
   BASE(enemyCode64);
   uint16_t sp0_ = gb->sp;
-  if (F & FZ) { CYCT(b_+0, b_+2); goto normalStatus; } // jr z
+  if (ENEMY_FLAG(FZ)) { CYCT(b_+0, b_+2); goto normalStatus; } // jr z
   CYC(b_+0, b_+2);
   CYC(b_+2, b_+4); alu_sub(gb, 0x03); // ENEMYSTATUS_NO_HEALTH
-  if (F & FC) { RET_TAKEN(b_+4); return; } // ret c
+  if (ENEMY_FLAG(FC)) { RET_TAKEN(b_+4); return; } // ret c
   CYC(b_+4, b_+5);
-  if (F & FZ) { CYCT(b_+5, b_+8); enemyDie_hook(gb); return; } // jp z
+  if (ENEMY_FLAG(FZ)) { CYCT(b_+5, b_+8); ENEMY_LOCAL_CALL(enemyDie_hook(gb)); return; } // jp z
   CYC(b_+5, b_+8);
   CYC(b_+8, b_+9); A = alu_dec8(gb, A);
-  if (!(F & FZ)) { CYCT(b_+9, b_+12); ecom_updateKnockback_b0e_hook(gb); return; } // jp nz
+  if (!(ENEMY_FLAG(FZ))) { CYCT(b_+9, b_+12); ENEMY_LOCAL_CALL(ecom_updateKnockback_b0e_hook(gb)); return; } // jp nz
   CYC(b_+9, b_+12);
   RET(b_+12); return; // ret
 
@@ -57,17 +58,17 @@ normalStatus:
     CYC(b_+16, b_+17); push_effect(gb, b_+17);
     uint16_t target = linkMimic_jump_table(gb);
     if (target == b_+35) goto state_uninitialized;
-    if (target == SYM(armMimic_state_stub)) { armMimic_state_stub_hook(gb); return; }
-    if (target == SYM(armMimic_state_switchHook)) { armMimic_state_switchHook_hook(gb); return; }
-    if (target == SYM(ecom_blownByGaleSeedState_b0e)) { ecom_blownByGaleSeedState_b0e_hook(gb); return; }
-    if (target == SYM(linkMimic_state8)) { linkMimic_state8_hook(gb); return; }
+    if (target == SYM(armMimic_state_stub)) { ENEMY_LOCAL_CALL(armMimic_state_stub_hook(gb)); return; }
+    if (target == SYM(armMimic_state_switchHook)) { ENEMY_LOCAL_CALL(armMimic_state_switchHook_hook(gb)); return; }
+    if (target == SYM(ecom_blownByGaleSeedState_b0e)) { ENEMY_LOCAL_CALL(ecom_blownByGaleSeedState_b0e_hook(gb)); return; }
+    if (target == SYM(linkMimic_state8)) { ENEMY_LOCAL_CALL(linkMimic_state8_hook(gb)); return; }
     HANDOFF(target);
   }
 
 state_uninitialized:
   CYC(b_+35, b_+37); A = 0x82; // PALH_82
-  CALL_C(b_+37, loadPaletteHeader_hook, SYM(loadPaletteHeader), b_+40);
-  CALL_C(b_+40, armMimic_uninitialized_hook, SYM(armMimic_uninitialized), b_+43);
+  ENEMY_CALL_C(b_+37, loadPaletteHeader_hook, SYM(loadPaletteHeader), b_+40);
+  ENEMY_CALL_C(b_+40, armMimic_uninitialized_hook, SYM(armMimic_uninitialized), b_+43);
   CYC(b_+43, b_+46); TAIL(objectSetVisible83); // jp
 }
 
@@ -76,8 +77,8 @@ state_uninitialized:
 void linkMimic_state8_hook(GB *gb) {
   BASE(linkMimic_state8);
   CYC(b_+0, b_+3); A = mem_rd(gb, wDisabledObjects);
-  CYC(b_+3, b_+4); alu_or(gb, A);
-  if (!(F & FZ)) { RET_TAKEN(b_+4); return; } // ret nz
+  CYC(b_+3, b_+4); ENEMY_OR(A);
+  if (!(ENEMY_FLAG(FZ))) { RET_TAKEN(b_+4); return; } // ret nz
   CYC(b_+4, b_+5);
   CYC(b_+5, b_+7); TAIL(armMimic_state8); // jr
 }

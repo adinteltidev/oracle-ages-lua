@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/npcs_events.h"
 
 #undef CYC
 #undef CYCT
@@ -49,25 +50,25 @@ void interactionCode8b_hook(GB *gb) {
   }
 
   // interactionCode8b@subid0 / @subid1
-  CALL_C(b_+10, checkInteractionState_hook, SYM(checkInteractionState), b_+13);
+  NPC_CALL_ZERO(b_+10, checkInteractionState_hook, SYM(checkInteractionState), b_+13);
   if (!(F & FZ)) { CYCT(b_+13, b_+15); goto L_6a7f; } // jr nz
   CYC(b_+13, b_+15);
   CYC(b_+15, b_+18); push_effect(gb, b_+18); goto loadScriptAndInitGraphics;
 
 L_6a7f:
-  CALL_C(b_+18, interactionRunScript_hook, SYM(interactionRunScript), b_+21);
+  NPC_CALL_C(b_+18, interactionRunScript_hook, SYM(interactionRunScript), b_+21);
   if (F & FC) { CYCT(b_+21, b_+24); interactionDelete_hook(gb); return; } // jp c
   CYC(b_+21, b_+24);
   CYC(b_+24, b_+26); E = INTERACTION_BASE + OBJ_VAR3F;
   CYC(b_+26, b_+27); A = mem_rd(gb, DE);
-  CYC(b_+27, b_+28); alu_or(gb, A);
+  CYC(b_+27, b_+28); NPC_OR(A);
   if (F & FZ) { CYCT(b_+28, b_+31); npcFaceLinkAndAnimate_hook(gb); return; } // jp z
   CYC(b_+28, b_+31);
   CYC(b_+31, b_+34); TAIL(interactionAnimateAsNpc); // jp
 
 subid2:
   CYC(b_+34, b_+36); A = 0x14; // GLOBALFLAG_FINISHEDGAME
-  CALL_C(b_+36, checkGlobalFlag_hook, SYM(checkGlobalFlag), b_+39);
+  NPC_CALL_ZERO(b_+36, checkGlobalFlag_hook, SYM(checkGlobalFlag), b_+39);
   if (F & FZ) { CYCT(b_+39, b_+42); interactionDelete_hook(gb); return; } // jp z
   CYC(b_+39, b_+42);
   CYC(b_+42, b_+45); SET_HL(RV((SYM(interaction6e_subid02__state1) + 12), 0x562a)); // agesInteractionsBank08.shootingGalleryNpc
@@ -76,15 +77,15 @@ subid2:
 
 // interactionCode8b@loadScriptAndInitGraphics
 loadScriptAndInitGraphics:
-  CALL_C(b_+56, interactionInitGraphics_hook, SYM(interactionInitGraphics), b_+59);
+  NPC_CALL_C(b_+56, interactionInitGraphics_hook, SYM(interactionInitGraphics), b_+59);
   CYC(b_+59, b_+61); E = INTERACTION_BASE + OBJ_SUBID;
   CYC(b_+61, b_+62); A = mem_rd(gb, DE);
   CYC(b_+62, b_+65); SET_HL(b_+75); // @scriptTable
-  CYC(b_+65, b_+66); interactionCode8b_add_double_index(gb, b_+66);
+  CYC(b_+65, b_+66); NPC_LOCAL_CALL(interactionCode8b_add_double_index(gb, b_+66));
   CYC(b_+66, b_+67); A = mem_rd(gb, HL); SET_HL(HL + 1); // ldi a,(hl)
   CYC(b_+67, b_+68); H = mem_rd(gb, HL);
   CYC(b_+68, b_+69); L = A;
-  CALL_C(b_+69, interactionSetScript_hook, SYM(interactionSetScript), b_+72);
+  NPC_CALL_C(b_+69, interactionSetScript_hook, SYM(interactionSetScript), b_+72);
   CYC(b_+72, b_+75); interactionIncState_hook(gb);
   if (gb->pc == b_+18 && gb->sp == sp0_) goto L_6a7f;
   return; // jp

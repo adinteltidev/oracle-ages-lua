@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/doors.h"
 
 #undef CYC
 #undef CYCT
@@ -323,7 +324,10 @@ void checkAndDecKeyCount_hook(GB *gb) {
   }
   CYC(b_+O(0), b_+OE(3)); A = W8(wDungeonIndex);
   CYC(b_+O(3), b_+OE(5)); alu_cp(gb, 0xff);
-  if (F & FZ) {
+  bool valid_ = (F & FZ) == 0;
+  DOOR_DECIDE(valid_, valid_dungeon, A);
+  DOOR_SET_ZERO(!valid_);
+  if (!valid_) {
     CYCT(b_+O(5), b_+OE(6)); ret_effect(gb); return;
   }
   CYC(b_+O(5), b_+OE(6));
@@ -331,17 +335,32 @@ void checkAndDecKeyCount_hook(GB *gb) {
   CYC(b_+O(7), b_+OE(9)); alu_cp(gb, 0x40);
   CYC(b_+O(9), b_+OE(11)); H = 0xc6;
   CYC(b_+O(11), b_+OE(14)); A = W8(wDungeonIndex);
-  if (!(F & FC)) {
+  bool boss_ = (F & FC) == 0;
+  DOOR_DECIDE(boss_, boss_door, B);
+  if (boss_) {
     CYCT(b_+O(14), b_+OE(16));
     CYC(b_+O(30), b_+OE(32)); L = GV(0x82, 0x7a);
-    CYC(b_+O(32), b_+OE(35)); TAIL(checkFlag);
+    CYC(b_+O(32), b_+OE(35));
+#ifdef ORACLES_LUA_GAMEPLAY
+    if (DOOR_ACTIVE) {
+      checkFlag_hook(gb); // Original bit lookup and return; no debit for boss keys.
+      bool owned_ = (F & FZ) == 0;
+      DOOR_DECIDE(owned_, boss_key, owned_);
+      DOOR_SET_ZERO(!owned_);
+      return;
+    }
+#endif
+    TAIL(checkFlag);
   }
   CYC(b_+O(14), b_+OE(16));
   CYC(b_+O(16), b_+OE(18)); alu_add(gb, GV(0x72, 0x6e));
   CYC(b_+O(18), b_+OE(19)); L = A;
   CYC(b_+O(19), b_+OE(20)); A = mem_rd(gb, HL);
   CYC(b_+O(20), b_+OE(21)); alu_or(gb, A);
-  if (F & FZ) {
+  bool available_ = (F & FZ) == 0;
+  DOOR_DECIDE(available_, small_key, A);
+  DOOR_SET_ZERO(!available_);
+  if (!available_) {
     CYCT(b_+O(21), b_+OE(22)); ret_effect(gb); return;
   }
   CYC(b_+O(21), b_+OE(22));
@@ -690,6 +709,7 @@ void nextToKeyBlock_hook(GB *gb) {
   }
   CYC(b_+9, b_+10);
   CALL_C(b_+10, checkAndDecKeyCount_hook, SYM(checkAndDecKeyCount), b_+13);
+  DOOR_FAILED_RETURN();
   CYC(b_+13, b_+15); A = 0x02;
   if (F & FZ) {
     CYCT(b_+15, b_+18); TAIL(showInfoTextForTile);
@@ -738,6 +758,7 @@ void nextToKeyDoor_hook(GB *gb) {
 
 check_key:
   CALL_C(b_+12, checkAndDecKeyCount_hook, SYM(checkAndDecKeyCount), b_+15);
+  DOOR_FAILED_RETURN();
   if (F & FZ) {
     CYCT(b_+15, b_+17); goto no_key;
   }
@@ -745,7 +766,9 @@ check_key:
   CYC(b_+17, b_+20); SET_HL(w1ReservedInteraction0_enabled);
   CYC(b_+20, b_+21); A = mem_rd(gb, HL);
   CYC(b_+21, b_+22); alu_or(gb, A);
-  if (!(F & FZ)) {
+  bool free_ = (F & FZ) != 0;
+  DOOR_DECIDE(free_, reserved_free, A);
+  if (!free_) {
     CYCT(b_+22, b_+24); goto finish;
   }
   CYC(b_+22, b_+24);
@@ -790,7 +813,9 @@ void nextToOverworldKeyhole_hook(GB *gb) {
   uint16_t sp0_ = gb->sp;
   CALL_C(b_+0, getThisRoomFlags_hook, SYM(getThisRoomFlags), b_+3);
   CYC(b_+3, b_+5); alu_and(gb, 0x80);
-  if (!(F & FZ)) {
+  bool locked_ = (F & FZ) != 0;
+  DOOR_DECIDE(locked_, overworld_locked, A);
+  if (!locked_) {
     CYCT(b_+5, b_+6); ret_effect(gb); return;
   }
   CYC(b_+5, b_+6);
@@ -827,7 +852,9 @@ void nextToOverworldKeyhole_hook(GB *gb) {
   }
   CYC(b_+35, b_+37);
   CALL_C(b_+37, checkTreasureObtained_hook, SYM(checkTreasureObtained), b_+40);
-  if (!(F & FC)) {
+  bool owned_ = (F & FC) != 0;
+  DOOR_DECIDE(owned_, overworld_key, owned_);
+  if (!owned_) {
     CYCT(b_+40, b_+42); TAIL(jumpToShowInfoText);
   }
   CYC(b_+40, b_+42);

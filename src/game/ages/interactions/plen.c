@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/npcs_events.h"
 
 #undef CYC
 #undef CYCT
@@ -39,15 +40,15 @@ static void interactionCodecc_addDoubleIndexToHl_from_rst(GB *gb, uint16_t retur
 void interactionCodecc_initialize_hook(GB *gb) {
   BASE(interactionCodecc);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+32, interactionInitGraphics_hook, SYM(interactionInitGraphics), b_+35);
+  NPC_CALL_C(b_+32, interactionInitGraphics_hook, SYM(interactionInitGraphics), b_+35);
   CYC(b_+35, b_+37); E = INTERACTION_BASE + OBJ_SUBID;
   CYC(b_+37, b_+38); A = mem_rd(gb, DE);
   CYC(b_+38, b_+41); SET_HL(b_+51); // interactionCodecc@scriptTable
-  CYC(b_+41, b_+42); interactionCodecc_addDoubleIndexToHl_from_rst(gb, b_+42);
+  CYC(b_+41, b_+42); NPC_LOCAL_CALL(interactionCodecc_addDoubleIndexToHl_from_rst(gb, b_+42));
   CYC(b_+42, b_+43); A = mem_rd(gb, HL); SET_HL(HL + 1); // ldi a,(hl)
   CYC(b_+43, b_+44); H = mem_rd(gb, HL);
   CYC(b_+44, b_+45); L = A;
-  CALL_C(b_+45, interactionSetScript_hook, SYM(interactionSetScript), b_+48);
+  NPC_CALL_C(b_+45, interactionSetScript_hook, SYM(interactionSetScript), b_+48);
   CYC(b_+48, b_+51); TAIL(interactionIncState); // jp
 }
 
@@ -58,7 +59,7 @@ void interactionCodecc_initialize_hook(GB *gb) {
 void interactionCodecc_unusedBytes_77fe_hook(GB *gb) {
   BASE(interactionCodecc);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+26, interactionInitGraphics_hook, SYM(interactionInitGraphics), b_+29);
+  NPC_CALL_C(b_+26, interactionInitGraphics_hook, SYM(interactionInitGraphics), b_+29);
   CYC(b_+29, b_+32); TAIL(interactionIncState); // jp
 }
 
@@ -77,16 +78,16 @@ void interactionCodecc_hook(GB *gb) {
   } while (0);
 
 subid0:
-  CALL_C(b_+6, checkInteractionState_hook, SYM(checkInteractionState), b_+9);
+  NPC_CALL_ZERO(b_+6, checkInteractionState_hook, SYM(checkInteractionState), b_+9);
   if (!(F & FZ)) { CYCT(b_+9, b_+11); goto state1; } // jr nz
   CYC(b_+9, b_+11);
 
   // interactionCodecc@state0 (0x77ef): reached solely by fallthrough, never a jump target.
   CALL_L(b_+11, interactionCodecc_initialize_hook, b_+14);
-  CALL_C(b_+14, interactionSetAlwaysUpdateBit_hook, SYM(interactionSetAlwaysUpdateBit), b_+17);
+  NPC_CALL_C(b_+14, interactionSetAlwaysUpdateBit_hook, SYM(interactionSetAlwaysUpdateBit), b_+17);
 
 state1:
-  CALL_C(b_+17, interactionRunScript_hook, SYM(interactionRunScript), b_+20);
+  NPC_CALL_C(b_+17, interactionRunScript_hook, SYM(interactionRunScript), b_+20);
   if (F & FC) { CYCT(b_+20, b_+23); interactionDelete_hook(gb); return; } // jp c
   CYC(b_+20, b_+23);
   CYC(b_+23, b_+26); TAIL(interactionAnimateAsNpc); // jp

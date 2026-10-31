@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/enemies.h"
 
 #undef CYC
 #undef CYCT
@@ -33,27 +34,27 @@ static uint16_t twinrovaBat_jump_table(GB *gb) {
 void enemyCode5e_hook(GB *gb) {
   BASE(enemyCode5e);
   uint16_t sp0_ = gb->sp;
-  if (F & FZ) { CYCT(b_+0, b_+2); goto afterHealthCheck; } // jr z
+  if (ENEMY_FLAG(FZ)) { CYCT(b_+0, b_+2); goto afterHealthCheck; } // jr z
   CYC(b_+0, b_+2);
   CYC(b_+2, b_+4); alu_sub(gb, 0x03); // ENEMYSTATUS_NO_HEALTH
-  if (F & FC) { RET_TAKEN(b_+4); return; } // ret c
+  if (ENEMY_FLAG(FC)) { RET_TAKEN(b_+4); return; } // ret c
   CYC(b_+4, b_+5);
-  if (F & FZ) { CYCT(b_+5, b_+8); enemyDie_uncounted_hook(gb); return; } // jp z
+  if (ENEMY_FLAG(FZ)) { CYCT(b_+5, b_+8); ENEMY_LOCAL_CALL(enemyDie_uncounted_hook(gb)); return; } // jp z
   CYC(b_+5, b_+8);
 
 afterHealthCheck:
   CYC(b_+8, b_+10); A = OBJ_ID; // Object.id
-  CALL_C(b_+10, objectGetRelatedObject1Var_hook, SYM(objectGetRelatedObject1Var), b_+13);
+  ENEMY_CALL_C(b_+10, objectGetRelatedObject1Var_hook, SYM(objectGetRelatedObject1Var), b_+13);
   CYC(b_+13, b_+14); A = mem_rd(gb, HL);
-  CYC(b_+14, b_+16); alu_cp(gb, 0x01); // ENEMY_MERGED_TWINROVA
-  if (!(F & FZ)) { CYCT(b_+16, b_+19); enemyDelete_hook(gb); return; } // jp nz
+  CYC(b_+14, b_+16); ENEMY_CP(0x01); // ENEMY_MERGED_TWINROVA
+  if (!(ENEMY_FLAG(FZ))) { CYCT(b_+16, b_+19); ENEMY_LOCAL_CALL(enemyDelete_hook(gb)); return; } // jp nz
   CYC(b_+16, b_+19);
   CYC(b_+19, b_+21); E = ENEMY_BASE + OBJ_COUNTER1;
   CYC(b_+21, b_+22); A = mem_rd(gb, DE);
   CYC(b_+22, b_+23); A = alu_inc8(gb, A);
-  CYC(b_+23, b_+25); alu_and(gb, 0x1f);
+  CYC(b_+23, b_+25); ENEMY_AND(0x1f);
   CYC(b_+25, b_+27); A = 0x78; // SND_BOOMERANG
-  if (F & FZ) CALL_C_CC(b_+27, playSound_b00_hook, SYM(playSound_b00), b_+30); else CYC(b_+27, b_+30); // call z
+  if (ENEMY_FLAG(FZ)) ENEMY_CALL_C_CC(b_+27, playSound_b00_hook, SYM(playSound_b00), b_+30); else CYC(b_+27, b_+30); // call z
   CYC(b_+30, b_+32); E = ENEMY_BASE + OBJ_STATE;
   CYC(b_+32, b_+33); A = mem_rd(gb, DE);
   {
@@ -68,33 +69,33 @@ afterHealthCheck:
 state0:
   CYC(b_+40, b_+41); H = D;
   CYC(b_+41, b_+42); L = E;
-  CYC(b_+42, b_+43); mem_wr(gb, HL, alu_inc8(gb, mem_rd(gb, HL))); // [state]
+  CYC(b_+42, b_+43); ENEMY_WRITE(HL, alu_inc8(gb, mem_rd(gb, HL))); // [state]
   CYC(b_+43, b_+45); L = ENEMY_BASE + OBJ_SPEED;
-  CYC(b_+45, b_+47); mem_wr(gb, HL, 0x50); // SPEED_200
+  CYC(b_+45, b_+47); ENEMY_WRITE(HL, 0x50); // SPEED_200
   CYC(b_+47, b_+49); L = ENEMY_BASE + OBJ_COUNTER2;
-  CYC(b_+49, b_+51); mem_wr(gb, HL, 0x50);
-  CALL_C(b_+51, getRandomNumber_noPreserveVars_hook, SYM(getRandomNumber_noPreserveVars), b_+54);
+  CYC(b_+49, b_+51); ENEMY_WRITE(HL, 0x50);
+  ENEMY_CALL_C(b_+51, getRandomNumber_noPreserveVars_hook, SYM(getRandomNumber_noPreserveVars), b_+54);
   CYC(b_+54, b_+56); E = ENEMY_BASE + OBJ_COUNTER1;
-  CYC(b_+56, b_+57); mem_wr(gb, DE, A);
+  CYC(b_+56, b_+57); ENEMY_WRITE(DE, A);
   CYC(b_+57, b_+59); A = 0xa8; // SND_VERAN_FAIRY_ATTACK
-  CALL_C(b_+59, playSound_b00_hook, SYM(playSound_b00), b_+62);
+  ENEMY_CALL_C(b_+59, playSound_b00_hook, SYM(playSound_b00), b_+62);
   CYC(b_+62, b_+65); TAIL(objectSetVisible82); // jp
 
 state1:
   CALL_L(b_+65, enemyCode5e_updateOamFlags_hook, b_+68);
-  CALL_C(b_+68, ecom_decCounter2_b0e_hook, SYM(ecom_decCounter2_b0e), b_+71);
-  if (!(F & FZ)) { CYCT(b_+71, b_+73); goto animate; } // jr nz
+  ENEMY_CALL_C(b_+68, ecom_decCounter2_b0e_hook, SYM(ecom_decCounter2_b0e), b_+71);
+  if (!(ENEMY_FLAG(FZ))) { CYCT(b_+71, b_+73); goto animate; } // jr nz
   CYC(b_+71, b_+73);
   CYC(b_+73, b_+74); L = E;
-  CYC(b_+74, b_+75); mem_wr(gb, HL, alu_inc8(gb, mem_rd(gb, HL))); // [state]
-  CALL_C(b_+75, ecom_updateAngleTowardTarget_b0e_hook, SYM(ecom_updateAngleTowardTarget_b0e), b_+78);
+  CYC(b_+74, b_+75); ENEMY_WRITE(HL, alu_inc8(gb, mem_rd(gb, HL))); // [state]
+  ENEMY_CALL_C(b_+75, ecom_updateAngleTowardTarget_b0e_hook, SYM(ecom_updateAngleTowardTarget_b0e), b_+78);
 
 state2:
   CALL_L(b_+78, enemyCode5e_checkInBounds_hook, b_+81);
-  if (!(F & FC)) { CYCT(b_+81, b_+84); enemyDelete_hook(gb); return; } // jp nc
+  if (!(ENEMY_FLAG(FC))) { CYCT(b_+81, b_+84); ENEMY_LOCAL_CALL(enemyDelete_hook(gb)); return; } // jp nc
   CYC(b_+81, b_+84);
   CALL_L(b_+84, enemyCode5e_updateOamFlags_hook, b_+87);
-  CALL_C(b_+87, objectApplySpeed_hook, SYM(objectApplySpeed), b_+90);
+  ENEMY_CALL_C(b_+87, objectApplySpeed_hook, SYM(objectApplySpeed), b_+90);
 
 animate:
   CYC(b_+90, b_+93); TAIL(enemyAnimate); // jp
@@ -107,12 +108,12 @@ void enemyCode5e_checkInBounds_hook(GB *gb) {
   BASE(enemyCode5e);
   CYC(b_+93, b_+95); E = ENEMY_BASE + OBJ_YH;
   CYC(b_+95, b_+96); A = mem_rd(gb, DE);
-  CYC(b_+96, b_+98); alu_cp(gb, 0xb0); // LARGE_ROOM_HEIGHT<<4
-  if (!(F & FC)) { RET_TAKEN(b_+98); return; } // ret nc
+  CYC(b_+96, b_+98); ENEMY_CP(0xb0); // LARGE_ROOM_HEIGHT<<4
+  if (!(ENEMY_FLAG(FC))) { RET_TAKEN(b_+98); return; } // ret nc
   CYC(b_+98, b_+99);
   CYC(b_+99, b_+101); E = ENEMY_BASE + OBJ_XH;
   CYC(b_+101, b_+102); A = mem_rd(gb, DE);
-  CYC(b_+102, b_+104); alu_cp(gb, 0xf0); // LARGE_ROOM_WIDTH<<4
+  CYC(b_+102, b_+104); ENEMY_CP(0xf0); // LARGE_ROOM_WIDTH<<4
   RET(b_+104); return; // ret
 }
 
@@ -121,14 +122,14 @@ void enemyCode5e_checkInBounds_hook(GB *gb) {
 void enemyCode5e_updateOamFlags_hook(GB *gb) {
   BASE(enemyCode5e);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+105, ecom_decCounter1_b0e_hook, SYM(ecom_decCounter1_b0e), b_+108);
+  ENEMY_CALL_C(b_+105, ecom_decCounter1_b0e_hook, SYM(ecom_decCounter1_b0e), b_+108);
   CYC(b_+108, b_+109); A = mem_rd(gb, HL);
-  CYC(b_+109, b_+111); alu_and(gb, 0x04);
+  CYC(b_+109, b_+111); ENEMY_AND(0x04);
   CYC(b_+111, b_+112); alu_rrca(gb);
   CYC(b_+112, b_+113); alu_rrca(gb);
   CYC(b_+113, b_+115); alu_add(gb, 0x02);
   CYC(b_+115, b_+117); L = ENEMY_BASE + OBJ_OAM_FLAGS_BACKUP;
-  CYC(b_+117, b_+118); mem_wr(gb, HL, A); SET_HL(HL + 1); // ldi (hl),a
-  CYC(b_+118, b_+119); mem_wr(gb, HL, A);
+  CYC(b_+117, b_+118); ENEMY_WRITE(HL, A); SET_HL(HL + 1); // ldi (hl),a
+  CYC(b_+118, b_+119); ENEMY_WRITE(HL, A);
   RET(b_+119); return; // ret
 }

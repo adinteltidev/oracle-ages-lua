@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/enemies.h"
 
 #undef CYC
 #undef CYCT
@@ -30,12 +31,12 @@ static uint16_t enemyCode08_jump_table(GB *gb) {
 void enemyCode08_hook(GB *gb) {
   BASE(enemyCode08);
   uint16_t sp0_ = gb->sp;
-  if (F & FZ) { CYCT(b_+0, b_+2); goto normalStatus; } // jr z
+  if (ENEMY_FLAG(FZ)) { CYCT(b_+0, b_+2); goto normalStatus; } // jr z
   CYC(b_+0, b_+2);
   CYC(b_+2, b_+4); alu_sub(gb, 0x03); // ENEMYSTATUS_NO_HEALTH
-  if (F & FC) { RET_TAKEN(b_+4); return; } // ret c
+  if (ENEMY_FLAG(FC)) { RET_TAKEN(b_+4); return; } // ret c
   CYC(b_+4, b_+5);
-  if (F & FZ) { CYCT(b_+5, b_+8); enemyDie_hook(gb); return; } // jp z
+  if (ENEMY_FLAG(FZ)) { CYCT(b_+5, b_+8); ENEMY_LOCAL_CALL(enemyDie_hook(gb)); return; } // jp z
   CYC(b_+5, b_+8);
 
 normalStatus:
@@ -55,24 +56,24 @@ normalStatus:
 
 state_uninitialized:
   CYC(b_+36, b_+38); A = 0x09;
-  CYC(b_+38, b_+39); mem_wr(gb, DE, A);
+  CYC(b_+38, b_+39); ENEMY_WRITE(DE, A);
   RET(b_+39); return; // ret
 
 state_stub:
   RET(b_+40); return; // ret
 
 state_08:
-  CALL_C(b_+41, ecom_decCounter1_b0d_hook, SYM(ecom_decCounter1_b0d), b_+44);
-  if (!(F & FZ)) { RET_TAKEN(b_+44); return; } // ret nz
+  ENEMY_CALL_C(b_+41, ecom_decCounter1_b0d_hook, SYM(ecom_decCounter1_b0d), b_+44);
+  if (!(ENEMY_FLAG(FZ))) { RET_TAKEN(b_+44); return; } // ret nz
   CYC(b_+44, b_+45);
   CYC(b_+45, b_+46); L = E;
-  CYC(b_+46, b_+47); mem_wr(gb, HL, alu_inc8(gb, mem_rd(gb, HL)));
+  CYC(b_+46, b_+47); ENEMY_WRITE(HL, alu_inc8(gb, mem_rd(gb, HL)));
   RET(b_+47); return; // ret
 
 state_09:
-  CALL_C(b_+48, getRandomNumber_noPreserveVars_hook, SYM(getRandomNumber_noPreserveVars), b_+51);
-  CYC(b_+51, b_+53); alu_cp(gb, 0x98); // (SCREEN_WIDTH<<4)-8
-  if (!(F & FC)) { RET_TAKEN(b_+53); return; } // ret nc
+  ENEMY_CALL_C(b_+48, getRandomNumber_noPreserveVars_hook, SYM(getRandomNumber_noPreserveVars), b_+51);
+  CYC(b_+51, b_+53); ENEMY_CP(0x98); // (SCREEN_WIDTH<<4)-8
+  if (!(ENEMY_FLAG(FC))) { RET_TAKEN(b_+53); return; } // ret nc
   CYC(b_+53, b_+54);
   CYC(b_+54, b_+55); C = A;
   CYC(b_+55, b_+57); A = H8(hCameraX);
@@ -84,27 +85,27 @@ state_09:
   CYC(b_+64, b_+66); A = (uint8_t)(A & ~(1 << 7)); // res 7,a
   CYC(b_+66, b_+67); alu_add(gb, B); B = A;
   CYC(b_+67, b_+68);
-  CALL_C(b_+68, checkTileAtPositionIsWater_hook, SYM(checkTileAtPositionIsWater), b_+71);
-  if (!(F & FC)) { RET_TAKEN(b_+71); return; } // ret nc
+  ENEMY_CALL_C(b_+68, checkTileAtPositionIsWater_hook, SYM(checkTileAtPositionIsWater), b_+71);
+  if (!(ENEMY_FLAG(FC))) { RET_TAKEN(b_+71); return; } // ret nc
   CYC(b_+71, b_+72);
   CYC(b_+72, b_+73); C = L;
-  CALL_C(b_+73, objectSetShortPosition_hook, SYM(objectSetShortPosition), b_+76);
+  ENEMY_CALL_C(b_+73, objectSetShortPosition_hook, SYM(objectSetShortPosition), b_+76);
   CYC(b_+76, b_+78); L = ENEMY_BASE + OBJ_COUNTER1;
-  CYC(b_+78, b_+80); mem_wr(gb, HL, 0x30); // 48
+  CYC(b_+78, b_+80); ENEMY_WRITE(HL, 0x30); // 48
   CYC(b_+80, b_+82); L = ENEMY_BASE + OBJ_STATE;
-  CYC(b_+82, b_+83); mem_wr(gb, HL, alu_inc8(gb, mem_rd(gb, HL)));
+  CYC(b_+82, b_+83); ENEMY_WRITE(HL, alu_inc8(gb, mem_rd(gb, HL)));
   CYC(b_+83, b_+84); alu_xor(gb, A);
-  CALL_C(b_+84, enemySetAnimation_hook, SYM(enemySetAnimation), b_+87);
+  ENEMY_CALL_C(b_+84, enemySetAnimation_hook, SYM(enemySetAnimation), b_+87);
   CYC(b_+87, b_+90); TAIL(objectSetVisible83); // jp
 
 state_0a:
-  CALL_C(b_+90, ecom_decCounter1_b0d_hook, SYM(ecom_decCounter1_b0d), b_+93);
-  if (!(F & FZ)) { CYCT(b_+93, b_+95); goto animate; } // jr nz
+  ENEMY_CALL_C(b_+90, ecom_decCounter1_b0d_hook, SYM(ecom_decCounter1_b0d), b_+93);
+  if (!(ENEMY_FLAG(FZ))) { CYCT(b_+93, b_+95); goto animate; } // jr nz
   CYC(b_+93, b_+95);
   CYC(b_+95, b_+96); L = E;
-  CYC(b_+96, b_+97); mem_wr(gb, HL, alu_inc8(gb, mem_rd(gb, HL)));
+  CYC(b_+96, b_+97); ENEMY_WRITE(HL, alu_inc8(gb, mem_rd(gb, HL)));
   CYC(b_+97, b_+99); L = ENEMY_BASE + OBJ_COLLISION_TYPE;
-  CYC(b_+99, b_+101); mem_wr(gb, HL, (uint8_t)(mem_rd(gb, HL) | (1 << 7))); // set 7,(hl)
+  CYC(b_+99, b_+101); ENEMY_WRITE(HL, (uint8_t)(mem_rd(gb, HL) | (1 << 7))); // set 7,(hl)
   CYC(b_+101, b_+103); A = 0x01;
   CYC(b_+103, b_+106); TAIL(enemySetAnimation); // jp
 
@@ -113,33 +114,33 @@ state_0b:
   CYC(b_+107, b_+109); L = ENEMY_BASE + OBJ_ANIM_PARAMETER;
   CYC(b_+109, b_+110); A = mem_rd(gb, HL);
   CYC(b_+110, b_+111); A = alu_inc8(gb, A);
-  if (F & FZ) { CYCT(b_+111, b_+113); goto disappear; } // jr z
+  if (ENEMY_FLAG(FZ)) { CYCT(b_+111, b_+113); goto disappear; } // jr z
   CYC(b_+111, b_+113);
   CYC(b_+113, b_+114); A = alu_dec8(gb, A);
-  if (F & FZ) { CYCT(b_+114, b_+116); goto animate; } // jr z
+  if (ENEMY_FLAG(FZ)) { CYCT(b_+114, b_+116); goto animate; } // jr z
   CYC(b_+114, b_+116);
-  CYC(b_+116, b_+118); mem_wr(gb, HL, 0x00);
+  CYC(b_+116, b_+118); ENEMY_WRITE(HL, 0x00);
   CYC(b_+118, b_+120); B = 0x19; // PART_ZORA_FIRE
-  CALL_C(b_+120, ecom_spawnProjectile_b0d_hook, SYM(ecom_spawnProjectile_b0d), b_+123);
-  if (!(F & FZ)) { CYCT(b_+123, b_+125); goto animate; } // jr nz
+  ENEMY_CALL_C(b_+120, ecom_spawnProjectile_b0d_hook, SYM(ecom_spawnProjectile_b0d), b_+123);
+  if (!(ENEMY_FLAG(FZ))) { CYCT(b_+123, b_+125); goto animate; } // jr nz
   CYC(b_+123, b_+125);
   CYC(b_+125, b_+127); L = PART_BASE + OBJ_SUBID; // Part.subid
-  CYC(b_+127, b_+128); mem_wr(gb, HL, alu_inc8(gb, mem_rd(gb, HL)));
+  CYC(b_+127, b_+128); ENEMY_WRITE(HL, alu_inc8(gb, mem_rd(gb, HL)));
 
 animate:
   CYC(b_+128, b_+131); TAIL(enemyAnimate); // jp
 
 disappear:
   CYC(b_+131, b_+133); A = 0x08;
-  CYC(b_+133, b_+134); mem_wr(gb, DE, A);
+  CYC(b_+133, b_+134); ENEMY_WRITE(DE, A);
   CYC(b_+134, b_+136); L = ENEMY_BASE + OBJ_COLLISION_TYPE;
-  CYC(b_+136, b_+138); mem_wr(gb, HL, (uint8_t)(mem_rd(gb, HL) & ~(1 << 7))); // res 7,(hl)
-  CALL_C(b_+138, getRandomNumber_noPreserveVars_hook, SYM(getRandomNumber_noPreserveVars), b_+141);
-  CYC(b_+141, b_+143); alu_and(gb, 0x1f);
+  CYC(b_+136, b_+138); ENEMY_WRITE(HL, (uint8_t)(mem_rd(gb, HL) & ~(1 << 7))); // res 7,(hl)
+  ENEMY_CALL_C(b_+138, getRandomNumber_noPreserveVars_hook, SYM(getRandomNumber_noPreserveVars), b_+141);
+  CYC(b_+141, b_+143); ENEMY_AND(0x1f);
   CYC(b_+143, b_+145); alu_add(gb, 0x18);
   CYC(b_+145, b_+147); E = ENEMY_BASE + OBJ_COUNTER1;
-  CYC(b_+147, b_+148); mem_wr(gb, DE, A);
+  CYC(b_+147, b_+148); ENEMY_WRITE(DE, A);
   CYC(b_+148, b_+150); B = 0x03; // INTERAC_SPLASH
-  CALL_C(b_+150, objectCreateInteractionWithSubid00_hook, SYM(objectCreateInteractionWithSubid00), b_+153);
+  ENEMY_CALL_C(b_+150, objectCreateInteractionWithSubid00_hook, SYM(objectCreateInteractionWithSubid00), b_+153);
   CYC(b_+153, b_+156); TAIL(objectSetInvisible); // jp
 }

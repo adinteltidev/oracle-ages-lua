@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/npcs_events.h"
 
 #undef CYC
 #undef CYCT
@@ -10,9 +11,9 @@ void ghiniHarassingMoosh_beginCircularMovement_hook(GB *gb) {
   BASE(ghiniHarassingMoosh_beginCircularMovement);
   CYC(b_+0, b_+2); E = 0x50;
   CYC(b_+2, b_+4); A = 0x32;
-  CYC(b_+4, b_+5); mem_wr(gb, DE, A);
+  CYC(b_+4, b_+5); EVENT_WRITE(DE, A);
   CYC(b_+5, b_+7); E = 0x49;
   CYC(b_+7, b_+9); A = 0x18;
-  CYC(b_+9, b_+10); mem_wr(gb, DE, A);
+  CYC(b_+9, b_+10); EVENT_WRITE(DE, A);
   CYC(b_+10, b_+11); ret_effect(gb);
 }

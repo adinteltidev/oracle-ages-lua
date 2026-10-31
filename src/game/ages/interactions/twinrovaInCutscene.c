@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/npcs_events.h"
 
 #undef CYC
 #undef CYCT
@@ -55,7 +56,7 @@ static void twinrovaInCutscene_add_double_index(GB *gb, uint16_t return_address)
 static void twinrovaInCutscene_state0_commonInit1(GB *gb) {
   BASE(twinrovaInCutscene_state0);
   CYC(b_+35, b_+37); E = INTERACTION_BASE + OBJ_OAM_FLAGS;
-  CYC(b_+37, b_+38); mem_wr(gb, DE, A);
+  CYC(b_+37, b_+38); EVENT_WRITE(DE, A);
   CYC(b_+38, b_+40); E = INTERACTION_BASE + OBJ_SUBID;
   CYC(b_+40, b_+41); A = mem_rd(gb, DE);
   CYC(b_+41, b_+44); interactionSetAnimation_hook(gb); // jp
@@ -78,11 +79,11 @@ void twinrovaInCutscene_state0_hook(GB *gb) {
   BASE(twinrovaInCutscene_state0);
   uint16_t sp0_ = gb->sp;
   CYC(b_+0, b_+2); A = 0x01;
-  CYC(b_+2, b_+3); mem_wr(gb, DE, A); // [state]
-  CALL_C(b_+3, interactionInitGraphics_hook, SYM(interactionInitGraphics), b_+6); // SWITCHES THREADS
-  CALL_C(b_+6, objectSetVisiblec2_hook, SYM(objectSetVisiblec2), b_+9);
+  CYC(b_+2, b_+3); EVENT_WRITE(DE, A); // [state]
+  NPC_CALL_C(b_+3, interactionInitGraphics_hook, SYM(interactionInitGraphics), b_+6); // SWITCHES THREADS
+  NPC_CALL_C(b_+6, objectSetVisiblec2_hook, SYM(objectSetVisiblec2), b_+9);
   CYC(b_+9, b_+11); A = 0x28; // >TX_2800
-  CALL_C(b_+11, interactionSetHighTextIndex_hook, SYM(interactionSetHighTextIndex), b_+14);
+  NPC_CALL_C(b_+11, interactionSetHighTextIndex_hook, SYM(interactionSetHighTextIndex), b_+14);
   CYC(b_+14, b_+16); E = INTERACTION_BASE + OBJ_SUBID;
   CYC(b_+16, b_+17); A = mem_rd(gb, DE);
   {
@@ -96,12 +97,12 @@ void twinrovaInCutscene_state0_hook(GB *gb) {
 
   // twinrovaInCutscene_state0@subid0
   CYC(b_+26, b_+28); A = 0x01;
-  CYC(b_+28, b_+31); push_effect(gb, b_+31); twinrovaInCutscene_state0_commonInit1(gb); // call
+  CYC(b_+28, b_+31); push_effect(gb, b_+31); NPC_LOCAL_CALL(twinrovaInCutscene_state0_commonInit1(gb)); // call
   CYC(b_+31, b_+33); TAIL(twinrovaInCutscene_loadScript); // jr
 
 subid1: // twinrovaInCutscene_state0@subid1
   CYC(b_+33, b_+35); A = 0x02;
-  twinrovaInCutscene_state0_commonInit1(gb); return; // falls through into @commonInit1, no call
+  NPC_LOCAL_CALL(twinrovaInCutscene_state0_commonInit1(gb)); return; // falls through into @commonInit1, no call
 
 subid2: // twinrovaInCutscene_state0@subid2
   CYC(b_+44, b_+46); A = 0x01;
@@ -109,12 +110,12 @@ subid2: // twinrovaInCutscene_state0@subid2
 
 subid3: // twinrovaInCutscene_state0@subid3
   CYC(b_+48, b_+50); A = 0x01;
-  CALL_C(b_+50, interactionSetAnimation_hook, SYM(interactionSetAnimation), b_+53);
+  NPC_CALL_C(b_+50, interactionSetAnimation_hook, SYM(interactionSetAnimation), b_+53);
   CYC(b_+53, b_+55); A = 0x02;
 
 commonInit2: // twinrovaInCutscene_state0@commonInit2
   CYC(b_+55, b_+57); E = INTERACTION_BASE + OBJ_OAM_FLAGS;
-  CYC(b_+57, b_+58); mem_wr(gb, DE, A);
+  CYC(b_+57, b_+58); EVENT_WRITE(DE, A);
   CYC(b_+58, b_+61); TAIL(interactionSetAlwaysUpdateBit); // jp
 }
 
@@ -131,17 +132,17 @@ void twinrovaInCutscene_state1_hook(GB *gb) {
   }
 
   // twinrovaInCutscene_state1@subid0
-  CALL_C(b_+12, checkInteractionSubstate_hook, SYM(checkInteractionSubstate), b_+15);
+  NPC_CALL_C(b_+12, checkInteractionSubstate_hook, SYM(checkInteractionSubstate), b_+15);
   if (!(F & FZ)) { CYCT(b_+15, b_+17); goto substate1; } // jr nz
   CYC(b_+15, b_+17);
 
   // twinrovaInCutscene_state1@substate0
-  CALL_C(b_+17, interactionAnimate_hook, SYM(interactionAnimate), b_+20);
-  CALL_C(b_+20, interactionRunScript_hook, SYM(interactionRunScript), b_+23);
+  NPC_CALL_C(b_+17, interactionAnimate_hook, SYM(interactionAnimate), b_+20);
+  NPC_CALL_C(b_+20, interactionRunScript_hook, SYM(interactionRunScript), b_+23);
   if (!(F & FC)) { CYCT(b_+23, b_+24); ret_effect(gb); return; } // ret nc
   CYC(b_+23, b_+24);
   CYC(b_+24, b_+26); A = 0xd2; // SND_LIGHTNING
-  CALL_C(b_+26, playSound_b00_hook, SYM(playSound_b00), b_+29);
+  NPC_CALL_C(b_+26, playSound_b00_hook, SYM(playSound_b00), b_+29);
   CYC(b_+29, b_+30); alu_xor(gb, A);
   CYC(b_+30, b_+33); W8(wGenericCutscene_cbb3) = A;
   CYC(b_+33, b_+34); A = alu_dec8(gb, A);
@@ -151,7 +152,7 @@ void twinrovaInCutscene_state1_hook(GB *gb) {
 substate1: // twinrovaInCutscene_state1@substate1
   CYC(b_+40, b_+43); SET_HL(wGenericCutscene_cbb3);
   CYC(b_+43, b_+45); B = 0x02;
-  CALL_C(b_+45, flashScreen_hook, SYM(flashScreen), b_+48);
+  NPC_CALL_C(b_+45, flashScreen_hook, SYM(flashScreen), b_+48);
   if (F & FZ) { CYCT(b_+48, b_+49); ret_effect(gb); return; } // ret z
   CYC(b_+48, b_+49);
   CYC(b_+49, b_+51); A = 0x02;
@@ -166,7 +167,7 @@ void twinrovaInCutscene_loadScript_hook(GB *gb) {
   CYC(b_+0, b_+2); E = INTERACTION_BASE + OBJ_SUBID;
   CYC(b_+2, b_+3); A = mem_rd(gb, DE);
   CYC(b_+3, b_+6); SET_HL(b_+13); // @scriptTable
-  CYC(b_+6, b_+7); twinrovaInCutscene_add_double_index(gb, b_+7);
+  CYC(b_+6, b_+7); NPC_LOCAL_CALL(twinrovaInCutscene_add_double_index(gb, b_+7));
   CYC(b_+7, b_+8); A = mem_rd(gb, HL); SET_HL(HL + 1);
   CYC(b_+8, b_+9); H = mem_rd(gb, HL);
   CYC(b_+9, b_+10); L = A;

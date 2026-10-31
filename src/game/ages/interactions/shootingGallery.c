@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/npcs_events.h"
 
 #undef CYC
 #undef CYCT
@@ -103,7 +104,7 @@ static void shootingGalleryNpc_setScript(GB *gb) {
   CYC(b_+79, b_+81); L = INTERACTION_BASE + OBJ_SUBID;
   CYC(b_+81, b_+82); alu_add(gb, mem_rd(gb, HL));
   CYC(b_+82, b_+85); SET_HL(shootingGalleryScriptTable_bank08);
-  CYC(b_+85, b_+86); shootingGallery_addDoubleIndex(gb, b_+86);
+  CYC(b_+85, b_+86); NPC_LOCAL_CALL(shootingGallery_addDoubleIndex(gb, b_+86));
   CYC(b_+86, b_+87); A = mem_rd(gb, HL); SET_HL(HL + 1);
   CYC(b_+87, b_+88); H = mem_rd(gb, HL);
   CYC(b_+88, b_+89); L = A;
@@ -116,9 +117,9 @@ static void shootingGalleryNpc_loadRetryScriptAndGotoState1(GB *gb) {
   BASE(shootingGalleryNpc);
   CYC(b_+68, b_+69); H = D;
   CYC(b_+69, b_+71); L = INTERACTION_BASE + OBJ_STATE;
-  CYC(b_+71, b_+73); mem_wr(gb, HL, 0x01);
+  CYC(b_+71, b_+73); EVENT_WRITE(HL, 0x01);
   CYC(b_+73, b_+75); A = 0x02;
-  shootingGalleryNpc_setScript(gb);
+  NPC_LOCAL_CALL(shootingGalleryNpc_setScript(gb));
 }
 
 // The shooting gallery NPC (subids 0-2). Interaction $8b (goron elder) also calls this.
@@ -138,41 +139,41 @@ void shootingGalleryNpc_hook(GB *gb) {
 
 state0:
   CYC(b_+12, b_+14); A = 0x01;
-  CYC(b_+14, b_+15); mem_wr(gb, DE, A);
-  CALL_C(b_+15, interactionInitGraphics_hook, SYM(interactionInitGraphics), b_+18);
+  CYC(b_+14, b_+15); EVENT_WRITE(DE, A);
+  NPC_CALL_C(b_+15, interactionInitGraphics_hook, SYM(interactionInitGraphics), b_+18);
   CYC(b_+18, b_+19); alu_xor(gb, A);
-  CYC(b_+19, b_+22); mem_wr(gb, wTmpcfc0_shootingGallery_disableGoronNpcs, A);
-  CYC(b_+22, b_+25); push_effect(gb, b_+25); shootingGalleryNpc_setScript(gb);
+  CYC(b_+19, b_+22); EVENT_WRITE(wTmpcfc0_shootingGallery_disableGoronNpcs, A);
+  CYC(b_+22, b_+25); push_effect(gb, b_+25); NPC_LOCAL_CALL(shootingGalleryNpc_setScript(gb));
 
 state1:
   // Waiting for the player to talk to the NPC and start the game
-  CALL_C(b_+25, interactionRunScript_hook, SYM(interactionRunScript), b_+28);
+  NPC_CALL_C(b_+25, interactionRunScript_hook, SYM(interactionRunScript), b_+28);
   if (!(F & FC)) {
     CYCT(b_+28, b_+30); goto updateAnimation;
   }
   CYC(b_+28, b_+30);
   CYC(b_+30, b_+31); alu_xor(gb, A);
-  CYC(b_+31, b_+34); mem_wr(gb, wTmpcfc0_shootingGallery_gameStatus, A);
-  CALL_C(b_+34, interactionIncState_hook, SYM(interactionIncState), b_+37);
+  CYC(b_+31, b_+34); EVENT_WRITE(wTmpcfc0_shootingGallery_gameStatus, A);
+  NPC_CALL_C(b_+34, interactionIncState_hook, SYM(interactionIncState), b_+37);
 
 state2:
   // Waiting for the game to finish
   CYC(b_+37, b_+40); A = mem_rd(gb, wTmpcfc0_shootingGallery_gameStatus);
-  CYC(b_+40, b_+41); alu_or(gb, A);
+  CYC(b_+40, b_+41); NPC_OR(A);
   if (F & FZ) {
     CYCT(b_+41, b_+43); goto updateAnimation;
   }
   CYC(b_+41, b_+43);
   CYC(b_+43, b_+45); A = 0x01;
-  CYC(b_+45, b_+48); push_effect(gb, b_+48); shootingGalleryNpc_setScript(gb);
-  CALL_C(b_+48, interactionIncState_hook, SYM(interactionIncState), b_+51);
+  CYC(b_+45, b_+48); push_effect(gb, b_+48); NPC_LOCAL_CALL(shootingGalleryNpc_setScript(gb));
+  NPC_CALL_C(b_+48, interactionIncState_hook, SYM(interactionIncState), b_+51);
 
 state3:
   // Waiting for the "game wrapup" script to finish, then ask to try again
-  CALL_C(b_+51, interactionRunScript_hook, SYM(interactionRunScript), b_+54);
+  NPC_CALL_C(b_+51, interactionRunScript_hook, SYM(interactionRunScript), b_+54);
   if (F & FC) {
     CYCT(b_+54, b_+57); push_effect(gb, b_+57);
-    shootingGalleryNpc_loadRetryScriptAndGotoState1(gb);
+    NPC_LOCAL_CALL(shootingGalleryNpc_loadRetryScriptAndGotoState1(gb));
   } else {
     CYC(b_+54, b_+57);
   }
@@ -180,7 +181,7 @@ state3:
 updateAnimation:
   CYC(b_+57, b_+59); E = INTERACTION_BASE + OBJ_SUBID;
   CYC(b_+59, b_+60); A = mem_rd(gb, DE);
-  CYC(b_+60, b_+62); alu_cp(gb, 0x02);
+  CYC(b_+60, b_+62); NPC_CP(0x02);
   if (!(F & FZ)) {
     CYCT(b_+62, b_+65); TAIL(interactionAnimateAsNpc);
   }
@@ -209,96 +210,96 @@ void shootingGalleryGame_hook(GB *gb) {
 
 state0:
   CYC(b_+18, b_+20); A = 0x01;
-  CYC(b_+20, b_+23); mem_wr(gb, wTmpcfc0_shootingGallery_disableGoronNpcs, A);
+  CYC(b_+20, b_+23); EVENT_WRITE(wTmpcfc0_shootingGallery_disableGoronNpcs, A);
   CYC(b_+23, b_+25); B = 0x0a;
-  CALL_C(b_+25, shootingGallery_initializeGameRounds_hook, SYM(shootingGallery_initializeGameRounds), b_+28);
+  NPC_CALL_C(b_+25, shootingGallery_initializeGameRounds_hook, SYM(shootingGallery_initializeGameRounds), b_+28);
   // Initialize score
   CYC(b_+28, b_+29); alu_xor(gb, A);
-  CYC(b_+29, b_+32); mem_wr(gb, wTextNumberSubstitution, A);
-  CYC(b_+32, b_+35); mem_wr(gb, wTextNumberSubstitution + 1, A);
+  CYC(b_+29, b_+32); EVENT_WRITE(wTextNumberSubstitution, A);
+  CYC(b_+32, b_+35); EVENT_WRITE(wTextNumberSubstitution + 1, A);
   CYC(b_+35, b_+37); E = INTERACTION_BASE + OBJ_VAR3F;
-  CYC(b_+37, b_+38); mem_wr(gb, DE, A);
-  CALL_C(b_+38, interactionIncState_hook, SYM(interactionIncState), b_+41);
+  CYC(b_+37, b_+38); EVENT_WRITE(DE, A);
+  NPC_CALL_C(b_+38, interactionIncState_hook, SYM(interactionIncState), b_+41);
   CYC(b_+41, b_+43); L = INTERACTION_BASE + OBJ_YH;
-  CYC(b_+43, b_+45); mem_wr(gb, HL, 0x2a);
+  CYC(b_+43, b_+45); EVENT_WRITE(HL, 0x2a);
   CYC(b_+45, b_+47); L = INTERACTION_BASE + OBJ_XH;
-  CYC(b_+47, b_+49); mem_wr(gb, HL, 0x50);
+  CYC(b_+47, b_+49); EVENT_WRITE(HL, 0x50);
   CYC(b_+49, b_+51); L = INTERACTION_BASE + OBJ_COUNTER1;
-  CYC(b_+51, b_+53); mem_wr(gb, HL, 0x78);
+  CYC(b_+51, b_+53); EVENT_WRITE(HL, 0x78);
   CYC(b_+53, b_+55); A = 0xcc; // SND_WHISTLE
-  CALL_C(b_+55, playSound_b00_hook, SYM(playSound_b00), b_+58);
+  NPC_CALL_C(b_+55, playSound_b00_hook, SYM(playSound_b00), b_+58);
 
 state1:
-  CALL_C(b_+58, interactionDecCounter1_hook, SYM(interactionDecCounter1), b_+61);
+  NPC_CALL_ZERO(b_+58, interactionDecCounter1_hook, SYM(interactionDecCounter1), b_+61);
   if (!(F & FZ)) {
     CYCT(b_+61, b_+62); ret_effect(gb); return;
   }
   CYC(b_+61, b_+62);
   // These variables will be set by the "ball" object later
   CYC(b_+62, b_+63); alu_xor(gb, A);
-  CYC(b_+63, b_+66); mem_wr(gb, wShootingGalleryBallStatus, A);
-  CYC(b_+66, b_+69); mem_wr(gb, wShootingGalleryccd5, A);
-  CYC(b_+69, b_+72); mem_wr(gb, wShootingGalleryHitTargets, A);
-  CALL_C(b_+72, interactionIncState_hook, SYM(interactionIncState), b_+75);
+  CYC(b_+63, b_+66); EVENT_WRITE(wShootingGalleryBallStatus, A);
+  CYC(b_+66, b_+69); EVENT_WRITE(wShootingGalleryccd5, A);
+  CYC(b_+69, b_+72); EVENT_WRITE(wShootingGalleryHitTargets, A);
+  NPC_CALL_C(b_+72, interactionIncState_hook, SYM(interactionIncState), b_+75);
   CYC(b_+75, b_+77); L = INTERACTION_BASE + OBJ_COUNTER1;
-  CYC(b_+77, b_+79); mem_wr(gb, HL, 0x28);
+  CYC(b_+77, b_+79); EVENT_WRITE(HL, 0x28);
   CYC(b_+79, b_+81); A = 0x99; // SND_BASEBALL
-  CALL_C(b_+81, playSound_b00_hook, SYM(playSound_b00), b_+84);
+  NPC_CALL_C(b_+81, playSound_b00_hook, SYM(playSound_b00), b_+84);
 
 state2:
-  CALL_C(b_+84, interactionDecCounter1_hook, SYM(interactionDecCounter1), b_+87);
+  NPC_CALL_ZERO(b_+84, interactionDecCounter1_hook, SYM(interactionDecCounter1), b_+87);
   if (!(F & FZ)) {
     CYCT(b_+87, b_+88); ret_effect(gb); return;
   }
   CYC(b_+87, b_+88);
-  CALL_C(b_+88, shootingGallery_createPuffAtEachTargetPosition_hook, SYM(shootingGallery_createPuffAtEachTargetPosition), b_+91);
-  CALL_C(b_+91, interactionIncState_hook, SYM(interactionIncState), b_+94);
+  NPC_CALL_C(b_+88, shootingGallery_createPuffAtEachTargetPosition_hook, SYM(shootingGallery_createPuffAtEachTargetPosition), b_+91);
+  NPC_CALL_C(b_+91, interactionIncState_hook, SYM(interactionIncState), b_+94);
   CYC(b_+94, b_+96); L = INTERACTION_BASE + OBJ_COUNTER1;
-  CYC(b_+96, b_+98); mem_wr(gb, HL, 0x0a);
+  CYC(b_+96, b_+98); EVENT_WRITE(HL, 0x0a);
   CYC(b_+98, b_+99); ret_effect(gb);
   return;
 
 state3:
-  CALL_C(b_+99, interactionDecCounter1_hook, SYM(interactionDecCounter1), b_+102);
+  NPC_CALL_ZERO(b_+99, interactionDecCounter1_hook, SYM(interactionDecCounter1), b_+102);
   if (!(F & FZ)) {
     CYCT(b_+102, b_+103); ret_effect(gb); return;
   }
   CYC(b_+102, b_+103);
-  CALL_C(b_+103, shootingGallery_setRandomTargetLayout_hook, SYM(shootingGallery_setRandomTargetLayout), b_+106);
-  CALL_C(b_+106, interactionIncState_hook, SYM(interactionIncState), b_+109);
+  NPC_CALL_C(b_+103, shootingGallery_setRandomTargetLayout_hook, SYM(shootingGallery_setRandomTargetLayout), b_+106);
+  NPC_CALL_C(b_+106, interactionIncState_hook, SYM(interactionIncState), b_+109);
   CYC(b_+109, b_+111); L = INTERACTION_BASE + OBJ_COUNTER1;
-  CYC(b_+111, b_+113); mem_wr(gb, HL, 0x5a);
+  CYC(b_+111, b_+113); EVENT_WRITE(HL, 0x5a);
   CYC(b_+113, b_+114); ret_effect(gb);
   return;
 
 state4:
-  CALL_C(b_+114, interactionDecCounter1_hook, SYM(interactionDecCounter1), b_+117);
+  NPC_CALL_ZERO(b_+114, interactionDecCounter1_hook, SYM(interactionDecCounter1), b_+117);
   if (!(F & FZ)) {
     CYCT(b_+117, b_+118); ret_effect(gb); return;
   }
   CYC(b_+117, b_+118);
-  CALL_C(b_+118, interactionIncState_hook, SYM(interactionIncState), b_+121);
+  NPC_CALL_C(b_+118, interactionIncState_hook, SYM(interactionIncState), b_+121);
   // Increment the "round" of the game
   CYC(b_+121, b_+123); L = INTERACTION_BASE + OBJ_VAR3F;
-  CYC(b_+123, b_+124); mem_wr(gb, HL, alu_inc8(gb, mem_rd(gb, HL)));
+  CYC(b_+123, b_+124); EVENT_WRITE(HL, alu_inc8(gb, mem_rd(gb, HL)));
   CYC(b_+124, b_+127); shootingGallery_createBallHere_hook(gb);
   return;
 
 state5:
   CYC(b_+127, b_+130); A = mem_rd(gb, wShootingGalleryBallStatus);
-  CYC(b_+130, b_+132); alu_bit(gb, 7, A);
+  CYC(b_+130, b_+132); NPC_BIT(7, A);
   if (F & FZ) {
     CYCT(b_+132, b_+133); ret_effect(gb); return;
   }
   CYC(b_+132, b_+133);
   // Ball has gone out-of-bounds
-  CYC(b_+133, b_+135); alu_and(gb, 0x7f);
+  CYC(b_+133, b_+135); NPC_AND(0x7f);
   if (!(F & FZ)) {
     CYCT(b_+135, b_+137); goto hitSomething;
   }
   CYC(b_+135, b_+137);
   CYC(b_+137, b_+140); A = mem_rd(gb, wTmpcfc0_shootingGallery_isStrike);
-  CYC(b_+140, b_+141); alu_or(gb, A);
+  CYC(b_+140, b_+141); NPC_OR(A);
   if (!(F & FZ)) {
     CYCT(b_+141, b_+143); goto strike;
   }
@@ -309,57 +310,57 @@ state5:
 
 strike:
   CYC(b_+147, b_+149); A = 0x14;
-  CALL_C(b_+149, shootingGallery_addValueToScore_hook, SYM(shootingGallery_addValueToScore), b_+152);
+  NPC_CALL_C(b_+149, shootingGallery_addValueToScore_hook, SYM(shootingGallery_addValueToScore), b_+152);
   CYC(b_+152, b_+154); A = 0x15;
   CYC(b_+154, b_+156); goto setScript;
 
 hitSomething:
-  CYC(b_+156, b_+158); alu_cp(gb, 0x02);
+  CYC(b_+156, b_+158); NPC_CP(0x02);
   if (F & FZ) {
     CYCT(b_+158, b_+160); goto hit2Things;
   }
   CYC(b_+158, b_+160);
   CYC(b_+160, b_+163); A = mem_rd(gb, wShootingGalleryHitTargets);
-  CYC(b_+163, b_+165); alu_and(gb, 0x0f);
-  CALL_C(b_+165, getHighestSetBit_hook, SYM(getHighestSetBit), b_+168);
+  CYC(b_+163, b_+165); NPC_AND(0x0f);
+  NPC_CALL_C(b_+165, getHighestSetBit_hook, SYM(getHighestSetBit), b_+168);
   CYC(b_+168, b_+170); goto addValueToScore;
 
 hit2Things:
   CYC(b_+170, b_+173); A = mem_rd(gb, wShootingGalleryHitTargets);
-  CYC(b_+173, b_+175); alu_and(gb, 0x0f);
-  CALL_C(b_+175, getHighestSetBit_hook, SYM(getHighestSetBit), b_+178);
+  CYC(b_+173, b_+175); NPC_AND(0x0f);
+  NPC_CALL_C(b_+175, getHighestSetBit_hook, SYM(getHighestSetBit), b_+178);
   CYC(b_+178, b_+179); A = alu_inc8(gb, A);
   CYC(b_+179, b_+180); alu_add(gb, A);
   CYC(b_+180, b_+181); alu_add(gb, A);
   CYC(b_+181, b_+182); B = A;
   CYC(b_+182, b_+185); A = mem_rd(gb, wShootingGalleryHitTargets);
   CYC(b_+185, b_+187); A = alu_swap(gb, A);
-  CYC(b_+187, b_+189); alu_and(gb, 0x0f);
-  CALL_C(b_+189, getHighestSetBit_hook, SYM(getHighestSetBit), b_+192);
+  CYC(b_+187, b_+189); NPC_AND(0x0f);
+  NPC_CALL_C(b_+189, getHighestSetBit_hook, SYM(getHighestSetBit), b_+192);
   CYC(b_+192, b_+193); alu_add(gb, B);
 
 addValueToScore:
   CYC(b_+193, b_+195); H8(hFF93) = A;
-  CALL_C(b_+195, shootingGallery_addValueToScore_hook, SYM(shootingGallery_addValueToScore), b_+198);
+  NPC_CALL_C(b_+195, shootingGallery_addValueToScore_hook, SYM(shootingGallery_addValueToScore), b_+198);
   CYC(b_+198, b_+200); A = H8(hFF93);
 
 setScript:
   CYC(b_+200, b_+203); SET_HL(shootingGalleryHitScriptTable_bank08);
-  CYC(b_+203, b_+204); shootingGallery_addDoubleIndex(gb, b_+204);
+  CYC(b_+203, b_+204); NPC_LOCAL_CALL(shootingGallery_addDoubleIndex(gb, b_+204));
   CYC(b_+204, b_+205); A = mem_rd(gb, HL); SET_HL(HL + 1);
   CYC(b_+205, b_+206); H = mem_rd(gb, HL);
   CYC(b_+206, b_+207); L = A;
-  CALL_C(b_+207, interactionSetScript_hook, SYM(interactionSetScript), b_+210);
-  CALL_C(b_+210, interactionIncState_hook, SYM(interactionIncState), b_+213);
+  NPC_CALL_C(b_+207, interactionSetScript_hook, SYM(interactionSetScript), b_+210);
+  NPC_CALL_C(b_+210, interactionIncState_hook, SYM(interactionIncState), b_+213);
   CYC(b_+213, b_+215); L = INTERACTION_BASE + OBJ_COUNTER1;
-  CYC(b_+215, b_+217); mem_wr(gb, HL, 0x28);
+  CYC(b_+215, b_+217); EVENT_WRITE(HL, 0x28);
   CYC(b_+217, b_+219); A = 0x81;
-  CYC(b_+219, b_+222); mem_wr(gb, wDisabledObjects, A);
+  CYC(b_+219, b_+222); EVENT_WRITE(wDisabledObjects, A);
   CYC(b_+222, b_+224); A = 0x80;
-  CYC(b_+224, b_+227); mem_wr(gb, wMenuDisabled, A);
+  CYC(b_+224, b_+227); EVENT_WRITE(wMenuDisabled, A);
 
 state6:
-  CALL_C(b_+227, interactionRunScript_hook, SYM(interactionRunScript), b_+230);
+  NPC_CALL_C(b_+227, interactionRunScript_hook, SYM(interactionRunScript), b_+230);
   if (!(F & FC)) {
     CYCT(b_+230, b_+231); ret_effect(gb); return;
   }
@@ -367,24 +368,24 @@ state6:
   // End the game on the tenth round
   CYC(b_+231, b_+233); E = INTERACTION_BASE + OBJ_VAR3F;
   CYC(b_+233, b_+234); A = mem_rd(gb, DE);
-  CYC(b_+234, b_+236); alu_cp(gb, 0x0a);
+  CYC(b_+234, b_+236); NPC_CP(0x0a);
   if (F & FZ) {
     CYCT(b_+236, b_+238); goto gameOver;
   }
   CYC(b_+236, b_+238);
   CYC(b_+238, b_+239); H = D;
   CYC(b_+239, b_+241); L = INTERACTION_BASE + OBJ_STATE;
-  CYC(b_+241, b_+243); mem_wr(gb, HL, 0x01);
+  CYC(b_+241, b_+243); EVENT_WRITE(HL, 0x01);
   CYC(b_+243, b_+245); L = INTERACTION_BASE + OBJ_COUNTER1;
-  CYC(b_+245, b_+247); mem_wr(gb, HL, 0x14);
+  CYC(b_+245, b_+247); EVENT_WRITE(HL, 0x14);
   CYC(b_+247, b_+248); ret_effect(gb);
   return;
 
 gameOver:
   CYC(b_+248, b_+250); A = 0x01;
-  CYC(b_+250, b_+253); mem_wr(gb, wTmpcfc0_shootingGallery_gameStatus, A);
+  CYC(b_+250, b_+253); EVENT_WRITE(wTmpcfc0_shootingGallery_gameStatus, A);
   CYC(b_+253, b_+254); alu_xor(gb, A);
-  CYC(b_+254, b_+257); mem_wr(gb, wTmpcfc0_shootingGallery_disableGoronNpcs, A);
+  CYC(b_+254, b_+257); EVENT_WRITE(wTmpcfc0_shootingGallery_disableGoronNpcs, A);
   CYC(b_+257, b_+260); TAIL(interactionDelete);
 }
 
@@ -395,14 +396,14 @@ void shootingGallery_initializeGameRounds_hook(GB *gb) {
   CYC(b_+0, b_+3); SET_HL(wShootingGalleryTileLayoutsToShow);
   CYC(b_+3, b_+4); alu_xor(gb, A);
 fill:
-  CYC(b_+4, b_+5); mem_wr(gb, HL, A); SET_HL(HL + 1);
+  CYC(b_+4, b_+5); EVENT_WRITE(HL, A); SET_HL(HL + 1);
   CYC(b_+5, b_+6); A = alu_inc8(gb, A);
-  CYC(b_+6, b_+7); alu_cp(gb, B);
+  CYC(b_+6, b_+7); NPC_CP(B);
   if (!(F & FZ)) {
     CYCT(b_+7, b_+9); goto fill;
   }
   CYC(b_+7, b_+9);
-  CYC(b_+9, b_+12); mem_wr(gb, wTmpcfc0_shootingGallery_remainingRounds, A);
+  CYC(b_+9, b_+12); EVENT_WRITE(wTmpcfc0_shootingGallery_remainingRounds, A);
   CYC(b_+12, b_+13); ret_effect(gb);
 }
 
@@ -414,9 +415,9 @@ void shootingGallery_getNextTargetLayout_hook(GB *gb) {
   CYC(b_+0, b_+3); A = mem_rd(gb, wTmpcfc0_shootingGallery_remainingRounds);
   CYC(b_+3, b_+4); B = A;
   CYC(b_+4, b_+5); A = alu_dec8(gb, A);
-  CYC(b_+5, b_+8); mem_wr(gb, wTmpcfc0_shootingGallery_remainingRounds, A);
+  CYC(b_+5, b_+8); EVENT_WRITE(wTmpcfc0_shootingGallery_remainingRounds, A);
   // Get a random number between 0 and b-1
-  CALL_C(b_+8, getRandomNumber_hook, SYM(getRandomNumber), b_+11);
+  NPC_CALL_C(b_+8, getRandomNumber_hook, SYM(getRandomNumber), b_+11);
 modulo:
   CYC(b_+11, b_+12); alu_sub(gb, B);
   if (!(F & FC)) {
@@ -426,9 +427,9 @@ modulo:
   CYC(b_+14, b_+15); alu_add(gb, B);
   CYC(b_+15, b_+16); C = A;
   CYC(b_+16, b_+19); SET_HL(wShootingGalleryTileLayoutsToShow);
-  CYC(b_+19, b_+20); push_effect(gb, b_+20); shootingGallery_addAToHl(gb);
+  CYC(b_+19, b_+20); push_effect(gb, b_+20); NPC_LOCAL_CALL(shootingGallery_addAToHl(gb));
   CYC(b_+20, b_+21); A = mem_rd(gb, HL);
-  CYC(b_+21, b_+24); mem_wr(gb, wTmpcfc0_shootingGallery_targetLayoutIndex, A);
+  CYC(b_+21, b_+24); EVENT_WRITE(wTmpcfc0_shootingGallery_targetLayoutIndex, A);
   CYC(b_+24, b_+25); push_effect(gb, DE);
   CYC(b_+25, b_+26); D = C;
   CYC(b_+26, b_+27); E = B;
@@ -437,14 +438,14 @@ modulo:
   CYC(b_+29, b_+30); C = L;
 shift:
   CYC(b_+30, b_+31); A = D;
-  CYC(b_+31, b_+32); alu_cp(gb, E);
+  CYC(b_+31, b_+32); NPC_CP(E);
   if (F & FZ) {
     CYCT(b_+32, b_+34); goto shiftDone;
   }
   CYC(b_+32, b_+34);
   CYC(b_+34, b_+35); SET_BC(BC + 1);
   CYC(b_+35, b_+36); A = mem_rd(gb, BC);
-  CYC(b_+36, b_+37); mem_wr(gb, HL, A); SET_HL(HL + 1);
+  CYC(b_+36, b_+37); EVENT_WRITE(HL, A); SET_HL(HL + 1);
   CYC(b_+37, b_+38); D = alu_inc8(gb, D);
   CYC(b_+38, b_+40); goto shift;
 shiftDone:
@@ -457,7 +458,7 @@ shiftDone:
 void shootingGallery_removeAllTargets_b08_hook(GB *gb) {
   BASE(shootingGallery_removeAllTargets_b08);
   CYC(b_+0, b_+2); A = 0x01;
-  CYC(b_+2, b_+5); mem_wr(gb, wTmpcfc0_shootingGallery_useTileIndexData, A);
+  CYC(b_+2, b_+5); EVENT_WRITE(wTmpcfc0_shootingGallery_useTileIndexData, A);
   CYC(b_+5, b_+7); E = INTERACTION_BASE + OBJ_SUBID;
   CYC(b_+7, b_+8); A = mem_rd(gb, DE);
   CYC(b_+8, b_+10); alu_sub(gb, 0x01);
@@ -487,8 +488,8 @@ void shootingGallery_setRandomTargetLayout_hook(GB *gb) {
   BASE(shootingGallery_setRandomTargetLayout);
   uint16_t sp0_ = gb->sp;
   CYC(b_+0, b_+1); alu_xor(gb, A);
-  CYC(b_+1, b_+4); mem_wr(gb, wTmpcfc0_shootingGallery_useTileIndexData, A);
-  CALL_C(b_+4, shootingGallery_getNextTargetLayout_hook, SYM(shootingGallery_getNextTargetLayout), b_+7);
+  CYC(b_+1, b_+4); EVENT_WRITE(wTmpcfc0_shootingGallery_useTileIndexData, A);
+  NPC_CALL_C(b_+4, shootingGallery_getNextTargetLayout_hook, SYM(shootingGallery_getNextTargetLayout), b_+7);
   CYC(b_+7, b_+10); A = mem_rd(gb, wTmpcfc0_shootingGallery_targetLayoutIndex);
   // l = a*5
   CYC(b_+10, b_+11); L = A;
@@ -510,19 +511,19 @@ void shootingGallery_setRandomTargetLayout_hook(GB *gb) {
   CYC(b_+23, b_+25);
   // @lynnaGallery
   CYC(b_+25, b_+28); SET_HL(shootingGallery_targetTiles_lynna_bank08);
-  CYC(b_+28, b_+29); shootingGallery_addDoubleIndex(gb, b_+29);
+  CYC(b_+28, b_+29); NPC_LOCAL_CALL(shootingGallery_addDoubleIndex(gb, b_+29));
   CYC(b_+29, b_+32); SET_BC(shootingGallery_targetPositions_lynna_bank08);
   CYC(b_+32, b_+34); shootingGallery_setTiles_hook(gb);
   return;
 goronGallery:
   CYC(b_+34, b_+37); SET_HL(shootingGallery_targetTiles_goron_bank08);
-  CYC(b_+37, b_+38); shootingGallery_addDoubleIndex(gb, b_+38);
+  CYC(b_+37, b_+38); NPC_LOCAL_CALL(shootingGallery_addDoubleIndex(gb, b_+38));
   CYC(b_+38, b_+41); SET_BC(shootingGallery_targetPositions_goron_bank08);
   CYC(b_+41, b_+43); shootingGallery_setTiles_hook(gb);
   return;
 biggoronGallery:
   CYC(b_+43, b_+46); SET_HL(shootingGallery_targetTiles_biggoron_bank08);
-  CYC(b_+46, b_+47); shootingGallery_addDoubleIndex(gb, b_+47);
+  CYC(b_+46, b_+47); NPC_LOCAL_CALL(shootingGallery_addDoubleIndex(gb, b_+47));
   CYC(b_+47, b_+50); SET_BC(shootingGallery_targetPositions_biggoron_bank08);
   TAIL(shootingGallery_setTiles);
 }
@@ -540,7 +541,7 @@ nextTile:
   CYC(b_+6, b_+7); push_effect(gb, BC);
   CYC(b_+7, b_+8); C = A;
   CYC(b_+8, b_+11); A = mem_rd(gb, wTmpcfc0_shootingGallery_useTileIndexData);
-  CYC(b_+11, b_+12); alu_or(gb, A);
+  CYC(b_+11, b_+12); NPC_OR(A);
   CYC(b_+12, b_+14); A = TILEINDEX_STANDARD_FLOOR;
   if (!(F & FZ)) {
     CYCT(b_+14, b_+16); goto haveTile;
@@ -549,7 +550,7 @@ nextTile:
   CYC(b_+16, b_+17); A = mem_rd(gb, HL); SET_HL(HL + 1);
 haveTile:
   CYC(b_+17, b_+18); push_effect(gb, HL);
-  CALL_C(b_+18, setTile_hook, SYM(setTile), b_+21);
+  NPC_CALL_C(b_+18, setTile_hook, SYM(setTile), b_+21);
   CYC(b_+21, b_+22); SET_HL(pop_effect(gb));
   CYC(b_+22, b_+23); SET_BC(pop_effect(gb));
   CYC(b_+23, b_+25); A = H8(hFF92);
@@ -587,17 +588,17 @@ start:
   CYC(b_+22, b_+24); A = 0x0a;
 nextTile:
   CYC(b_+24, b_+26); H8(hFF92) = A;
-  CALL_C(b_+26, getFreeInteractionSlot_hook, SYM(getFreeInteractionSlot), b_+29);
+  NPC_CALL_C(b_+26, getFreeInteractionSlot_hook, SYM(getFreeInteractionSlot), b_+29);
   if (!(F & FZ)) {
     CYCT(b_+29, b_+30); ret_effect(gb); return;
   }
   CYC(b_+29, b_+30);
-  CYC(b_+30, b_+32); mem_wr(gb, HL, INTERAC_PUFF);
+  CYC(b_+30, b_+32); EVENT_WRITE(HL, INTERAC_PUFF);
   CYC(b_+32, b_+33); A = mem_rd(gb, BC);
   CYC(b_+33, b_+34); SET_BC(BC + 1);
   CYC(b_+34, b_+35); push_effect(gb, BC);
   CYC(b_+35, b_+37); L = INTERACTION_BASE + OBJ_YH;
-  CALL_C(b_+37, setShortPosition_hook, SYM(setShortPosition), b_+40);
+  NPC_CALL_C(b_+37, setShortPosition_hook, SYM(setShortPosition), b_+40);
   CYC(b_+40, b_+41); SET_BC(pop_effect(gb));
   CYC(b_+41, b_+43); A = H8(hFF92);
   CYC(b_+43, b_+44); A = alu_dec8(gb, A);
@@ -612,12 +613,12 @@ nextTile:
 void shootingGallery_createBallHere_hook(GB *gb) {
   BASE(shootingGallery_createBallHere);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, getFreePartSlot_hook, SYM(getFreePartSlot), b_+3);
+  NPC_CALL_C(b_+0, getFreePartSlot_hook, SYM(getFreePartSlot), b_+3);
   if (!(F & FZ)) {
     CYCT(b_+3, b_+4); ret_effect(gb); return;
   }
   CYC(b_+3, b_+4);
-  CYC(b_+4, b_+6); mem_wr(gb, HL, PART_BALL);
+  CYC(b_+4, b_+6); EVENT_WRITE(HL, PART_BALL);
   CYC(b_+6, b_+9); TAIL(objectCopyPosition);
 }
 
@@ -625,12 +626,12 @@ void shootingGallery_createBallHere_hook(GB *gb) {
 void shootingGallery_addValueToScore_hook(GB *gb) {
   BASE(shootingGallery_addValueToScore);
   CYC(b_+0, b_+3); SET_HL(shootingGallery_scores_bank08);
-  CYC(b_+3, b_+4); shootingGallery_addDoubleIndex(gb, b_+4);
+  CYC(b_+3, b_+4); NPC_LOCAL_CALL(shootingGallery_addDoubleIndex(gb, b_+4));
   CYC(b_+4, b_+5); C = mem_rd(gb, HL);
   CYC(b_+5, b_+6); SET_HL(HL + 1);
   CYC(b_+6, b_+7); B = mem_rd(gb, HL);
   CYC(b_+7, b_+10); SET_HL(wTextNumberSubstitution);
-  CYC(b_+10, b_+12); alu_bit(gb, 0, C);
+  CYC(b_+10, b_+12); NPC_BIT(0, C);
   if (!(F & FZ)) {
     CYCT(b_+12, b_+14); goto subtract;
   }

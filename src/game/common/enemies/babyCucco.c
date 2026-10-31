@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/enemies.h"
 
 #undef CYC
 #undef CYCT
@@ -43,11 +44,11 @@ void enemyCode33_hook(GB *gb) {
   {
     CYC(b_+3, b_+4); push_effect(gb, b_+4);
     uint16_t target = babyCucco_jump_table(gb);
-    if (target == SYM(babyCucco_state_uninitialized)) { babyCucco_state_uninitialized_hook(gb); return; }
-    if (target == SYM(babyCucco_state_stub)) { babyCucco_state_stub_hook(gb); return; }
-    if (target == SYM(babyCucco_state_grabbed)) { babyCucco_state_grabbed_hook(gb); return; }
-    if (target == SYM(babyCucco_state8)) { babyCucco_state8_hook(gb); return; }
-    if (target == SYM(babyCucco_state9)) { babyCucco_state9_hook(gb); return; }
+    if (target == SYM(babyCucco_state_uninitialized)) { ENEMY_LOCAL_CALL(babyCucco_state_uninitialized_hook(gb)); return; }
+    if (target == SYM(babyCucco_state_stub)) { ENEMY_LOCAL_CALL(babyCucco_state_stub_hook(gb)); return; }
+    if (target == SYM(babyCucco_state_grabbed)) { ENEMY_LOCAL_CALL(babyCucco_state_grabbed_hook(gb)); return; }
+    if (target == SYM(babyCucco_state8)) { ENEMY_LOCAL_CALL(babyCucco_state8_hook(gb)); return; }
+    if (target == SYM(babyCucco_state9)) { ENEMY_LOCAL_CALL(babyCucco_state9_hook(gb)); return; }
     HANDOFF(target);
   }
 }
@@ -76,17 +77,17 @@ void babyCucco_state_grabbed_hook(GB *gb) {
 justGrabbed:
   CYC(b_+11, b_+12); H = D;
   CYC(b_+12, b_+13); L = E;
-  CYC(b_+13, b_+14); mem_wr(gb, HL, alu_inc8(gb, mem_rd(gb, HL))); // inc (hl) [substate]
+  CYC(b_+13, b_+14); ENEMY_WRITE(HL, alu_inc8(gb, mem_rd(gb, HL))); // inc (hl) [substate]
   CYC(b_+14, b_+16); L = ENEMY_BASE + OBJ_COLLISION_TYPE;
-  CYC(b_+16, b_+18); mem_wr(gb, HL, (uint8_t)(mem_rd(gb, HL) & ~(1 << 7))); // res 7,(hl)
+  CYC(b_+16, b_+18); ENEMY_WRITE(HL, (uint8_t)(mem_rd(gb, HL) & ~(1 << 7))); // res 7,(hl)
   CYC(b_+18, b_+19); alu_xor(gb, A);
-  CYC(b_+19, b_+22); mem_wr(gb, wLinkGrabState2, A);
+  CYC(b_+19, b_+22); ENEMY_WRITE(wLinkGrabState2, A);
   CYC(b_+22, b_+25); A = mem_rd(gb, w1Link_direction);
   CYC(b_+25, b_+27); A = alu_srl(gb, A);
-  CYC(b_+27, b_+29); alu_xor(gb, 0x01);
+  CYC(b_+27, b_+29); ENEMY_XOR(0x01);
   CYC(b_+29, b_+31); L = ENEMY_BASE + OBJ_DIRECTION;
-  CYC(b_+31, b_+32); mem_wr(gb, HL, A);
-  CALL_C(b_+32, enemySetAnimation_hook, SYM(enemySetAnimation), b_+35);
+  CYC(b_+31, b_+32); ENEMY_WRITE(HL, A);
+  ENEMY_CALL_C(b_+32, enemySetAnimation_hook, SYM(enemySetAnimation), b_+35);
   CYC(b_+35, b_+38); TAIL(objectSetVisiblec1); // jp
 
 beingHeld:
@@ -94,23 +95,23 @@ beingHeld:
   CYC(b_+39, b_+41); L = ENEMY_BASE + OBJ_DIRECTION;
   CYC(b_+41, b_+44); A = mem_rd(gb, w1Link_direction);
   CYC(b_+44, b_+46); A = alu_srl(gb, A);
-  CYC(b_+46, b_+48); alu_xor(gb, 0x01);
-  CYC(b_+48, b_+49); alu_cp(gb, mem_rd(gb, HL));
-  if (F & FZ) { CYCT(b_+49, b_+51); goto released; } // jr z
+  CYC(b_+46, b_+48); ENEMY_XOR(0x01);
+  CYC(b_+48, b_+49); ENEMY_CP(mem_rd(gb, HL));
+  if (ENEMY_FLAG(FZ)) { CYCT(b_+49, b_+51); goto released; } // jr z
   CYC(b_+49, b_+51);
-  CYC(b_+51, b_+52); mem_wr(gb, HL, A);
+  CYC(b_+51, b_+52); ENEMY_WRITE(HL, A);
   CYC(b_+52, b_+55); TAIL(enemySetAnimation); // jp
 
 released:
   CYC(b_+55, b_+57); E = ENEMY_BASE + OBJ_YH;
   CYC(b_+57, b_+58); A = mem_rd(gb, DE);
-  CYC(b_+58, b_+60); alu_cp(gb, 0x80); // SMALL_ROOM_HEIGHT<<4
-  if (!(F & FC)) { CYCT(b_+60, b_+62); goto delete_; } // jr nc
+  CYC(b_+58, b_+60); ENEMY_CP(0x80); // SMALL_ROOM_HEIGHT<<4
+  if (!(ENEMY_FLAG(FC))) { CYCT(b_+60, b_+62); goto delete_; } // jr nc
   CYC(b_+60, b_+62);
   CYC(b_+62, b_+64); E = ENEMY_BASE + OBJ_XH;
   CYC(b_+64, b_+65); A = mem_rd(gb, DE);
-  CYC(b_+65, b_+67); alu_cp(gb, 0xa0); // SMALL_ROOM_WIDTH<<4
-  if (F & FC) { CYCT(b_+67, b_+70); enemyAnimate_hook(gb); return; } // jp c
+  CYC(b_+65, b_+67); ENEMY_CP(0xa0); // SMALL_ROOM_WIDTH<<4
+  if (ENEMY_FLAG(FC)) { CYCT(b_+67, b_+70); ENEMY_LOCAL_CALL(enemyAnimate_hook(gb)); return; } // jp c
   CYC(b_+67, b_+70);
 
 delete_:
@@ -119,11 +120,11 @@ delete_:
 landed:
   CYC(b_+73, b_+74); H = D;
   CYC(b_+74, b_+76); L = ENEMY_BASE + OBJ_STATE;
-  CYC(b_+76, b_+78); mem_wr(gb, HL, 0x08);
+  CYC(b_+76, b_+78); ENEMY_WRITE(HL, 0x08);
   CYC(b_+78, b_+80); L = ENEMY_BASE + OBJ_COLLISION_TYPE;
-  CYC(b_+80, b_+82); mem_wr(gb, HL, (uint8_t)(mem_rd(gb, HL) | (1 << 7))); // set 7,(hl)
+  CYC(b_+80, b_+82); ENEMY_WRITE(HL, (uint8_t)(mem_rd(gb, HL) | (1 << 7))); // set 7,(hl)
   CYC(b_+82, b_+84); L = ENEMY_BASE + OBJ_DIRECTION;
-  CYC(b_+84, b_+86); mem_wr(gb, HL, 0xff);
+  CYC(b_+84, b_+86); ENEMY_WRITE(HL, 0xff);
   CYC(b_+86, b_+89); TAIL(objectSetVisiblec2); // jp
 }
 
@@ -135,27 +136,27 @@ void babyCucco_state_stub_hook(GB *gb) {
 void babyCucco_state8_hook(GB *gb) {
   BASE(babyCucco_state8);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, objectAddToGrabbableObjectBuffer_hook, SYM(objectAddToGrabbableObjectBuffer), b_+3);
-  CALL_C(b_+3, objectSetPriorityRelativeToLink_withTerrainEffects_hook, SYM(objectSetPriorityRelativeToLink_withTerrainEffects), b_+6);
-  CALL_C(b_+6, ecom_updateAngleTowardTarget_b0e_hook, SYM(ecom_updateAngleTowardTarget_b0e), b_+9);
-  CALL_C(b_+9, babyCucco_updateAnimationFromAngle_hook, SYM(babyCucco_updateAnimationFromAngle), b_+12);
+  ENEMY_CALL_C(b_+0, objectAddToGrabbableObjectBuffer_hook, SYM(objectAddToGrabbableObjectBuffer), b_+3);
+  ENEMY_CALL_C(b_+3, objectSetPriorityRelativeToLink_withTerrainEffects_hook, SYM(objectSetPriorityRelativeToLink_withTerrainEffects), b_+6);
+  ENEMY_CALL_C(b_+6, ecom_updateAngleTowardTarget_b0e_hook, SYM(ecom_updateAngleTowardTarget_b0e), b_+9);
+  ENEMY_CALL_C(b_+9, babyCucco_updateAnimationFromAngle_hook, SYM(babyCucco_updateAnimationFromAngle), b_+12);
   CYC(b_+12, b_+14); C = 0x10;
-  CALL_C(b_+14, objectCheckLinkWithinDistance_hook, SYM(objectCheckLinkWithinDistance), b_+17);
-  if (!(F & FC)) { CYCT(b_+17, b_+19); goto moveCloserToLink; } // jr nc
+  ENEMY_CALL_C(b_+14, objectCheckLinkWithinDistance_hook, SYM(objectCheckLinkWithinDistance), b_+17);
+  if (!(ENEMY_FLAG(FC))) { CYCT(b_+17, b_+19); goto moveCloserToLink; } // jr nc
   CYC(b_+17, b_+19);
-  CALL_C(b_+19, getRandomNumber_noPreserveVars_hook, SYM(getRandomNumber_noPreserveVars), b_+22);
-  CYC(b_+22, b_+24); alu_and(gb, 0x3f);
-  if (!(F & FZ)) { RET_TAKEN(b_+24); return; } // ret nz
+  ENEMY_CALL_C(b_+19, getRandomNumber_noPreserveVars_hook, SYM(getRandomNumber_noPreserveVars), b_+22);
+  CYC(b_+22, b_+24); ENEMY_AND(0x3f);
+  if (!(ENEMY_FLAG(FZ))) { RET_TAKEN(b_+24); return; } // ret nz
   CYC(b_+24, b_+25);
-  CALL_C(b_+25, ecom_incState_b0e_hook, SYM(ecom_incState_b0e), b_+28);
+  ENEMY_CALL_C(b_+25, ecom_incState_b0e_hook, SYM(ecom_incState_b0e), b_+28);
   CYC(b_+28, b_+30); L = ENEMY_BASE + OBJ_SPEED_Z;
   CYC(b_+30, b_+32); A = 0x40;
-  CYC(b_+32, b_+33); mem_wr(gb, HL, A); SET_HL(HL + 1); // ldi (hl),a
-  CYC(b_+33, b_+35); mem_wr(gb, HL, 0xff);
+  CYC(b_+32, b_+33); ENEMY_WRITE(HL, A); SET_HL(HL + 1); // ldi (hl),a
+  CYC(b_+33, b_+35); ENEMY_WRITE(HL, 0xff);
   RET(b_+35); return; // ret
 
 moveCloserToLink:
-  CALL_C(b_+36, ecom_applyVelocityForSideviewEnemyNoHoles_b0e_hook, SYM(ecom_applyVelocityForSideviewEnemyNoHoles_b0e), SYM(babyCucco_animate));
+  ENEMY_CALL_C(b_+36, ecom_applyVelocityForSideviewEnemyNoHoles_b0e_hook, SYM(ecom_applyVelocityForSideviewEnemyNoHoles_b0e), SYM(babyCucco_animate));
   TAIL(babyCucco_animate); // fallthrough
 }
 
@@ -169,11 +170,11 @@ void babyCucco_state9_hook(GB *gb) {
   BASE(babyCucco_state9);
   uint16_t sp0_ = gb->sp;
   CYC(b_+0, b_+2); C = 0x12;
-  CALL_C(b_+2, objectUpdateSpeedZ_paramC_hook, SYM(objectUpdateSpeedZ_paramC), b_+5);
-  if (!(F & FZ)) { CYCT(b_+5, b_+7); babyCucco_animate_hook(gb); return; } // jr nz
+  ENEMY_CALL_C(b_+2, objectUpdateSpeedZ_paramC_hook, SYM(objectUpdateSpeedZ_paramC), b_+5);
+  if (!(ENEMY_FLAG(FZ))) { CYCT(b_+5, b_+7); ENEMY_LOCAL_CALL(babyCucco_animate_hook(gb)); return; } // jr nz
   CYC(b_+5, b_+7);
   CYC(b_+7, b_+9); L = ENEMY_BASE + OBJ_STATE;
-  CYC(b_+9, b_+10); mem_wr(gb, HL, alu_dec8(gb, mem_rd(gb, HL))); // dec (hl)
+  CYC(b_+9, b_+10); ENEMY_WRITE(HL, alu_dec8(gb, mem_rd(gb, HL))); // dec (hl)
   RET(b_+10); return; // ret
 }
 
@@ -182,18 +183,18 @@ void babyCucco_updateAnimationFromAngle_hook(GB *gb) {
   uint16_t sp0_ = gb->sp; (void)sp0_;
   CYC(b_+0, b_+2); E = ENEMY_BASE + OBJ_ANGLE;
   CYC(b_+2, b_+3); A = mem_rd(gb, DE);
-  CYC(b_+3, b_+5); alu_cp(gb, 0x10);
+  CYC(b_+3, b_+5); ENEMY_CP(0x10);
   CYC(b_+5, b_+7); A = 0x01;
-  if (F & FC) { CYCT(b_+7, b_+9); goto L_4924; } // jr c
+  if (ENEMY_FLAG(FC)) { CYCT(b_+7, b_+9); goto L_4924; } // jr c
   CYC(b_+7, b_+9);
   CYC(b_+9, b_+10); alu_xor(gb, A);
 
 L_4924:
   CYC(b_+10, b_+11); H = D;
   CYC(b_+11, b_+13); L = ENEMY_BASE + OBJ_DIRECTION;
-  CYC(b_+13, b_+14); alu_cp(gb, mem_rd(gb, HL));
-  if (F & FZ) { RET_TAKEN(b_+14); return; } // ret z
+  CYC(b_+13, b_+14); ENEMY_CP(mem_rd(gb, HL));
+  if (ENEMY_FLAG(FZ)) { RET_TAKEN(b_+14); return; } // ret z
   CYC(b_+14, b_+15);
-  CYC(b_+15, b_+16); mem_wr(gb, HL, A);
+  CYC(b_+15, b_+16); ENEMY_WRITE(HL, A);
   CYC(b_+16, b_+19); TAIL(enemySetAnimation); // jp
 }

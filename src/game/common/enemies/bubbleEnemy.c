@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/enemies.h"
 
 #undef CYC
 #undef CYCT
@@ -29,13 +30,13 @@ void enemyCode15_chooseNewDirection_hook(GB *gb) {
   BASE(enemyCode15);
   uint16_t sp0_ = gb->sp;
   CYC(b_+78, b_+81); SET_BC(0x0718);
-  CALL_C(b_+81, ecom_randomBitwiseAndBCE_b0d_hook, SYM(ecom_randomBitwiseAndBCE_b0d), b_+84);
-  CYC(b_+84, b_+85); alu_or(gb, B);
-  if (!(F & FZ)) { RET_TAKEN(b_+85); return; } // ret nz
+  ENEMY_CALL_C(b_+81, ecom_randomBitwiseAndBCE_b0d_hook, SYM(ecom_randomBitwiseAndBCE_b0d), b_+84);
+  CYC(b_+84, b_+85); ENEMY_OR(B);
+  if (!(ENEMY_FLAG(FZ))) { RET_TAKEN(b_+85); return; } // ret nz
   CYC(b_+85, b_+86);
   CYC(b_+86, b_+88); E = ENEMY_BASE + OBJ_ANGLE;
   CYC(b_+88, b_+89); A = C;
-  CYC(b_+89, b_+90); mem_wr(gb, DE, A);
+  CYC(b_+89, b_+90); ENEMY_WRITE(DE, A);
   RET(b_+90); return; // ret
 }
 
@@ -48,8 +49,8 @@ static void enemyCode15_checkCenteredOnTile(GB *gb) {
   CYC(b_+95, b_+96); B = A;
   CYC(b_+96, b_+97); L = alu_inc8(gb, L);
   CYC(b_+97, b_+98); C = mem_rd(gb, HL);
-  CYC(b_+98, b_+99); alu_or(gb, C);
-  CYC(b_+99, b_+101); alu_and(gb, 0x07);
+  CYC(b_+98, b_+99); ENEMY_OR(C);
+  CYC(b_+99, b_+101); ENEMY_AND(0x07);
   RET(b_+101); return; // ret
 }
 
@@ -59,22 +60,22 @@ static void enemyCode15_checkCenteredOnTile(GB *gb) {
 void enemyCode15_hook(GB *gb) {
   BASE(enemyCode15);
   uint16_t sp0_ = gb->sp;
-  if (F & FZ) { CYCT(b_+0, b_+2); goto normalStatus; } // jr z
+  if (ENEMY_FLAG(FZ)) { CYCT(b_+0, b_+2); goto normalStatus; } // jr z
   CYC(b_+0, b_+2);
   CYC(b_+2, b_+4); alu_sub(gb, 0x03); // ENEMYSTATUS_NO_HEALTH
-  if (F & FC) { RET_TAKEN(b_+4); return; } // ret c
+  if (ENEMY_FLAG(FC)) { RET_TAKEN(b_+4); return; } // ret c
   CYC(b_+4, b_+5);
   CYC(b_+5, b_+7); E = ENEMY_BASE + OBJ_VAR2A;
   CYC(b_+7, b_+8); A = mem_rd(gb, DE);
-  CYC(b_+8, b_+10); alu_cp(gb, 0x80); // $80|ITEMCOLLISION_LINK
-  if (!(F & FZ)) { CYCT(b_+10, b_+12); goto normalStatus; } // jr nz
+  CYC(b_+8, b_+10); ENEMY_CP(0x80); // $80|ITEMCOLLISION_LINK
+  if (!(ENEMY_FLAG(FZ))) { CYCT(b_+10, b_+12); goto normalStatus; } // jr nz
   CYC(b_+10, b_+12);
   CYC(b_+12, b_+14); A = 0x39; // WHISP_RING
-  CALL_C(b_+14, cpActiveRing_hook, SYM(cpActiveRing), b_+17);
-  if (F & FZ) { CYCT(b_+17, b_+19); goto normalStatus; } // jr z
+  ENEMY_CALL_C(b_+14, cpActiveRing_hook, SYM(cpActiveRing), b_+17);
+  if (ENEMY_FLAG(FZ)) { CYCT(b_+17, b_+19); goto normalStatus; } // jr z
   CYC(b_+17, b_+19);
   CYC(b_+19, b_+21); A = 0xb4;
-  CYC(b_+21, b_+24); mem_wr(gb, wSwordDisabledCounter, A);
+  CYC(b_+21, b_+24); ENEMY_WRITE(wSwordDisabledCounter, A);
 
 normalStatus:
   CYC(b_+24, b_+26); E = ENEMY_BASE + OBJ_STATE;
@@ -89,12 +90,12 @@ normalStatus:
   }
 
 state_uninitialized:
-  CALL_C(b_+46, getRandomNumber_noPreserveVars_hook, SYM(getRandomNumber_noPreserveVars), b_+49);
-  CYC(b_+49, b_+51); alu_and(gb, 0x18);
+  ENEMY_CALL_C(b_+46, getRandomNumber_noPreserveVars_hook, SYM(getRandomNumber_noPreserveVars), b_+49);
+  CYC(b_+49, b_+51); ENEMY_AND(0x18);
   CYC(b_+51, b_+53); E = ENEMY_BASE + OBJ_ANGLE;
-  CYC(b_+53, b_+54); mem_wr(gb, DE, A);
+  CYC(b_+53, b_+54); ENEMY_WRITE(DE, A);
   CYC(b_+54, b_+56); A = 0x1e; // SPEED_c0
-  CALL_C(b_+56, ecom_setSpeedAndState8_b0d_hook, SYM(ecom_setSpeedAndState8_b0d), b_+59);
+  ENEMY_CALL_C(b_+56, ecom_setSpeedAndState8_b0d_hook, SYM(ecom_setSpeedAndState8_b0d), b_+59);
   CYC(b_+59, b_+62); TAIL(objectSetVisible82); // jp
 
 state_stub:
@@ -102,8 +103,8 @@ state_stub:
 
 state8:
   CALL_L(b_+63, enemyCode15_checkCenteredOnTile, b_+66);
-  if (F & FZ) { CALL_L_CC(b_+66, enemyCode15_chooseNewDirection_hook, b_+69); } else { CYC(b_+66, b_+69); } // call z
-  CALL_C(b_+69, ecom_applyVelocityForSideviewEnemyNoHoles_b0d_hook, SYM(ecom_applyVelocityForSideviewEnemyNoHoles_b0d), b_+72);
-  if (F & FZ) { CALL_L_CC(b_+72, enemyCode15_chooseNewDirection_hook, b_+75); } else { CYC(b_+72, b_+75); } // call z
+  if (ENEMY_FLAG(FZ)) { CALL_L_CC(b_+66, enemyCode15_chooseNewDirection_hook, b_+69); } else { CYC(b_+66, b_+69); } // call z
+  ENEMY_CALL_C(b_+69, ecom_applyVelocityForSideviewEnemyNoHoles_b0d_hook, SYM(ecom_applyVelocityForSideviewEnemyNoHoles_b0d), b_+72);
+  if (ENEMY_FLAG(FZ)) { CALL_L_CC(b_+72, enemyCode15_chooseNewDirection_hook, b_+75); } else { CYC(b_+72, b_+75); } // call z
   CYC(b_+75, b_+78); TAIL(enemyAnimate); // jp
 }

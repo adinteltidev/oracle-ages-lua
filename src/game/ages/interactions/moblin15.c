@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/npcs_events.h"
 
 #undef CYC
 #undef CYCT
@@ -9,9 +10,9 @@
 void moblin_spawnEnemyHere_hook(GB *gb) {
   BASE(moblin_spawnEnemyHere);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, getFreeEnemySlot_hook, SYM(getFreeEnemySlot), b_+3);
+  NPC_CALL_C(b_+0, getFreeEnemySlot_hook, SYM(getFreeEnemySlot), b_+3);
   if (!(F & FZ)) { RET_TAKEN(b_+3); return; }
   CYC(b_+3, b_+4);
-  CYC(b_+4, b_+6); mem_wr(gb, HL, 0x20);
+  CYC(b_+4, b_+6); EVENT_WRITE(HL, 0x20);
   CYC(b_+6, b_+9); TAIL(objectCopyPosition);
 }

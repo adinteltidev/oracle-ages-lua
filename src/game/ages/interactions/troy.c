@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/npcs_events.h"
 
 #undef CYC
 #undef CYCT
@@ -39,7 +40,7 @@ static void interactionCodeca_addDoubleIndexToHl_from_rst(GB *gb, uint16_t retur
 void interactionCodeca_func_7781_hook(GB *gb) {
   BASE(interactionCodeca);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+42, interactionInitGraphics_hook, SYM(interactionInitGraphics), b_+45);
+  NPC_CALL_C(b_+42, interactionInitGraphics_hook, SYM(interactionInitGraphics), b_+45);
   CYC(b_+45, b_+48); TAIL(interactionIncState); // jp
 }
 
@@ -48,15 +49,15 @@ void interactionCodeca_func_7781_hook(GB *gb) {
 void interactionCodeca_initialize_hook(GB *gb) {
   BASE(interactionCodeca);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+48, interactionInitGraphics_hook, SYM(interactionInitGraphics), b_+51);
+  NPC_CALL_C(b_+48, interactionInitGraphics_hook, SYM(interactionInitGraphics), b_+51);
   CYC(b_+51, b_+53); E = INTERACTION_BASE + OBJ_SUBID;
   CYC(b_+53, b_+54); A = mem_rd(gb, DE);
   CYC(b_+54, b_+57); SET_HL(b_+67); // interactionCodeca@scriptTable
-  CYC(b_+57, b_+58); interactionCodeca_addDoubleIndexToHl_from_rst(gb, b_+58);
+  CYC(b_+57, b_+58); NPC_LOCAL_CALL(interactionCodeca_addDoubleIndexToHl_from_rst(gb, b_+58));
   CYC(b_+58, b_+59); A = mem_rd(gb, HL); SET_HL(HL + 1); // ldi a,(hl)
   CYC(b_+59, b_+60); H = mem_rd(gb, HL);
   CYC(b_+60, b_+61); L = A;
-  CALL_C(b_+61, interactionSetScript_hook, SYM(interactionSetScript), b_+64);
+  NPC_CALL_C(b_+61, interactionSetScript_hook, SYM(interactionSetScript), b_+64);
   CYC(b_+64, b_+67); TAIL(interactionIncState); // jp
 }
 
@@ -76,24 +77,24 @@ void interactionCodeca_hook(GB *gb) {
   } while (0);
 
 subid0:
-  CALL_C(b_+8, checkInteractionState_hook, SYM(checkInteractionState), b_+11);
+  NPC_CALL_ZERO(b_+8, checkInteractionState_hook, SYM(checkInteractionState), b_+11);
   if (!(F & FZ)) { CYCT(b_+11, b_+13); goto state1; } // jr nz
   CYC(b_+11, b_+13);
   CALL_L(b_+13, interactionCodeca_initialize_hook, b_+16);
   CYC(b_+16, b_+19); A = mem_rd(gb, wScreenTransitionDirection);
-  CYC(b_+19, b_+20); alu_or(gb, A);
+  CYC(b_+19, b_+20); NPC_OR(A);
   if (!(F & FZ)) { CYCT(b_+20, b_+22); goto state1; } // jr nz
   CYC(b_+20, b_+22);
-  CYC(b_+22, b_+25); mem_wr(gb, wTmpcfc0_targetCarts_beganGameWithTroy, A);
+  CYC(b_+22, b_+25); EVENT_WRITE(wTmpcfc0_targetCarts_beganGameWithTroy, A);
 
 state1:
-  CALL_C(b_+25, interactionRunScript_hook, SYM(interactionRunScript), b_+28);
+  NPC_CALL_C(b_+25, interactionRunScript_hook, SYM(interactionRunScript), b_+28);
   if (F & FC) { CYCT(b_+28, b_+31); interactionDelete_hook(gb); return; } // jp c
   CYC(b_+28, b_+31);
   CYC(b_+31, b_+34); TAIL(interactionAnimateAsNpc); // jp
 
 subid1:
-  CALL_C(b_+34, checkInteractionState_hook, SYM(checkInteractionState), b_+37);
+  NPC_CALL_ZERO(b_+34, checkInteractionState_hook, SYM(checkInteractionState), b_+37);
   if (!(F & FZ)) { CYCT(b_+37, b_+39); goto state1; } // jr nz
   CYC(b_+37, b_+39);
   CYC(b_+39, b_+42); interactionCodeca_initialize_hook(gb); return; // jp
