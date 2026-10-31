@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/enemies.h"
 
 #undef CYC
 #undef CYCT
@@ -39,16 +40,16 @@ static uint16_t enemyCode21_jump_table(GB *gb) {
 void enemyCode21_hook(GB *gb) {
   BASE(enemyCode21);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, ecom_checkHazards_b0d_hook, GV(SYM(ecom_checkHazards_b0d), 0x4446), b_+3);
-  if (F & FZ) { CYCT(b_+3, b_+5); goto normalStatus; } // jr z
+  ENEMY_CALL_C(b_+0, ecom_checkHazards_b0d_hook, GV(SYM(ecom_checkHazards_b0d), 0x4446), b_+3);
+  if (ENEMY_FLAG(FZ)) { CYCT(b_+3, b_+5); goto normalStatus; } // jr z
   CYC(b_+3, b_+5);
   CYC(b_+5, b_+7); alu_sub(gb, 0x03); // ENEMYSTATUS_NO_HEALTH
-  if (F & FC) { RET_TAKEN(b_+7); return; } // ret c
+  if (ENEMY_FLAG(FC)) { RET_TAKEN(b_+7); return; } // ret c
   CYC(b_+7, b_+8);
-  if (F & FZ) { CYCT(b_+8, b_+11); enemyDie_hook(gb); return; } // jp z
+  if (ENEMY_FLAG(FZ)) { CYCT(b_+8, b_+11); ENEMY_LOCAL_CALL(enemyDie_hook(gb)); return; } // jp z
   CYC(b_+8, b_+11);
   CYC(b_+11, b_+12); A = alu_dec8(gb, A);
-  if (!(F & FZ)) { CYCT(b_+12, b_+15); ecom_updateKnockbackAndCheckHazards_b0d_hook(gb); return; } // jp nz
+  if (!(ENEMY_FLAG(FZ))) { CYCT(b_+12, b_+15); ENEMY_LOCAL_CALL(ecom_updateKnockbackAndCheckHazards_b0d_hook(gb)); return; } // jp nz
   CYC(b_+12, b_+15);
   RET(b_+15); return; // ret
 
@@ -58,11 +59,11 @@ normalStatus:
   {
     CYC(b_+19, b_+20); push_effect(gb, b_+20);
     uint16_t target = enemyCode21_jump_table(gb);
-    if (target == SYM(arrowDarknut_state_uninitialized)) { arrowDarknut_state_uninitialized_hook(gb); return; }
-    if (target == SYM(moblin_state_stub)) { moblin_state_stub_hook(gb); return; }
-    if (target == SYM(moblin_state_switchHook)) { moblin_state_switchHook_hook(gb); return; }
-    if (target == SYM(moblin_state_8)) { moblin_state_8_hook(gb); return; }
-    if (target == SYM(arrowDarknut_state_9)) { arrowDarknut_state_9_hook(gb); return; }
+    if (target == SYM(arrowDarknut_state_uninitialized)) { ENEMY_LOCAL_CALL(arrowDarknut_state_uninitialized_hook(gb)); return; }
+    if (target == SYM(moblin_state_stub)) { ENEMY_LOCAL_CALL(moblin_state_stub_hook(gb)); return; }
+    if (target == SYM(moblin_state_switchHook)) { ENEMY_LOCAL_CALL(moblin_state_switchHook_hook(gb)); return; }
+    if (target == SYM(moblin_state_8)) { ENEMY_LOCAL_CALL(moblin_state_8_hook(gb)); return; }
+    if (target == SYM(arrowDarknut_state_9)) { ENEMY_LOCAL_CALL(arrowDarknut_state_9_hook(gb)); return; }
     HANDOFF(target);
   }
 }
@@ -73,9 +74,9 @@ void arrowDarknut_state_uninitialized_hook(GB *gb) {
   uint16_t sp0_ = gb->sp;
   CYC(b_+0, b_+2); E = ENEMY_BASE + OBJ_SPEED;
   CYC(b_+2, b_+4); A = 0x14; // SPEED_80
-  CYC(b_+4, b_+5); mem_wr(gb, DE, A);
-  CALL_C(b_+5, ecom_setRandomCardinalAngle_b0d_hook, SYM(ecom_setRandomCardinalAngle_b0d), b_+8);
-  CALL_C(b_+8, arrowDarknut_setState8WithRandomAngleAndCounter_hook, SYM(arrowDarknut_setState8WithRandomAngleAndCounter), b_+11);
+  CYC(b_+4, b_+5); ENEMY_WRITE(DE, A);
+  ENEMY_CALL_C(b_+5, ecom_setRandomCardinalAngle_b0d_hook, SYM(ecom_setRandomCardinalAngle_b0d), b_+8);
+  ENEMY_CALL_C(b_+8, arrowDarknut_setState8WithRandomAngleAndCounter_hook, SYM(arrowDarknut_setState8WithRandomAngleAndCounter), b_+11);
   CYC(b_+11, b_+14); TAIL(objectSetVisiblec2); // jp
 }
 
@@ -83,11 +84,11 @@ void arrowDarknut_state_uninitialized_hook(GB *gb) {
 void arrowDarknut_state_9_hook(GB *gb) {
   BASE(arrowDarknut_state_9);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, ecom_decCounter1_b0d_hook, SYM(ecom_decCounter1_b0d), b_+3);
-  if (!(F & FZ)) { RET_TAKEN(b_+3); return; } // ret nz
+  ENEMY_CALL_C(b_+0, ecom_decCounter1_b0d_hook, SYM(ecom_decCounter1_b0d), b_+3);
+  if (!(ENEMY_FLAG(FZ))) { RET_TAKEN(b_+3); return; } // ret nz
   CYC(b_+3, b_+4);
-  CALL_C(b_+4, arrowDarknut_chooseAngle_hook, SYM(arrowDarknut_chooseAngle), b_+7);
-  CALL_C(b_+7, arrowDarknut_setState8WithRandomAngleAndCounter_hook, SYM(arrowDarknut_setState8WithRandomAngleAndCounter), SYM(arrowDarknut_fireArrowEveryOtherTime));
+  ENEMY_CALL_C(b_+4, arrowDarknut_chooseAngle_hook, SYM(arrowDarknut_chooseAngle), b_+7);
+  ENEMY_CALL_C(b_+7, arrowDarknut_setState8WithRandomAngleAndCounter_hook, SYM(arrowDarknut_setState8WithRandomAngleAndCounter), SYM(arrowDarknut_fireArrowEveryOtherTime));
   TAIL(arrowDarknut_fireArrowEveryOtherTime); // fallthrough
 }
 
@@ -97,17 +98,17 @@ void arrowDarknut_fireArrowEveryOtherTime_hook(GB *gb) {
   uint16_t sp0_ = gb->sp;
   CYC(b_+0, b_+1); H = D;
   CYC(b_+1, b_+3); L = ENEMY_BASE + 0x30; // Enemy.var30
-  CYC(b_+3, b_+4); mem_wr(gb, HL, alu_inc8(gb, mem_rd(gb, HL)));
-  CYC(b_+4, b_+6); alu_bit(gb, 0, mem_rd(gb, HL));
-  if (F & FZ) { RET_TAKEN(b_+6); return; } // ret z
+  CYC(b_+3, b_+4); ENEMY_WRITE(HL, alu_inc8(gb, mem_rd(gb, HL)));
+  CYC(b_+4, b_+6); ENEMY_BIT(0, mem_rd(gb, HL));
+  if (ENEMY_FLAG(FZ)) { RET_TAKEN(b_+6); return; } // ret z
   CYC(b_+6, b_+7);
-  CALL_C(b_+7, objectGetAngleTowardEnemyTarget_hook, SYM(objectGetAngleTowardEnemyTarget), b_+10);
+  ENEMY_CALL_C(b_+7, objectGetAngleTowardEnemyTarget_hook, SYM(objectGetAngleTowardEnemyTarget), b_+10);
   CYC(b_+10, b_+12); alu_add(gb, 0x04);
-  CYC(b_+12, b_+14); alu_and(gb, 0x18);
+  CYC(b_+12, b_+14); ENEMY_AND(0x18);
   CYC(b_+14, b_+15); H = D;
   CYC(b_+15, b_+17); L = ENEMY_BASE + OBJ_ANGLE;
-  CYC(b_+17, b_+18); alu_cp(gb, mem_rd(gb, HL));
-  if (!(F & FZ)) { RET_TAKEN(b_+18); return; } // ret nz
+  CYC(b_+17, b_+18); ENEMY_CP(mem_rd(gb, HL));
+  if (!(ENEMY_FLAG(FZ))) { RET_TAKEN(b_+18); return; } // ret nz
   CYC(b_+18, b_+19);
   CYC(b_+19, b_+21); B = 0x1a; // PART_ENEMY_ARROW
   CYC(b_+21, b_+24); TAIL(ecom_spawnProjectile_b0d); // jp
@@ -117,14 +118,14 @@ void arrowDarknut_fireArrowEveryOtherTime_hook(GB *gb) {
 void arrowDarknut_setState8WithRandomAngleAndCounter_hook(GB *gb) {
   BASE(arrowDarknut_setState8WithRandomAngleAndCounter);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, getRandomNumber_noPreserveVars_hook, SYM(getRandomNumber_noPreserveVars), b_+3);
-  CYC(b_+3, b_+5); alu_and(gb, 0x3f);
+  ENEMY_CALL_C(b_+0, getRandomNumber_noPreserveVars_hook, SYM(getRandomNumber_noPreserveVars), b_+3);
+  CYC(b_+3, b_+5); ENEMY_AND(0x3f);
   CYC(b_+5, b_+7); alu_add(gb, 0x30);
   CYC(b_+7, b_+8); H = D;
   CYC(b_+8, b_+10); L = ENEMY_BASE + OBJ_COUNTER1;
-  CYC(b_+10, b_+11); mem_wr(gb, HL, A);
+  CYC(b_+10, b_+11); ENEMY_WRITE(HL, A);
   CYC(b_+11, b_+13); L = ENEMY_BASE + OBJ_STATE;
-  CYC(b_+13, b_+15); mem_wr(gb, HL, 0x08);
+  CYC(b_+13, b_+15); ENEMY_WRITE(HL, 0x08);
   CYC(b_+15, b_+18); TAIL(ecom_updateAnimationFromAngle_b0d); // jp
 }
 
@@ -132,9 +133,9 @@ void arrowDarknut_setState8WithRandomAngleAndCounter_hook(GB *gb) {
 void arrowDarknut_chooseAngle_hook(GB *gb) {
   BASE(arrowDarknut_chooseAngle);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, getRandomNumber_noPreserveVars_hook, SYM(getRandomNumber_noPreserveVars), b_+3);
-  CYC(b_+3, b_+5); alu_and(gb, 0x03);
-  if (F & FZ) { CYCT(b_+5, b_+8); ecom_updateCardinalAngleTowardTarget_b0d_hook(gb); return; } // jp z
+  ENEMY_CALL_C(b_+0, getRandomNumber_noPreserveVars_hook, SYM(getRandomNumber_noPreserveVars), b_+3);
+  CYC(b_+3, b_+5); ENEMY_AND(0x03);
+  if (ENEMY_FLAG(FZ)) { CYCT(b_+5, b_+8); ENEMY_LOCAL_CALL(ecom_updateCardinalAngleTowardTarget_b0d_hook(gb)); return; } // jp z
   CYC(b_+5, b_+8);
   CYC(b_+8, b_+11); TAIL(ecom_setRandomCardinalAngle_b0d); // jp
 }

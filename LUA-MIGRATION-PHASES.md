@@ -1,21 +1,21 @@
 # Migração de gameplay para Lua: sete fases
 
-Atualização: 30/10/2026. Implementação experimental das fases 1–5 disponível.
-O jogador validou as versões cumulativas da fase 4 no Windows e Switch e
-confirmou funcionamento e estabilidade. A pendência de validação manual dessas
-plataformas está atendida para a fase 4. A fase 5 possui implementação e
-validação local; a confirmação dos novos pacotes Windows/Switch está pendente.
-Fase 6 possui integração experimental em validação local; a aceitação completa
-depende das verificações registradas em [LUA-PHASE-6.md](LUA-PHASE-6.md).
-Fase 7 ainda não iniciada.
+Atualização: 31/10/2026. Implementação experimental das fases 1–7 disponível.
+A fase 6 de Ages está concluída: implementação no commit `73e7f75`, validação
+local registrada e confirmação do jogador de que Windows e Switch estão
+funcionando, com autorização explícita para encerrar a fase.
+Fase 7 possui implementação e validação local concluídas; os novos pacotes
+aguardam confirmação própria no Windows/Switch. Ver [LUA-PHASE-7.md](LUA-PHASE-7.md).
 
+[Fase 6: NPCs, eventos e evidências](LUA-PHASE-6.md).
+[Confirmação de Windows/Switch da fase 6](LUA-PHASE-6-PLAYER-VALIDATION.md).
 [Fase 5: itens, lojas e validação](LUA-PHASE-5.md).
 [Fase 4: inventário, implementação e evidências](LUA-PHASE-4.md).
-[Confirmação de Windows/Switch pelo jogador](LUA-PHASE-4-PLAYER-VALIDATION.md).
+[Confirmação anterior da fase 4](LUA-PHASE-4-PLAYER-VALIDATION.md).
 
 Continua pendente a regressão completa de Seasons com ROM própria. Essa
-verificação mantém a validação comum da migração em aberto; as opções
-experimentais continuam OFF por padrão.
+verificação permanece na validação comum da migração, separada da fase 6 de
+Ages encerrada pelo jogador. As opções experimentais continuam OFF por padrão.
 
 Os relatórios de fases anteriores preservam seus resultados e pendências da
 época. O primeiro lote está em [fase 1, inventário](LUA-PHASE-1.md), e sua
@@ -235,6 +235,9 @@ inventário e flags equivalentes, sem duplicação, com validação comum aprova
 
 ## Fase 6 — NPCs e eventos
 
+**Status: concluída em 31/10/2026**, após validação local e
+[confirmação do jogador no Windows/Switch](LUA-PHASE-6-PLAYER-VALIDATION.md).
+
 **Objetivo:** migrar seleção de diálogos, ações e progressão dos eventos de Ages.
 Começar por um NPC simples, como `pastOldLady.c`, antes de ampliar para
 `symmetryNpc.c`, outros personagens e sequências de história.
@@ -262,6 +265,9 @@ determinística após reload; eventos não deixam controles bloqueados e a valid
 comum está aprovada. Exclusões de cenas permanecem visíveis como pendências.
 
 ## Fase 7 — Inimigos
+
+**Status: implementação e validação local concluídas**, na branch
+`port/lua-gameplay`; aceitação dos novos pacotes no Windows/Switch pendente. Detalhes e fronteira C/Lua em [LUA-PHASE-7.md](LUA-PHASE-7.md).
 
 **Objetivo:** migrar decisões de IA de Ages, começando por inimigos simples,
 como os de `src/game/common/enemies/octorok.c`, e ampliando por famílias.

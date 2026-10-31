@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/enemies.h"
 
 #undef CYC
 #undef CYCT
@@ -28,7 +29,7 @@ static void enemyCode1f_addAToHl_from_rst(GB *gb, uint16_t return_address) {
   push_effect(gb, return_address);
   burn_rom(gb, 0x00, 0x0010, 0x0011, false); alu_add(gb, L);
   burn_rom(gb, 0x00, 0x0011, 0x0012, false); L = A;
-  if (F & FC) {
+  if ((F & FC)) {
     burn_rom(gb, 0x00, 0x0012, 0x0013, false);
     burn_rom(gb, 0x00, 0x0013, 0x0014, false); H = alu_inc8(gb, H);
     burn_rom(gb, 0x00, 0x0014, 0x0015, false);
@@ -47,15 +48,15 @@ static void enemyCode1f_addAToHl_from_rst(GB *gb, uint16_t return_address) {
 void enemyCode1f_hook(GB *gb) {
   BASE(enemyCode1f);
   uint16_t sp0_ = gb->sp;
-  if (F & FZ) { CYCT(b_+0, b_+2); goto normalStatus; } // jr z
+  if (ENEMY_FLAG(FZ)) { CYCT(b_+0, b_+2); goto normalStatus; } // jr z
   CYC(b_+0, b_+2);
   CYC(b_+2, b_+4); alu_sub(gb, 0x03); // ENEMYSTATUS_NO_HEALTH
-  if (F & FC) { CYCT(b_+4, b_+5); ret_effect(gb); return; } // ret c
+  if (ENEMY_FLAG(FC)) { CYCT(b_+4, b_+5); ret_effect(gb); return; } // ret c
   CYC(b_+4, b_+5);
-  if (F & FZ) { CYCT(b_+5, b_+8); enemyDie_hook(gb); return; } // jp z
+  if (ENEMY_FLAG(FZ)) { CYCT(b_+5, b_+8); ENEMY_LOCAL_CALL(enemyDie_hook(gb)); return; } // jp z
   CYC(b_+5, b_+8);
   CYC(b_+8, b_+9); A = alu_dec8(gb, A);
-  if (!(F & FZ)) { CYCT(b_+9, b_+12); ecom_updateKnockbackNoSolidity_b0d_hook(gb); return; } // jp nz
+  if (!(ENEMY_FLAG(FZ))) { CYCT(b_+9, b_+12); ENEMY_LOCAL_CALL(ecom_updateKnockbackNoSolidity_b0d_hook(gb)); return; } // jp nz
   CYC(b_+9, b_+12);
   RET(b_+12); return;
 
@@ -65,7 +66,7 @@ normalStatus:
   CYC(b_+16, b_+17); push_effect(gb, b_+17);
   {
     uint16_t target = enemyCode1f_jump_table(gb);
-    if (target == SYM(ecom_blownByGaleSeedState_b0d)) { ecom_blownByGaleSeedState_b0d_hook(gb); return; }
+    if (target == SYM(ecom_blownByGaleSeedState_b0d)) { ENEMY_LOCAL_CALL(ecom_blownByGaleSeedState_b0d_hook(gb)); return; }
     if (target == b_+66) goto state8;
     if (target == b_+83) goto state9;
     if (target == b_+93) goto stateA;
@@ -75,51 +76,51 @@ normalStatus:
 
 stateUninitialized:
   CYC(b_+39, b_+41); A = 0x50; // SPEED_200
-  CALL_C(b_+41, ecom_setSpeedAndState8_b0d_hook, SYM(ecom_setSpeedAndState8_b0d), b_+44);
+  ENEMY_CALL_C(b_+41, ecom_setSpeedAndState8_b0d_hook, SYM(ecom_setSpeedAndState8_b0d), b_+44);
   CYC(b_+44, b_+46); L = ENEMY_BASE + OBJ_COUNTER1;
-  CYC(b_+46, b_+48); mem_wr(gb, HL, 0x10);
+  CYC(b_+46, b_+48); ENEMY_WRITE(HL, 0x10);
   CYC(b_+48, b_+50); E = ENEMY_BASE + OBJ_SUBID;
   CYC(b_+50, b_+51); A = mem_rd(gb, DE);
   CYC(b_+51, b_+54); SET_HL(b_+62); // @angleVals
-  CYC(b_+54, b_+55); enemyCode1f_addAToHl_from_rst(gb, b_+55);
+  CYC(b_+54, b_+55); ENEMY_LOCAL_CALL(enemyCode1f_addAToHl_from_rst(gb, b_+55));
   CYC(b_+55, b_+57); E = ENEMY_BASE + OBJ_ANGLE;
   CYC(b_+57, b_+58); A = mem_rd(gb, HL);
-  CYC(b_+58, b_+59); mem_wr(gb, DE, A);
+  CYC(b_+58, b_+59); ENEMY_WRITE(DE, A);
   CYC(b_+59, b_+62); TAIL(objectSetVisible83); // jp
 
   // enemyCode1f@angleVals (0d:6c8a-6c8c): pure data ($10 $16 $0a), read only through the
   // addAToHl indexing above.
 
 state8:
-  CALL_C(b_+66, ecom_decCounter1_b0d_hook, SYM(ecom_decCounter1_b0d), b_+69);
-  if (F & FZ) { CYCT(b_+69, b_+71); goto counter1AndState; } // jr z
+  ENEMY_CALL_C(b_+66, ecom_decCounter1_b0d_hook, SYM(ecom_decCounter1_b0d), b_+69);
+  if (ENEMY_FLAG(FZ)) { CYCT(b_+69, b_+71); goto counter1AndState; } // jr z
   CYC(b_+69, b_+71);
-  CALL_C(b_+71, objectApplySpeed_hook, SYM(objectApplySpeed), b_+74);
+  ENEMY_CALL_C(b_+71, objectApplySpeed_hook, SYM(objectApplySpeed), b_+74);
   CYC(b_+74, b_+76); goto animate; // jr
 
 counter1AndState:
-  CYC(b_+76, b_+78); mem_wr(gb, HL, 0x0c); // [counter1]
+  CYC(b_+76, b_+78); ENEMY_WRITE(HL, 0x0c); // [counter1]
   CYC(b_+78, b_+79); L = E;
-  CYC(b_+79, b_+80); mem_wr(gb, HL, alu_inc8(gb, mem_rd(gb, HL))); // [state]
+  CYC(b_+79, b_+80); ENEMY_WRITE(HL, alu_inc8(gb, mem_rd(gb, HL))); // [state]
   // falls into @animate
 
 animate:
   CYC(b_+80, b_+83); TAIL(enemyAnimate); // jp
 
 state9:
-  CALL_C(b_+83, ecom_decCounter1_b0d_hook, SYM(ecom_decCounter1_b0d), b_+86);
-  if (!(F & FZ)) { CYCT(b_+86, b_+88); goto animate; } // jr nz
+  ENEMY_CALL_C(b_+83, ecom_decCounter1_b0d_hook, SYM(ecom_decCounter1_b0d), b_+86);
+  if (!(ENEMY_FLAG(FZ))) { CYCT(b_+86, b_+88); goto animate; } // jr nz
   CYC(b_+86, b_+88);
   CYC(b_+88, b_+89); L = E;
-  CYC(b_+89, b_+90); mem_wr(gb, HL, alu_inc8(gb, mem_rd(gb, HL))); // [state]
-  CALL_C(b_+90, ecom_updateAngleTowardTarget_b0d_hook, SYM(ecom_updateAngleTowardTarget_b0d), b_+93);
+  CYC(b_+89, b_+90); ENEMY_WRITE(HL, alu_inc8(gb, mem_rd(gb, HL))); // [state]
+  ENEMY_CALL_C(b_+90, ecom_updateAngleTowardTarget_b0d_hook, SYM(ecom_updateAngleTowardTarget_b0d), b_+93);
   // falls through to stateA
 
 stateA:
-  CALL_C(b_+93, objectApplySpeed_hook, SYM(objectApplySpeed), b_+96);
-  CALL_C(b_+96, objectCheckWithinRoomBoundary_hook, SYM(objectCheckWithinRoomBoundary), b_+99);
-  if (F & FC) { CYCT(b_+99, b_+101); goto animate; } // jr c
+  ENEMY_CALL_C(b_+93, objectApplySpeed_hook, SYM(objectApplySpeed), b_+96);
+  ENEMY_CALL_C(b_+96, objectCheckWithinRoomBoundary_hook, SYM(objectCheckWithinRoomBoundary), b_+99);
+  if (ENEMY_FLAG(FC)) { CYCT(b_+99, b_+101); goto animate; } // jr c
   CYC(b_+99, b_+101);
-  CALL_C(b_+101, decNumEnemies_hook, SYM(decNumEnemies), b_+104);
+  ENEMY_CALL_C(b_+101, decNumEnemies_hook, SYM(decNumEnemies), b_+104);
   CYC(b_+104, b_+107); TAIL(enemyDelete); // jp
 }

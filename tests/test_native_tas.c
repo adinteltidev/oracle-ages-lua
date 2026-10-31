@@ -7,6 +7,7 @@
 #include "script/doors.h"
 #include "script/items_shops.h"
 #include "script/npcs_events.h"
+#include "script/enemies.h"
 #endif
 #include "platform/tempfile.h"
 #include "core/gb.h"
@@ -62,6 +63,7 @@ static void native_run_reloading(const char *rom_path, const char *inputs, const
   uint64_t npcs_before[GAMEPLAY_NPCS_COUNT],events_before[GAMEPLAY_EVENTS_COUNT];
   for(int i=0;i<GAMEPLAY_NPCS_COUNT;++i)npcs_before[i]=gameplay_npc_calls(i);
   for(int i=0;i<GAMEPLAY_EVENTS_COUNT;++i)events_before[i]=gameplay_event_calls(i);
+  uint64_t enemy_before[GAMEPLAY_ENEMY_COUNT];for(int i=0;i<GAMEPLAY_ENEMY_COUNT;++i)enemy_before[i]=gameplay_enemy_calls(i);
   uint64_t items_before[GAMEPLAY_ITEMS_COUNT],shops_before[GAMEPLAY_SHOPS_COUNT];
   for(int i=0;i<GAMEPLAY_ITEMS_COUNT;++i)items_before[i]=gameplay_item_calls(i);
   for(int i=0;i<GAMEPLAY_SHOPS_COUNT;++i)shops_before[i]=gameplay_shop_calls(i);
@@ -137,6 +139,8 @@ static void native_run_reloading(const char *rom_path, const char *inputs, const
     printf("Lua rule %s: %llu\n",gameplay_door_rule_name(i),(unsigned long long)(gameplay_door_calls(i)-doors_before[i]));
   for(int i=0;i<GAMEPLAY_NPCS_COUNT;++i)printf("Lua rule %s: %llu\n",gameplay_npc_rule_name(i),(unsigned long long)(gameplay_npc_calls(i)-npcs_before[i]));
   for(int i=0;i<GAMEPLAY_EVENTS_COUNT;++i)printf("Lua rule %s: %llu\n",gameplay_event_rule_name(i),(unsigned long long)(gameplay_event_calls(i)-events_before[i]));
+  for(int i=0;i<GAMEPLAY_ENEMY_COUNT;++i)printf("Lua rule %s: %llu\n",gameplay_enemy_rule_name(i),(unsigned long long)(gameplay_enemy_calls(i)-enemy_before[i]));
+  for(unsigned i=0;i<256;++i)if(gameplay_enemy_owner_calls(i))fprintf(stderr,"Lua enemy owner %02x: %llu\n",i,(unsigned long long)gameplay_enemy_owner_calls(i));
   for(unsigned i=0;i<256;++i)if(gameplay_npc_owner_calls(i))printf("Lua NPC owner %02x: %llu\n",i,(unsigned long long)gameplay_npc_owner_calls(i));
   for(int i=0;i<GAMEPLAY_ITEMS_COUNT;++i)printf("Lua rule %s: %llu\n",gameplay_item_rule_name(i),(unsigned long long)(gameplay_item_calls(i)-items_before[i]));
   for(int i=0;i<GAMEPLAY_SHOPS_COUNT;++i)printf("Lua rule %s: %llu\n",gameplay_shop_rule_name(i),(unsigned long long)(gameplay_shop_calls(i)-shops_before[i]));

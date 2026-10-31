@@ -26,6 +26,10 @@ on:
       - 'tests/test_lua_levers_lava*'
       - 'tests/test_lua_doors*'
       - 'tests/test_lua_npcs_events*'
+      - 'src/game/enemyPolicy.c'
+      - 'src/game/ages/enemies/**'
+      - 'src/game/common/enemies/**'
+      - 'tests/test_lua_enemies*'
       - 'src/game/npcEventPolicy.c'
       - 'src/game/cutscenes.c'
       - 'src/game/cutscenes2.c'
@@ -72,11 +76,11 @@ jobs:
         with:
           persist-credentials: false
       - name: Configure standalone bounded runtime
-        run: cmake -S . -B build-lua-ci -DORACLES_SDL=OFF -DORACLES_LUA_GAMEPLAY=ON -DORACLES_LUA_BLOCK_PUZZLES=ON -DORACLES_LUA_COLORED_CUBE=ON -DORACLES_LUA_LEVERS_LAVA=ON -DORACLES_LUA_DOORS=ON -DORACLES_LUA_ITEMS_SHOPS=ON -DORACLES_LUA_NPCS_EVENTS=ON
+        run: cmake -S . -B build-lua-ci -DORACLES_SDL=OFF -DORACLES_LUA_GAMEPLAY=ON -DORACLES_LUA_BLOCK_PUZZLES=ON -DORACLES_LUA_COLORED_CUBE=ON -DORACLES_LUA_LEVERS_LAVA=ON -DORACLES_LUA_DOORS=ON -DORACLES_LUA_ITEMS_SHOPS=ON -DORACLES_LUA_NPCS_EVENTS=ON -DORACLES_LUA_ENEMIES=ON
       - name: Compile
-        run: cmake --build build-lua-ci --config Release --target test_lua_gameplay test_lua_cube_candidate test_lua_sync_candidate test_lua_block_rules test_lua_colored_cube test_lua_levers_lava test_lua_doors test_lua_items_shops test_lua_npcs_events --parallel 3
+        run: cmake --build build-lua-ci --config Release --target test_lua_gameplay test_lua_cube_candidate test_lua_sync_candidate test_lua_block_rules test_lua_colored_cube test_lua_levers_lava test_lua_doors test_lua_items_shops test_lua_npcs_events test_lua_enemies --parallel 3
       - name: Test (no commercial ROM)
-        run: ctest --test-dir build-lua-ci -C Release -R "^(lua_gameplay|lua_cube_candidate|lua_sync_candidate|lua_block_rules|lua_colored_cube|lua_levers_lava|lua_doors|lua_items_shops|lua_npcs_events)$" --output-on-failure
+        run: ctest --test-dir build-lua-ci -C Release -R "^(lua_gameplay|lua_cube_candidate|lua_sync_candidate|lua_block_rules|lua_colored_cube|lua_levers_lava|lua_doors|lua_items_shops|lua_npcs_events|lua_enemies)$" --output-on-failure
   artifacts:
     if: github.event_name == 'workflow_dispatch'
     uses: ./.github/workflows/build-platforms.yml

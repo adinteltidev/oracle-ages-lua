@@ -252,11 +252,14 @@ Wine tests and the remaining acceptance checks on a real Windows machine.
 
 ## Experimental C + Lua branch
 
-The optional Ages migration now includes NPC and event decisions (phase 6),
+The optional Ages migration now includes enemy AI decisions (experimental phase 7),
+NPC and event decisions (phase 6),
 alongside the previous puzzles, doors, items and shops. C owns timing, resources,
 presentation and physical effects; Lua decides predicates and state/script
 transitions. See [phase 6](LUA-PHASE-6.md) and its
 [platform test instructions](LUA-PHASE-6-PLATFORM-TESTS.md). All integration
-options remain OFF by default. Windows/Switch acceptance is pending for phases
-5 and 6; the player's stability report applies to
-[phase 4](LUA-PHASE-4-PLAYER-VALIDATION.md). Full Seasons regression is pending.
+options remain OFF by default. Phase 6 for Ages is complete following local
+validation and the player's [Windows/Switch confirmation](LUA-PHASE-6-PLAYER-VALIDATION.md).
+Full Seasons regression remains a separate migration validation item.
+See [phase 7](LUA-PHASE-7.md) and its [platform tests](LUA-PHASE-7-PLATFORM-TESTS.md).
+The new phase-7 packages require their own Windows/Switch player validation.

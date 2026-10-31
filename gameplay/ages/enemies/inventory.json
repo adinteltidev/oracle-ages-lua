@@ -1,0 +1,5062 @@
+{
+  "phase": 7,
+  "base_commit": "73e7f75",
+  "sources": [
+    {
+      "source": "src/game/ages/enemies/ambiGuard.c",
+      "family": "ambiGuard",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        84
+      ],
+      "rng_calls": [],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "enemyCode54_hook",
+        "ambiGuard_tossesLinkOut_hook",
+        "ambiGuard_tossesLinkOut_uninitialized_hook",
+        "ambiGuard_state_galeSeed_hook",
+        "ambiGuard_state_stub_hook",
+        "ambiGuard_state8_hook",
+        "ambiGuard_state9_hook",
+        "ambiGuard_stateA_hook",
+        "ambiGuard_stateB_hook",
+        "ambiGuard_stateC_hook",
+        "ambiGuard_stateE_hook",
+        "ambiGuard_animate_hook",
+        "ambiGuard_stateD_hook",
+        "ambiGuard_tossesLinkOut_stateF_hook",
+        "ambiGuard_tossesLinkOut_state10_hook",
+        "ambiGuard_tossesLinkOut_state11_hook",
+        "ambiGuard_attacksLink_hook",
+        "ambiGuard_attacksLink_state_uninitialized_hook",
+        "ambiGuard_attacksLink_stateF_hook",
+        "ambiGuard_attacksLink_state10_hook",
+        "ambiGuard_turnToFaceLink_hook",
+        "ambiGuard_attacksLink_state11_hook",
+        "ambiGuard_commonInitialization_hook",
+        "ambiGuard_runMovementScript_hook",
+        "ambiGuard_checkAlertTrigger_hook",
+        "ambiGuard_alertAllGuards_hook",
+        "ambiGuard_checkSpottedLink_hook",
+        "ambiGuard_createExclamationMark_hook",
+        "ambiGuard_collisionOccured_hook",
+        "ambiGuard_setAngle_hook",
+        "ambiGuard_directAttackOccurred_hook",
+        "ambiGuard_setCounter2ForAttackingTypeOnly_hook",
+        "ambiGuard_noHealth_hook"
+      ],
+      "bindings": {
+        "CP": 14,
+        "ZERO": 0,
+        "OR": 11,
+        "AND": 3,
+        "BIT": 3,
+        "XOR": 2,
+        "FLAG": 54,
+        "WRITE": 62,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/ages/enemies/anglerFish.c",
+      "family": "anglerFish",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        118
+      ],
+      "rng_calls": [
+        "getRandomNumber_noPreserveVars_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "anglerFish_addDoubleIndexToHl_from_rst",
+        "enemyCode76_hook",
+        "anglerFish_state_uninitialized_hook",
+        "anglerFish_state_stub_hook",
+        "anglerFish_main_hook",
+        "anglerFish_main_state8_hook",
+        "anglerFish_main_state9_hook",
+        "anglerFish_main_stateA_hook",
+        "anglerFish_bounceOffGround_hook",
+        "anglerFish_main_stateB_hook",
+        "anglerFish_updatePosition_hook",
+        "anglerFish_applySpeed_hook",
+        "anglerFish_updateAnimation_hook",
+        "anglerFish_main_stateC_hook",
+        "anglerFish_main_stateD_hook",
+        "anglerFish_main_stateE_hook",
+        "anglerFish_main_stateF_hook",
+        "anglerFish_antenna_hook",
+        "anglerFish_main_checkFireProjectile_hook"
+      ],
+      "bindings": {
+        "CP": 8,
+        "ZERO": 0,
+        "OR": 5,
+        "AND": 4,
+        "BIT": 1,
+        "XOR": 2,
+        "FLAG": 32,
+        "WRITE": 47,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/ages/enemies/anglerFishBubble.c",
+      "family": "anglerFishBubble",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        38
+      ],
+      "rng_calls": [
+        "getRandomNumber_noPreserveVars_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "anglerFishBubble_popBubble_hook",
+        "enemyCode26_hook"
+      ],
+      "bindings": {
+        "CP": 2,
+        "ZERO": 0,
+        "OR": 0,
+        "AND": 0,
+        "BIT": 1,
+        "XOR": 0,
+        "FLAG": 9,
+        "WRITE": 10,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/ages/enemies/armosWarrior.c",
+      "family": "armosWarrior",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        115
+      ],
+      "rng_calls": [
+        "getRandomNumber_noPreserveVars_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "armosWarrior_addAToHl_from_rst",
+        "armosWarrior_addDoubleIndexToHl_from_rst",
+        "enemyCode73_hook",
+        "armosWarrior_state_uninitialized_hook",
+        "armosWarrior_state_spawner_hook",
+        "armosWarrior_state_stub_hook",
+        "armosWarrior_parent_hook",
+        "armosWarrior_parent_state8_hook",
+        "armosWarrior_parent_state9_hook",
+        "armosWarrior_parent_stateA_hook",
+        "armosWarrior_parent_stateB_hook",
+        "armosWarrior_parent_updateBoxMovement_hook",
+        "armosWarrior_parent_animate_hook",
+        "armosWarrior_parent_stateC_hook",
+        "armosWarrior_parent_stateD_hook",
+        "armosWarrior_parent_stateE_hook",
+        "armosWarrior_parent_stateF_hook",
+        "armosWarrior_parent_state10_hook",
+        "armosWarrior_shield_hook",
+        "armosWarrior_sword_hook",
+        "armosWarrior_sword_state8_hook",
+        "armosWarrior_sword_state9_hook",
+        "armosWarrior_sword_stateA_hook",
+        "armosWarrior_sword_stateB_hook",
+        "armosWarrior_sword_updatePosition_hook",
+        "armosWarrior_sword_stateC_hook",
+        "armosWarrior_shield_updatePosition_hook",
+        "armosWarrior_sword_updateCollisionBox_hook",
+        "armosWarrior_sword_setPositionAsHeld_hook",
+        "armosWarrior_checkIntersection_hook",
+        "armosWarrior_sword_checkCollisionWithShield_hook",
+        "armosWarrior_parent_checkReachedTurningPoint_hook",
+        "armosWarrior_checkPositionComponent_hook",
+        "armosWarrior_sword_checkWentTooFar_hook",
+        "armosWarrior_sword_playSlashSound_hook"
+      ],
+      "bindings": {
+        "CP": 16,
+        "ZERO": 0,
+        "OR": 8,
+        "AND": 9,
+        "BIT": 1,
+        "XOR": 2,
+        "FLAG": 54,
+        "WRITE": 103,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/ages/enemies/bari.c",
+      "family": "bari",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        60
+      ],
+      "rng_calls": [
+        "getRandomNumber_hook",
+        "getRandomNumber_noPreserveVars_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "bari_addAToHl_from_rst",
+        "enemyCode3c_hook",
+        "bari_state_uninitialized_hook",
+        "bari_state_stub_hook",
+        "bari_subid0_hook",
+        "bari_subid0_state8_hook",
+        "bari_applySpeed_hook",
+        "bari_animate_hook",
+        "bari_state9_hook",
+        "bari_setRandomAngleAndCounter2_hook",
+        "bari_subid0_stateA_hook",
+        "bari_subid0_stateA_spawnSmallBari_hook",
+        "bari_subid1_hook",
+        "bari_updateZPosition_hook"
+      ],
+      "bindings": {
+        "CP": 3,
+        "ZERO": 0,
+        "OR": 5,
+        "AND": 5,
+        "BIT": 0,
+        "XOR": 0,
+        "FLAG": 20,
+        "WRITE": 23,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/ages/enemies/blueStalfos.c",
+      "family": "blueStalfos",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        119
+      ],
+      "rng_calls": [
+        "ecom_randomBitwiseAndBCE_b0f_hook",
+        "ecom_setRandomAngle_b0f_hook",
+        "getRandomNumber_noPreserveVars_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "blueStalfos_addAToHl_from_rst",
+        "enemyCode77_hook",
+        "blueStalfos_state_uninitialized_hook",
+        "blueStalfos_state_spawner_hook",
+        "blueStalfos_state_stub_hook",
+        "blueStalfos_subid1_hook",
+        "blueStalfos_main_state08_hook",
+        "blueStalfos_main_state09_hook",
+        "blueStalfos_main_state0a_hook",
+        "blueStalfos_main_state0b_hook",
+        "blueStalfos_main_animate_hook",
+        "blueStalfos_main_state0c_hook",
+        "blueStalfos_main_state0d_hook",
+        "blueStalfos_main_state0e_hook",
+        "blueStalfos_main_state0f_hook",
+        "blueStalfos_main_finishedAttack_hook",
+        "blueStalfos_main_state10_hook",
+        "blueStalfos_main_state11_hook",
+        "blueStalfos_main_state12_hook",
+        "blueStalfos_main_state13_hook",
+        "blueStalfos_main_beginSickleAttack_hook",
+        "blueStalfos_main_state14_hook",
+        "blueStalfos_main_state15_hook",
+        "blueStalfos_main_state16_hook",
+        "blueStalfos_main_state17_hook",
+        "blueStalfos_subid2_hook",
+        "blueStalfos_initSubid2Or3_hook",
+        "blueStalfos_subid3_hook",
+        "blueStalfos_main_decideNextPosition_hook",
+        "blueStalfos_main_moveToQuadrant_hook",
+        "blueStalfos_main_moveToQuadrant_getLinkQuadrant_hook",
+        "blueStalfos_main_accelerate_hook",
+        "blueStalfos_afterImage_resetPositionVars_hook",
+        "blueStalfos_createPuff_hook"
+      ],
+      "bindings": {
+        "CP": 17,
+        "ZERO": 0,
+        "OR": 4,
+        "AND": 7,
+        "BIT": 2,
+        "XOR": 0,
+        "FLAG": 47,
+        "WRITE": 88,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/ages/enemies/candle.c",
+      "family": "candle",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        85
+      ],
+      "rng_calls": [
+        "getRandomNumber_noPreserveVars_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "enemyCode55_hook",
+        "candle_state_uninitialized_hook",
+        "candle_state_stub_hook",
+        "candle_state8_hook",
+        "candle_state9_hook",
+        "candle_stateA_hook",
+        "candle_stateB_hook",
+        "candle_applySpeed_hook",
+        "candle_animate_hook",
+        "candle_stateC_hook",
+        "candle_stateD_hook",
+        "candle_stateE_hook"
+      ],
+      "bindings": {
+        "CP": 2,
+        "ZERO": 0,
+        "OR": 1,
+        "AND": 1,
+        "BIT": 0,
+        "XOR": 0,
+        "FLAG": 13,
+        "WRITE": 22,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/ages/enemies/colorChangingGel.c",
+      "family": "colorChangingGel",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        71
+      ],
+      "rng_calls": [
+        "getRandomNumber_noPreserveVars_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "colorChangingGel_addAToHl_from_rst",
+        "colorChangingGel_lookupFloorColor_hook",
+        "enemyCode47_hook",
+        "colorChangingGel_state_uninitialized_hook",
+        "colorChangingGel_state_stub_hook",
+        "colorChangingGel_state8_hook",
+        "colorChangingGel_state9_hook",
+        "colorChangingGel_stateA_hook",
+        "colorChangingGel_updateColor_hook",
+        "colorChangingGel_chooseRandomColor_hook"
+      ],
+      "bindings": {
+        "CP": 8,
+        "ZERO": 0,
+        "OR": 0,
+        "AND": 3,
+        "BIT": 0,
+        "XOR": 0,
+        "FLAG": 20,
+        "WRITE": 22,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/ages/enemies/enableSidescrollDownTransition.c",
+      "family": "enableSidescrollDownTransition",
+      "status": "retained_c_service",
+      "enemy_ids": [
+        43
+      ],
+      "rng_calls": [],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "reason": "room transition service",
+      "native_void_entries": [
+        "enemyCode2b_hook"
+      ]
+    },
+    {
+      "source": "src/game/ages/enemies/eyesoar.c",
+      "family": "eyesoar",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        123
+      ],
+      "rng_calls": [
+        "getRandomNumber_noPreserveVars_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "eyesoar_addAToHl_from_rst",
+        "enemyCode7b_hook",
+        "eyesoar_state_uninitialized_hook",
+        "eyesoar_state1_hook",
+        "eyesoar_state_switchHook_hook",
+        "eyesoar_state_stub_hook",
+        "eyesoar_state8_hook",
+        "eyesoar_state9_hook",
+        "eyesoar_stateA_hook",
+        "eyesoar_stateB_hook",
+        "eyesoar_animate_hook",
+        "eyesoar_stateC_hook",
+        "eyesoar_stateD_hook",
+        "eyesoar_stateE_hook",
+        "eyesoar_updateFormation_hook",
+        "eyesoar_dead_hook",
+        "eyesoar_chooseNewAngle_hook"
+      ],
+      "bindings": {
+        "CP": 13,
+        "ZERO": 0,
+        "OR": 8,
+        "AND": 8,
+        "BIT": 0,
+        "XOR": 0,
+        "FLAG": 34,
+        "WRITE": 52,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/ages/enemies/eyesoarChild.c",
+      "family": "eyesoarChild",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        17
+      ],
+      "rng_calls": [],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "eyesoarChild_addAToHl_from_rst",
+        "enemyCode11_hook",
+        "eyesoarChild_state_uninitialized_hook",
+        "eyesoarChild_state_stub_hook",
+        "eyesoarChild_state8_hook",
+        "eyesoarChild_state9_hook",
+        "eyesoarChild_stateA_hook",
+        "eyesoarChild_updatePosition_hook",
+        "eyesoarChild_stateB_hook",
+        "eyesoarChild_incOrDecHL_hook",
+        "eyesoarChild_stateC_hook",
+        "eyesoarChild_stateD_hook",
+        "eyesoarChild_stateE_hook",
+        "eyesoarChild_stateF_hook",
+        "eyesoarChild_animate_hook",
+        "eyesoarChild_state10_hook"
+      ],
+      "bindings": {
+        "CP": 6,
+        "ZERO": 0,
+        "OR": 2,
+        "AND": 6,
+        "BIT": 7,
+        "XOR": 0,
+        "FLAG": 22,
+        "WRITE": 31,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/ages/enemies/giantGhini.c",
+      "family": "giantGhini",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        112
+      ],
+      "rng_calls": [
+        "getRandomNumber_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "enemyCode70_hook",
+        "giantGhini_state_uninitialized_hook",
+        "giantGhini_state_stub_hook",
+        "giantGhini_state8_hook",
+        "giantGhini_gotoState9_hook",
+        "giantGhini_setChildRespawnTimer_hook",
+        "giantGhini_state9_hook",
+        "giantGhini_updateChargeTargetPosition_hook",
+        "giantGhini_stateA_hook",
+        "giantGhini_updateZPos_hook",
+        "giantGhini_spawnChildren_hook",
+        "giantGhini_getTargetAngle_hook"
+      ],
+      "bindings": {
+        "CP": 4,
+        "ZERO": 0,
+        "OR": 5,
+        "AND": 3,
+        "BIT": 0,
+        "XOR": 2,
+        "FLAG": 20,
+        "WRITE": 33,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/ages/enemies/giantGhiniChild.c",
+      "family": "giantGhiniChild",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        63
+      ],
+      "rng_calls": [],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "giantGhiniChild_addDoubleIndexToHl_from_rst",
+        "enemyCode3f_hook",
+        "giantGhiniChild_state_stub_hook",
+        "giantGhiniChild_state_uninitialized_hook",
+        "giantGhiniChild_state8_hook",
+        "giantGhiniChild_state9_hook",
+        "giantGhiniChild_gotoStateA_hook",
+        "giantGhiniChild_stateA_hook",
+        "giantGhiniChild_stateB_hook",
+        "giantGhiniChild_stateC_hook"
+      ],
+      "bindings": {
+        "CP": 2,
+        "ZERO": 0,
+        "OR": 3,
+        "AND": 2,
+        "BIT": 0,
+        "XOR": 2,
+        "FLAG": 16,
+        "WRITE": 27,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/ages/enemies/headThwomp.c",
+      "family": "headThwomp",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        121
+      ],
+      "rng_calls": [
+        "getRandomNumber_noPreserveVars_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "enemyCode79_hook",
+        "headThwomp_state_uninitialized_hook",
+        "headThwomp_state_stub_hook",
+        "headThwomp_state8_hook",
+        "headThwomp_state9_hook",
+        "headThwomp_stateA_hook",
+        "headThwomp_stateB_hook",
+        "headThwomp_stateC_hook",
+        "headThwomp_stateD_hook",
+        "headThwomp_stateE_hook",
+        "headThwomp_stateF_hook",
+        "headThwomp_poundGround_hook",
+        "headThwomp_state10_hook",
+        "headThwomp_state11_hook",
+        "headThwomp_setSolidTilesAroundSelf_hook",
+        "headThwomp_unsetSolidTilesAroundSelf_hook",
+        "headThwomp_rotate_hook",
+        "headThwomp_checkBombThrownIntoHead_hook",
+        "headThwomp_dropHeart_hook",
+        "headThwomp_checkShootProjectile_hook"
+      ],
+      "bindings": {
+        "CP": 16,
+        "ZERO": 0,
+        "OR": 3,
+        "AND": 7,
+        "BIT": 1,
+        "XOR": 0,
+        "FLAG": 60,
+        "WRITE": 104,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/ages/enemies/ironMask.c",
+      "family": "ironMask",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        28
+      ],
+      "rng_calls": [
+        "ecom_randomBitwiseAndBCE_b0d_hook",
+        "ecom_setRandomCardinalAngle_b0d_hook",
+        "getRandomNumber_noPreserveVars_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "ironMask_addAToHl_from_rst",
+        "ironMask_chooseAngle",
+        "enemyCode1c_hook",
+        "ironMask_state_uninitialized_hook",
+        "ironMask_state_switchHook_hook",
+        "ironMask_state_stub_hook",
+        "ironMask_subid00_hook",
+        "ironMask_subid01_hook",
+        "ironMask_updateCollisionsFromLinkRelativeAngle_hook",
+        "ironMask_chooseRandomAngleAndCounter1_hook",
+        "ironMask_chooseAmountOfTimeToStand_hook"
+      ],
+      "bindings": {
+        "CP": 4,
+        "ZERO": 0,
+        "OR": 4,
+        "AND": 2,
+        "BIT": 2,
+        "XOR": 0,
+        "FLAG": 20,
+        "WRITE": 15,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/ages/enemies/kingMoblin.c",
+      "family": "kingMoblin",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        127
+      ],
+      "rng_calls": [],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "kingMoblin_addAToHl_from_rst",
+        "kingMoblin_spawnMinion",
+        "enemyCode7f_hook",
+        "kingMoblin_state_uninitialized_hook",
+        "kingMoblin_state_stub_hook",
+        "kingMoblin_state8_hook",
+        "kingMoblin_animate_hook",
+        "kingMoblin_state9_hook",
+        "kingMoblin_stateA_hook",
+        "kingMoblin_stateB_hook",
+        "kingMoblin_initBombPickupAnimation_hook",
+        "kingMoblin_stateC_hook",
+        "kingMoblin_stateD_hook",
+        "kingMoblin_stateE_hook",
+        "kingMoblin_stateF_hook",
+        "kingMoblin_grabBomb_hook",
+        "kingMoblin_state10_hook",
+        "kingMoblin_animate2_hook",
+        "kingMoblin_state11_hook",
+        "kingMoblin_state12_hook",
+        "kingMoblin_state13_hook",
+        "kingMoblin_state14_hook",
+        "kingMoblin_state15_hook",
+        "kingMoblin_checkMoveToCentre_hook",
+        "kingMoblin_moveToCentre_hook",
+        "kingMoblin_setAngleStateAndAnimation_hook",
+        "kingMoblin_setStateAndAnimation_hook"
+      ],
+      "bindings": {
+        "CP": 18,
+        "ZERO": 0,
+        "OR": 4,
+        "AND": 2,
+        "BIT": 0,
+        "XOR": 0,
+        "FLAG": 44,
+        "WRITE": 61,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/ages/enemies/kingMoblinMinion.c",
+      "family": "kingMoblinMinion",
+      "status": "native_dispatch",
+      "enemy_ids": [
+        86
+      ],
+      "rng_calls": [],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "policy_source": "src/game/ages/enemies/kingMoblinMinionMain.c",
+      "reason": "dispatch wrapper delegates the AI to its main controller",
+      "native_void_entries": [
+        "enemyCode56_hook"
+      ],
+      "bindings": {
+        "CP": 0,
+        "ZERO": 0,
+        "OR": 0,
+        "AND": 0,
+        "BIT": 0,
+        "XOR": 0,
+        "FLAG": 0,
+        "WRITE": 0,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/ages/enemies/kingMoblinMinionMain.c",
+      "family": "kingMoblinMinionMain",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [],
+      "rng_calls": [],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "kingMoblinMinion_addDoubleIndexToHl_from_rst",
+        "kingMoblinMinion_addAToHl_from_rst",
+        "enemyCode56_body_hook",
+        "blackTower_getMovingFlamesNextTileCoords_hook",
+        "kingMoblinMinion_state0_hook",
+        "kingMoblinMinion_state2_hook",
+        "kingMoblinMinion_state3_hook",
+        "kingMoblinMinion_state4_hook",
+        "kingMoblinMinion_animate_hook",
+        "kingMoblinMinion_state5_hook",
+        "kingMoblinMinion_state6_hook",
+        "kingMoblinMinion_state7_hook",
+        "kingMoblinMinion_state8_hook",
+        "kingMoblinMinion_state9_hook",
+        "kingMoblinMinion_stateA_hook"
+      ],
+      "bindings": {
+        "CP": 0,
+        "ZERO": 0,
+        "OR": 2,
+        "AND": 2,
+        "BIT": 1,
+        "XOR": 0,
+        "FLAG": 12,
+        "WRITE": 35,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/ages/enemies/linkMimic.c",
+      "family": "linkMimic",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        100
+      ],
+      "rng_calls": [],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "enemyCode64_hook",
+        "linkMimic_state8_hook"
+      ],
+      "bindings": {
+        "CP": 0,
+        "ZERO": 0,
+        "OR": 1,
+        "AND": 0,
+        "BIT": 0,
+        "XOR": 0,
+        "FLAG": 5,
+        "WRITE": 0,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/ages/enemies/octogon.c",
+      "family": "octogon",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        125
+      ],
+      "rng_calls": [
+        "getRandomNumber_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "octogon_addAToHl_from_rst",
+        "octogon_addDoubleIndexToHl_from_rst",
+        "octogon_doJumpTable",
+        "enemyCode7d_hook",
+        "octogon_state_uninitialized_hook",
+        "octogon_state_stub_hook",
+        "octogon_subid0_hook",
+        "octogon_subid0AboveWater_state8_hook",
+        "octogon_subid0AboveWater_state9_hook",
+        "octogon_subid0_pauseMovement_hook",
+        "octogon_subid0AboveWater_stateA_hook",
+        "octogon_chooseRandomTargetPosition_hook",
+        "octogon_loadTargetPosition_hook",
+        "octogon_subid0AboveWater_stateB_hook",
+        "octogon_subid0AboveWater_stateF_hook",
+        "octogon_subid0AboveWater_stateC_hook",
+        "octogon_subid0AboveWater_turningAround_hook",
+        "octogon_subid0AboveWater_stateD_hook",
+        "octogon_subid0AboveWater_stateE_hook",
+        "octogon_subid0AboveWater_state10_hook",
+        "octogon_subid0AboveWater_state11_hook",
+        "octogon_subid0BelowWater_hook",
+        "octogon_subid0BelowWater_state8_hook",
+        "octogon_subid0BelowWater_state9_hook",
+        "octogon_animate_hook",
+        "octogon_subid0BelowWater_stateA_hook",
+        "octogon_loadNormalSubmergedAnimation_hook",
+        "octogon_subid0BelowWater_stateB_hook",
+        "octogon_subid0BelowWater_stateC_hook",
+        "octogon_subid0BelowWater_stateD_hook",
+        "octogon_subid1_hook",
+        "octogon_subid1_belowWater_state8_hook",
+        "octogon_updateMovementAndAnimation_hook",
+        "octogon_doSplashAnimation_hook",
+        "octogon_subid1_belowWater_state9_hook",
+        "octogon_subid1_belowWater_stateA_hook",
+        "octogon_subid1_belowWater_stateB_hook",
+        "octogon_subid1_belowWater_stateC_hook",
+        "octogon_subid1_aboveWater_hook",
+        "octogon_subid2_hook",
+        "octogon_subid0_submergeIntoWater_hook",
+        "octogon_beginRisingAboveWater_hook",
+        "octogon_fixPositionAboveWater_hook",
+        "octogon_fireOctorokProjectile_hook",
+        "octogon_initializeProjectile_hook",
+        "octogon_decVar36IfNonzero_hook",
+        "octogon_moveTowardTargetPosition_hook",
+        "octogon_getClosestTargetPositionIndex_hook"
+      ],
+      "bindings": {
+        "CP": 24,
+        "ZERO": 0,
+        "OR": 13,
+        "AND": 21,
+        "BIT": 3,
+        "XOR": 2,
+        "FLAG": 77,
+        "WRITE": 148,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/ages/enemies/plasmarine.c",
+      "family": "plasmarine",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        126
+      ],
+      "rng_calls": [
+        "getRandomNumber_noPreserveVars_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "plasmarine_addAToHl_from_rst",
+        "plasmarine_swapColor",
+        "enemyCode7e_hook",
+        "plasmarine_state_uninitialized_hook",
+        "plasmarine_state_switchHook_hook",
+        "plasmarine_state_stub_hook",
+        "plasmarine_state8_hook",
+        "plasmarine_state9_hook",
+        "plasmarine_stateA_hook",
+        "plasmarine_animate_hook",
+        "plasmarine_stateB_hook",
+        "plasmarine_stateC_hook",
+        "plasmarine_stateD_hook",
+        "plasmarine_stateE_hook",
+        "plasmarine_stateF_hook",
+        "plasmarine_decideNumberOfShockAttacks_hook",
+        "plasmarine_checkCloseToTargetPosition_hook"
+      ],
+      "bindings": {
+        "CP": 4,
+        "ZERO": 0,
+        "OR": 2,
+        "AND": 2,
+        "BIT": 1,
+        "XOR": 1,
+        "FLAG": 24,
+        "WRITE": 57,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/ages/enemies/pumpkinHead.c",
+      "family": "pumpkinHead",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        120
+      ],
+      "rng_calls": [
+        "ecom_randomBitwiseAndBCE_b0f_hook",
+        "ecom_setRandomCardinalAngle_b0f_hook",
+        "getRandomNumber_noPreserveVars_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "pumpkinHead_addAToHl_from_rst",
+        "pumpkinHead_addDoubleIndexToHl_from_rst",
+        "enemyCode78_hook",
+        "pumpkinHead_state_uninitialized_hook",
+        "pumpkinHead_state_spawner_commonInit",
+        "pumpkinHead_state_spawner_hook",
+        "pumpkinHead_state_grabbed_hook",
+        "pumpkinHead_state_stub_hook",
+        "pumpkinHead_body_hook",
+        "pumpkinHead_body_state08_hook",
+        "pumpkinHead_body_state09_hook",
+        "pumpkinHead_body_shakeScreen_hook",
+        "pumpkinHead_body_state0a_hook",
+        "pumpkinHead_body_state0b_hook",
+        "pumpkinHead_body_chooseNextAction_hook",
+        "pumpkinHead_body_state0c_hook",
+        "pumpkinHead_body_beginMoving_hook",
+        "pumpkinHead_body_updateAnimationFromAngle_hook",
+        "pumpkinHead_body_state0d_hook",
+        "pumpkinHead_body_beginStomp_hook",
+        "pumpkinHead_body_state0e_hook",
+        "pumpkinHead_body_state0f_hook",
+        "pumpkinHead_body_state10_hook",
+        "pumpkinHead_body_state11_hook",
+        "pumpkinHead_body_state12_hook",
+        "pumpkinHead_body_state13_hook",
+        "pumpkinHead_ghost_hook",
+        "pumpkinHead_ghost_state08_hook",
+        "pumpkinHead_ghost_state09_hook",
+        "pumpkinHead_ghost_state0a_hook",
+        "pumpkinHead_ghost_state0b_hook",
+        "pumpkinHead_ghost_state0c_hook",
+        "pumpkinHead_ghost_state0d_hook",
+        "pumpkinHead_ghost_state0e_hook",
+        "pumpkinHead_ghost_state0f_hook",
+        "pumpkinHead_ghost_state10_hook",
+        "pumpkinHead_ghost_state11_hook",
+        "pumpkinHead_ghost_state12_hook",
+        "pumpkinHead_ghost_state13_hook",
+        "pumpkinHead_ghost_state14_hook",
+        "pumpkinHead_ghost_state15_hook",
+        "pumpkinHead_ghost_state16_hook",
+        "pumpkinHead_ghost_state17_hook",
+        "pumpkinHead_head_hook",
+        "pumpkinHead_head_state08_hook",
+        "pumpkinHead_head_setAnimation_hook",
+        "pumpkinHead_head_state09_hook",
+        "pumpkinHead_head_state0a_hook",
+        "pumpkinHead_head_state0b_hook",
+        "pumpkinHead_head_state0c_hook",
+        "pumpkinHead_head_state0d_hook",
+        "pumpkinHead_head_state0e_hook",
+        "pumpkinHead_head_state0f_hook",
+        "pumpkinHead_head_state10_hook",
+        "pumpkinHead_head_state11_hook",
+        "pumpkinHead_head_state12_hook",
+        "pumpkinHead_head_state13_hook",
+        "pumpkinHead_head_state14_hook",
+        "pumpkinHead_head_state15_hook",
+        "pumpkinHead_head_state16_hook",
+        "pumpkinHead_body_countdownUntilStomp_hook",
+        "pumpkinHead_body_chooseRandomStompTimerAndCount_hook",
+        "pumpkinHead_ghostOrHead_updatePositionWhileStompingUp_hook",
+        "pumpkinHead_ghostOrHead_updatePositionWhileStompingDown_hook",
+        "pumpkinHead_noHealth_hook"
+      ],
+      "bindings": {
+        "CP": 18,
+        "ZERO": 0,
+        "OR": 5,
+        "AND": 6,
+        "BIT": 1,
+        "XOR": 0,
+        "FLAG": 65,
+        "WRITE": 140,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/ages/enemies/ramrock.c",
+      "family": "ramrock",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        7
+      ],
+      "rng_calls": [
+        "getRandomNumber_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "ramrock_updateHorizontalMovement_hook",
+        "ramrock_glovePhase_reverseDirection_hook",
+        "ramrock_glovePhase_updateMovement_hook",
+        "ramrock_glovePhase_gotoSubstate3_hook",
+        "label_10_248_hook",
+        "label_10_236_hook",
+        "label_10_237_hook",
+        "ramrock_seedPhase_resumeNormalMovement_hook",
+        "ramrock_seedPhase_6a94_hook",
+        "ramrock_bombPhase_gotoSubstate3_hook",
+        "ramrock_state8_substate0_hook",
+        "ramrock_state8_substate1_hook",
+        "ramrock_state8_substate2_hook",
+        "ramrock_state8_substate3_hook",
+        "ramrock_state8_substate5_hook",
+        "ramrock_state8_substate4_hook",
+        "ramrock_state8_hook",
+        "ramrock_state0_hook",
+        "ramrock_state_stub_hook",
+        "ramrock_swordPhase_hook",
+        "ramrock_bombPhase_substate0_hook",
+        "ramrock_bombPhase_substate1_hook",
+        "ramrock_bombPhase_substate2_hook",
+        "ramrock_bombPhase_substate3_hook",
+        "ramrock_bombPhase_substate4_hook",
+        "ramrock_bombPhase__func_68fe_hook",
+        "ramrock_bombPhase_hook",
+        "ramrock_seedPhase_substate0_hook",
+        "ramrock_seedPhase_substate1_hook",
+        "ramrock_seedPhase_substate2_hook",
+        "ramrock_seedPhase_substate3_hook",
+        "ramrock_seedPhase_substate5_hook",
+        "ramrock_seedPhase_substate4_hook",
+        "ramrock_seedPhase_substate6_hook",
+        "ramrock_seedPhase_hook",
+        "ramrock_glovePhase_substate0_hook",
+        "ramrock_glovePhase_substate1_hook",
+        "ramrock_glovePhase_substate2_hook",
+        "ramrock_glovePhase_substate3_hook",
+        "ramrock_glovePhase_substate4_hook",
+        "ramrock_glovePhase_hook",
+        "enemyCode07_hook"
+      ],
+      "bindings": {
+        "CP": 32,
+        "ZERO": 0,
+        "OR": 10,
+        "AND": 4,
+        "BIT": 0,
+        "XOR": 2,
+        "FLAG": 73,
+        "WRITE": 81,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/ages/enemies/ramrockArms.c",
+      "family": "ramrockArms",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        5
+      ],
+      "rng_calls": [],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "ramrockArm_addAToHl_from_rst",
+        "enemyCode05_hook",
+        "ramrockArm_state0_hook",
+        "ramrockArm_state_stub_hook",
+        "ramrockArm_state8_hook",
+        "ramrockArm_subid0_hook",
+        "ramrockArm_subid0_substate0_hook",
+        "ramrockArm_subid0_substate1_hook",
+        "ramrockArm_subid0_substate2_hook",
+        "ramrockArm_subid0_substate3_hook",
+        "ramrockArm_subid0_moveBackToRamrock_hook",
+        "ramrockArm_subid0_setAngleTowardRamrock_hook",
+        "ramrockArm_subid0_substate4_hook",
+        "ramrockArm_subid0_substate5_hook",
+        "ramrockArm_subid0_substate6_hook",
+        "ramrockArm_setRelativePosition_hook",
+        "ramrockArm_subid0_checkReachedRamrock_hook",
+        "ramrockArm_checkPositionAtRamrock_hook",
+        "label_10_211_hook",
+        "label_10_212_hook",
+        "ramrockArm_subid2_copyRamrockPosition_hook",
+        "ramrockArm_deleteSelf_hook",
+        "ramrockArm_subid2_hook",
+        "ramrockArm_subid2_substate0_hook",
+        "ramrockArm_subid2_substate1_hook",
+        "ramrockArm_subid2_substate2_hook",
+        "ramrockArm_subid4_hook",
+        "ramrockArm_subid4_substate0_hook",
+        "ramrockArm_subid4_substate1_hook",
+        "ramrockArm_subid4_updateXPosition_hook",
+        "ramrockArm_subid4_collisionOccurred_hook",
+        "ramrockArm_subid4_substate2_hook",
+        "ramrockArm_subid4_substate3_hook",
+        "ramrockArm_getRelativePosition_hook"
+      ],
+      "bindings": {
+        "CP": 23,
+        "ZERO": 0,
+        "OR": 8,
+        "AND": 4,
+        "BIT": 0,
+        "XOR": 1,
+        "FLAG": 52,
+        "WRITE": 60,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/ages/enemies/shadowHag.c",
+      "family": "shadowHag",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        122
+      ],
+      "rng_calls": [
+        "getRandomNumber_noPreserveVars_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "shadowHag_addAToHl_from_rst",
+        "shadowHag_addDoubleIndexToHl_from_rst",
+        "enemyCode7a_hook",
+        "shadowHag_state_uninitialized_hook",
+        "shadowHag_state_stub_hook",
+        "shadowHag_state8_hook",
+        "shadowHag_state9_hook",
+        "shadowHag_stateA_hook",
+        "shadowHag_stateB_hook",
+        "shadowHag_initStateC_hook",
+        "shadowHag_stateC_hook",
+        "shadowHag_stateD_hook",
+        "shadowHag_stateE_hook",
+        "shadowHag_stateF_hook",
+        "shadowHag_state10_hook",
+        "shadowHag_state11_hook",
+        "shadowHag_animate_hook",
+        "shadowHag_state12_hook",
+        "shadowHag_doneCharging_hook",
+        "shadowHag_state13_hook",
+        "shadowHag_beginEmergingFromShadow_hook",
+        "shadowHag_updateEmergingFromShadow_hook",
+        "shadowHag_updateReturningToGround_hook",
+        "shadowHag_beginReturningToGround_hook",
+        "shadowHag_chooseSpawnPosition_hook",
+        "shadowHag_checkLinkLookedAtHag_hook"
+      ],
+      "bindings": {
+        "CP": 9,
+        "ZERO": 0,
+        "OR": 8,
+        "AND": 4,
+        "BIT": 1,
+        "XOR": 0,
+        "FLAG": 46,
+        "WRITE": 63,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/ages/enemies/shadowHagBug.c",
+      "family": "shadowHagBug",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        66
+      ],
+      "rng_calls": [
+        "ecom_randomBitwiseAndBCE_b0e_hook",
+        "getRandomNumber_hook",
+        "getRandomNumber_noPreserveVars_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "enemyCode42_hook",
+        "shadowHagBug_state_uninitialized_hook",
+        "shadowHagBug_state_galeSeed_hook",
+        "shadowHagBug_state_stub_hook",
+        "shadowHagBug_state8_hook",
+        "shadowHagBug_state9_hook",
+        "shadowHagBug_applySpeedAndAnimate_hook",
+        "shadowHagBug_delete_hook"
+      ],
+      "bindings": {
+        "CP": 1,
+        "ZERO": 0,
+        "OR": 0,
+        "AND": 2,
+        "BIT": 0,
+        "XOR": 0,
+        "FLAG": 9,
+        "WRITE": 9,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/ages/enemies/smasher.c",
+      "family": "smasher",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        116
+      ],
+      "rng_calls": [
+        "getRandomNumber_noPreserveVars_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "smasher_addAToHl_from_rst",
+        "smasher_state_uninitialized_hook",
+        "smasher_state_grabbed_hook",
+        "smasher_state_stub_hook",
+        "smasher_ball_hook",
+        "smasher_ball_state8_hook",
+        "smasher_ball_state9_hook",
+        "smasher_ball_stateA_hook",
+        "smasher_ball_stateB_hook",
+        "smasher_ball_stateC_hook",
+        "smasher_ball_playLandSound_hook",
+        "smasher_ball_stateD_hook",
+        "smasher_ball_stateE_hook",
+        "smasher_ball_stateF_hook",
+        "smasher_parent_hook",
+        "smasher_parent_state8_hook",
+        "smasher_parent_state9_hook",
+        "smasher_parent_stateA_hook",
+        "smasher_parent_linkPickedUpBall_hook",
+        "smasher_parent_stateB_hook",
+        "smasher_hop_hook",
+        "smasher_parent_stateC_hook",
+        "smasher_parent_stateD_hook",
+        "smasher_updateAngleTowardPosition_hook",
+        "smasher_updateAngleTowardLink_hook",
+        "smasher_updateDirectionFromAngle_hook",
+        "smasher_setOamFlags_hook",
+        "smasher_ball_loadPositions_hook",
+        "smasher_ball_updateRespawnTimer_hook",
+        "smasher_ball_makeLinkDrop_hook",
+        "enemyCode74_hook"
+      ],
+      "bindings": {
+        "CP": 20,
+        "ZERO": 0,
+        "OR": 9,
+        "AND": 4,
+        "BIT": 1,
+        "XOR": 2,
+        "FLAG": 53,
+        "WRITE": 79,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/ages/enemies/smog.c",
+      "family": "smog",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        124
+      ],
+      "rng_calls": [],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "enemyCode7c_hook"
+      ],
+      "bindings": {
+        "CP": 0,
+        "ZERO": 0,
+        "OR": 0,
+        "AND": 0,
+        "BIT": 0,
+        "XOR": 0,
+        "FLAG": 3,
+        "WRITE": 0,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/ages/enemies/smogEnemy.c",
+      "family": "smogEnemy",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [],
+      "rng_calls": [
+        "getRandomNumber_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "smog_addAToHl_from_rst",
+        "smog_addDoubleIndexToHl_from_rst",
+        "smog_initCollisions",
+        "smog_func_72b2",
+        "smog_state_uninitialized_hook",
+        "smog_state_stub_hook",
+        "smog_state8_hook",
+        "smog_state8_subid0_hook",
+        "smog_state8_subid1_hook",
+        "smog_deleteSelf_hook",
+        "smog_state8_subid2_hook",
+        "smog_state8_subid3_hook",
+        "smog_state8_subid4_hook",
+        "smog_state8_subid5_hook",
+        "smog_checkHitWall_hook",
+        "smog_checkHuggingWall_hook",
+        "smog_checkAdjacentWallsBitset_hook",
+        "smog_applySpeed_hook",
+        "smog_updateAdjacentWallsBitset_hook",
+        "smog_decCounterToFireProjectile_hook",
+        "smog_setCounterToFireProjectile_hook"
+      ],
+      "bindings": {
+        "CP": 6,
+        "ZERO": 0,
+        "OR": 5,
+        "AND": 15,
+        "BIT": 7,
+        "XOR": 0,
+        "FLAG": 37,
+        "WRITE": 48,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/ages/enemies/subterror.c",
+      "family": "subterror",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        114
+      ],
+      "rng_calls": [
+        "getRandomNumber_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "subterror_addAToHl_from_rst",
+        "enemyCode72_hook",
+        "subterror_state_uninitialized_hook",
+        "subterror_state_stub_hook",
+        "subterror_state8_hook",
+        "subterror_digIntoGround_hook",
+        "subterror_state9_hook",
+        "subterror_beginUndergroundMovement_hook",
+        "subterror_stateA_hook",
+        "subterror_stateA_resetUndergroundMovement_hook",
+        "subterror_stateB_hook",
+        "subterror_stateC_hook",
+        "subterror_spawnDirtEvery8Frames_hook",
+        "subterror_spawnDirt_hook",
+        "subterror_retFromCallerIfAnimationUnfinished_hook",
+        "subterror_getAngerLevel_hook",
+        "subterror_setAnimationFromAngle_hook"
+      ],
+      "bindings": {
+        "CP": 5,
+        "ZERO": 0,
+        "OR": 6,
+        "AND": 4,
+        "BIT": 0,
+        "XOR": 2,
+        "FLAG": 32,
+        "WRITE": 50,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/ages/enemies/swoop.c",
+      "family": "swoop",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        113
+      ],
+      "rng_calls": [
+        "getRandomNumber_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "swoop_addAToHl_from_rst",
+        "enemyCode71_hook",
+        "swoop_state_uninitialized_hook",
+        "swoop_state_stub_hook",
+        "swoop_state8_hook",
+        "swoop_state9_hook",
+        "swoop_stateA_hook",
+        "swoop_stateB_hook",
+        "swoop_setSpeedZForBounce_hook",
+        "swoop_setVisible_hook",
+        "swoop_stomp_substate2_hook",
+        "swoop_beginFlyingUp_hook",
+        "swoop_flyFurtherUp_hook",
+        "swoop_stomp_substate3_hook",
+        "swoop_getAngerLevel_hook",
+        "swoop_hitGround_hook",
+        "swoop_animate_hook"
+      ],
+      "bindings": {
+        "CP": 10,
+        "ZERO": 0,
+        "OR": 6,
+        "AND": 5,
+        "BIT": 0,
+        "XOR": 0,
+        "FLAG": 32,
+        "WRITE": 31,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/ages/enemies/targetCartCrystal.c",
+      "family": "targetCartCrystal",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        99
+      ],
+      "rng_calls": [],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "targetCartCrystal_addAToHl_from_rst",
+        "targetCartCrystal_addDoubleIndexToHl_from_rst",
+        "enemyCode63_hook",
+        "targetCartCrystal_state0_hook",
+        "targetCartCrystal_state1_hook",
+        "targetCartCrystal_state2_hook",
+        "targetCartCrystal_loadBehaviour_hook",
+        "targetCartCrystal_loadPosition_hook",
+        "targetCartCrystal_initSpeed_hook",
+        "targetCartCrystal_updateMovement_hook"
+      ],
+      "bindings": {
+        "CP": 3,
+        "ZERO": 0,
+        "OR": 3,
+        "AND": 0,
+        "BIT": 0,
+        "XOR": 1,
+        "FLAG": 10,
+        "WRITE": 14,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/ages/enemies/veranChildBee.c",
+      "family": "veranChildBee",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        31
+      ],
+      "rng_calls": [],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "enemyCode1f_addAToHl_from_rst",
+        "enemyCode1f_hook"
+      ],
+      "bindings": {
+        "CP": 0,
+        "ZERO": 0,
+        "OR": 0,
+        "AND": 0,
+        "BIT": 0,
+        "XOR": 0,
+        "FLAG": 7,
+        "WRITE": 5,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/ages/enemies/veranFairy.c",
+      "family": "veranFairy",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        6
+      ],
+      "rng_calls": [
+        "getRandomNumber_hook",
+        "getRandomNumber_noPreserveVars_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "veranFairy_addAToHl_from_rst",
+        "veranFairy_addDoubleIndexToHl_from_rst",
+        "veranFairy_checkWithinBoundary_hook",
+        "veranFairy_updateVar35BasedOnHealth_hook",
+        "attack0_hook",
+        "attack1_hook",
+        "attack2_hook",
+        "veranFairy_66ed_hook",
+        "veranFairy_checkLoopAroundScreen_hook",
+        "veranFairy_saveMovementPatternPointer_hook",
+        "veranFairy_animate_hook",
+        "veranFairy_state0_hook",
+        "veranFairy_state1_strikeLightning_hook",
+        "veranFairy_state1_hook",
+        "veranFairy_state2_hook",
+        "veranFairy_state3_hook",
+        "veranFairy_state4_hook",
+        "veranFairy_state5_hook",
+        "enemyCode06_hook"
+      ],
+      "bindings": {
+        "CP": 10,
+        "ZERO": 0,
+        "OR": 5,
+        "AND": 6,
+        "BIT": 1,
+        "XOR": 0,
+        "FLAG": 44,
+        "WRITE": 70,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/ages/enemies/veranFinal.c",
+      "family": "veranFinal",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        2
+      ],
+      "rng_calls": [
+        "ecom_randomBitwiseAndBCE_b10_hook",
+        "getRandomNumber_hook",
+        "getRandomNumber_noPreserveVars_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "veranFinal_addAToHl_from_rst",
+        "veranFinal_addDoubleIndexToHl_from_rst",
+        "enemyCode02_hook",
+        "veranFinal_turtleForm_hook",
+        "veranFinal_turtleForm_state0_hook",
+        "veranFinal_turtleForm_state1_hook",
+        "veranFinal_turtleForm_state2_hook",
+        "veranFinal_turtleForm_state3_hook",
+        "veranFinal_turtleForm_state4_hook",
+        "veranFinal_turtleForm_state5_hook",
+        "veranFinal_turtleForm_state6_hook",
+        "veranFinal_turtleForm_state7_hook",
+        "veranFinal_turtleForm_state8_hook",
+        "veranFinal_turtleForm_state9_hook",
+        "veranFinal_turtleForm_stateA_hook",
+        "veranFinal_spiderForm_hook",
+        "veranFinal_spiderOrBeeForm_state0_hook",
+        "veranFinal_spiderForm_state1_hook",
+        "veranFinal_spiderForm_setCounter2AndInitState2_hook",
+        "veranFinal_spiderForm_initState2_hook",
+        "veranFinal_spiderForm_state2_hook",
+        "veranFinal_spiderForm_updateMovement_hook",
+        "veranFinal_spiderForm_animate_hook",
+        "veranFinal_spiderForm_state3_hook",
+        "veranFinal_spiderForm_state4_hook",
+        "veranFinal_spiderForm_rushAttack_hook",
+        "veranFinal_spiderForm_jumpAttack_hook",
+        "veranFinal_spiderForm_webAttack_hook",
+        "veranFinal_spiderForm_webAttack_substate0_hook",
+        "veranFinal_spiderForm_resetCollisionData_hook",
+        "veranFinal_spiderForm_webAttack_substate1_hook",
+        "veranFinal_spiderForm_setVulnerableCollisionData_hook",
+        "veranFinal_spiderForm_webAttack_substate2_hook",
+        "veranFinal_spiderForm_webAttack_substate3_hook",
+        "veranFinal_spiderForm_webAttack_updateLinkPosition_hook",
+        "veranFinal_spiderForm_webAttack_substate4_hook",
+        "veranFinal_spiderForm_webAttack_applyDamageToLink_hook",
+        "veranFinal_spiderForm_webAttack_substate5_hook",
+        "veranFinal_spiderForm_webAttack_substate6_hook",
+        "veranFinal_spiderForm_webAttack_substate7_hook",
+        "veranFinal_grabbingLink_hook",
+        "veranFinal_beeForm_hook",
+        "veranFinal_beeForm_state1_hook",
+        "veranFinal_initializeForm_hook",
+        "veranFinal_beeForm_state2_hook",
+        "veranFinal_beeForm_animate_hook",
+        "veranFinal_beeForm_state3_hook",
+        "veranFinal_beeForm_state4_hook",
+        "veranFinal_beeForm_state5_hook",
+        "veranFinal_beeForm_state6_hook",
+        "veranFinal_beeForm_state7_hook",
+        "veranFinal_beeForm_state8_hook",
+        "veranFinal_beeForm_state9_hook",
+        "veranFinal_beeForm_animate2_hook",
+        "veranFinal_beeForm_stateA_hook",
+        "label_10_173_hook",
+        "veranFinal_beeForm_stateB_hook",
+        "veranFinal_transformToBeeOrSpider_hook",
+        "veranFinal_spiderForm_checkLinkWithinDistance_hook",
+        "veranFinal_spiderForm_decideWhetherToAttack_hook",
+        "veranFinal_dead_hook",
+        "veranFinal_spiderForm_decideAngle_hook",
+        "veranFinal_beeForm_chooseRandomTargetPosition_hook",
+        "veranFinal_beeForm_nextTargetPosition_hook",
+        "veranFinal_moveTowardTargetPosition_hook",
+        "veranFinal_getQuadrant_hook"
+      ],
+      "bindings": {
+        "CP": 23,
+        "ZERO": 0,
+        "OR": 14,
+        "AND": 17,
+        "BIT": 7,
+        "XOR": 1,
+        "FLAG": 100,
+        "WRITE": 177,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/ages/enemies/veranPossessionBoss.c",
+      "family": "veranPossessionBoss",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        97
+      ],
+      "rng_calls": [
+        "getRandomNumber_noPreserveVars_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "veranPossessionBoss_addAToHl_from_rst",
+        "enemyCode61_hook",
+        "veranPossessionBoss_state_uninitialized_hook",
+        "veranPossessionBoss_state_switchHook_hook",
+        "veranPossessionBoss_state_stub_hook",
+        "veranPossessionBoss_subid0_hook",
+        "veranPossessionBoss_nayruAmbi_state8_hook",
+        "veranPossessionBoss_nayruAmbi_state9_hook",
+        "veranPossessionBoss_nayruAmbi_stateA_hook",
+        "veranPossessionBoss_nayruAmbi_stateB_hook",
+        "veranPossessionBoss_nayru_stateC_hook",
+        "veranPossessionBoss_nayru_stateD_hook",
+        "veranPossessionBoss_doneAttacking_hook",
+        "veranPossessionBoss_nayruAmbi_stateE_hook",
+        "veranPossessionBoss_nayruAmbi_stateF_hook",
+        "veranPossessionBoss_nayruAmbi_state10_hook",
+        "veranPossessionBoss_nayruAmbi_state11_hook",
+        "veranPossessionBoss_nayruAmbi_beginMoving_hook",
+        "veranPossessionBoss_nayruAmbi_state12_hook",
+        "veranPossessionBoss_nayruAmbi_state13_hook",
+        "veranPossessionBoss_nayru_state14_hook",
+        "veranPossessionBoss_subid1_hook",
+        "veranPossessionBoss_ambi_stateC_hook",
+        "veranPossessionBoss_ambi_stateD_hook",
+        "veranPossessionBoss_ambi_state14_hook",
+        "veranPossessionBoss_subid2_hook",
+        "veranPossessionBoss_humanForm_state8_hook",
+        "veranPossessionBoss_humanForm_state9_hook",
+        "veranPossessionBoss_animate_hook",
+        "veranPossessionBoss_humanForm_stateA_hook",
+        "veranPossessionBoss_humanForm_returnToHost_hook",
+        "veranPossessionBoss_humanForm_stateB_hook",
+        "veranPossessionBoss_humanForm_stateC_hook",
+        "veranPossessionBoss_humanForm_stateD_hook",
+        "veranPossessionBoss_humanForm_stateE_hook",
+        "veranPossessionBoss_humanForm_stateF_hook",
+        "veranPossessionBoss_humanForm_state10_hook",
+        "veranPossessionBoss_subid3_hook",
+        "veranPossessionBoss_wasHit_hook"
+      ],
+      "bindings": {
+        "CP": 16,
+        "ZERO": 0,
+        "OR": 9,
+        "AND": 5,
+        "BIT": 5,
+        "XOR": 1,
+        "FLAG": 56,
+        "WRITE": 114,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/ages/enemies/veranSpider.c",
+      "family": "veranSpider",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        15
+      ],
+      "rng_calls": [
+        "ecom_randomBitwiseAndBCE_b0d_hook",
+        "getRandomNumber_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "enemyCode0f_hook",
+        "veranSpider_state_uninitialized_hook",
+        "veranSpider_state_switchHook_hook",
+        "veranSpider_state_scentSeed_hook",
+        "veranSpider_updateAnimation_hook",
+        "veranSpider_gotoState9_hook",
+        "veranSpider_state_stub_hook",
+        "veranSpider_state8_hook",
+        "veranSpider_state9_hook",
+        "veranSpider_animate_hook",
+        "veranSpider_stateA_hook",
+        "veranSpider_setRandomAngleAndCounter1_hook"
+      ],
+      "bindings": {
+        "CP": 2,
+        "ZERO": 0,
+        "OR": 4,
+        "AND": 4,
+        "BIT": 0,
+        "XOR": 0,
+        "FLAG": 17,
+        "WRITE": 19,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/ages/enemies/vineSprout.c",
+      "family": "vineSprout",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        98
+      ],
+      "rng_calls": [],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "vineSprout_addAToHl_from_rst",
+        "enemyCode62_hook",
+        "vineSprout_state0_hook",
+        "vineSprout_state1_hook",
+        "vineSprout_linkJumpingDownCliff_hook",
+        "vineSprout_destroy_hook",
+        "vineSprout_state_grabbed_hook",
+        "vineSprout_state_switchHook_hook",
+        "vineSprout_state4_hook",
+        "vineSprout_updateTileAtPosition_hook",
+        "vineSprout_restoreTileAtPosition_hook",
+        "vineSprout_checkLinkInSprout_hook",
+        "vineSprout_getDefaultPosition_hook",
+        "vineSprout_getPosition_hook"
+      ],
+      "bindings": {
+        "CP": 10,
+        "ZERO": 0,
+        "OR": 6,
+        "AND": 4,
+        "BIT": 2,
+        "XOR": 0,
+        "FLAG": 32,
+        "WRITE": 22,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/armMimic.c",
+      "family": "armMimic",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        78
+      ],
+      "rng_calls": [],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "enemyCode4e_hook",
+        "armMimic_uninitialized_hook",
+        "armMimic_state_switchHook_hook",
+        "armMimic_state_stub_hook",
+        "armMimic_state8_hook"
+      ],
+      "bindings": {
+        "CP": 1,
+        "ZERO": 0,
+        "OR": 0,
+        "AND": 3,
+        "BIT": 0,
+        "XOR": 0,
+        "FLAG": 6,
+        "WRITE": 3,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/armos.c",
+      "family": "armos",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        29
+      ],
+      "rng_calls": [
+        "ecom_randomBitwiseAndBCE_b0d_hook",
+        "ecom_setRandomCardinalAngle_b0d_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "armos_addAToHl_from_rst",
+        "enemyCode1d_hook",
+        "armos_uninitialized_hook",
+        "armos_state1_hook",
+        "armos_state_switchHook_hook",
+        "armos_state_stub_hook",
+        "armos_subid00_hook",
+        "armos_subid00_state8_hook",
+        "armos_state9_hook",
+        "armos_subid00_stateA_hook",
+        "armos_beginMoving_hook",
+        "armos_subid00_stateB_hook",
+        "armos_subid00_stateC_hook",
+        "armos_subid01_hook",
+        "armos_subid01_state8_hook",
+        "armos_subid01_stateA_hook",
+        "armos_subid02_stateB_hook",
+        "armos_subid03_stateC_hook",
+        "armos_spawnArmosAtPosition_hook",
+        "armos_dead_hook",
+        "armos_clearKilledArmosBuffer_hook",
+        "armos_replaceTileUnderSelf_hook"
+      ],
+      "bindings": {
+        "CP": 6,
+        "ZERO": 0,
+        "OR": 4,
+        "AND": 4,
+        "BIT": 2,
+        "XOR": 0,
+        "FLAG": 27,
+        "WRITE": 33,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/arrowDarknut.c",
+      "family": "arrowDarknut",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        33
+      ],
+      "rng_calls": [
+        "ecom_setRandomCardinalAngle_b0d_hook",
+        "getRandomNumber_noPreserveVars_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "enemyCode21_hook",
+        "arrowDarknut_state_uninitialized_hook",
+        "arrowDarknut_state_9_hook",
+        "arrowDarknut_fireArrowEveryOtherTime_hook",
+        "arrowDarknut_setState8WithRandomAngleAndCounter_hook",
+        "arrowDarknut_chooseAngle_hook"
+      ],
+      "bindings": {
+        "CP": 1,
+        "ZERO": 0,
+        "OR": 0,
+        "AND": 3,
+        "BIT": 1,
+        "XOR": 0,
+        "FLAG": 8,
+        "WRITE": 4,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/babyCucco.c",
+      "family": "babyCucco",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        51
+      ],
+      "rng_calls": [
+        "getRandomNumber_noPreserveVars_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "enemyCode33_hook",
+        "babyCucco_state_uninitialized_hook",
+        "babyCucco_state_grabbed_hook",
+        "babyCucco_state_stub_hook",
+        "babyCucco_state8_hook",
+        "babyCucco_animate_hook",
+        "babyCucco_state9_hook",
+        "babyCucco_updateAnimationFromAngle_hook"
+      ],
+      "bindings": {
+        "CP": 5,
+        "ZERO": 0,
+        "OR": 0,
+        "AND": 1,
+        "BIT": 0,
+        "XOR": 2,
+        "FLAG": 8,
+        "WRITE": 12,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/ballAndChainSoldier.c",
+      "family": "ballAndChainSoldier",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        75
+      ],
+      "rng_calls": [],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "enemyCode4b_hook",
+        "ballAndChain_state_uninitialized_hook",
+        "ballAndChain_state_switchHook_hook",
+        "ballAndChain_state_stub_hook",
+        "ballAndChain_state8_hook",
+        "ballAndChain_animate_hook",
+        "ballAndChain_state9_hook",
+        "ballAndChain_stateA_hook",
+        "ballAndChain_spawnSpikedBall_hook",
+        "ballAndChain_setDefaultState_hook"
+      ],
+      "bindings": {
+        "CP": 1,
+        "ZERO": 0,
+        "OR": 1,
+        "AND": 0,
+        "BIT": 0,
+        "XOR": 0,
+        "FLAG": 10,
+        "WRITE": 16,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/beamos.c",
+      "family": "beamos",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        22
+      ],
+      "rng_calls": [],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "enemyCode16_addAToHl_from_rst",
+        "enemyCode16_updateAngle_hook",
+        "enemyCode16_hook"
+      ],
+      "bindings": {
+        "CP": 2,
+        "ZERO": 0,
+        "OR": 0,
+        "AND": 2,
+        "BIT": 0,
+        "XOR": 0,
+        "FLAG": 9,
+        "WRITE": 10,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/beetle.c",
+      "family": "beetle",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        81
+      ],
+      "rng_calls": [
+        "ecom_randomBitwiseAndBCE_b0e_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "beetle_addAToHl_from_rst",
+        "enemyCode51_hook",
+        "beetle_state_uninitialized_hook",
+        "beetle_state_spawner_hook",
+        "beetle_state_galeSeed_hook",
+        "beetle_state_switchHook_hook",
+        "beetle_state_stub_hook",
+        "beetle_subid1_hook",
+        "beetle_stateA_hook",
+        "beetle_animate_hook",
+        "beetle_subid2_hook",
+        "beetle_subid3_hook",
+        "beetle_chooseRandomAngleAndCounter1_hook",
+        "beetle_checkHazards_hook"
+      ],
+      "bindings": {
+        "CP": 5,
+        "ZERO": 0,
+        "OR": 6,
+        "AND": 0,
+        "BIT": 1,
+        "XOR": 0,
+        "FLAG": 26,
+        "WRITE": 27,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/bladeAndFlameTrap.c",
+      "family": "bladeAndFlameTrap",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        14
+      ],
+      "rng_calls": [
+        "getRandomNumber_noPreserveVars_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "bladeTrap_addAToHl_from_rst",
+        "enemyCode0e_hook",
+        "bladeTrap_subid00_hook",
+        "bladeTrap_subid01_hook",
+        "bladeTrap_subid03_hook",
+        "bladeTrap_subid05_hook",
+        "bladeTrap_updateAngle_hook",
+        "bladeTrap_initCircular_hook",
+        "bladeTrap_checkObstructionsToTarget_getNumTilesToTarget",
+        "bladeTrap_checkObstructionsToTarget_checkNextTileSolid",
+        "bladeTrap_checkObstructionsToTarget_hook",
+        "bladeTrap_checkLinkAligned_hook",
+        "bladeTrap_incAngle_hook",
+        "bladeTrap_decAngle_hook"
+      ],
+      "bindings": {
+        "CP": 8,
+        "ZERO": 0,
+        "OR": 3,
+        "AND": 9,
+        "BIT": 2,
+        "XOR": 3,
+        "FLAG": 37,
+        "WRITE": 32,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/boomerangMoblin.c",
+      "family": "boomerangMoblin",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        10
+      ],
+      "rng_calls": [
+        "ecom_setRandomCardinalAngle_b0d_hook",
+        "getRandomNumber_noPreserveVars_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "enemyCode0a_addAToHl_from_rst",
+        "enemyCode0a_hook"
+      ],
+      "bindings": {
+        "CP": 1,
+        "ZERO": 0,
+        "OR": 3,
+        "AND": 3,
+        "BIT": 0,
+        "XOR": 0,
+        "FLAG": 11,
+        "WRITE": 7,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/bubbleEnemy.c",
+      "family": "bubbleEnemy",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        21
+      ],
+      "rng_calls": [
+        "ecom_randomBitwiseAndBCE_b0d_hook",
+        "getRandomNumber_noPreserveVars_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "enemyCode15_chooseNewDirection_hook",
+        "enemyCode15_checkCenteredOnTile",
+        "enemyCode15_hook"
+      ],
+      "bindings": {
+        "CP": 1,
+        "ZERO": 0,
+        "OR": 2,
+        "AND": 2,
+        "BIT": 0,
+        "XOR": 0,
+        "FLAG": 7,
+        "WRITE": 3,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/bushOrRock.c",
+      "family": "bushOrRock",
+      "status": "retained_c_service",
+      "enemy_ids": [
+        88
+      ],
+      "rng_calls": [],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "reason": "environmental object",
+      "native_void_entries": [
+        "bushOrRock_addAToHl_from_rst",
+        "bushOrRock_addDoubleIndexToHl_from_rst",
+        "enemyCode58_makeParentEnemyVisibleAndRemoveReference_hook",
+        "enemyCode58_copyParentPosition_hook",
+        "enemyCode58_checkDisableDestruction_hook",
+        "enemyCode58_hook"
+      ]
+    },
+    {
+      "source": "src/game/common/enemies/butterfly.c",
+      "family": "butterfly",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        55
+      ],
+      "rng_calls": [
+        "ecom_randomBitwiseAndBCE_b0e_hook",
+        "ecom_setRandomAngle_b0e_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "enemyCode37_hook"
+      ],
+      "bindings": {
+        "CP": 0,
+        "ZERO": 0,
+        "OR": 2,
+        "AND": 0,
+        "BIT": 0,
+        "XOR": 0,
+        "FLAG": 2,
+        "WRITE": 3,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/buzzblob.c",
+      "family": "buzzblob",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        24
+      ],
+      "rng_calls": [
+        "ecom_randomBitwiseAndBCE_b0d_hook",
+        "getRandomNumber_noPreserveVars_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "enemyCode18_hook",
+        "buzzblob_state_uninitialized_hook",
+        "buzzblob_state_scentSeed_hook",
+        "buzzblob_state_stub_hook",
+        "buzzblob_state8_hook",
+        "buzzblob_state9_hook",
+        "buzzblob_animate_hook",
+        "buzzblob_stateA_hook",
+        "buzzblob_chooseNewDirection_hook",
+        "buzzblob_checkShowText_hook"
+      ],
+      "bindings": {
+        "CP": 3,
+        "ZERO": 0,
+        "OR": 3,
+        "AND": 2,
+        "BIT": 0,
+        "XOR": 0,
+        "FLAG": 11,
+        "WRITE": 15,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/cheepCheep.c",
+      "family": "cheepCheep",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        44
+      ],
+      "rng_calls": [],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "enemyCode2c_hook",
+        "cheepCheep_state_uninitialized_hook",
+        "cheepCheep_state_stub_hook",
+        "cheepCheep_subid00_hook",
+        "cheepCheep_subid00_state8_hook",
+        "cheepCheep_state9_hook",
+        "cheepCheep_animate_hook",
+        "cheepCheep_stateA_hook",
+        "cheepCheep_subid01_hook",
+        "cheepCheep_subid01_state8_hook"
+      ],
+      "bindings": {
+        "CP": 0,
+        "ZERO": 0,
+        "OR": 0,
+        "AND": 0,
+        "BIT": 0,
+        "XOR": 2,
+        "FLAG": 7,
+        "WRITE": 14,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/crows.c",
+      "family": "crows",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        65
+      ],
+      "rng_calls": [
+        "getRandomNumber_noPreserveVars_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "crow_addAToHl_from_rst",
+        "enemyCode41_hook",
+        "crow_state_uninitialized_hook",
+        "crow_state_stub_hook",
+        "crow_subid0_hook",
+        "crow_subid0_state8_hook",
+        "crow_subid0_state9_hook",
+        "crow_subid0_stateA_hook",
+        "crow_subid0_animate_hook",
+        "crow_subid1_hook",
+        "crow_subid1_state8_hook",
+        "crow_subid1_state9_hook",
+        "crow_subid1_stateA_hook",
+        "crow_subid1_animate_hook",
+        "crow_subid1_stateB_hook",
+        "crow_subid1_stateC_hook",
+        "crow_subid1_stateD_hook",
+        "crow_updateAngleTowardLinkIfCounter1Zero_hook",
+        "crow_setAnimationFromAngle_hook",
+        "crow_subid0_checkWithinScreenBounds_hook",
+        "crow_moveTowardTargetPosition_hook",
+        "crow_updateSpeed_hook",
+        "crow_subid1_checkWithinScreenBounds_hook"
+      ],
+      "bindings": {
+        "CP": 16,
+        "ZERO": 0,
+        "OR": 3,
+        "AND": 5,
+        "BIT": 1,
+        "XOR": 0,
+        "FLAG": 34,
+        "WRITE": 32,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/cucco.c",
+      "family": "cucco",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        54,
+        59
+      ],
+      "rng_calls": [
+        "ecom_randomBitwiseAndBCE_b0e_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "cucco_addAToHl_from_rst",
+        "enemyCode36_hook",
+        "cucco_state_uninitialized_hook",
+        "cucco_state_grabbed_hook",
+        "cucco_state_stub_hook",
+        "cucco_state8_hook",
+        "cucco_state9_hook",
+        "cucco_animate_hook",
+        "cucco_stateA_hook",
+        "cucco_stateB_hook",
+        "enemyCode3b_hook",
+        "giantCucco_state_uninitialized_hook",
+        "giantCucco_stateA_hook",
+        "giantCucco_stateB_hook",
+        "giantCucco_animate_hook",
+        "cucco_setAnimationFromAngle_hook",
+        "cucco_checkSpawnCuccoAttacker_hook",
+        "cucco_attacked_hook",
+        "cucco_hitWithMysterySeed_hook",
+        "cucco_playChickenSoundEvery32Frames_hook"
+      ],
+      "bindings": {
+        "CP": 12,
+        "ZERO": 0,
+        "OR": 4,
+        "AND": 5,
+        "BIT": 2,
+        "XOR": 3,
+        "FLAG": 28,
+        "WRITE": 36,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/dekuScrubEnemy.c",
+      "family": "dekuScrubEnemy",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        39
+      ],
+      "rng_calls": [],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "dekuScrub_addAToHl_from_rst",
+        "enemyCode27_hook",
+        "dekuScrub_state_uninitialized_hook",
+        "dekuScrub_state_stub_hook",
+        "dekuScrub_state8_hook",
+        "dekuScrub_state9_hook",
+        "dekuScrub_stateA_hook",
+        "dekuScrub_animate_hook",
+        "dekuScrub_stateB_hook",
+        "dekuScrub_stateC_hook",
+        "dekuScrub_stateD_hook",
+        "dekuScrub_hideInBush_hook",
+        "dekuScrub_spawnBush_hook"
+      ],
+      "bindings": {
+        "CP": 0,
+        "ZERO": 0,
+        "OR": 3,
+        "AND": 0,
+        "BIT": 0,
+        "XOR": 0,
+        "FLAG": 18,
+        "WRITE": 27,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/dragonfly.c",
+      "family": "dragonfly",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        83
+      ],
+      "rng_calls": [
+        "getRandomNumber_noPreserveVars_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "dragonfly_addAToHl_from_rst",
+        "enemyCode53_hook",
+        "dragonfly_state0_hook",
+        "dragonfly_state1_hook",
+        "dragonfly_state2_hook",
+        "dragonfly_animate_hook",
+        "dragonfly_state3_hook",
+        "dragonfly_state4_hook",
+        "dragonfly_state5_hook",
+        "dragonfly_applySpeed_hook"
+      ],
+      "bindings": {
+        "CP": 4,
+        "ZERO": 0,
+        "OR": 0,
+        "AND": 5,
+        "BIT": 0,
+        "XOR": 0,
+        "FLAG": 14,
+        "WRITE": 15,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/enemyCommonBossCode.c",
+      "family": "enemyCommonBossCode",
+      "status": "shared_state_service",
+      "enemy_ids": [],
+      "rng_calls": [],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "enemyBoss_beginBoss_common_b10_hook",
+        "enemyBoss_dead_b10_hook",
+        "enemyBoss_spawnShadow_b10_hook",
+        "enemyBoss_initializeRoom_b10_hook",
+        "enemyBoss_initializeRoomWithoutExtraGfx_b10_hook",
+        "enemyBoss_beginMiniboss_b10_hook",
+        "enemyBoss_beginBoss_b10_hook"
+      ],
+      "bindings": {
+        "CP": 0,
+        "ZERO": 0,
+        "OR": 0,
+        "AND": 0,
+        "BIT": 0,
+        "XOR": 0,
+        "FLAG": 0,
+        "WRITE": 13,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/enemyCommonBossCode_b0f.c",
+      "family": "enemyCommonBossCode_b0f",
+      "status": "shared_state_service",
+      "enemy_ids": [],
+      "rng_calls": [],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "enemyBoss_beginBoss_common_b0f_hook",
+        "enemyBoss_dead_b0f_hook",
+        "enemyBoss_spawnShadow_b0f_hook",
+        "enemyBoss_initializeRoom_b0f_hook",
+        "enemyBoss_initializeRoomWithoutExtraGfx_b0f_hook",
+        "enemyBoss_beginMiniboss_b0f_hook",
+        "enemyBoss_beginBoss_b0f_hook"
+      ],
+      "bindings": {
+        "CP": 0,
+        "ZERO": 0,
+        "OR": 0,
+        "AND": 0,
+        "BIT": 0,
+        "XOR": 0,
+        "FLAG": 0,
+        "WRITE": 13,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/enemyCommonCode.c",
+      "family": "enemyCommonCode",
+      "status": "shared_state_service",
+      "enemy_ids": [],
+      "rng_calls": [
+        "ecom_randomBitwiseAndBCE_b0d_hook",
+        "ecom_randomBitwiseAndBCE_b0e_hook",
+        "ecom_randomBitwiseAndBCE_b0f_hook",
+        "ecom_randomBitwiseAndBCE_b10_hook",
+        "ecom_setRandomAngle_b0d_hook",
+        "ecom_setRandomAngle_b0e_hook",
+        "ecom_setRandomAngle_b0f_hook",
+        "ecom_setRandomAngle_b10_hook",
+        "ecom_setRandomCardinalAngle_b0d_hook",
+        "ecom_setRandomCardinalAngle_b0e_hook",
+        "ecom_setRandomCardinalAngle_b0f_hook",
+        "ecom_setRandomCardinalAngle_b10_hook",
+        "getRandomNumber_noPreserveVars_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "ecom_splashOrLavaTail_b10_hook",
+        "ecom_incState_b10_hook",
+        "ecom_incSubstate_b10_hook",
+        "ecom_updateKnockback_b10_hook",
+        "ecom_updateKnockback_common_b10_hook",
+        "ecom_updateKnockbackNoSolidity_b10_hook",
+        "ecom_updateKnockbackAndCheckHazardsNoAnimationsForHoles_b10_hook",
+        "ecom_checkHazardsNoAnimationForHoles_b10_hook",
+        "ecom_updateKnockbackAndCheckHazards_b10_hook",
+        "ecom_checkHazards_b10_hook",
+        "ecom_checkHazardsCommon_b10_hook",
+        "ecom_makeSplashAndDelete_b10_hook",
+        "ecom_makeLavaSplashAndDelete_b10_hook",
+        "ecom_decNumEnemiesAndDelete_b10_hook",
+        "ecom_fallDownHoleAndDelete_b10_hook",
+        "ecom_fallingInHole_checkInCenterOfHole_b10",
+        "ecom_fallingInHole_b10_hook",
+        "ecom_updateMovingPlatform_b10_hook",
+        "ecom_applyGivenVelocity_b10_hook",
+        "ecom_applyVelocityForTopDownEnemy_b10_hook",
+        "ecom_applyVelocityForTopDownEnemyNoHoles_b10_hook",
+        "ecom_applyVelocityForSideviewEnemy_b10_hook",
+        "ecom_applyVelocityForSideviewEnemyNoHoles_b10_hook",
+        "ecom_applyVelocityGivenAdjacentWalls_b10_hook",
+        "ecom_addAToHl_from_rst_b10",
+        "ecom_applyGivenVelocityGivenAdjacentWalls_applySpeedComponent_b10",
+        "ecom_applyGivenVelocityGivenAdjacentWalls_b10_hook",
+        "ecom_getTopDownAdjacentWallsBitsetGivenAngle_b10_hook",
+        "ecom_getTopDownAdjacentWallsBitset_b10_hook",
+        "ecom_getSideviewAdjacentWallsBitset_b10_hook",
+        "ecom_getSideviewAdjacentWallsBitsetGivenAngle_b10_hook",
+        "label_025_b10_hook",
+        "ecom_getAdjacentWallsBitset_checkCollisionAt_b10_hook",
+        "ecom_getAdjacentWallsBitset_b10_hook",
+        "ecom_getAdjacentWallTableOffset_b10_hook",
+        "ecom_bounceOffScreenBoundary__getDirectionsHit_b10_hook",
+        "ecom_bounceOffScreenBoundary__reverseDirection_b10_hook",
+        "ecom_bounceOffScreenBoundary_common_b10_hook",
+        "ecom_bounceOffWallsAndHoles_b10_hook",
+        "ecom_bounceOffWalls_b10_hook",
+        "ecom_bounceOffScreenBoundary_b10_hook",
+        "ecom_randomBitwiseAndBCE_b10_hook",
+        "ecom_setSpeedAndState8AndVisible_b10_hook",
+        "ecom_setSpeedAndState8_b10_hook",
+        "ecom_spawnEnemyCommon_b10_hook",
+        "ecom_spawnUncountedEnemyWithSubid01_b10_hook",
+        "ecom_spawnEnemyWithSubid01_b10_hook",
+        "ecom_spawnProjectile_b10_hook",
+        "ecom_decCounter1_b10_hook",
+        "ecom_dec16BitCounter_b10_hook",
+        "ecom_decCounter2_b10_hook",
+        "ecom_updateCardinalAngleAwayFromTarget_b10_hook",
+        "ecom_updateCardinalAngleTowardTarget_b10_hook",
+        "ecom_updateAngleTowardTarget_b10_hook",
+        "ecom_setRandomCardinalAngle_b10_hook",
+        "ecom_setRandomAngle_b10_hook",
+        "ecom_updateAnimationFromAngle_b10_hook",
+        "ecom_flickerVisibility_b10_hook",
+        "ecom_getSubidAndCpStateTo08_b10_hook",
+        "ecom_moveTowardPosition_b10_hook",
+        "ecom_readPositionVars_b10_hook",
+        "ecom_setZAboveScreen_b10_hook",
+        "ecom_killObjectH_b10_hook",
+        "ecom_killRelatedObj_b10_hook",
+        "ecom_killRelatedObj1_b10_hook",
+        "ecom_killRelatedObj2_b10_hook",
+        "ecom_galeSeedEffect_b10_hook",
+        "ecom_blownByGaleSeedState_b10_hook",
+        "ecom_checkScentSeedActive_b10_hook",
+        "ecom_updateAngleToScentSeed_b10_hook",
+        "ecom_fallToGroundAndSetState8_b10_hook",
+        "ecom_fallToGroundAndSetState_b10_hook",
+        "ecom_splashOrLavaTail_b0d_hook",
+        "ecom_incState_b0d_hook",
+        "ecom_incSubstate_b0d_hook",
+        "ecom_updateKnockback_b0d_hook",
+        "ecom_updateKnockback_common_b0d_hook",
+        "ecom_updateKnockbackNoSolidity_b0d_hook",
+        "ecom_updateKnockbackAndCheckHazardsNoAnimationsForHoles_b0d_hook",
+        "ecom_checkHazardsNoAnimationForHoles_b0d_hook",
+        "ecom_updateKnockbackAndCheckHazards_b0d_hook",
+        "ecom_checkHazards_b0d_hook",
+        "ecom_checkHazardsCommon_b0d_hook",
+        "ecom_makeSplashAndDelete_b0d_hook",
+        "ecom_makeLavaSplashAndDelete_b0d_hook",
+        "ecom_decNumEnemiesAndDelete_b0d_hook",
+        "ecom_fallDownHoleAndDelete_b0d_hook",
+        "ecom_fallingInHole_checkInCenterOfHole_b0d",
+        "ecom_fallingInHole_b0d_hook",
+        "ecom_updateMovingPlatform_b0d_hook",
+        "ecom_applyGivenVelocity_b0d_hook",
+        "ecom_applyVelocityForTopDownEnemy_b0d_hook",
+        "ecom_applyVelocityForTopDownEnemyNoHoles_b0d_hook",
+        "ecom_applyVelocityForSideviewEnemy_b0d_hook",
+        "ecom_applyVelocityForSideviewEnemyNoHoles_b0d_hook",
+        "ecom_applyVelocityGivenAdjacentWalls_b0d_hook",
+        "ecom_addAToHl_from_rst_b0d",
+        "ecom_applyGivenVelocityGivenAdjacentWalls_applySpeedComponent_b0d",
+        "ecom_applyGivenVelocityGivenAdjacentWalls_b0d_hook",
+        "ecom_getTopDownAdjacentWallsBitsetGivenAngle_b0d_hook",
+        "ecom_getTopDownAdjacentWallsBitset_b0d_hook",
+        "ecom_getSideviewAdjacentWallsBitset_b0d_hook",
+        "ecom_getSideviewAdjacentWallsBitsetGivenAngle_b0d_hook",
+        "label_025_b0d_hook",
+        "ecom_getAdjacentWallsBitset_checkCollisionAt_b0d_hook",
+        "ecom_getAdjacentWallsBitset_b0d_hook",
+        "ecom_getAdjacentWallTableOffset_b0d_hook",
+        "ecom_bounceOffScreenBoundary__getDirectionsHit_b0d_hook",
+        "ecom_bounceOffScreenBoundary__reverseDirection_b0d_hook",
+        "ecom_bounceOffScreenBoundary_common_b0d_hook",
+        "ecom_bounceOffWallsAndHoles_b0d_hook",
+        "ecom_bounceOffWalls_b0d_hook",
+        "ecom_bounceOffScreenBoundary_b0d_hook",
+        "ecom_randomBitwiseAndBCE_b0d_hook",
+        "ecom_setSpeedAndState8AndVisible_b0d_hook",
+        "ecom_setSpeedAndState8_b0d_hook",
+        "ecom_spawnEnemyCommon_b0d_hook",
+        "ecom_spawnUncountedEnemyWithSubid01_b0d_hook",
+        "ecom_spawnEnemyWithSubid01_b0d_hook",
+        "ecom_spawnProjectile_b0d_hook",
+        "ecom_decCounter1_b0d_hook",
+        "ecom_dec16BitCounter_b0d_hook",
+        "ecom_decCounter2_b0d_hook",
+        "ecom_updateCardinalAngleAwayFromTarget_b0d_hook",
+        "ecom_updateCardinalAngleTowardTarget_b0d_hook",
+        "ecom_updateAngleTowardTarget_b0d_hook",
+        "ecom_setRandomCardinalAngle_b0d_hook",
+        "ecom_setRandomAngle_b0d_hook",
+        "ecom_updateAnimationFromAngle_b0d_hook",
+        "ecom_flickerVisibility_b0d_hook",
+        "ecom_getSubidAndCpStateTo08_b0d_hook",
+        "ecom_moveTowardPosition_b0d_hook",
+        "ecom_readPositionVars_b0d_hook",
+        "ecom_setZAboveScreen_b0d_hook",
+        "ecom_killObjectH_b0d_hook",
+        "ecom_killRelatedObj_b0d_hook",
+        "ecom_killRelatedObj1_b0d_hook",
+        "ecom_killRelatedObj2_b0d_hook",
+        "ecom_galeSeedEffect_b0d_hook",
+        "ecom_blownByGaleSeedState_b0d_hook",
+        "ecom_checkScentSeedActive_b0d_hook",
+        "ecom_updateAngleToScentSeed_b0d_hook",
+        "ecom_fallToGroundAndSetState8_b0d_hook",
+        "ecom_fallToGroundAndSetState_b0d_hook",
+        "ecom_splashOrLavaTail_b0e_hook",
+        "ecom_incState_b0e_hook",
+        "ecom_incSubstate_b0e_hook",
+        "ecom_updateKnockback_b0e_hook",
+        "ecom_updateKnockback_common_b0e_hook",
+        "ecom_updateKnockbackNoSolidity_b0e_hook",
+        "ecom_updateKnockbackAndCheckHazardsNoAnimationsForHoles_b0e_hook",
+        "ecom_checkHazardsNoAnimationForHoles_b0e_hook",
+        "ecom_updateKnockbackAndCheckHazards_b0e_hook",
+        "ecom_checkHazards_b0e_hook",
+        "ecom_checkHazardsCommon_b0e_hook",
+        "ecom_makeSplashAndDelete_b0e_hook",
+        "ecom_makeLavaSplashAndDelete_b0e_hook",
+        "ecom_decNumEnemiesAndDelete_b0e_hook",
+        "ecom_fallDownHoleAndDelete_b0e_hook",
+        "ecom_fallingInHole_checkInCenterOfHole_b0e",
+        "ecom_fallingInHole_b0e_hook",
+        "ecom_updateMovingPlatform_b0e_hook",
+        "ecom_applyGivenVelocity_b0e_hook",
+        "ecom_applyVelocityForTopDownEnemy_b0e_hook",
+        "ecom_applyVelocityForTopDownEnemyNoHoles_b0e_hook",
+        "ecom_applyVelocityForSideviewEnemy_b0e_hook",
+        "ecom_applyVelocityForSideviewEnemyNoHoles_b0e_hook",
+        "ecom_applyVelocityGivenAdjacentWalls_b0e_hook",
+        "ecom_addAToHl_from_rst_b0e",
+        "ecom_applyGivenVelocityGivenAdjacentWalls_applySpeedComponent_b0e",
+        "ecom_applyGivenVelocityGivenAdjacentWalls_b0e_hook",
+        "ecom_getTopDownAdjacentWallsBitsetGivenAngle_b0e_hook",
+        "ecom_getTopDownAdjacentWallsBitset_b0e_hook",
+        "ecom_getSideviewAdjacentWallsBitset_b0e_hook",
+        "ecom_getSideviewAdjacentWallsBitsetGivenAngle_b0e_hook",
+        "label_025_b0e_hook",
+        "ecom_getAdjacentWallsBitset_checkCollisionAt_b0e_hook",
+        "ecom_getAdjacentWallsBitset_b0e_hook",
+        "ecom_getAdjacentWallTableOffset_b0e_hook",
+        "ecom_bounceOffScreenBoundary__getDirectionsHit_b0e_hook",
+        "ecom_bounceOffScreenBoundary__reverseDirection_b0e_hook",
+        "ecom_bounceOffScreenBoundary_common_b0e_hook",
+        "ecom_bounceOffWallsAndHoles_b0e_hook",
+        "ecom_bounceOffWalls_b0e_hook",
+        "ecom_bounceOffScreenBoundary_b0e_hook",
+        "ecom_randomBitwiseAndBCE_b0e_hook",
+        "ecom_setSpeedAndState8AndVisible_b0e_hook",
+        "ecom_setSpeedAndState8_b0e_hook",
+        "ecom_spawnEnemyCommon_b0e_hook",
+        "ecom_spawnUncountedEnemyWithSubid01_b0e_hook",
+        "ecom_spawnEnemyWithSubid01_b0e_hook",
+        "ecom_spawnProjectile_b0e_hook",
+        "ecom_decCounter1_b0e_hook",
+        "ecom_dec16BitCounter_b0e_hook",
+        "ecom_decCounter2_b0e_hook",
+        "ecom_updateCardinalAngleAwayFromTarget_b0e_hook",
+        "ecom_updateCardinalAngleTowardTarget_b0e_hook",
+        "ecom_updateAngleTowardTarget_b0e_hook",
+        "ecom_setRandomCardinalAngle_b0e_hook",
+        "ecom_setRandomAngle_b0e_hook",
+        "ecom_updateAnimationFromAngle_b0e_hook",
+        "ecom_flickerVisibility_b0e_hook",
+        "ecom_getSubidAndCpStateTo08_b0e_hook",
+        "ecom_moveTowardPosition_b0e_hook",
+        "ecom_readPositionVars_b0e_hook",
+        "ecom_setZAboveScreen_b0e_hook",
+        "ecom_killObjectH_b0e_hook",
+        "ecom_killRelatedObj_b0e_hook",
+        "ecom_killRelatedObj1_b0e_hook",
+        "ecom_killRelatedObj2_b0e_hook",
+        "ecom_galeSeedEffect_b0e_hook",
+        "ecom_blownByGaleSeedState_b0e_hook",
+        "ecom_checkScentSeedActive_b0e_hook",
+        "ecom_updateAngleToScentSeed_b0e_hook",
+        "ecom_fallToGroundAndSetState8_b0e_hook",
+        "ecom_fallToGroundAndSetState_b0e_hook",
+        "ecom_splashOrLavaTail_b0f_hook",
+        "ecom_incState_b0f_hook",
+        "ecom_incSubstate_b0f_hook",
+        "ecom_updateKnockback_b0f_hook",
+        "ecom_updateKnockback_common_b0f_hook",
+        "ecom_updateKnockbackNoSolidity_b0f_hook",
+        "ecom_updateKnockbackAndCheckHazardsNoAnimationsForHoles_b0f_hook",
+        "ecom_checkHazardsNoAnimationForHoles_b0f_hook",
+        "ecom_updateKnockbackAndCheckHazards_b0f_hook",
+        "ecom_checkHazards_b0f_hook",
+        "ecom_checkHazardsCommon_b0f_hook",
+        "ecom_makeSplashAndDelete_b0f_hook",
+        "ecom_makeLavaSplashAndDelete_b0f_hook",
+        "ecom_decNumEnemiesAndDelete_b0f_hook",
+        "ecom_fallDownHoleAndDelete_b0f_hook",
+        "ecom_fallingInHole_checkInCenterOfHole_b0f",
+        "ecom_fallingInHole_b0f_hook",
+        "ecom_updateMovingPlatform_b0f_hook",
+        "ecom_applyGivenVelocity_b0f_hook",
+        "ecom_applyVelocityForTopDownEnemy_b0f_hook",
+        "ecom_applyVelocityForTopDownEnemyNoHoles_b0f_hook",
+        "ecom_applyVelocityForSideviewEnemy_b0f_hook",
+        "ecom_applyVelocityForSideviewEnemyNoHoles_b0f_hook",
+        "ecom_applyVelocityGivenAdjacentWalls_b0f_hook",
+        "ecom_addAToHl_from_rst_b0f",
+        "ecom_applyGivenVelocityGivenAdjacentWalls_applySpeedComponent_b0f",
+        "ecom_applyGivenVelocityGivenAdjacentWalls_b0f_hook",
+        "ecom_getTopDownAdjacentWallsBitsetGivenAngle_b0f_hook",
+        "ecom_getTopDownAdjacentWallsBitset_b0f_hook",
+        "ecom_getSideviewAdjacentWallsBitset_b0f_hook",
+        "ecom_getSideviewAdjacentWallsBitsetGivenAngle_b0f_hook",
+        "label_025_b0f_hook",
+        "ecom_getAdjacentWallsBitset_checkCollisionAt_b0f_hook",
+        "ecom_getAdjacentWallsBitset_b0f_hook",
+        "ecom_getAdjacentWallTableOffset_b0f_hook",
+        "ecom_bounceOffScreenBoundary__getDirectionsHit_b0f_hook",
+        "ecom_bounceOffScreenBoundary__reverseDirection_b0f_hook",
+        "ecom_bounceOffScreenBoundary_common_b0f_hook",
+        "ecom_bounceOffWallsAndHoles_b0f_hook",
+        "ecom_bounceOffWalls_b0f_hook",
+        "ecom_bounceOffScreenBoundary_b0f_hook",
+        "ecom_randomBitwiseAndBCE_b0f_hook",
+        "ecom_setSpeedAndState8AndVisible_b0f_hook",
+        "ecom_setSpeedAndState8_b0f_hook",
+        "ecom_spawnEnemyCommon_b0f_hook",
+        "ecom_spawnUncountedEnemyWithSubid01_b0f_hook",
+        "ecom_spawnEnemyWithSubid01_b0f_hook",
+        "ecom_spawnProjectile_b0f_hook",
+        "ecom_decCounter1_b0f_hook",
+        "ecom_dec16BitCounter_b0f_hook",
+        "ecom_decCounter2_b0f_hook",
+        "ecom_updateCardinalAngleAwayFromTarget_b0f_hook",
+        "ecom_updateCardinalAngleTowardTarget_b0f_hook",
+        "ecom_updateAngleTowardTarget_b0f_hook",
+        "ecom_setRandomCardinalAngle_b0f_hook",
+        "ecom_setRandomAngle_b0f_hook",
+        "ecom_updateAnimationFromAngle_b0f_hook",
+        "ecom_flickerVisibility_b0f_hook",
+        "ecom_getSubidAndCpStateTo08_b0f_hook",
+        "ecom_moveTowardPosition_b0f_hook",
+        "ecom_readPositionVars_b0f_hook",
+        "ecom_setZAboveScreen_b0f_hook",
+        "ecom_killObjectH_b0f_hook",
+        "ecom_killRelatedObj_b0f_hook",
+        "ecom_killRelatedObj1_b0f_hook",
+        "ecom_killRelatedObj2_b0f_hook",
+        "ecom_galeSeedEffect_b0f_hook",
+        "ecom_blownByGaleSeedState_b0f_hook",
+        "ecom_checkScentSeedActive_b0f_hook",
+        "ecom_updateAngleToScentSeed_b0f_hook",
+        "ecom_fallToGroundAndSetState8_b0f_hook",
+        "ecom_fallToGroundAndSetState_b0f_hook"
+      ],
+      "bindings": {
+        "CP": 0,
+        "ZERO": 0,
+        "OR": 0,
+        "AND": 0,
+        "BIT": 0,
+        "XOR": 0,
+        "FLAG": 0,
+        "WRITE": 260,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/fireKeese.c",
+      "family": "fireKeese",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        57
+      ],
+      "rng_calls": [
+        "ecom_randomBitwiseAndBCE_b0e_hook",
+        "getRandomNumber_noPreserveVars_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "fireKeese_addAToHl_from_rst",
+        "enemyCode39_hook",
+        "fireKeese_stateBOrHigher_hook",
+        "fireKeese_state_uninitialized_hook",
+        "fireKeese_state_stub_hook",
+        "fireKeese_state8_hook",
+        "fireKeese_state9_hook",
+        "fireKeese_stateA_hook",
+        "fireKeese_subid0_hook",
+        "fireKeese_subid0_stateB_hook",
+        "fireKeese_subid0_stateC_hook",
+        "fireKeese_updatePosition_hook",
+        "fireKeese_animate_hook",
+        "fireKeese_subid0_stateD_hook",
+        "fireKeese_subid1_hook",
+        "fireKeese_subid1_stateB_hook",
+        "fireKeese_subid1_stateC_hook",
+        "fireKeese_subid1_stateD_hook",
+        "fireKeese_subid1_setSpeedAndAnimateBasedOnCounter1_hook",
+        "fireKeese_checkCloseToLink_hook",
+        "fireKeese_addCandidateTorch_hook",
+        "fireKeese_checkForNewlyLitTorch_hook",
+        "fireKeese_moveToGround_hook",
+        "fireKeese_moveTowardCenterIfOutOfBounds_hook"
+      ],
+      "bindings": {
+        "CP": 17,
+        "ZERO": 0,
+        "OR": 6,
+        "AND": 15,
+        "BIT": 3,
+        "XOR": 0,
+        "FLAG": 45,
+        "WRITE": 62,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/fireballShooter.c",
+      "family": "fireballShooter",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        80
+      ],
+      "rng_calls": [
+        "getRandomNumber_noPreserveVars_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "fireballShooter_addAToHl_from_rst",
+        "enemyCode50_hook",
+        "fireballShooter_state_uninitialized_hook",
+        "fireballShooter_state1_hook",
+        "fireballShooter_state_stub_hook",
+        "fireballShooter_state8_hook",
+        "fireballShooter_state9_hook",
+        "fireballShooter_checkAllEnemiesKilled_hook"
+      ],
+      "bindings": {
+        "CP": 2,
+        "ZERO": 0,
+        "OR": 1,
+        "AND": 4,
+        "BIT": 1,
+        "XOR": 0,
+        "FLAG": 10,
+        "WRITE": 9,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/fish.c",
+      "family": "fish",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        30
+      ],
+      "rng_calls": [
+        "getRandomNumber_noPreserveVars_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "fish_addAToHl_from_rst",
+        "enemyCode1e_hook",
+        "fish_state_uninitialized_hook",
+        "fish_state_stub_hook",
+        "fish_subid00_hook",
+        "fish_enterWater_hook",
+        "fish_subid01_hook",
+        "fish_checkReverseAngle_hook",
+        "fish_updateAnimationFromAngle_hook",
+        "fish_setAnimation_hook",
+        "fish_updatePosition_hook",
+        "fish_setRandomCounter1_hook",
+        "fish_getAdjacentWallsBitsetForKnockback_hook"
+      ],
+      "bindings": {
+        "CP": 5,
+        "ZERO": 0,
+        "OR": 6,
+        "AND": 6,
+        "BIT": 0,
+        "XOR": 2,
+        "FLAG": 18,
+        "WRITE": 18,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/floormaster.c",
+      "family": "floormaster",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        53
+      ],
+      "rng_calls": [
+        "getRandomNumber_noPreserveVars_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "floormaster_addAToHl_from_rst",
+        "enemyCode35_hook",
+        "floormaster_state_uninitialized_hook",
+        "floormaster_state1_hook",
+        "floormaster_state_galeSeed_hook",
+        "floormaster_state_stub_hook",
+        "floormaster_state8_hook",
+        "floormaster_state9_hook",
+        "floormaster_stateA_hook",
+        "floormaster_stateB_hook",
+        "floormaster_animate_hook",
+        "floormaster_stateC_hook",
+        "floormaster_stateD_hook",
+        "floormaster_updateAngleTowardLink_hook",
+        "floormaster_updateZPosition_hook",
+        "floormaster_checkLinkMoved8PixelsAway_hook",
+        "floormaster_initSpawner_hook",
+        "floormaster_getAdjacentWallsBitset_hook"
+      ],
+      "bindings": {
+        "CP": 11,
+        "ZERO": 0,
+        "OR": 2,
+        "AND": 8,
+        "BIT": 1,
+        "XOR": 0,
+        "FLAG": 37,
+        "WRITE": 55,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/flyingTile.c",
+      "family": "flyingTile",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        82
+      ],
+      "rng_calls": [],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "flyingTile_addAToHl_from_rst",
+        "flyingTile_addDoubleIndexToHl_from_rst",
+        "flyingTile_saveTileDataAddress",
+        "enemyCode52_hook",
+        "flyingTile_state_uninitialized_hook",
+        "flyingTile_state_spawner_hook",
+        "flyingTile_state_stub_hook",
+        "flyingTile_state8_hook",
+        "flyingTile_state9_hook",
+        "flyingTile_animate_hook",
+        "flyingTile_stateA_hook",
+        "flyingTile_stateB_hook",
+        "flyingTile_dead_hook",
+        "flyingTile_delete_hook",
+        "flyingTile_overwriteTileHere_hook"
+      ],
+      "bindings": {
+        "CP": 1,
+        "ZERO": 0,
+        "OR": 1,
+        "AND": 1,
+        "BIT": 0,
+        "XOR": 0,
+        "FLAG": 9,
+        "WRITE": 15,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/ganon.c",
+      "family": "ganon",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        4
+      ],
+      "rng_calls": [
+        "ecom_randomBitwiseAndBCE_b10_hook",
+        "getRandomNumber_hook",
+        "getRandomNumber_noPreserveVars_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "ganon_addAToHl_from_rst",
+        "ganon_addDoubleIndexToHl_from_rst",
+        "enemyCode04__normalStatus_hook",
+        "enemyCode04_hook",
+        "ganon_state_uninitialized_hook",
+        "ganon_state1_hook",
+        "ganon_state2_hook",
+        "ganon_state3_hook",
+        "ganon_state4_hook",
+        "ganon_state5_hook",
+        "ganon_state6_hook",
+        "ganon_state7_hook",
+        "ganon_state8_hook",
+        "ganon_state8_substate0_hook",
+        "ganon_state8_substate1_hook",
+        "ganon_state8_substate2_hook",
+        "ganon_state8_substate3_hook",
+        "ganon_state8_substate4_hook",
+        "ganon_state8_substate5_hook",
+        "ganon_state8_substate6_hook",
+        "ganon_state8_spawnProjectile_hook",
+        "ganon_state8_substate7_hook",
+        "ganon_state9_hook",
+        "ganon_state9_substate0_hook",
+        "ganon_state9_substate1_hook",
+        "ganon_state9_substate3_hook",
+        "ganon_state9_substate4_hook",
+        "ganon_state9_substate4__spawnProjectile_hook",
+        "ganon_state9_substate5_hook",
+        "ganon_state9_substate6_hook",
+        "ganon_state9_substate7_hook",
+        "ganon_stateA_hook",
+        "ganon_stateA_substate1_hook",
+        "ganon_stateA_substate2_hook",
+        "ganon_stateA_substate3_hook",
+        "ganon_stateA_substate4_hook",
+        "ganon_stateA_substate5_hook",
+        "ganon_stateA_substate6_hook",
+        "ganon_stateA_substate7_hook",
+        "ganon_stateB_hook",
+        "ganon_stateB_substate1_hook",
+        "ganon_stateB_substate2_hook",
+        "ganon_stateB_substate3_hook",
+        "ganon_stateB_substate4_hook",
+        "ganon_stateB_substate5_hook",
+        "ganon_stateB_substate6_hook",
+        "ganon_stateB_substate7_hook",
+        "ganon_stateB_substate8_hook",
+        "ganon_stateB_substate9_hook",
+        "ganon_stateB_substateA_hook",
+        "ganon_stateC_hook",
+        "ganon_stateC_substate1_hook",
+        "ganon_stateC_substate3_hook",
+        "ganon_stateC_substate4_hook",
+        "ganon_stateC_substate5_hook",
+        "ganon_stateC_substate6_hook",
+        "ganon_stateC_substate7_hook",
+        "ganon_stateC_substate8_hook",
+        "ganon_stateC_substate9_hook",
+        "ganon_stateC_substateA_hook",
+        "ganon_stateD_hook",
+        "ganon_stateD_substate3_hook",
+        "ganon_stateE_hook",
+        "ganon_stateE_substate0_hook",
+        "ganon_stateE_substate1_hook",
+        "ganon_stateE_substate2_hook",
+        "ganon_stateE_substate3_hook",
+        "ganon_loadGfxHeader_hook",
+        "ganon_updateTeleportAnimationGoingOut_hook",
+        "ganon_updateFlickeringXPosition_hook",
+        "ganon_updateTeleportVarsAndPlaySound_hook",
+        "ganon_updateTeleportAnimationComingIn_hook",
+        "ganon_finishAttack_hook",
+        "label_10_135_hook",
+        "ganon_decideNextMove_hook",
+        "ganon_decideTeleportLocationAndCounter_hook",
+        "ganon_spawnPart_hook",
+        "ganon_makeRoomBoundarySolid_hook",
+        "ganon_updateSeizurePalette_hook",
+        "ganon_setTileReplacementMode_hook"
+      ],
+      "bindings": {
+        "CP": 12,
+        "ZERO": 0,
+        "OR": 8,
+        "AND": 11,
+        "BIT": 2,
+        "XOR": 1,
+        "FLAG": 89,
+        "WRITE": 206,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/ganonRevivalCutscene.c",
+      "family": "ganonRevivalCutscene",
+      "status": "retained_c_service",
+      "enemy_ids": [
+        96
+      ],
+      "rng_calls": [],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "reason": "phase 6 story controller",
+      "native_void_entries": [
+        "enemyCode60_hook",
+        "label_266_hook",
+        "label_267_hook",
+        "ganonRevivalCutscene_controller_hook",
+        "label_270_hook",
+        "ganonRevivalCutscene_spawnShadow_hook"
+      ]
+    },
+    {
+      "source": "src/game/common/enemies/gel.c",
+      "family": "gel",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        67
+      ],
+      "rng_calls": [
+        "ecom_setRandomAngle_b0e_hook",
+        "getRandomNumber_noPreserveVars_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "enemyCode43_hook",
+        "gel_state_uninitialized_hook",
+        "gel_state_stub_hook",
+        "gel_state8_hook",
+        "gel_state9_hook",
+        "gel_animate_hook",
+        "gel_stateA_hook",
+        "gel_stateB_hook",
+        "gel_stateC_hook",
+        "gel_stateD_hook",
+        "gel_beginHop_hook",
+        "gel_setAngleAwayFromLink_hook"
+      ],
+      "bindings": {
+        "CP": 1,
+        "ZERO": 0,
+        "OR": 1,
+        "AND": 2,
+        "BIT": 1,
+        "XOR": 2,
+        "FLAG": 15,
+        "WRITE": 23,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/ghini.c",
+      "family": "ghini",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        23
+      ],
+      "rng_calls": [
+        "ecom_randomBitwiseAndBCE_b0d_hook",
+        "getRandomNumber_noPreserveVars_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "ghini_addAToHl_from_rst",
+        "enemyCode17_hook",
+        "ghini_subid00_hook",
+        "ghini_subid01_hook",
+        "ghini_subid02_hook",
+        "ghini_updateMovementAndSetSpeedFromCounter1_hook",
+        "ghini_updateMovement_hook",
+        "ghini_updateAnimationFromAngle_hook",
+        "ghini_chooseTargetPosition_hook"
+      ],
+      "bindings": {
+        "CP": 10,
+        "ZERO": 0,
+        "OR": 2,
+        "AND": 4,
+        "BIT": 0,
+        "XOR": 0,
+        "FLAG": 33,
+        "WRITE": 34,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/giantBladeTrap.c",
+      "family": "giantBladeTrap",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        42
+      ],
+      "rng_calls": [],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "giantBladeTrap_addAToHl_from_rst",
+        "giantBladeTrap_checkTileAtOffsetSolid",
+        "enemyCode2a_hook",
+        "giantBladeTrap_state_uninitialized_hook",
+        "giantBladeTrap_state_stub_hook",
+        "giantBladeTrap_subid00_hook",
+        "giantBladeTrap_subid01_hook",
+        "giantBladeTrap_subid01_state8_hook",
+        "giantBladeTrap_subid01_state9_hook",
+        "giantBladeTrap_subid01_stateA_hook",
+        "giantBladeTrap_subid02_hook",
+        "giantBladeTrap_subid02_state8_hook",
+        "giantBladeTrap_commonState9_hook",
+        "giantBladeTrap_subid02_stateA_hook",
+        "giantBladeTrap_subid03_hook",
+        "giantBladeTrap_subid03_state8_hook",
+        "giantBladeTrap_subid03_stateA_hook",
+        "giantBladeTrap_chooseInitialAngle_hook",
+        "giantBladeTrap_checkCanMoveInDirection_hook",
+        "giantBladeTrap_updateSpeed_hook"
+      ],
+      "bindings": {
+        "CP": 0,
+        "ZERO": 0,
+        "OR": 3,
+        "AND": 10,
+        "BIT": 0,
+        "XOR": 2,
+        "FLAG": 17,
+        "WRITE": 28,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/gibdo.c",
+      "family": "gibdo",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        18
+      ],
+      "rng_calls": [
+        "ecom_randomBitwiseAndBCE_b0d_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "enemyCode12_hook"
+      ],
+      "bindings": {
+        "CP": 2,
+        "ZERO": 0,
+        "OR": 0,
+        "AND": 0,
+        "BIT": 0,
+        "XOR": 0,
+        "FLAG": 8,
+        "WRITE": 7,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/gopongaFlower.c",
+      "family": "gopongaFlower",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        37
+      ],
+      "rng_calls": [
+        "getRandomNumber_noPreserveVars_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "enemyCode25_hook"
+      ],
+      "bindings": {
+        "CP": 1,
+        "ZERO": 0,
+        "OR": 2,
+        "AND": 1,
+        "BIT": 0,
+        "XOR": 0,
+        "FLAG": 10,
+        "WRITE": 7,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/greatFairyEnemy.c",
+      "family": "greatFairyEnemy",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        56
+      ],
+      "rng_calls": [],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "enemyCode38_hook",
+        "greatFairy_state_uninitialized_hook",
+        "greatFairy_state1_hook",
+        "greatFairy_state2_hook",
+        "greatFairy_state3_hook",
+        "greatFairy_animate_hook",
+        "greatFairy_state4_hook",
+        "greatFairy_state5_hook",
+        "greatFairy_state6_hook",
+        "greatFairy_state7_hook",
+        "greatFairy_state8_hook",
+        "greatFairy_state9_hook",
+        "greatFairy_updateZPosition_hook",
+        "greatFairy_checkLinkApproached_hook",
+        "greatFairy_spawnCirclingHeart_hook",
+        "greatFairy_createPuff_hook",
+        "greatFairy_playSoundEvery8Frames_hook"
+      ],
+      "bindings": {
+        "CP": 4,
+        "ZERO": 0,
+        "OR": 1,
+        "AND": 3,
+        "BIT": 3,
+        "XOR": 0,
+        "FLAG": 19,
+        "WRITE": 31,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/hardhatBeetle.c",
+      "family": "hardhatBeetle",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        77,
+        95
+      ],
+      "rng_calls": [],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "enemyCode4d_hook",
+        "enemyCode5f_hook"
+      ],
+      "bindings": {
+        "CP": 1,
+        "ZERO": 0,
+        "OR": 0,
+        "AND": 0,
+        "BIT": 0,
+        "XOR": 0,
+        "FLAG": 5,
+        "WRITE": 0,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/itemDropProducer.c",
+      "family": "itemDropProducer",
+      "status": "retained_c_service",
+      "enemy_ids": [
+        89
+      ],
+      "rng_calls": [],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "reason": "drop creation service",
+      "native_void_entries": [
+        "enemyCode59_hook"
+      ]
+    },
+    {
+      "source": "src/game/common/enemies/keese.c",
+      "family": "keese",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        50
+      ],
+      "rng_calls": [
+        "ecom_randomBitwiseAndBCE_b0e_hook",
+        "getRandomNumber_noPreserveVars_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "keese_addAToHl_from_rst",
+        "enemyCode32_hook",
+        "keese_state_uninitialized_hook",
+        "keese_state_stub_hook",
+        "keese_subid00_hook",
+        "keese_subid00_state8_hook",
+        "keese_subid00_state9_hook",
+        "keese_animate_hook",
+        "keese_subid00_stateA_hook",
+        "keese_subid01_hook",
+        "keese_subid01_state8_hook",
+        "keese_subid02_state9_hook",
+        "keese_updateDeceleration_hook",
+        "keese_initializeSubid_hook",
+        "keese_chooseWhetherToReverseTurningAngle_hook"
+      ],
+      "bindings": {
+        "CP": 2,
+        "ZERO": 0,
+        "OR": 1,
+        "AND": 7,
+        "BIT": 0,
+        "XOR": 0,
+        "FLAG": 18,
+        "WRITE": 21,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/leever.c",
+      "family": "leever",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        11
+      ],
+      "rng_calls": [
+        "getRandomNumber_noPreserveVars_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "enemyCode0b_addAToHl_from_rst",
+        "enemyCode0b_chooseSpawnPosition_hook",
+        "enemyCode0b_setRandomCounter1_hook",
+        "enemyCode0b_setRandomHighCounter1_hook",
+        "enemyCode0b_nudgeTowardsLink_hook",
+        "enemyCode0b_hook"
+      ],
+      "bindings": {
+        "CP": 4,
+        "ZERO": 0,
+        "OR": 4,
+        "AND": 7,
+        "BIT": 0,
+        "XOR": 0,
+        "FLAG": 23,
+        "WRITE": 24,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/likelike.c",
+      "family": "likelike",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        36
+      ],
+      "rng_calls": [
+        "ecom_randomBitwiseAndBCE_b0d_hook",
+        "getRandomNumber_noPreserveVars_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "likelike_addAToHl_from_rst",
+        "enemyCode24_hook",
+        "likelike_state_uninitialized_hook",
+        "likelike_state_switchHook_hook",
+        "likelike_state_galeSeed_hook",
+        "likelike_state_stub_hook",
+        "likelike_subid00_hook",
+        "likelike_subid00_state8_hook",
+        "likelike_state9_hook",
+        "likelike_stateA_hook",
+        "likelike_animate_hook",
+        "likelike_stateB_hook",
+        "likelike_releaseLink_hook",
+        "likelike_stateC_hook",
+        "likelike_subid01_hook",
+        "likelike_subid02_hook",
+        "likelike_animate2_hook",
+        "likelike_subid03_hook",
+        "likelike_spawn_hook",
+        "likelike_setChildSpawnPosition_hook",
+        "likelike_findAllLikelikesWithSubid0_hook",
+        "likelike_chooseRandomPosition_hook",
+        "likelike_checkHazards_hook"
+      ],
+      "bindings": {
+        "CP": 12,
+        "ZERO": 0,
+        "OR": 6,
+        "AND": 4,
+        "BIT": 1,
+        "XOR": 0,
+        "FLAG": 41,
+        "WRITE": 46,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/lynel.c",
+      "family": "lynel",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        13
+      ],
+      "rng_calls": [
+        "ecom_randomBitwiseAndBCE_b0d_hook",
+        "ecom_setRandomCardinalAngle_b0d_hook",
+        "getRandomNumber_noPreserveVars_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "enemyCode0d_addAToHl_from_rst",
+        "enemyCode0d_hook"
+      ],
+      "bindings": {
+        "CP": 4,
+        "ZERO": 0,
+        "OR": 2,
+        "AND": 5,
+        "BIT": 1,
+        "XOR": 0,
+        "FLAG": 18,
+        "WRITE": 15,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/mergedTwinrova.c",
+      "family": "mergedTwinrova",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        1
+      ],
+      "rng_calls": [
+        "getRandomNumber_hook",
+        "getRandomNumber_noPreserveVars_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "mergedTwinrova_addAToHl_from_rst",
+        "mergedTwinrova_addDoubleIndexToHl_from_rst",
+        "enemyCode01__normalStatus_hook",
+        "enemyCode01_hook",
+        "mergedTwinrova_state_uninitialized_hook",
+        "mergedTwinrova_state_stub_hook",
+        "mergedTwinrova_state8_hook",
+        "mergedTwinrova_state9_hook",
+        "mergedTwinrova_stateA_hook",
+        "mergedTwinrova_stateB_hook",
+        "mergedTwinrova_lavaRoom_hook",
+        "mergedTwinrova_lavaRoom_stateC_hook",
+        "mergedTwinrova_chooseTargetPosition_hook",
+        "mergedTwinrova_lavaRoom_stateD_hook",
+        "mergedTwinrova_lavaRoom_stateE_hook",
+        "mergedTwinrova_iceRoom_hook",
+        "mergedTwinrova_iceRoom_stateC_hook",
+        "mergedTwinrova_iceRoom_stateD_hook",
+        "mergedTwinrova_iceRoom_stateE_hook",
+        "mergedTwinrova_iceRoom_stateF_hook",
+        "mergedTwinrova_iceRoom_state10_hook",
+        "mergedTwinrova_checkTimeToSwapRoomFromTimer_hook",
+        "mergedTwinrova_checkPositionsCloseEnough_hook",
+        "mergedTwinrova_checkTimeToSwapRoomFromDamage_hook",
+        "mergedTwinrova_deathCutscene_hook",
+        "mergedTwinrova_decVar3bIfNonzero_hook"
+      ],
+      "bindings": {
+        "CP": 8,
+        "ZERO": 0,
+        "OR": 12,
+        "AND": 7,
+        "BIT": 0,
+        "XOR": 6,
+        "FLAG": 54,
+        "WRITE": 141,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/moblinsAndShroudedStalfos.c",
+      "family": "moblinsAndShroudedStalfos",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        12
+      ],
+      "rng_calls": [
+        "ecom_setRandomCardinalAngle_b0d_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "enemyCode0c_hook",
+        "moblin_state_uninitialized_hook",
+        "moblin_state_scentSeed_hook",
+        "moblin_state_switchHook_hook",
+        "moblin_state_stub_hook",
+        "moblin_state_8_hook",
+        "moblin_state_9_hook"
+      ],
+      "bindings": {
+        "CP": 1,
+        "ZERO": 0,
+        "OR": 1,
+        "AND": 1,
+        "BIT": 2,
+        "XOR": 0,
+        "FLAG": 11,
+        "WRITE": 4,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/moldorm.c",
+      "family": "moldorm",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        79
+      ],
+      "rng_calls": [
+        "ecom_setRandomAngle_b0e_hook",
+        "getRandomNumber_noPreserveVars_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "enemyCode4f_hook",
+        "moldorm_state_uninitialized_hook",
+        "moldorm_state1_hook",
+        "moldorm_state_stub_hook",
+        "moldorm_head_hook",
+        "moldorm_tail_hook",
+        "moldorm_tail_delete_hook",
+        "moldorm_tail_setRelatedObj1AndCopyPosition_hook",
+        "moldorm_head_updateAnimationFromAngle_hook",
+        "moldorm_tail_clearOffsetBuffer_hook",
+        "moldorm_checkHazards_hook"
+      ],
+      "bindings": {
+        "CP": 2,
+        "ZERO": 0,
+        "OR": 5,
+        "AND": 7,
+        "BIT": 0,
+        "XOR": 0,
+        "FLAG": 21,
+        "WRITE": 33,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/none.c",
+      "family": "none",
+      "status": "retained_c_service",
+      "enemy_ids": [
+        0
+      ],
+      "rng_calls": [],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "reason": "empty dispatch",
+      "native_void_entries": [
+        "enemyCode00_hook"
+      ]
+    },
+    {
+      "source": "src/game/common/enemies/octorok.c",
+      "family": "octorok",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        9
+      ],
+      "rng_calls": [
+        "ecom_randomBitwiseAndBCE_b0d_hook",
+        "ecom_setRandomCardinalAngle_b0d_hook",
+        "getRandomNumber_noPreserveVars_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "octorok_addAToHl_from_rst",
+        "enemyCode09_hook",
+        "octorok_state_uninitialized_hook",
+        "octorok_state_followingScentSeed_hook",
+        "octorok_state_latchedBySwitchHook_hook",
+        "octorok_state_stub_hook",
+        "octorok_state_08_hook",
+        "octorok_state_09_hook",
+        "octorok_state_0a_hook",
+        "octorok_state_0b_hook"
+      ],
+      "bindings": {
+        "CP": 2,
+        "ZERO": 0,
+        "OR": 2,
+        "AND": 1,
+        "BIT": 1,
+        "XOR": 0,
+        "FLAG": 17,
+        "WRITE": 20,
+        "OCTOROK_ROLL": 1,
+        "OCTOROK_AIM": 1
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/peahat.c",
+      "family": "peahat",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        62
+      ],
+      "rng_calls": [
+        "ecom_setRandomAngle_b0e_hook",
+        "getRandomNumber_noPreserveVars_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "peahat_addAToHl_from_rst",
+        "enemyCode3e_hook",
+        "peahat_state_uninitialized_hook",
+        "peahet_state_stub_hook",
+        "peahat_state8_hook",
+        "peahat_state9_hook",
+        "peahat_stateA_hook",
+        "peahat_animate_hook",
+        "peahat_stateB_hook",
+        "peahat_updateEnemyCollisionMode_hook",
+        "peahat_updatePosition_hook"
+      ],
+      "bindings": {
+        "CP": 3,
+        "ZERO": 0,
+        "OR": 1,
+        "AND": 5,
+        "BIT": 0,
+        "XOR": 0,
+        "FLAG": 15,
+        "WRITE": 16,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/pincer.c",
+      "family": "pincer",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        69
+      ],
+      "rng_calls": [],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "enemyCode45_hook",
+        "pincer_state_uninitialized_hook",
+        "pincer_state1_hook",
+        "pincer_state_stub_hook",
+        "pincer_head_hook",
+        "pincer_head_state8_hook",
+        "pincer_head_state9_hook",
+        "pincer_head_stateA_hook",
+        "pincer_head_stateB_hook",
+        "pincer_head_stateC_hook",
+        "pincer_head_stateD_hook",
+        "pincer_head_stateE_hook",
+        "pincer_body_hook",
+        "pincer_setChildRelatedObj1_hook",
+        "pincer_updatePosition_hook",
+        "pincer_body_updateExtendedAmount_hook"
+      ],
+      "bindings": {
+        "CP": 3,
+        "ZERO": 0,
+        "OR": 1,
+        "AND": 1,
+        "BIT": 0,
+        "XOR": 0,
+        "FLAG": 16,
+        "WRITE": 35,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/podoboo.c",
+      "family": "podoboo",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        41
+      ],
+      "rng_calls": [
+        "getRandomNumber_noPreserveVars_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "podoboo_addAToHl_from_rst",
+        "enemyCode29_hook",
+        "podoboo_state_uninitialized_hook",
+        "podoboo_state_stub_hook",
+        "podoboo_state8_hook",
+        "podoboo_state9_hook",
+        "podoboo_stateA_hook",
+        "podoboo_stateB_hook",
+        "podoboo_stateC_hook",
+        "podoboo_spawnLavaParticleEvery16Frames_hook",
+        "podoboo_spawnLavaParticle_hook",
+        "podoboo_beginMovingUp_hook",
+        "podoboo_makeLavaSplash_hook",
+        "podoboo_updatePosition_hook"
+      ],
+      "bindings": {
+        "CP": 3,
+        "ZERO": 0,
+        "OR": 3,
+        "AND": 2,
+        "BIT": 0,
+        "XOR": 0,
+        "FLAG": 15,
+        "WRITE": 16,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/podobooTower.c",
+      "family": "podobooTower",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        45
+      ],
+      "rng_calls": [
+        "getRandomNumber_noPreserveVars_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "enemyCode2d_addAToHl_from_rst",
+        "enemyCode2d_decCounter2Every4Frames",
+        "enemyCode2d_updateCollisionRadiiAndYPosition",
+        "enemyCode2d_hook"
+      ],
+      "bindings": {
+        "CP": 3,
+        "ZERO": 0,
+        "OR": 2,
+        "AND": 1,
+        "BIT": 1,
+        "XOR": 0,
+        "FLAG": 15,
+        "WRITE": 20,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/polsVoice.c",
+      "family": "polsVoice",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        35
+      ],
+      "rng_calls": [
+        "ecom_randomBitwiseAndBCE_b0d_hook",
+        "getRandomNumber_noPreserveVars_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "enemyCode23_hook",
+        "polsVoice_state_uninitialized_hook",
+        "polsVoice_state_stub_hook",
+        "polsVoice_state8_hook",
+        "polsVoice_state9_hook",
+        "polsVoice_setLandedAnimation_hook",
+        "polsVoice_checkLinkPlayingInstrument_hook"
+      ],
+      "bindings": {
+        "CP": 1,
+        "ZERO": 0,
+        "OR": 3,
+        "AND": 2,
+        "BIT": 0,
+        "XOR": 0,
+        "FLAG": 9,
+        "WRITE": 9,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/riverZora.c",
+      "family": "riverZora",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        8
+      ],
+      "rng_calls": [
+        "getRandomNumber_noPreserveVars_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "enemyCode08_hook"
+      ],
+      "bindings": {
+        "CP": 1,
+        "ZERO": 0,
+        "OR": 0,
+        "AND": 1,
+        "BIT": 0,
+        "XOR": 0,
+        "FLAG": 10,
+        "WRITE": 11,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/rope.c",
+      "family": "rope",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        16
+      ],
+      "rng_calls": [
+        "ecom_randomBitwiseAndBCE_b0d_hook",
+        "getRandomNumber_noPreserveVars_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "rope_addAToHl_from_rst",
+        "enemyCode10_hook",
+        "rope_subid00_hook",
+        "rope_state_moveAround_hook",
+        "rope_callEnemyAnimate_hook",
+        "rope_state_chargeLink_hook",
+        "rope_subid01_hook",
+        "rope_subid02_hook",
+        "rope_subid03_hook",
+        "rope_changeDirection_hook",
+        "rope_updateAnimationFromAngle_hook",
+        "rope_animate_hook",
+        "rope_checkHazardsIfApplicable_hook"
+      ],
+      "bindings": {
+        "CP": 1,
+        "ZERO": 0,
+        "OR": 4,
+        "AND": 4,
+        "BIT": 1,
+        "XOR": 1,
+        "FLAG": 23,
+        "WRITE": 42,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/sandCrab.c",
+      "family": "sandCrab",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        26
+      ],
+      "rng_calls": [
+        "ecom_randomBitwiseAndBCE_b0d_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "enemyCode1a_hook"
+      ],
+      "bindings": {
+        "CP": 0,
+        "ZERO": 0,
+        "OR": 1,
+        "AND": 1,
+        "BIT": 2,
+        "XOR": 0,
+        "FLAG": 9,
+        "WRITE": 9,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/seedsOnTree.c",
+      "family": "seedsOnTree",
+      "status": "retained_c_service",
+      "enemy_ids": [
+        90
+      ],
+      "rng_calls": [],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "reason": "collectible seed tree",
+      "native_void_entries": [
+        "seedsOnTree_addAToHl_from_rst",
+        "seedsOnTree_addDoubleIndexToHl_from_rst",
+        "enemyCode5a_hook",
+        "enemyCode5a_addSeed_hook"
+      ]
+    },
+    {
+      "source": "src/game/common/enemies/spark.c",
+      "family": "spark",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        19
+      ],
+      "rng_calls": [],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "enemyCode13_hook",
+        "spark_state_uninitialized_hook",
+        "spark_state_stub_hook",
+        "spark_state8_hook",
+        "spark_state9_hook",
+        "spark_stateA_hook"
+      ],
+      "bindings": {
+        "CP": 3,
+        "ZERO": 0,
+        "OR": 0,
+        "AND": 0,
+        "BIT": 0,
+        "XOR": 0,
+        "FLAG": 7,
+        "WRITE": 4,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/spikedBeetle.c",
+      "family": "spikedBeetle",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        20
+      ],
+      "rng_calls": [
+        "ecom_randomBitwiseAndBCE_b0d_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "enemyCode14_addAToHl_from_rst",
+        "enemyCode14_hook"
+      ],
+      "bindings": {
+        "CP": 5,
+        "ZERO": 0,
+        "OR": 1,
+        "AND": 2,
+        "BIT": 1,
+        "XOR": 1,
+        "FLAG": 23,
+        "WRITE": 23,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/spinyBeetle.c",
+      "family": "spinyBeetle",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        27
+      ],
+      "rng_calls": [
+        "getRandomNumber_noPreserveVars_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "enemyCode1b_checkBushOrRockGone_hook",
+        "enemyCode1b_hook"
+      ],
+      "bindings": {
+        "CP": 3,
+        "ZERO": 0,
+        "OR": 2,
+        "AND": 1,
+        "BIT": 0,
+        "XOR": 0,
+        "FLAG": 19,
+        "WRITE": 24,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/stalfos.c",
+      "family": "stalfos",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        49
+      ],
+      "rng_calls": [
+        "ecom_randomBitwiseAndBCE_b0e_hook",
+        "getRandomNumber_noPreserveVars_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "enemyCode31_hook",
+        "stalfos_state_uninitialized_hook",
+        "stalfos_state_switchHook_hook",
+        "stalfos_state_stub_hook",
+        "stalfos_state08_hook",
+        "stalfos_state09_hook",
+        "stalfos_state0a_hook",
+        "stalfos_state0b_hook",
+        "stalfos_state0c_hook",
+        "stalfos_state0d_hook",
+        "stalfos_state0e_hook",
+        "stalfos_state0f_hook",
+        "stalfos_state10_hook",
+        "stalfos_moveInRandomAngle_hook",
+        "stalfos_checkSubid3StompsLink_hook",
+        "stalfos_beginJumpAnimation_hook",
+        "stalfos_checkJumpAwayFromLink_hook",
+        "stalfos_setState8_hook"
+      ],
+      "bindings": {
+        "CP": 4,
+        "ZERO": 0,
+        "OR": 3,
+        "AND": 2,
+        "BIT": 0,
+        "XOR": 0,
+        "FLAG": 20,
+        "WRITE": 21,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/swordEnemies.c",
+      "family": "swordEnemies",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        61,
+        72
+      ],
+      "rng_calls": [
+        "ecom_randomBitwiseAndBCE_b0e_hook",
+        "ecom_setRandomCardinalAngle_b0e_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "swordEnemy_addDoubleIndexToHl_from_rst",
+        "enemyCode3d_hook",
+        "enemyCode3d_runState_hook",
+        "swordEnemy_state_uninitialized_hook",
+        "swordEnemy_state_switchHook_hook",
+        "swordEnemy_state_scentSeed_hook",
+        "swordEnemy_state_stub_hook",
+        "swordEnemy_state8_hook",
+        "swordEnemy_animate_hook",
+        "swordEnemy_state9_hook",
+        "swordEnemy_stateA_hook",
+        "swordEnemy_gotoState8_hook",
+        "enemyCode48_hook",
+        "enemyCode48_runState_hook",
+        "swordDarknut_state_uninitialized_hook",
+        "swordDarknut_state8_hook",
+        "swordDarknut_animate_hook",
+        "swordDarknut_state9_hook",
+        "swordDarknut_stateA_hook",
+        "swordEnemy_beginChasingLink_hook",
+        "swordEnemy_chooseRandomAngleAndCounter1_hook",
+        "swordEnemy_chooseRandomAngleAndCounter1_chooseAngle_hook",
+        "swordEnemy_checkLinkIsClose_hook",
+        "swordDarknut_checkLinkIsClose_hook",
+        "swordEnemy_setChaseCooldown_hook",
+        "swordEnemy_updateEnemyCollisionMode_hook",
+        "swordDarknut_updateEnemyCollisionMode_hook",
+        "swordEnemy_checkIgnoreCollision_hook",
+        "swordDarknut_delete_hook"
+      ],
+      "bindings": {
+        "CP": 7,
+        "ZERO": 0,
+        "OR": 5,
+        "AND": 3,
+        "BIT": 1,
+        "XOR": 0,
+        "FLAG": 39,
+        "WRITE": 22,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/tektite.c",
+      "family": "tektite",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        48
+      ],
+      "rng_calls": [
+        "getRandomNumber_noPreserveVars_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "enemyCode30_hook"
+      ],
+      "bindings": {
+        "CP": 0,
+        "ZERO": 0,
+        "OR": 0,
+        "AND": 4,
+        "BIT": 1,
+        "XOR": 0,
+        "FLAG": 10,
+        "WRITE": 12,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/thwimp.c",
+      "family": "thwimp",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        46
+      ],
+      "rng_calls": [],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "enemyCode2e_state8_hook",
+        "enemyCode2e_hook"
+      ],
+      "bindings": {
+        "CP": 3,
+        "ZERO": 0,
+        "OR": 0,
+        "AND": 0,
+        "BIT": 0,
+        "XOR": 0,
+        "FLAG": 8,
+        "WRITE": 13,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/thwomp.c",
+      "family": "thwomp",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        47
+      ],
+      "rng_calls": [],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "enemyCode2f_runState",
+        "enemyCode2f_hook",
+        "thwomp_uninitialized_hook",
+        "thwomp_state_stub_hook",
+        "thwomp_state8_hook",
+        "thwomp_state9_hook",
+        "thwomp_stateA_hook",
+        "thwomp_stateB_hook",
+        "thwomp_func67ba_hook",
+        "thwomp_updateLinkRidingSelf_hook"
+      ],
+      "bindings": {
+        "CP": 6,
+        "ZERO": 0,
+        "OR": 0,
+        "AND": 1,
+        "BIT": 0,
+        "XOR": 0,
+        "FLAG": 12,
+        "WRITE": 12,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/twinrova.c",
+      "family": "twinrova",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        3
+      ],
+      "rng_calls": [
+        "getRandomNumber_noPreserveVars_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "twinrova_addDoubleIndexToHl_from_rst",
+        "twinrova_addAToHl_from_rst",
+        "enemyCode03__runState_hook",
+        "enemyCode03_hook",
+        "twinrova_state_uninitialized_hook",
+        "twinrova_state_spawner_hook",
+        "twinrova_state_stub_hook",
+        "twinrova_subid0_hook",
+        "twinrova_state8_hook",
+        "twinrova_state9_hook",
+        "twinrova_subid0_stateA_hook",
+        "twinrova_subid0_stateB_hook",
+        "twinrova_subid0_stateC_hook",
+        "twinrova_stateD_hook",
+        "twinrova_stateE_hook",
+        "twinrova_animate_hook",
+        "twinrova_stateF_hook",
+        "twinrova_state10_hook",
+        "twinrova_subid1_hook",
+        "twinrova_subid1_stateA_hook",
+        "twinrova_subid1_stateB_hook",
+        "twinrova_subid1_stateC_hook",
+        "twinrova_initialize_hook",
+        "twinrova_updateZPosition_hook",
+        "twinrova_checkFireProjectile_hook",
+        "twinrova_checkFireProjectile__spawnProjectile_hook",
+        "twinrova_setTargetPositionToObject_hook",
+        "twinrova_updateAnimationFromAngle_hook",
+        "twinrova_updateMovingAnimation_hook",
+        "twinrova_updateMovingAnimationGivenAngle_hook",
+        "twinrova_calculateAnimationFromAngle_hook",
+        "twinrova_subid0_updateTargetPosition_hook",
+        "twinrova_subid1_updateTargetPosition_hook",
+        "twinrova_moveTowardTargetPosition_hook",
+        "twinrova_chooseObjectToAttack_hook",
+        "twinrova_checkAttackInProgress_hook",
+        "twinrova_rise2PixelsAboveGround_hook",
+        "twinrova_incState2ForSelfAndTwin_hook"
+      ],
+      "bindings": {
+        "CP": 10,
+        "ZERO": 0,
+        "OR": 20,
+        "AND": 11,
+        "BIT": 16,
+        "XOR": 0,
+        "FLAG": 71,
+        "WRITE": 142,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/twinrovaBat.c",
+      "family": "twinrovaBat",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        94
+      ],
+      "rng_calls": [
+        "getRandomNumber_noPreserveVars_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "enemyCode5e_hook",
+        "enemyCode5e_checkInBounds_hook",
+        "enemyCode5e_updateOamFlags_hook"
+      ],
+      "bindings": {
+        "CP": 3,
+        "ZERO": 0,
+        "OR": 0,
+        "AND": 2,
+        "BIT": 0,
+        "XOR": 0,
+        "FLAG": 8,
+        "WRITE": 7,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/twinrovaIce.c",
+      "family": "twinrovaIce",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        93
+      ],
+      "rng_calls": [],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "twinrovaIce_addAToHl_from_rst",
+        "enemyCode5d_hook",
+        "twinrovaIce_bounceOffShield_hook"
+      ],
+      "bindings": {
+        "CP": 3,
+        "ZERO": 0,
+        "OR": 1,
+        "AND": 0,
+        "BIT": 0,
+        "XOR": 0,
+        "FLAG": 8,
+        "WRITE": 6,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/vireEnemy.c",
+      "family": "vireEnemy",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        117
+      ],
+      "rng_calls": [
+        "getRandomNumber_hook",
+        "getRandomNumber_noPreserveVars_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "vireEnemy_addAToHl_from_rst",
+        "enemyCode75_hook",
+        "vire_state_uninitialized_hook",
+        "vire_state_stub_hook",
+        "vire_mainForm_hook",
+        "vire_mainForm_state8_hook",
+        "vire_mainForm_state9_hook",
+        "vire_mainForm_stateA_hook",
+        "vire_mainForm_stateB_substate0_hook",
+        "vire_mainForm_stateB_hook",
+        "vire_mainForm_stateC_hook",
+        "vire_mainForm_stateD_hook",
+        "vire_state_moveOffScreen_hook",
+        "vire_mainForm_stateE_hook",
+        "vire_mainForm_stateF_hook",
+        "vire_mainForm_stateF_initBat_hook",
+        "vire_batForm_hook",
+        "vire_batForm_state8_hook",
+        "vire_batForm_state9_hook",
+        "vire_batForm_gotoStateA_hook",
+        "vire_batForm_stateA_hook",
+        "vire_batForm_animate_hook",
+        "vire_batForm_stateB_hook",
+        "vire_batForm_stateC_hook",
+        "vire_batForm_stateD_hook",
+        "vire_spawnOutsideCamera_hook",
+        "vire_mainForm_leftScreen_hook",
+        "vire_checkOffScreen_hook",
+        "vire_mainForm_circleAroundScreen_hook",
+        "vire_mainForm_applySpeedAndAnimate_hook",
+        "vire_mainForm_checkLinkTooClose_hook",
+        "vire_mainForm_fireProjectile_hook",
+        "vire_mainForm_fireProjectileWithSubid_hook",
+        "vire_batForm_moveAwayFromLinkIfTooClose_hook",
+        "vire_batForm_updateZPos_hook"
+      ],
+      "bindings": {
+        "CP": 25,
+        "ZERO": 0,
+        "OR": 13,
+        "AND": 16,
+        "BIT": 1,
+        "XOR": 3,
+        "FLAG": 88,
+        "WRITE": 123,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/wallmaster.c",
+      "family": "wallmaster",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        40
+      ],
+      "rng_calls": [],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "enemyCode28_hook",
+        "wallmaster_state_uninitialized_hook",
+        "wallmaster_state1_hook",
+        "wallmaster_state_galeSeed_hook",
+        "wallmaster_state_stub_hook",
+        "wallmaster_state8_hook",
+        "wallmaster_state9_hook",
+        "wallmaster_stateA_hook",
+        "wallmaster_stateB_hook",
+        "wallmaster_stateC_hook",
+        "wallmaster_stateD_hook",
+        "wallmaster_flickerVisibilityIfHighUp_hook"
+      ],
+      "bindings": {
+        "CP": 5,
+        "ZERO": 0,
+        "OR": 9,
+        "AND": 1,
+        "BIT": 2,
+        "XOR": 0,
+        "FLAG": 28,
+        "WRITE": 35,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/waterTektite.c",
+      "family": "waterTektite",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        58
+      ],
+      "rng_calls": [
+        "getRandomNumber_noPreserveVars_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "waterTektite_addAToHl_from_rst",
+        "enemyCode3a_hook",
+        "waterTektite_state_uninitialized_hook",
+        "waterTektike_decideNewAngle_hook",
+        "waterTektike_state_stub_hook",
+        "waterTektike_state8_hook",
+        "waterTektike_animate_hook",
+        "waterTektike_state9_hook",
+        "waterTektite_getAdjacentWallsBitset_hook",
+        "waterTektite_getAdjacentWallsBitsetGivenAngle_hook",
+        "waterTektike_setSpeedFromCounter1_hook"
+      ],
+      "bindings": {
+        "CP": 1,
+        "ZERO": 0,
+        "OR": 2,
+        "AND": 3,
+        "BIT": 0,
+        "XOR": 1,
+        "FLAG": 8,
+        "WRITE": 14,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/whisp.c",
+      "family": "whisp",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        25
+      ],
+      "rng_calls": [
+        "getRandomNumber_noPreserveVars_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "whisp_addAToHl_from_rst",
+        "enemyCode19_hook",
+        "whisp_state_uninitialized_hook",
+        "whisp_state8_hook",
+        "spark_updateAngle_hook",
+        "spark_getWallAngle_hook",
+        "spark_getTileOffset_hook",
+        "spark_checkWallInDirection_hook"
+      ],
+      "bindings": {
+        "CP": 2,
+        "ZERO": 0,
+        "OR": 0,
+        "AND": 7,
+        "BIT": 1,
+        "XOR": 0,
+        "FLAG": 12,
+        "WRITE": 5,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/wizzrobe.c",
+      "family": "wizzrobe",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        64
+      ],
+      "rng_calls": [
+        "ecom_randomBitwiseAndBCE_b0e_hook",
+        "ecom_setRandomCardinalAngle_b0e_hook",
+        "getRandomNumber_hook",
+        "getRandomNumber_noPreserveVars_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "wizzrobe_addDoubleIndexToHl_from_rst",
+        "enemyCode40_hook",
+        "wizzrobe_state_uninitialized_hook",
+        "wizzrobe_state_switchHook_hook",
+        "wizzrobe_state_stub_hook",
+        "wizzrobe_subid0_hook",
+        "wizzrobe_subid0_state8_hook",
+        "wizzrobe_subid0_state9_hook",
+        "wizzrobe_subid0_stateA_hook",
+        "wizzrobe_subid0_stateB_hook",
+        "wizzrobe_subid1_hook",
+        "wizzrobe_subid1_state8_hook",
+        "wizzrobe_subid1_state9_hook",
+        "wizzrobe_subid1_stateA_hook",
+        "wizzrobe_subid1_stateB_hook",
+        "wizzrobe_removePositionReservation_hook",
+        "wizzrobe_subid2_hook",
+        "wizzrobe_subid2_state8_hook",
+        "wizzrobe_subid2_state9_hook",
+        "wizzrobe_subid2_stateA_hook",
+        "wizzrobe_subid2_stateB_hook",
+        "wizzrobe_setAnimationFromAngle_hook",
+        "wizzrobe_checkFlickerVisibility_hook",
+        "wizzrobe_checkReachedTargetPosition_hook",
+        "wizzrobe_setAngleTowardTargetPosition_hook",
+        "wizzrobe_chooseSpawnPosition_hook",
+        "wizzrobe_fireEvery32Frames_hook",
+        "wizzrobe_markSpotAsTaken_hook"
+      ],
+      "bindings": {
+        "CP": 10,
+        "ZERO": 0,
+        "OR": 5,
+        "AND": 7,
+        "BIT": 0,
+        "XOR": 0,
+        "FLAG": 39,
+        "WRITE": 51,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/common/enemies/zol.c",
+      "family": "zol",
+      "status": "enemy_ai_policy",
+      "enemy_ids": [
+        52
+      ],
+      "rng_calls": [
+        "getRandomNumber_noPreserveVars_hook"
+      ],
+      "state_storage": "existing enemy state/substate, angles, counters and flags in GB",
+      "physical_services": "C movement, collision, damage, animation, projectile effects; original RNG order",
+      "native_void_entries": [
+        "enemyCode34_hook",
+        "zol_state_uninitialized_hook",
+        "zol_state_stub_hook",
+        "zol_subid00_hook",
+        "zol_subid00_state8_hook",
+        "zol_subid00_state9_hook",
+        "zol_subid00_stateA_hook",
+        "zol_animate_hook",
+        "zol_subid00_stateB_hook",
+        "zol_subid00_stateC_hook",
+        "zol_subid00_stateD_hook",
+        "zol_subid01_hook",
+        "zol_subid01_state8_hook",
+        "zol_subid01_state9_hook",
+        "zol_animate2_hook",
+        "zol_subid01_stateA_hook",
+        "zol_subid01_stateB_hook",
+        "zol_subid01_stateC_hook",
+        "zol_subid01_stateD_hook",
+        "zol_spawnGel_hook"
+      ],
+      "bindings": {
+        "CP": 2,
+        "ZERO": 0,
+        "OR": 4,
+        "AND": 2,
+        "BIT": 0,
+        "XOR": 0,
+        "FLAG": 25,
+        "WRITE": 36,
+        "OCTOROK_ROLL": 0,
+        "OCTOROK_AIM": 0
+      },
+      "native_address_helpers": "ROM address/jump arithmetic and lookup helpers retained in C"
+    },
+    {
+      "source": "src/game/seasons/enemies/agunima.c",
+      "family": "agunima",
+      "status": "outside_ages_scope",
+      "reason": "Seasons-only implementation remains C"
+    },
+    {
+      "source": "src/game/seasons/enemies/aquamentus.c",
+      "family": "aquamentus",
+      "status": "outside_ages_scope",
+      "reason": "Seasons-only implementation remains C"
+    },
+    {
+      "source": "src/game/seasons/enemies/blaino.c",
+      "family": "blaino",
+      "status": "outside_ages_scope",
+      "reason": "Seasons-only implementation remains C"
+    },
+    {
+      "source": "src/game/seasons/enemies/blainosGloves.c",
+      "family": "blainosGloves",
+      "status": "outside_ages_scope",
+      "reason": "Seasons-only implementation remains C"
+    },
+    {
+      "source": "src/game/seasons/enemies/brotherGoriyas.c",
+      "family": "brotherGoriyas",
+      "status": "outside_ages_scope",
+      "reason": "Seasons-only implementation remains C"
+    },
+    {
+      "source": "src/game/seasons/enemies/commonCode.c",
+      "family": "commonCode",
+      "status": "outside_ages_scope",
+      "reason": "Seasons-only implementation remains C"
+    },
+    {
+      "source": "src/game/seasons/enemies/digdogger.c",
+      "family": "digdogger",
+      "status": "outside_ages_scope",
+      "reason": "Seasons-only implementation remains C"
+    },
+    {
+      "source": "src/game/seasons/enemies/dodongo.c",
+      "family": "dodongo",
+      "status": "outside_ages_scope",
+      "reason": "Seasons-only implementation remains C"
+    },
+    {
+      "source": "src/game/seasons/enemies/dragonOnox.c",
+      "family": "dragonOnox",
+      "status": "outside_ages_scope",
+      "reason": "Seasons-only implementation remains C"
+    },
+    {
+      "source": "src/game/seasons/enemies/facade.c",
+      "family": "facade",
+      "status": "outside_ages_scope",
+      "reason": "Seasons-only implementation remains C"
+    },
+    {
+      "source": "src/game/seasons/enemies/frypolar.c",
+      "family": "frypolar",
+      "status": "outside_ages_scope",
+      "reason": "Seasons-only implementation remains C"
+    },
+    {
+      "source": "src/game/seasons/enemies/generalOnox.c",
+      "family": "generalOnox",
+      "status": "outside_ages_scope",
+      "reason": "Seasons-only implementation remains C"
+    },
+    {
+      "source": "src/game/seasons/enemies/gleeok.c",
+      "family": "gleeok",
+      "status": "outside_ages_scope",
+      "reason": "Seasons-only implementation remains C"
+    },
+    {
+      "source": "src/game/seasons/enemies/gohma.c",
+      "family": "gohma",
+      "status": "outside_ages_scope",
+      "reason": "Seasons-only implementation remains C"
+    },
+    {
+      "source": "src/game/seasons/enemies/gohmaGel.c",
+      "family": "gohmaGel",
+      "status": "outside_ages_scope",
+      "reason": "Seasons-only implementation remains C"
+    },
+    {
+      "source": "src/game/seasons/enemies/ironMask.c",
+      "family": "ironMask",
+      "status": "outside_ages_scope",
+      "reason": "Seasons-only implementation remains C"
+    },
+    {
+      "source": "src/game/seasons/enemies/kingMoblin.c",
+      "family": "kingMoblin",
+      "status": "outside_ages_scope",
+      "reason": "Seasons-only implementation remains C"
+    },
+    {
+      "source": "src/game/seasons/enemies/magunesu.c",
+      "family": "magunesu",
+      "status": "outside_ages_scope",
+      "reason": "Seasons-only implementation remains C"
+    },
+    {
+      "source": "src/game/seasons/enemies/makuTreeBubble.c",
+      "family": "makuTreeBubble",
+      "status": "outside_ages_scope",
+      "reason": "Seasons-only implementation remains C"
+    },
+    {
+      "source": "src/game/seasons/enemies/manhandla.c",
+      "family": "manhandla",
+      "status": "outside_ages_scope",
+      "reason": "Seasons-only implementation remains C"
+    },
+    {
+      "source": "src/game/seasons/enemies/medusaHead.c",
+      "family": "medusaHead",
+      "status": "outside_ages_scope",
+      "reason": "Seasons-only implementation remains C"
+    },
+    {
+      "source": "src/game/seasons/enemies/miniDigdogger.c",
+      "family": "miniDigdogger",
+      "status": "outside_ages_scope",
+      "reason": "Seasons-only implementation remains C"
+    },
+    {
+      "source": "src/game/seasons/enemies/mothula.c",
+      "family": "mothula",
+      "status": "outside_ages_scope",
+      "reason": "Seasons-only implementation remains C"
+    },
+    {
+      "source": "src/game/seasons/enemies/mothulaChild.c",
+      "family": "mothulaChild",
+      "status": "outside_ages_scope",
+      "reason": "Seasons-only implementation remains C"
+    },
+    {
+      "source": "src/game/seasons/enemies/omuai.c",
+      "family": "omuai",
+      "status": "outside_ages_scope",
+      "reason": "Seasons-only implementation remains C"
+    },
+    {
+      "source": "src/game/seasons/enemies/poeSister1.c",
+      "family": "poeSister1",
+      "status": "outside_ages_scope",
+      "reason": "Seasons-only implementation remains C"
+    },
+    {
+      "source": "src/game/seasons/enemies/poeSister2.c",
+      "family": "poeSister2",
+      "status": "outside_ages_scope",
+      "reason": "Seasons-only implementation remains C"
+    },
+    {
+      "source": "src/game/seasons/enemies/pokey.c",
+      "family": "pokey",
+      "status": "outside_ages_scope",
+      "reason": "Seasons-only implementation remains C"
+    },
+    {
+      "source": "src/game/seasons/enemies/rollingSpikeTrap.c",
+      "family": "rollingSpikeTrap",
+      "status": "outside_ages_scope",
+      "reason": "Seasons-only implementation remains C"
+    },
+    {
+      "source": "src/game/seasons/enemies/sandPuff.c",
+      "family": "sandPuff",
+      "status": "outside_ages_scope",
+      "reason": "Seasons-only implementation remains C"
+    },
+    {
+      "source": "src/game/seasons/enemies/syger.c",
+      "family": "syger",
+      "status": "outside_ages_scope",
+      "reason": "Seasons-only implementation remains C"
+    },
+    {
+      "source": "src/game/seasons/enemies/unusedTemplate.c",
+      "family": "unusedTemplate",
+      "status": "outside_ages_scope",
+      "reason": "Seasons-only implementation remains C"
+    },
+    {
+      "source": "src/game/seasons/enemies/wallFlameShooter.c",
+      "family": "wallFlameShooter",
+      "status": "outside_ages_scope",
+      "reason": "Seasons-only implementation remains C"
+    }
+  ],
+  "projectiles": "C part controllers retain physical trajectories; firing decisions are in enemy policies",
+  "persistent_state": "unchanged GB/SRAM, no Lua coroutine or new serialization",
+  "address_helpers": "Native ROM jump/address arithmetic stays C, including carry propagation; no Lua pointer selection",
+  "directed_test": {
+    "catalog": "tests/lua_enemy_catalog.h",
+    "enemy_dispatch_ids": 101,
+    "frames_per_id": 80,
+    "seed": "b937",
+    "related_object_fixture": "disabled parent data at D180, state 8; component fixtures are not full battle approval",
+    "smog_entry_subid": 5
+  }
+}

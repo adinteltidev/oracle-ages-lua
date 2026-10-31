@@ -6,6 +6,7 @@ export ORACLES_RELEASES=${GITHUB_REPOSITORY:-adinteltidev/oracle-ages-native}
 export ORACLES_LUA_ITEMS_SHOPS=${ORACLES_LUA_ITEMS_SHOPS:-OFF}
 export ORACLES_LUA_NPCS_EVENTS=${ORACLES_LUA_NPCS_EVENTS:-OFF}
 export ORACLES_LUA_DOORS=${ORACLES_LUA_DOORS:-OFF}
+export ORACLES_LUA_ENEMIES="${ORACLES_LUA_ENEMIES:-OFF}"
 export ORACLES_LUA_GAMEPLAY=${ORACLES_LUA_GAMEPLAY:-OFF}
 export ORACLES_LUA_LEVERS_LAVA=${ORACLES_LUA_LEVERS_LAVA:-OFF}
 export ORACLES_LUA_COLORED_CUBE=${ORACLES_LUA_COLORED_CUBE:-OFF}
@@ -24,6 +25,7 @@ case "$platform" in
       if [ "$ORACLES_LUA_COLORED_CUBE" = ON ]; then cmake --build build-win-ci --target test_lua_colored_cube --parallel 3; fi
       if [ "$ORACLES_LUA_DOORS" = ON ]; then cmake --build build-win-ci --target test_lua_doors --parallel 3; fi
       if [ "$ORACLES_LUA_NPCS_EVENTS" = ON ]; then cmake --build build-win-ci --target test_lua_npcs_events --parallel 3; fi
+      if [ "$ORACLES_LUA_ENEMIES" = ON ]; then cmake --build build-win-ci --target test_lua_enemies --parallel 3; fi
       if [ "$ORACLES_LUA_ITEMS_SHOPS" = ON ]; then cmake --build build-win-ci --target test_lua_items_shops --parallel 3; fi
       if [ "$ORACLES_LUA_LEVERS_LAVA" = ON ]; then cmake --build build-win-ci --target test_lua_levers_lava --parallel 3; fi
     fi
@@ -46,6 +48,7 @@ with zipfile.ZipFile('reports/smoke-input.zip','w',zipfile.ZIP_DEFLATED) as z:
         if os.environ.get('ORACLES_LUA_DOORS')=='ON':names.append('test_lua_doors.exe')
         if os.environ.get('ORACLES_LUA_ITEMS_SHOPS')=='ON':names.append('test_lua_items_shops.exe')
         if os.environ.get('ORACLES_LUA_NPCS_EVENTS')=='ON':names.append('test_lua_npcs_events.exe')
+        if os.environ.get('ORACLES_LUA_ENEMIES')=='ON':names.append('test_lua_enemies.exe')
         if os.environ.get('ORACLES_LUA_LEVERS_LAVA')=='ON':names.append('test_lua_levers_lava.exe')
         for name in names:
             z.write('build-win-ci/'+name,name)
@@ -55,7 +58,7 @@ PY
     cmake -S . -B build-macos-ci -G Ninja -DCMAKE_BUILD_TYPE=Release \
       -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0 \
       -DORACLES_SDL=ON -DORACLES_SDL_VENDORED=ON -DORACLES_VERSION="$ORACLES_VERSION" -DORACLES_RELEASES="$ORACLES_RELEASES" \
-      -DORACLES_LUA_GAMEPLAY="$ORACLES_LUA_GAMEPLAY" -DORACLES_LUA_BLOCK_PUZZLES="$ORACLES_LUA_BLOCK_PUZZLES" -DORACLES_LUA_COLORED_CUBE="$ORACLES_LUA_COLORED_CUBE" -DORACLES_LUA_LEVERS_LAVA="$ORACLES_LUA_LEVERS_LAVA" -DORACLES_LUA_DOORS="$ORACLES_LUA_DOORS" -DORACLES_LUA_ITEMS_SHOPS="$ORACLES_LUA_ITEMS_SHOPS" -DORACLES_LUA_NPCS_EVENTS="$ORACLES_LUA_NPCS_EVENTS"
+      -DORACLES_LUA_GAMEPLAY="$ORACLES_LUA_GAMEPLAY" -DORACLES_LUA_BLOCK_PUZZLES="$ORACLES_LUA_BLOCK_PUZZLES" -DORACLES_LUA_COLORED_CUBE="$ORACLES_LUA_COLORED_CUBE" -DORACLES_LUA_LEVERS_LAVA="$ORACLES_LUA_LEVERS_LAVA" -DORACLES_LUA_DOORS="$ORACLES_LUA_DOORS" -DORACLES_LUA_ITEMS_SHOPS="$ORACLES_LUA_ITEMS_SHOPS" -DORACLES_LUA_NPCS_EVENTS="$ORACLES_LUA_NPCS_EVENTS" -DORACLES_LUA_ENEMIES="$ORACLES_LUA_ENEMIES"
     cmake --build build-macos-ci --target oracles-native-app oracles-native-run test_ui test_platform_keys test_native_ages test_switch_storage --parallel 3
     ctest --test-dir build-macos-ci --output-on-failure --output-junit "$PWD/reports/macos.xml" -R '^(ui|platform_keys|native_ages|switch_storage)$'
     if [ "$ORACLES_LUA_GAMEPLAY" = ON ]; then
@@ -64,9 +67,10 @@ PY
       if [ "$ORACLES_LUA_COLORED_CUBE" = ON ]; then cmake --build build-macos-ci --target test_lua_colored_cube --parallel 3; fi
       if [ "$ORACLES_LUA_DOORS" = ON ]; then cmake --build build-macos-ci --target test_lua_doors --parallel 3; fi
       if [ "$ORACLES_LUA_NPCS_EVENTS" = ON ]; then cmake --build build-macos-ci --target test_lua_npcs_events --parallel 3; fi
+      if [ "$ORACLES_LUA_ENEMIES" = ON ]; then cmake --build build-macos-ci --target test_lua_enemies --parallel 3; fi
       if [ "$ORACLES_LUA_ITEMS_SHOPS" = ON ]; then cmake --build build-macos-ci --target test_lua_items_shops --parallel 3; fi
       if [ "$ORACLES_LUA_LEVERS_LAVA" = ON ]; then cmake --build build-macos-ci --target test_lua_levers_lava --parallel 3; fi
-      ctest --test-dir build-macos-ci --output-on-failure --output-junit "$PWD/reports/macos-lua.xml" -R '^(lua_gameplay|lua_block_rules|lua_colored_cube|lua_levers_lava|lua_doors|lua_items_shops|lua_npcs_events)$'
+      ctest --test-dir build-macos-ci --output-on-failure --output-junit "$PWD/reports/macos-lua.xml" -R '^(lua_gameplay|lua_block_rules|lua_colored_cube|lua_levers_lava|lua_doors|lua_items_shops|lua_npcs_events|lua_enemies)$'
       mkdir -p build-macos-ci/Oracles.app/Contents/Resources/Licenses
       cp third_party/lua/lua.h build-macos-ci/Oracles.app/Contents/Resources/Licenses/Lua-MIT-header.txt
     fi

@@ -21,6 +21,7 @@
 #include "script/doors.h"
 #include "script/items_shops.h"
 #include "script/npcs_events.h"
+#include "script/enemies.h"
 #endif
 #include <stdio.h>
 #include <stdlib.h>
@@ -31,7 +32,9 @@
 #include <errno.h>
 #include "platform/switch_status.h"
 
-#if defined(ORACLES_LUA_NPCS_EVENTS)
+#if defined(ORACLES_LUA_ENEMIES)
+#define DATA "sdmc:/switch/oracle-ages-lua-phase7/"
+#elif defined(ORACLES_LUA_NPCS_EVENTS)
 #define DATA "sdmc:/switch/oracle-ages-lua-phase6/"
 #elif defined(ORACLES_LUA_ITEMS_SHOPS)
 #define DATA "sdmc:/switch/oracle-ages-lua-phase5/"
@@ -247,6 +250,8 @@ static int replay(bool full) {
       fprintf(result,"lua_rule.%s=%llu\n",gameplay_npc_rule_name(r),(unsigned long long)gameplay_npc_calls(r));
     for(int r=0;r<GAMEPLAY_EVENTS_COUNT;++r)
       fprintf(result,"lua_rule.%s=%llu\n",gameplay_event_rule_name(r),(unsigned long long)gameplay_event_calls(r));
+    for(int r=0;r<GAMEPLAY_ENEMY_COUNT;++r)
+      fprintf(result,"lua_rule.%s=%llu\n",gameplay_enemy_rule_name(r),(unsigned long long)gameplay_enemy_calls(r));
     for(int r=0;r<GAMEPLAY_ITEMS_COUNT;++r)
       fprintf(result,"lua_rule.%s=%llu\n",gameplay_item_rule_name(r),(unsigned long long)gameplay_item_calls(r));
     for(int r=0;r<GAMEPLAY_SHOPS_COUNT;++r)
@@ -469,6 +474,8 @@ static int play(void) {
     fprintf(stderr,"Lua rule %s=%llu\n",gameplay_npc_rule_name(r),(unsigned long long)gameplay_npc_calls(r));
   for(int r=0;r<GAMEPLAY_EVENTS_COUNT;++r)
     fprintf(stderr,"Lua rule %s=%llu\n",gameplay_event_rule_name(r),(unsigned long long)gameplay_event_calls(r));
+  for(int r=0;r<GAMEPLAY_ENEMY_COUNT;++r)
+    fprintf(stderr,"Lua rule %s=%llu\n",gameplay_enemy_rule_name(r),(unsigned long long)gameplay_enemy_calls(r));
   for(int r=0;r<GAMEPLAY_ITEMS_COUNT;++r)
     fprintf(stderr,"Lua rule %s=%llu\n",gameplay_item_rule_name(r),(unsigned long long)gameplay_item_calls(r));
   for(int r=0;r<GAMEPLAY_SHOPS_COUNT;++r)

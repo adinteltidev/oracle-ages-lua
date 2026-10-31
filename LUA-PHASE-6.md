@@ -1,13 +1,16 @@
 # Fase 6 — NPCs e eventos
 
-30/10/2026. Branch `port/lua-gameplay`, base `40cf271`, alterações locais.
+Implementação de 30/10/2026; conclusão registrada em 31/10/2026.
+Branch `port/lua-gameplay`, commit de implementação `73e7f75`.
+
+**Status: fase 6 concluída para Ages.** O jogador confirmou que Windows e Switch
+estão funcionando e autorizou o encerramento da fase. A confirmação posterior e
+seu escopo estão em [validação do jogador](LUA-PHASE-6-PLAYER-VALIDATION.md).
 
 Integração experimental de decisões de NPCs e eventos em Lua. A opção
 `ORACLES_LUA_NPCS_EVENTS` é OFF por padrão e exige `ORACLES_LUA_GAMEPLAY`.
-O jogador informou que ainda não testou os pacotes da fase 5. A execução dos
-novos pacotes da fase 6 no Windows e Switch também aguarda confirmação; a
-regressão completa de Seasons exige uma ROM própria. Essas pendências impedem
-considerar encerrada a aceitação completa da fase.
+A regressão completa de Seasons com ROM própria continua como pendência comum
+da migração, separada do encerramento desta fase de Ages.
 
 ## Inventário e regras
 

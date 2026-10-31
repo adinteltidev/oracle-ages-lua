@@ -1,8 +1,9 @@
 # Testar C + Lua — fase 6, NPCs e eventos
 
-Branch `port/lua-gameplay`, base `40cf271`, alterações locais. Lua incorporado;
-as sete opções cumulativas estão ON. Esta fase tem perfil próprio. A validação
-física da fase 5 também permanece pendente, conforme o jogador informou.
+Branch `port/lua-gameplay`, commit de implementação `73e7f75`. Lua incorporado;
+as sete opções cumulativas estão ON. Esta fase tem perfil próprio e foi concluída
+em 31/10/2026 após [confirmação do jogador](LUA-PHASE-6-PLAYER-VALIDATION.md).
+O roteiro abaixo continua disponível para repetir e ampliar as verificações.
 
 ## macOS Intel
 
@@ -58,6 +59,7 @@ cena, antes/depois de uma recompensa e após fechar/reabrir o aplicativo. Teste
 slots 1–4, SRAM, áudio, menu e suspensão/retomada. No Switch, repita portátil/dock
 quando disponíveis. Refaça também puzzles/lojas das fases anteriores.
 
-A execução destes novos pacotes no Windows e Switch precisa de confirmação.
-O relato anterior de estabilidade é da fase 4; as fases 5 e 6 não herdam essa
-aprovação. Seasons completo continua pendente de ROM própria.
+O jogador confirmou o funcionamento destes pacotes no Windows e Switch e
+autorizou concluir a fase 6. A confirmação é de funcionamento geral; os detalhes
+das cenas e verificações individuais acima não foram especificados.
+Seasons completo continua pendente de ROM própria, na validação comum da migração.

@@ -55,6 +55,14 @@ endmacro()
 
 include(cmake/LuaGameplay.cmake)
 
+# Enemy policies: per-source opt-in is needed by the scoped Switch native build.
+file(GLOB ORACLES_ENEMY_POLICY_SOURCES CONFIGURE_DEPENDS
+  "${CMAKE_SOURCE_DIR}/src/game/ages/enemies/*.c"
+  "${CMAKE_SOURCE_DIR}/src/game/common/enemies/*.c")
+if(ORACLES_LUA_GAMEPLAY)
+  set_property(SOURCE ${ORACLES_ENEMY_POLICY_SOURCES} src/game/enemyPolicy.c
+    APPEND PROPERTY COMPILE_DEFINITIONS ORACLES_LUA_GAMEPLAY=1)
+endif()
 file(GLOB_RECURSE ORACLES_GAME_SRC CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/src/game/*.c")
 set(ORACLES_SHARED_SRC ${ORACLES_GAME_SRC}
   src/core/gb.c
@@ -97,6 +105,9 @@ if(ORACLES_SWITCH OR CMAKE_SYSTEM_NAME STREQUAL "NintendoSwitch")
       src/game/ages/interactions/tokayShopItem.c src/game/common/interactions/treasureInteraction.c
       src/game/treasureAndDrops.c src/game/features.c src/game/loadTreasureData.c
       APPEND PROPERTY COMPILE_DEFINITIONS ORACLES_LUA_GAMEPLAY=1)
+    if(ORACLES_LUA_ENEMIES)
+      target_compile_definitions(oraclesnative INTERFACE ORACLES_LUA_ENEMIES=1)
+    endif()
     if(ORACLES_LUA_NPCS_EVENTS)
       target_compile_definitions(oraclesnative INTERFACE ORACLES_LUA_NPCS_EVENTS=1)
     endif()
@@ -482,6 +493,19 @@ endif()
 
 enable_testing()
 if(ORACLES_LUA_GAMEPLAY)
+  if(ORACLES_LUA_ENEMIES)
+    target_compile_definitions(oraclesnative INTERFACE ORACLES_LUA_ENEMIES=1)
+    add_executable(test_lua_enemies tests/test_lua_enemies.c)
+    target_include_directories(test_lua_enemies PRIVATE tests)
+    target_link_libraries(test_lua_enemies PRIVATE oraclesgameplay)
+    add_test(NAME lua_enemies COMMAND test_lua_enemies)
+    add_executable(test_lua_enemies_rom tests/test_lua_enemies_rom.c)
+    target_include_directories(test_lua_enemies_rom PRIVATE tests)
+    target_link_libraries(test_lua_enemies_rom PRIVATE oraclesnative)
+    target_compile_definitions(test_lua_enemies_rom PRIVATE GAME_ROM_DIR="${CMAKE_SOURCE_DIR}/roms")
+    add_test(NAME lua_enemies_rom COMMAND test_lua_enemies_rom)
+    set_tests_properties(lua_enemies_rom PROPERTIES SKIP_RETURN_CODE 77 LABELS "rom" TIMEOUT 900)
+  endif()
   if(ORACLES_LUA_NPCS_EVENTS)
     target_compile_definitions(oraclesnative INTERFACE ORACLES_LUA_NPCS_EVENTS=1)
   endif()

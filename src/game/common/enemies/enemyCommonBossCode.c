@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/enemies.h"
 
 #undef CYC
 #undef CYCT
@@ -31,31 +32,31 @@ void enemyBoss_dead_b10_hook(GB *gb) {
     goto alreadyPlayedDeathSound;
   }
   CYC(b_+5, b_+7);
-  CYC(b_+7, b_+9); mem_wr(gb, HL, 0x00);
+  CYC(b_+7, b_+9); ENEMY_WRITE(HL, 0x00);
   CYC(b_+9, b_+11); L = ENEMY_BASE + OBJ_COUNTER1;
-  CYC(b_+11, b_+13); mem_wr(gb, HL, 0x78);
+  CYC(b_+11, b_+13); ENEMY_WRITE(HL, 0x78);
   CYC(b_+13, b_+15); A = 0x01;
   CYC(b_+15, b_+18); W8(wDisableLinkCollisionsAndMenu) = A;
   CYC(b_+18, b_+20); A = 0x67;
-  CALL_C(b_+20, playSound_b00_hook, SYM(playSound_b00), b_+23);
+  ENEMY_CALL_C(b_+20, playSound_b00_hook, SYM(playSound_b00), b_+23);
 alreadyPlayedDeathSound:
-  CALL_C(b_+23, ecom_decCounter1_b10_hook, SYM(ecom_decCounter1_b10), b_+26);
+  ENEMY_CALL_C(b_+23, ecom_decCounter1_b10_hook, SYM(ecom_decCounter1_b10), b_+26);
   if (!(F & FZ)) {
     CYCT(b_+26, b_+29);
     TAIL(ecom_flickerVisibility_b10);
   }
   CYC(b_+26, b_+29);
-  CYC(b_+29, b_+30); mem_wr(gb, HL, alu_inc8(gb, mem_rd(gb, HL)));
-  CALL_C(b_+30, getFreePartSlot_hook, SYM(getFreePartSlot), b_+33);
+  CYC(b_+29, b_+30); ENEMY_WRITE(HL, alu_inc8(gb, mem_rd(gb, HL)));
+  ENEMY_CALL_C(b_+30, getFreePartSlot_hook, SYM(getFreePartSlot), b_+33);
   if (!(F & FZ)) { RET_TAKEN(b_+33); return; }
   CYC(b_+33, b_+34);
-  CYC(b_+34, b_+36); mem_wr(gb, HL, 0x04);
+  CYC(b_+34, b_+36); ENEMY_WRITE(HL, 0x04);
   CYC(b_+36, b_+37); L = alu_inc8(gb, L);
   CYC(b_+37, b_+39); E = ENEMY_BASE + OBJ_ID;
   CYC(b_+39, b_+40); A = mem_rd(gb, DE);
-  CYC(b_+40, b_+41); mem_wr(gb, HL, A);
-  CALL_C(b_+41, objectCopyPosition_hook, SYM(objectCopyPosition), b_+44);
-  CALL_C(b_+44, markEnemyAsKilledInRoom_b00_hook, SYM(markEnemyAsKilledInRoom_b00), b_+47);
+  CYC(b_+40, b_+41); ENEMY_WRITE(HL, A);
+  ENEMY_CALL_C(b_+41, objectCopyPosition_hook, SYM(objectCopyPosition), b_+44);
+  ENEMY_CALL_C(b_+44, markEnemyAsKilledInRoom_b00_hook, SYM(markEnemyAsKilledInRoom_b00), b_+47);
   CYC(b_+47, b_+49); E = ENEMY_BASE + OBJ_ID;
   CYC(b_+49, b_+50); A = mem_rd(gb, DE);
   CYC(b_+50, b_+52); alu_sub(gb, 0x08);
@@ -67,7 +68,7 @@ alreadyPlayedDeathSound:
   CYC(b_+54, b_+56);
   CYC(b_+56, b_+59); A = W8(wActiveMusic2);
   CYC(b_+59, b_+62); W8(wActiveMusic) = A;
-  CALL_C(b_+62, playSound_b00_hook, SYM(playSound_b00), b_+65);
+  ENEMY_CALL_C(b_+62, playSound_b00_hook, SYM(playSound_b00), b_+65);
 finish:
   CYC(b_+65, b_+68);
   TAIL(enemyDelete);
@@ -76,18 +77,18 @@ finish:
 void enemyBoss_spawnShadow_b10_hook(GB *gb) {
   BASE(enemyBoss_spawnShadow_b10);
   uint16_t sp0_ = gb->sp; (void)sp0_;
-  CALL_C(b_+0, getFreePartSlot_hook, SYM(getFreePartSlot), b_+3);
+  ENEMY_CALL_C(b_+0, getFreePartSlot_hook, SYM(getFreePartSlot), b_+3);
   if (!(F & FZ)) { RET_TAKEN(b_+3); return; }
   CYC(b_+3, b_+4);
-  CYC(b_+4, b_+6); mem_wr(gb, HL, 0x07);
+  CYC(b_+4, b_+6); ENEMY_WRITE(HL, 0x07);
   CYC(b_+6, b_+7); L = alu_inc8(gb, L);
-  CYC(b_+7, b_+8); mem_wr(gb, HL, B);
+  CYC(b_+7, b_+8); ENEMY_WRITE(HL, B);
   CYC(b_+8, b_+9); L = alu_inc8(gb, L);
-  CYC(b_+9, b_+10); mem_wr(gb, HL, C);
+  CYC(b_+9, b_+10); ENEMY_WRITE(HL, C);
   CYC(b_+10, b_+12); L = PART_BASE + OBJ_RELATED1;
   CYC(b_+12, b_+14); A = 0x80;
-  CYC(b_+14, b_+15); mem_wr(gb, HL, A); SET_HL(HL + 1);
-  CYC(b_+15, b_+16); mem_wr(gb, HL, D);
+  CYC(b_+14, b_+15); ENEMY_WRITE(HL, A); SET_HL(HL + 1);
+  CYC(b_+15, b_+16); ENEMY_WRITE(HL, D);
   CYC(b_+16, b_+17); alu_xor(gb, A);
   RET(b_+17); return;
 }
@@ -108,7 +109,7 @@ skipScreenVarStore:
   if (F & FZ) {
     CYC(b_+9, b_+12);
   } else {
-    CALL_C_CC(b_+9, loadPaletteHeader_hook, SYM(loadPaletteHeader), SYM(enemyBoss_initializeRoomWithoutExtraGfx_b10));
+    ENEMY_CALL_C_CC(b_+9, loadPaletteHeader_hook, SYM(loadPaletteHeader), SYM(enemyBoss_initializeRoomWithoutExtraGfx_b10));
   }
   TAIL(enemyBoss_initializeRoomWithoutExtraGfx_b10);
 }
@@ -121,13 +122,13 @@ void enemyBoss_initializeRoomWithoutExtraGfx_b10_hook(GB *gb) {
     CYC(b_+S(2), b_+S(3)); D = A;
   }
   CYC(b_+O(0), b_+OE(2)); A = 0xf0;
-  CALL_C(b_+O(2), playSound_b00_hook, SYM(playSound_b00), b_+OE(5));
+  ENEMY_CALL_C(b_+O(2), playSound_b00_hook, SYM(playSound_b00), b_+OE(5));
   CYC(b_+O(5), b_+OE(6)); alu_xor(gb, A);
   CYC(b_+O(6), b_+OE(9)); W8(wDisableLinkCollisionsAndMenu) = A;
   CYC(b_+O(9), b_+OE(10)); A = alu_dec8(gb, A);
   CYC(b_+O(10), b_+OE(13)); W8(wActiveMusic) = A;
   CYC(b_+O(13), b_+OE(16)); SET_HL(wcc93);
-  CYC(b_+O(16), b_+OE(18)); mem_wr(gb, HL, (uint8_t)(mem_rd(gb, HL) | (1 << 7)));
+  CYC(b_+O(16), b_+OE(18)); ENEMY_WRITE(HL, (uint8_t)(mem_rd(gb, HL) | (1 << 7)));
   CYC(b_+O(18), b_+OE(21)); A = W8(wScreenVariables);
   CYC(b_+O(21), b_+OE(23)); alu_and(gb, 0x01);
   if (!(F & FZ)) { RET_TAKEN(b_+O(23)); return; }
@@ -138,10 +139,10 @@ void enemyBoss_initializeRoomWithoutExtraGfx_b10_hook(GB *gb) {
   CYC(b_+O(31), b_+OE(34)); W8(wLinkStateParameter) = A;
   CYC(b_+O(34), b_+OE(37)); SET_HL(w1Link_direction);
   CYC(b_+O(37), b_+OE(40)); A = W8(wScreenTransitionDirection);
-  CYC(b_+O(40), b_+OE(41)); mem_wr(gb, HL, A); SET_HL(HL + 1);
+  CYC(b_+O(40), b_+OE(41)); ENEMY_WRITE(HL, A); SET_HL(HL + 1);
   CYC(b_+O(41), b_+OE(43)); A = alu_swap(gb, A);
   CYC(b_+O(43), b_+OE(44)); alu_rrca(gb);
-  CYC(b_+O(44), b_+OE(45)); mem_wr(gb, HL, A);
+  CYC(b_+O(44), b_+OE(45)); ENEMY_WRITE(HL, A);
   RET(b_+O(45)); return;
 }
 
@@ -149,11 +150,11 @@ void enemyBoss_beginMiniboss_b10_hook(GB *gb) {
   BASE(enemyBoss_beginMiniboss_b10);
   CYC(b_+0, b_+2); B = 0x2d;
   CYC(b_+2, b_+4);
-  enemyBoss_beginBoss_common_b10_hook(gb);
+  ENEMY_LOCAL_CALL(enemyBoss_beginBoss_common_b10_hook(gb));
 }
 
 void enemyBoss_beginBoss_b10_hook(GB *gb) {
   BASE(enemyBoss_beginBoss_b10);
   CYC(b_+0, b_+2); B = 0x2e;
-  enemyBoss_beginBoss_common_b10_hook(gb);
+  ENEMY_LOCAL_CALL(enemyBoss_beginBoss_common_b10_hook(gb));
 }

@@ -5,6 +5,7 @@
 #include "script/doors.h"
 #include "script/items_shops.h"
 #include "script/npcs_events.h"
+#include "script/enemies.h"
 #include "lua.h"
 #include "lauxlib.h"
 #include <stdio.h>
@@ -25,6 +26,8 @@ extern const unsigned char ages_items_lua[], ages_shops_lua[];
 extern const unsigned int ages_items_lua_size, ages_shops_lua_size;
 extern const unsigned char ages_npcs_rules_lua[], ages_events_flow_lua[];
 extern const unsigned int ages_npcs_rules_lua_size, ages_events_flow_lua_size;
+extern const unsigned char ages_enemies_ai_lua[];
+extern const unsigned int ages_enemies_ai_lua_size;
 #define CAP (256u * 1024u)
 enum { SWITCH_CHANGED, SWITCH_ALTERNATE, BLOCK_NEXT_STATE, BLOCK_RULE_FIRST,
        COLORED_CUBE_FIRST = BLOCK_RULE_FIRST + GAMEPLAY_BLOCK_RULE_COUNT,
@@ -34,7 +37,8 @@ enum { SWITCH_CHANGED, SWITCH_ALTERNATE, BLOCK_NEXT_STATE, BLOCK_RULE_FIRST,
        SHOPS_FIRST = ITEMS_FIRST + GAMEPLAY_ITEMS_COUNT,
        NPCS_FIRST = SHOPS_FIRST + GAMEPLAY_SHOPS_COUNT,
        EVENTS_FIRST = NPCS_FIRST + GAMEPLAY_NPCS_COUNT,
-       RULE_COUNT = EVENTS_FIRST + GAMEPLAY_EVENTS_COUNT };
+       ENEMIES_FIRST = EVENTS_FIRST + GAMEPLAY_EVENTS_COUNT,
+       RULE_COUNT = ENEMIES_FIRST + GAMEPLAY_ENEMY_COUNT };
 static const char *const rule_names[RULE_COUNT] = {
   "ages/switch_tiles.changed", "ages/switch_tiles.alternate", "ages/block_puzzles.next_state",
 #define BLOCK_RULE1(name, a) "ages/block_rules." #name,
@@ -63,7 +67,19 @@ static const char *const rule_names[RULE_COUNT] = {
   "ages/npcs/rules.compare", "ages/npcs/rules.zero", "ages/npcs/rules.bit_zero", "ages/npcs/rules.carry", "ages/npcs/rules.old_lady_available", "ages/npcs/rules.old_lady_script", "ages/npcs/rules.symmetry_available", "ages/npcs/rules.symmetry_restart",
   "ages/events/flow.compare", "ages/events/flow.zero", "ages/events/flow.bit_zero", "ages/events/flow.carry", "ages/events/flow.table_index", "ages/events/flow.transition", "ages/events/flow.next_state", "ages/events/flow.dialogue", "ages/events/flow.choose_linked", "ages/events/flow.script_ready", "ages/events/flow.script_ended", "ages/events/flow.condition",
 
+  "ages/enemies/ai.condition",
+  "ages/enemies/ai.transition",
+  "ages/enemies/ai.angle",
+  "ages/enemies/ai.direction",
+  "ages/enemies/ai.speed",
+  "ages/enemies/ai.octorok_attack",
+  "ages/enemies/ai.octorok_aim",
+  "ages/enemies/ai.compare", "ages/enemies/ai.zero", "ages/enemies/ai.bit_zero",
+
 };
+static uint64_t enemy_owners[256];
+void gameplay_enemy_note_owner(uint8_t owner){++enemy_owners[owner];}
+uint64_t gameplay_enemy_owner_calls(uint8_t owner){return enemy_owners[owner];}
 static uint64_t npc_owners[256];
 void gameplay_npc_note_owner(uint8_t owner){++npc_owners[owner];}
 uint64_t gameplay_npc_owner_calls(uint8_t owner){return npc_owners[owner];}
@@ -110,7 +126,7 @@ static bool failed(const char *rule) {
 void gameplay_close(void) {
   if (vm) lua_close(vm);
   vm = NULL; used = 0; peak = 0; allocations = 0; attempted = false;
-  memset(npc_owners,0,sizeof npc_owners);
+  memset(npc_owners,0,sizeof npc_owners);memset(enemy_owners,0,sizeof enemy_owners);
   memset(calls, 0, sizeof calls); memset(block_calls, 0, sizeof block_calls);
   error[0] = 0;
 }
@@ -165,6 +181,9 @@ static int initialize(lua_State *L) {
   load_module(L, sources && sources->events ? sources->events : (const char *)ages_events_flow_lua,
     sources && sources->events ? sources->events_size : ages_events_flow_lua_size,
     "ages/events/flow.lua", EVENTS_FIRST, GAMEPLAY_EVENTS_COUNT);
+  load_module(L,sources && sources->enemies?sources->enemies:(const char*)ages_enemies_ai_lua,
+    sources && sources->enemies?sources->enemies_size:ages_enemies_ai_lua_size,
+    "ages/enemies/ai.lua",ENEMIES_FIRST,GAMEPLAY_ENEMY_COUNT);
   if (used > CAP - 16384) luaL_error(L, "gameplay initialization memory limit");
   if (!lua_checkstack(L, 16)) luaL_error(L, "gameplay stack limit");
   return 0;
@@ -574,6 +593,40 @@ bool gameplay_event_condition(uint8_t a, bool *out) {
 }
 uint64_t gameplay_event_calls(GameplayEventsRule rule) {return rule>=0 && rule<GAMEPLAY_EVENTS_COUNT?calls[EVENTS_FIRST+rule]:0;}
 const char *gameplay_event_rule_name(GameplayEventsRule rule) {return rule>=0 && rule<GAMEPLAY_EVENTS_COUNT?rule_names[EVENTS_FIRST+rule]:"invalid";}
+bool gameplay_enemies_enabled(void){
+#ifdef ORACLES_LUA_ENEMIES
+ return enabled;
+#else
+ return false;
+#endif
+}
+bool gameplay_enemy_compare(uint8_t a,uint8_t b,uint8_t *out){
+ int index=ENEMIES_FIRST+GAMEPLAY_ENEMY_compare;uint8_t args[]={a,b};
+ if(!out)return reject(rule_names[index],"invalid output argument");if(!call_rule(index,args,2))return false;
+ if(!lua_isinteger(vm,-1))return reject(rule_names[index],"expected integer relation");lua_Integer value=lua_tointeger(vm,-1);
+ if(value<0 || value>2)return reject(rule_names[index],"invalid comparison relation");*out=(uint8_t)value;lua_pop(vm,1);++calls[index];return true;
+}
+bool gameplay_enemy_zero(uint8_t a,bool *out){uint8_t args[]={a};return trade_boolean(ENEMIES_FIRST+GAMEPLAY_ENEMY_zero,args,1,out);}
+bool gameplay_enemy_bit_zero(uint8_t a,uint8_t b,bool *out){uint8_t args[]={a,b};return trade_boolean(ENEMIES_FIRST+GAMEPLAY_ENEMY_bit_zero,args,2,out);}
+bool gameplay_enemy_condition(uint8_t a,uint8_t b,bool *out){uint8_t args[]={a,b};return trade_boolean(ENEMIES_FIRST+GAMEPLAY_ENEMY_condition,args,2,out);}
+bool gameplay_enemy_octorok_attack(uint8_t a,uint8_t b,bool *out){uint8_t args[]={a,b};return trade_boolean(ENEMIES_FIRST+GAMEPLAY_ENEMY_octorok_attack,args,2,out);}
+bool gameplay_enemy_octorok_aim(uint8_t a,bool *out){uint8_t args[]={a};return trade_boolean(ENEMIES_FIRST+GAMEPLAY_ENEMY_octorok_aim,args,1,out);}
+static bool enemy_intention(GameplayEnemyRule rule,uint8_t current,uint8_t requested,uint8_t *out){
+ int index=ENEMIES_FIRST+rule;uint8_t args[]={current,requested};
+ if(!out)return reject(rule_names[index],"invalid output argument");
+ if(!call_rule(index,args,2))return false;
+ if(!lua_isinteger(vm,-1))return reject(rule_names[index],"expected integer intention");
+ lua_Integer value=lua_tointeger(vm,-1);
+ bool valid=value>=0 && value<=255 && (value==current || value==requested || (rule==GAMEPLAY_ENEMY_angle && value<32) || (rule==GAMEPLAY_ENEMY_direction && value<4) || (rule==GAMEPLAY_ENEMY_speed && value==0));
+ if(!valid)return reject(rule_names[index],"intention outside native domain");
+ *out=(uint8_t)value;lua_pop(vm,1);++calls[index];return true;
+}
+bool gameplay_enemy_transition(uint8_t a,uint8_t b,uint8_t *out){return enemy_intention(GAMEPLAY_ENEMY_transition,a,b,out);}
+bool gameplay_enemy_angle(uint8_t a,uint8_t b,uint8_t *out){return enemy_intention(GAMEPLAY_ENEMY_angle,a,b,out);}
+bool gameplay_enemy_direction(uint8_t a,uint8_t b,uint8_t *out){return enemy_intention(GAMEPLAY_ENEMY_direction,a,b,out);}
+bool gameplay_enemy_speed(uint8_t a,uint8_t b,uint8_t *out){return enemy_intention(GAMEPLAY_ENEMY_speed,a,b,out);}
+uint64_t gameplay_enemy_calls(GameplayEnemyRule rule){return rule>=0 && rule<GAMEPLAY_ENEMY_COUNT?calls[ENEMIES_FIRST+rule]:0;}
+const char *gameplay_enemy_rule_name(GameplayEnemyRule rule){return rule>=0 && rule<GAMEPLAY_ENEMY_COUNT?rule_names[ENEMIES_FIRST+rule]:"invalid";}
 const char *gameplay_error(void) { return error; }
 const char *gameplay_revision(void) { return ORACLES_GAMEPLAY_REVISION; }
 uint64_t gameplay_calls(int rule) { return rule >= 0 && rule < RULE_COUNT ? calls[rule] : 0; }

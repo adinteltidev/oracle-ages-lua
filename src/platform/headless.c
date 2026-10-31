@@ -19,6 +19,7 @@
 #include "script/doors.h"
 #include "script/items_shops.h"
 #include "script/npcs_events.h"
+#include "script/enemies.h"
 #endif
 #include <stdio.h>
 #include <stdlib.h>
@@ -402,6 +403,8 @@ int main(int argc, char **argv) {
     fprintf(stderr,"Lua rule %s=%llu\n",gameplay_npc_rule_name(r),(unsigned long long)gameplay_npc_calls(r));
   for(int r=0;r<GAMEPLAY_EVENTS_COUNT;++r)
     fprintf(stderr,"Lua rule %s=%llu\n",gameplay_event_rule_name(r),(unsigned long long)gameplay_event_calls(r));
+  for(int r=0;r<GAMEPLAY_ENEMY_COUNT;++r)
+    fprintf(stderr,"Lua rule %s=%llu\n",gameplay_enemy_rule_name(r),(unsigned long long)gameplay_enemy_calls(r));
   for(int r=0;r<GAMEPLAY_ITEMS_COUNT;++r)
     fprintf(stderr,"Lua rule %s=%llu\n",gameplay_item_rule_name(r),(unsigned long long)gameplay_item_calls(r));
   for(int r=0;r<GAMEPLAY_SHOPS_COUNT;++r)

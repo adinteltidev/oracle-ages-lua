@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/enemies.h"
 
 #undef CYC
 #undef CYCT
@@ -38,26 +39,26 @@ static uint16_t enemyCode13_jump_table(GB *gb) {
 void enemyCode13_hook(GB *gb) {
   BASE(enemyCode13);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, ecom_checkHazards_b0d_hook, SYM(ecom_checkHazards_b0d), b_+3);
-  if (F & FZ) { CYCT(b_+3, b_+5); goto normalStatus; } // jr z
+  ENEMY_CALL_C(b_+0, ecom_checkHazards_b0d_hook, SYM(ecom_checkHazards_b0d), b_+3);
+  if (ENEMY_FLAG(FZ)) { CYCT(b_+3, b_+5); goto normalStatus; } // jr z
   CYC(b_+3, b_+5);
   CYC(b_+5, b_+7); alu_sub(gb, 0x03); // ENEMYSTATUS_NO_HEALTH
-  if (F & FC) { RET_TAKEN(b_+7); return; } // ret c
+  if (ENEMY_FLAG(FC)) { RET_TAKEN(b_+7); return; } // ret c
   CYC(b_+7, b_+8);
   CYC(b_+8, b_+10); E = ENEMY_BASE + OBJ_VAR2A;
   CYC(b_+10, b_+11); A = mem_rd(gb, DE);
   CYC(b_+11, b_+13); A = (uint8_t)(A & ~(1 << 7)); // res 7,a
   CYC(b_+13, b_+15); alu_sub(gb, GV(0x17, 0x15)); // ITEMCOLLISION_L1_BOOMERANG
-  CYC(b_+15, b_+17); alu_cp(gb, GV(0x01, 0x02)); // MAX_BOOMERANG_LEVEL
-  if (!(F & FC)) { CYCT(b_+17, b_+19); goto normalStatus; } // jr nc
+  CYC(b_+15, b_+17); ENEMY_CP(GV(0x01, 0x02)); // MAX_BOOMERANG_LEVEL
+  if (!(ENEMY_FLAG(FC))) { CYCT(b_+17, b_+19); goto normalStatus; } // jr nc
   CYC(b_+17, b_+19);
   CYC(b_+19, b_+21); E = ENEMY_BASE + OBJ_STATE;
   CYC(b_+21, b_+22); A = mem_rd(gb, DE);
-  CYC(b_+22, b_+24); alu_cp(gb, 0x09);
-  if (!(F & FC)) { CYCT(b_+24, b_+26); goto normalStatus; } // jr nc
+  CYC(b_+22, b_+24); ENEMY_CP(0x09);
+  if (!(ENEMY_FLAG(FC))) { CYCT(b_+24, b_+26); goto normalStatus; } // jr nc
   CYC(b_+24, b_+26);
   CYC(b_+26, b_+28); A = 0x09;
-  CYC(b_+28, b_+29); mem_wr(gb, DE, A);
+  CYC(b_+28, b_+29); ENEMY_WRITE(DE, A);
 
 normalStatus:
   CYC(b_+29, b_+31); E = ENEMY_BASE + OBJ_STATE;
@@ -65,11 +66,11 @@ normalStatus:
   {
     CYC(b_+32, b_+33); push_effect(gb, b_+33);
     uint16_t target = enemyCode13_jump_table(gb);
-    if (target == SYM(spark_state_uninitialized)) { spark_state_uninitialized_hook(gb); return; }
-    if (target == SYM(spark_state_stub)) { spark_state_stub_hook(gb); return; }
-    if (target == SYM(spark_state8)) { spark_state8_hook(gb); return; }
-    if (target == SYM(spark_state9)) { spark_state9_hook(gb); return; }
-    if (target == SYM(spark_stateA)) { spark_stateA_hook(gb); return; }
+    if (target == SYM(spark_state_uninitialized)) { ENEMY_LOCAL_CALL(spark_state_uninitialized_hook(gb)); return; }
+    if (target == SYM(spark_state_stub)) { ENEMY_LOCAL_CALL(spark_state_stub_hook(gb)); return; }
+    if (target == SYM(spark_state8)) { ENEMY_LOCAL_CALL(spark_state8_hook(gb)); return; }
+    if (target == SYM(spark_state9)) { ENEMY_LOCAL_CALL(spark_state9_hook(gb)); return; }
+    if (target == SYM(spark_stateA)) { ENEMY_LOCAL_CALL(spark_stateA_hook(gb)); return; }
     HANDOFF(target);
   }
 }
@@ -78,11 +79,11 @@ normalStatus:
 void spark_state_uninitialized_hook(GB *gb) {
   BASE(spark_state_uninitialized);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, spark_getWallAngle_hook, SYM(spark_getWallAngle), b_+3);
+  ENEMY_CALL_C(b_+0, spark_getWallAngle_hook, SYM(spark_getWallAngle), b_+3);
   CYC(b_+3, b_+5); E = ENEMY_BASE + OBJ_ANGLE;
-  CYC(b_+5, b_+6); mem_wr(gb, DE, A);
+  CYC(b_+5, b_+6); ENEMY_WRITE(DE, A);
   CYC(b_+6, b_+8); A = 0x28; // SPEED_100
-  CALL_C(b_+8, ecom_setSpeedAndState8_b0d_hook, SYM(ecom_setSpeedAndState8_b0d), b_+11);
+  ENEMY_CALL_C(b_+8, ecom_setSpeedAndState8_b0d_hook, SYM(ecom_setSpeedAndState8_b0d), b_+11);
   CYC(b_+11, b_+14); TAIL(objectSetVisible82); // jp
 }
 
@@ -96,8 +97,8 @@ void spark_state_stub_hook(GB *gb) {
 void spark_state8_hook(GB *gb) {
   BASE(spark_state8);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, spark_updateAngle_hook, SYM(spark_updateAngle), b_+3);
-  CALL_C(b_+3, objectApplySpeed_hook, SYM(objectApplySpeed), b_+6);
+  ENEMY_CALL_C(b_+0, spark_updateAngle_hook, SYM(spark_updateAngle), b_+3);
+  ENEMY_CALL_C(b_+3, objectApplySpeed_hook, SYM(objectApplySpeed), b_+6);
   CYC(b_+6, b_+9); TAIL(enemyAnimate); // jp
 }
 
@@ -106,16 +107,16 @@ void spark_state9_hook(GB *gb) {
   BASE(spark_state9);
   uint16_t sp0_ = gb->sp;
   CYC(b_+0, b_+3); SET_BC(0x0502); // INTERAC_PUFF, subid 2
-  CALL_C(b_+3, objectCreateInteraction_hook, SYM(objectCreateInteraction), b_+6);
-  if (!(F & FZ)) { RET_TAKEN(b_+6); return; } // ret nz
+  ENEMY_CALL_C(b_+3, objectCreateInteraction_hook, SYM(objectCreateInteraction), b_+6);
+  if (!(ENEMY_FLAG(FZ))) { RET_TAKEN(b_+6); return; } // ret nz
   CYC(b_+6, b_+7);
   CYC(b_+7, b_+9); E = ENEMY_BASE + OBJ_RELATED2;
   CYC(b_+9, b_+11); A = 0x40; // Interaction.start
-  CYC(b_+11, b_+12); mem_wr(gb, DE, A);
+  CYC(b_+11, b_+12); ENEMY_WRITE(DE, A);
   CYC(b_+12, b_+13); E = alu_inc8(gb, E);
   CYC(b_+13, b_+14); A = H;
-  CYC(b_+14, b_+15); mem_wr(gb, DE, A);
-  CALL_C(b_+15, ecom_incState_b0d_hook, SYM(ecom_incState_b0d), b_+18);
+  CYC(b_+14, b_+15); ENEMY_WRITE(DE, A);
+  ENEMY_CALL_C(b_+15, ecom_incState_b0d_hook, SYM(ecom_incState_b0d), b_+18);
   CYC(b_+18, b_+21); TAIL(objectSetInvisible); // jp
 }
 
@@ -125,15 +126,15 @@ void spark_stateA_hook(GB *gb) {
   BASE(spark_stateA);
   uint16_t sp0_ = gb->sp;
   CYC(b_+0, b_+2); A = OBJ_ANIM_PARAMETER;
-  CALL_C(b_+2, objectGetRelatedObject2Var_hook, SYM(objectGetRelatedObject2Var), b_+5);
+  ENEMY_CALL_C(b_+2, objectGetRelatedObject2Var_hook, SYM(objectGetRelatedObject2Var), b_+5);
   CYC(b_+5, b_+6); A = mem_rd(gb, HL);
   CYC(b_+6, b_+7); A = alu_inc8(gb, A);
-  if (!(F & FZ)) { RET_TAKEN(b_+7); return; } // ret nz
+  if (!(ENEMY_FLAG(FZ))) { RET_TAKEN(b_+7); return; } // ret nz
   CYC(b_+7, b_+8);
   CYC(b_+8, b_+10); E = ENEMY_BASE + OBJ_ID;
   CYC(b_+10, b_+11); A = mem_rd(gb, DE);
-  CYC(b_+11, b_+13); alu_cp(gb, 0x13); // ENEMY_SPARK
+  CYC(b_+11, b_+13); ENEMY_CP(0x13); // ENEMY_SPARK
   CYC(b_+13, b_+15); B = 0x01; // PART_ITEM_DROP
-  if (F & FZ) { CALL_C_CC(b_+15, ecom_spawnProjectile_b0d_hook, SYM(ecom_spawnProjectile_b0d), b_+18); } else { CYC(b_+15, b_+18); } // call z
+  if (ENEMY_FLAG(FZ)) { ENEMY_CALL_C_CC(b_+15, ecom_spawnProjectile_b0d_hook, SYM(ecom_spawnProjectile_b0d), b_+18); } else { CYC(b_+15, b_+18); } // call z
   CYC(b_+18, b_+21); TAIL(enemyDelete); // jp
 }

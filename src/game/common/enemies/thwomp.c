@@ -1,5 +1,6 @@
 #include "game/game.h"
 #include "game/gen.h"
+#include "script/enemies.h"
 
 #undef CYC
 #undef CYCT
@@ -43,11 +44,11 @@ static void enemyCode2f_runState(GB *gb) {
   CYC(b_+13, b_+14); A = mem_rd(gb, DE);
   CYC(b_+14, b_+15); push_effect(gb, b_+15);
   uint16_t target = enemyCode2f_jump_table(gb);
-  if (target == SYM(thwomp_state8)) { thwomp_state8_hook(gb); return; }
-  if (target == SYM(thwomp_state9)) { thwomp_state9_hook(gb); return; }
-  if (target == SYM(thwomp_stateA)) { thwomp_stateA_hook(gb); return; }
-  if (target == SYM(thwomp_stateB)) { thwomp_stateB_hook(gb); return; }
-  if (target == SYM(thwomp_uninitialized)) { thwomp_uninitialized_hook(gb); return; }
+  if (target == SYM(thwomp_state8)) { ENEMY_LOCAL_CALL(thwomp_state8_hook(gb)); return; }
+  if (target == SYM(thwomp_state9)) { ENEMY_LOCAL_CALL(thwomp_state9_hook(gb)); return; }
+  if (target == SYM(thwomp_stateA)) { ENEMY_LOCAL_CALL(thwomp_stateA_hook(gb)); return; }
+  if (target == SYM(thwomp_stateB)) { ENEMY_LOCAL_CALL(thwomp_stateB_hook(gb)); return; }
+  if (target == SYM(thwomp_uninitialized)) { ENEMY_LOCAL_CALL(thwomp_uninitialized_hook(gb)); return; }
   TAIL(thwomp_state_stub); // states 1-7 all target 0x6743
 }
 
@@ -59,29 +60,29 @@ static void enemyCode2f_runState(GB *gb) {
 // ==================================================================================================
 void enemyCode2f_hook(GB *gb) {
   BASE(enemyCode2f);
-  if (F & FZ) { CYCT(b_+0, b_+2); goto normalStatus; } // jr z
+  if (ENEMY_FLAG(FZ)) { CYCT(b_+0, b_+2); goto normalStatus; } // jr z
   CYC(b_+0, b_+2);
   CYC(b_+2, b_+4); alu_sub(gb, 0x03); // ENEMYSTATUS_NO_HEALTH
-  if (F & FC) { CYCT(b_+4, b_+5); ret_effect(gb); return; } // ret c
+  if (ENEMY_FLAG(FC)) { CYCT(b_+4, b_+5); ret_effect(gb); return; } // ret c
   CYC(b_+4, b_+5);
 
 normalStatus:
-  CYC(b_+5, b_+8); push_effect(gb, b_+8); enemyCode2f_runState(gb);
+  CYC(b_+5, b_+8); push_effect(gb, b_+8); ENEMY_LOCAL_CALL(enemyCode2f_runState(gb));
   CYC(b_+8, b_+11); TAIL(thwomp_updateLinkRidingSelf); // jp
 }
 
 void thwomp_uninitialized_hook(GB *gb) {
   BASE(thwomp_uninitialized);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, ecom_setSpeedAndState8_b0d_hook, SYM(ecom_setSpeedAndState8_b0d), b_+3);
+  ENEMY_CALL_C(b_+0, ecom_setSpeedAndState8_b0d_hook, SYM(ecom_setSpeedAndState8_b0d), b_+3);
   CYC(b_+3, b_+5); L = ENEMY_BASE + 0x30; // Enemy.var30
   CYC(b_+5, b_+7); E = ENEMY_BASE + OBJ_YH;
   CYC(b_+7, b_+8); A = mem_rd(gb, DE);
-  CYC(b_+8, b_+9); mem_wr(gb, HL, A);
+  CYC(b_+8, b_+9); ENEMY_WRITE(HL, A);
   CYC(b_+9, b_+11); L = ENEMY_BASE + OBJ_ANGLE;
-  CYC(b_+11, b_+13); mem_wr(gb, HL, 0x10); // ANGLE_DOWN
+  CYC(b_+11, b_+13); ENEMY_WRITE(HL, 0x10); // ANGLE_DOWN
   CYC(b_+13, b_+15); A = 0x04;
-  CALL_C(b_+15, enemySetAnimation_hook, SYM(enemySetAnimation), b_+18);
+  ENEMY_CALL_C(b_+15, enemySetAnimation_hook, SYM(enemySetAnimation), b_+18);
   CYC(b_+18, b_+21); TAIL(objectSetVisible82); // jp
 }
 
@@ -99,29 +100,29 @@ void thwomp_state8_hook(GB *gb) {
   CYC(b_+3, b_+6); A = W8(w1Link_xh);
   CYC(b_+6, b_+7); alu_sub(gb, mem_rd(gb, HL));
   CYC(b_+7, b_+9); alu_add(gb, 0x14);
-  CYC(b_+9, b_+11); alu_cp(gb, 0x29);
-  if (F & FC) { CYCT(b_+11, b_+13); goto linkApproached; } // jr c
+  CYC(b_+9, b_+11); ENEMY_CP(0x29);
+  if (ENEMY_FLAG(FC)) { CYCT(b_+11, b_+13); goto linkApproached; } // jr c
   CYC(b_+11, b_+13);
   // Update eye looking at Link
-  CALL_C(b_+13, objectGetAngleTowardLink_hook, SYM(objectGetAngleTowardLink), b_+16);
+  ENEMY_CALL_C(b_+13, objectGetAngleTowardLink_hook, SYM(objectGetAngleTowardLink), b_+16);
   CYC(b_+16, b_+18); alu_add(gb, 0x02);
-  CYC(b_+18, b_+20); alu_and(gb, 0x1c);
+  CYC(b_+18, b_+20); ENEMY_AND(0x1c);
   CYC(b_+20, b_+21); H = D;
   CYC(b_+21, b_+23); L = ENEMY_BASE + OBJ_ANGLE;
-  CYC(b_+23, b_+24); alu_cp(gb, mem_rd(gb, HL));
-  if (F & FZ) { CYCT(b_+24, b_+25); ret_effect(gb); return; } // ret z
+  CYC(b_+23, b_+24); ENEMY_CP(mem_rd(gb, HL));
+  if (ENEMY_FLAG(FZ)) { CYCT(b_+24, b_+25); ret_effect(gb); return; } // ret z
   CYC(b_+24, b_+25);
-  CYC(b_+25, b_+26); mem_wr(gb, HL, A);
+  CYC(b_+25, b_+26); ENEMY_WRITE(HL, A);
   CYC(b_+26, b_+27); alu_rrca(gb);
   CYC(b_+27, b_+28); alu_rrca(gb);
   CYC(b_+28, b_+31); TAIL(enemySetAnimation); // jp
 
 linkApproached:
-  CALL_C(b_+31, ecom_incState_b0d_hook, SYM(ecom_incState_b0d), b_+34);
+  ENEMY_CALL_C(b_+31, ecom_incState_b0d_hook, SYM(ecom_incState_b0d), b_+34);
   CYC(b_+34, b_+36); L = ENEMY_BASE + OBJ_SPEED_Z;
   CYC(b_+36, b_+37); alu_xor(gb, A);
-  CYC(b_+37, b_+38); mem_wr(gb, HL, A); SET_HL(HL + 1);
-  CYC(b_+38, b_+39); mem_wr(gb, HL, A);
+  CYC(b_+37, b_+38); ENEMY_WRITE(HL, A); SET_HL(HL + 1);
+  CYC(b_+38, b_+39); ENEMY_WRITE(HL, A);
   CYC(b_+39, b_+41); A = 0x08;
   CYC(b_+41, b_+44); TAIL(enemySetAnimation); // jp
 }
@@ -132,21 +133,21 @@ void thwomp_state9_hook(GB *gb) {
   uint16_t sp0_ = gb->sp;
   CYC(b_+0, b_+2); B = 0x10;
   CYC(b_+2, b_+4); A = 0x30;
-  CALL_C(b_+4, objectUpdateSpeedZ_sidescroll_givenYOffset_hook, SYM(objectUpdateSpeedZ_sidescroll_givenYOffset), b_+7);
-  if (F & FC) { CYCT(b_+7, b_+9); goto hitGround; } // jr c
+  ENEMY_CALL_C(b_+4, objectUpdateSpeedZ_sidescroll_givenYOffset_hook, SYM(objectUpdateSpeedZ_sidescroll_givenYOffset), b_+7);
+  if (ENEMY_FLAG(FC)) { CYCT(b_+7, b_+9); goto hitGround; } // jr c
   CYC(b_+7, b_+9);
   // Cap speedZ to $0200 (ish... doesn't fix the low byte)
   CYC(b_+9, b_+10); A = mem_rd(gb, HL);
-  CYC(b_+10, b_+12); alu_cp(gb, 0x03);
-  if (F & FC) { CYCT(b_+12, b_+13); ret_effect(gb); return; } // ret c
+  CYC(b_+10, b_+12); ENEMY_CP(0x03);
+  if (ENEMY_FLAG(FC)) { CYCT(b_+12, b_+13); ret_effect(gb); return; } // ret c
   CYC(b_+12, b_+13);
-  CYC(b_+13, b_+15); mem_wr(gb, HL, 0x02);
+  CYC(b_+13, b_+15); ENEMY_WRITE(HL, 0x02);
   RET(b_+15); return;
 
 hitGround:
-  CALL_C(b_+16, ecom_incState_b0d_hook, SYM(ecom_incState_b0d), b_+19);
+  ENEMY_CALL_C(b_+16, ecom_incState_b0d_hook, SYM(ecom_incState_b0d), b_+19);
   CYC(b_+19, b_+21); L = ENEMY_BASE + OBJ_COUNTER2;
-  CYC(b_+21, b_+23); mem_wr(gb, HL, 60);
+  CYC(b_+21, b_+23); ENEMY_WRITE(HL, 60);
   CYC(b_+23, b_+25); A = 45;
   CYC(b_+25, b_+28); W8(wScreenShakeCounterY) = A;
   CYC(b_+28, b_+30); A = 0x70; // SND_DOORCLOSE
@@ -157,29 +158,29 @@ hitGround:
 void thwomp_stateA_hook(GB *gb) {
   BASE(thwomp_stateA);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, ecom_decCounter2_b0d_hook, SYM(ecom_decCounter2_b0d), b_+3);
-  if (!(F & FZ)) { CYCT(b_+3, b_+4); ret_effect(gb); return; } // ret nz
+  ENEMY_CALL_C(b_+0, ecom_decCounter2_b0d_hook, SYM(ecom_decCounter2_b0d), b_+3);
+  if (!(ENEMY_FLAG(FZ))) { CYCT(b_+3, b_+4); ret_effect(gb); return; } // ret nz
   CYC(b_+3, b_+4);
   CYC(b_+4, b_+6); E = ENEMY_BASE + OBJ_YH;
   CYC(b_+6, b_+8); L = ENEMY_BASE + 0x30; // Enemy.var30
   CYC(b_+8, b_+9); A = mem_rd(gb, DE);
-  CYC(b_+9, b_+10); alu_cp(gb, mem_rd(gb, HL));
-  if (F & FZ) { CYCT(b_+10, b_+12); goto doneMovingUp; } // jr z
+  CYC(b_+9, b_+10); ENEMY_CP(mem_rd(gb, HL));
+  if (ENEMY_FLAG(FZ)) { CYCT(b_+10, b_+12); goto doneMovingUp; } // jr z
   CYC(b_+10, b_+12);
   CYC(b_+12, b_+14); L = ENEMY_BASE + OBJ_Y;
   CYC(b_+14, b_+15); A = mem_rd(gb, HL);
   CYC(b_+15, b_+17); alu_sub(gb, 0x80);
-  CYC(b_+17, b_+18); mem_wr(gb, HL, A); SET_HL(HL + 1);
+  CYC(b_+17, b_+18); ENEMY_WRITE(HL, A); SET_HL(HL + 1);
   CYC(b_+18, b_+19); A = mem_rd(gb, HL);
   CYC(b_+19, b_+21); alu_sbc(gb, 0x00);
-  CYC(b_+21, b_+22); mem_wr(gb, HL, A);
+  CYC(b_+21, b_+22); ENEMY_WRITE(HL, A);
   RET(b_+22); return;
 
 doneMovingUp:
   CYC(b_+23, b_+25); L = ENEMY_BASE + OBJ_STATE;
-  CYC(b_+25, b_+26); mem_wr(gb, HL, alu_inc8(gb, mem_rd(gb, HL)));
+  CYC(b_+25, b_+26); ENEMY_WRITE(HL, alu_inc8(gb, mem_rd(gb, HL)));
   CYC(b_+26, b_+28); L = ENEMY_BASE + OBJ_COUNTER1;
-  CYC(b_+28, b_+30); mem_wr(gb, HL, 0x20);
+  CYC(b_+28, b_+30); ENEMY_WRITE(HL, 0x20);
   RET(b_+30); return;
 }
 
@@ -187,11 +188,11 @@ doneMovingUp:
 void thwomp_stateB_hook(GB *gb) {
   BASE(thwomp_stateB);
   uint16_t sp0_ = gb->sp;
-  CALL_C(b_+0, ecom_decCounter1_b0d_hook, SYM(ecom_decCounter1_b0d), b_+3);
-  if (!(F & FZ)) { CYCT(b_+3, b_+4); ret_effect(gb); return; } // ret nz
+  ENEMY_CALL_C(b_+0, ecom_decCounter1_b0d_hook, SYM(ecom_decCounter1_b0d), b_+3);
+  if (!(ENEMY_FLAG(FZ))) { CYCT(b_+3, b_+4); ret_effect(gb); return; } // ret nz
   CYC(b_+3, b_+4);
   CYC(b_+4, b_+5); L = E;
-  CYC(b_+5, b_+7); mem_wr(gb, HL, 0x08); // [state] = 8
+  CYC(b_+5, b_+7); ENEMY_WRITE(HL, 0x08); // [state] = 8
   CYC(b_+7, b_+10); TAIL(thwomp_updateLinkRidingSelf); // jp
 }
 
@@ -219,8 +220,8 @@ void thwomp_updateLinkRidingSelf_hook(GB *gb) {
   CYC(b_+3, b_+6); A = W8(w1Link_xh);
   CYC(b_+6, b_+7); alu_sub(gb, mem_rd(gb, HL));
   CYC(b_+7, b_+9); alu_add(gb, 0x13);
-  CYC(b_+9, b_+11); alu_cp(gb, 0x27);
-  if (!(F & FC)) { CYCT(b_+11, b_+13); goto notRiding; } // jr nc
+  CYC(b_+9, b_+11); ENEMY_CP(0x27);
+  if (!(ENEMY_FLAG(FC))) { CYCT(b_+11, b_+13); goto notRiding; } // jr nc
   CYC(b_+11, b_+13);
   CYC(b_+13, b_+16); A = W8(w1Link_collisionRadiusY);
   CYC(b_+16, b_+17); B = A;
@@ -233,8 +234,8 @@ void thwomp_updateLinkRidingSelf_hook(GB *gb) {
   CYC(b_+25, b_+28); A = W8(w1Link_yh);
   CYC(b_+28, b_+29); alu_sub(gb, C);
   CYC(b_+29, b_+31); alu_add(gb, 0x03);
-  CYC(b_+31, b_+33); alu_cp(gb, 0x07);
-  if (!(F & FC)) { CYCT(b_+33, b_+35); goto notRiding; } // jr nc
+  CYC(b_+31, b_+33); ENEMY_CP(0x07);
+  if (!(ENEMY_FLAG(FC))) { CYCT(b_+33, b_+35); goto notRiding; } // jr nc
   CYC(b_+33, b_+35);
   CYC(b_+35, b_+36); A = C;
   CYC(b_+36, b_+38); alu_sub(gb, 0x03);
@@ -247,7 +248,7 @@ notRiding:
   // Only clear wLinkRidingObject if it's already equal to this object's index.
   CYC(b_+46, b_+49); A = W8(wLinkRidingObject);
   CYC(b_+49, b_+50); alu_sub(gb, D);
-  if (!(F & FZ)) { CYCT(b_+50, b_+51); ret_effect(gb); return; } // ret nz
+  if (!(ENEMY_FLAG(FZ))) { CYCT(b_+50, b_+51); ret_effect(gb); return; } // ret nz
   CYC(b_+50, b_+51);
   CYC(b_+51, b_+54); W8(wLinkRidingObject) = A;
   RET(b_+54); return;
