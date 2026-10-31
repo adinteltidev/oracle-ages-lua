@@ -54,6 +54,8 @@ macro(oracles_fetch_sdl)
 endmacro()
 
 include(cmake/LuaGameplay.cmake)
+option(ORACLES_SWITCH_MODS "Experimental external mods in the Switch frontend" OFF)
+include(cmake/Mods.cmake)
 
 # Enemy policies: per-source opt-in is needed by the scoped Switch native build.
 file(GLOB ORACLES_ENEMY_POLICY_SOURCES CONFIGURE_DEPENDS
@@ -391,7 +393,7 @@ if(ORACLES_SDL)
   add_executable(oracles-native src/platform/app.c src/platform/window.c src/platform/sync_client.c src/platform/haptic.c)
   # oraclesui is not named here: oraclesmods and oraclesgui link it PUBLIC, so naming it again makes
   # the linker warn about a duplicate library.
-  target_link_libraries(oracles-native oraclesnative oraclesgui oraclessync oracleswide oraclesmods ${ORACLES_SDL_TARGET})
+  target_link_libraries(oracles-native oraclesnative oraclesgui oraclessync oracleswide oraclesmodsbridge ${ORACLES_SDL_TARGET})
   target_compile_definitions(oracles-native PRIVATE ${ORACLES_APP_DEFS})
   if(WIN32)
     enable_language(RC)
@@ -407,7 +409,7 @@ if(ORACLES_SDL)
     set(ORACLES_ICNS ${CMAKE_SOURCE_DIR}/icon/Oracles.icns)
     set_source_files_properties(${ORACLES_ICNS} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
     add_executable(oracles-native-app MACOSX_BUNDLE src/platform/app.c src/platform/window.c src/platform/sync_client.c src/platform/haptic.c ${ORACLES_ICNS})
-    target_link_libraries(oracles-native-app oraclesnative oraclesgui oraclessync oracleswide oraclesmods ${ORACLES_SDL_TARGET})
+    target_link_libraries(oracles-native-app oraclesnative oraclesgui oraclessync oracleswide oraclesmodsbridge ${ORACLES_SDL_TARGET})
     target_compile_definitions(oracles-native-app PRIVATE ${ORACLES_APP_DEFS})
     set_target_properties(oracles-native-app PROPERTIES
       OUTPUT_NAME "Oracles"
@@ -422,20 +424,19 @@ if(ORACLES_SDL)
   target_link_libraries(test_platform_keys ${ORACLES_SDL_TARGET})
 endif()
 
-add_library(oraclesui STATIC src/ui/ui.c src/ui/font_builtin.c src/ui/savefile.c src/ui/menu.c src/ui/settings.c src/ui/filter.c src/ui/controls.c src/ui/touch.c src/ui/syncui.c src/ui/home.c src/ui/labels.c
+add_library(oraclesui STATIC src/ui/savefile.c src/ui/menu.c src/ui/settings.c src/ui/filter.c src/ui/controls.c src/ui/touch.c src/ui/syncui.c src/ui/home.c src/ui/labels.c
   src/ui/upscale.cpp third_party/xbrz/xbrz.cpp third_party/hqx/hq2x.c third_party/hqx/hq3x.c)
 target_include_directories(oraclesui PUBLIC src PRIVATE third_party/xbrz third_party/hqx)
+target_link_libraries(oraclesui PUBLIC oraclesmodresources)
 # oraclesui carries C++ objects, so anything linking it links with the C++ driver.
 set_target_properties(oraclesui PROPERTIES LINKER_LANGUAGE CXX)
 # item.c on its own: oraclesmods needs the icon decoder but must not link the engine, and wide.c
 # pulls in framebuffer_to_rgb (and so the engine). Do not merge this back into oracleswide.
-add_library(oraclesitem STATIC src/wide/item.c)
-target_include_directories(oraclesitem PUBLIC src)
 # hud.c calls wide_window_left, so it pulls in the engine too; split it out like oraclesitem if mods
 # or ui ever need hud_glyph.
 add_library(oracleswide STATIC src/wide/wide.c src/wide/room.c src/wide/hud.c src/wide/npcs.c)
 target_include_directories(oracleswide PUBLIC src)
-target_link_libraries(oracleswide PUBLIC oraclesitem)
+target_link_libraries(oracleswide PUBLIC oraclesitem oraclesorigin)
 add_library(oraclessync STATIC src/sync/sha256.c src/sync/sync.c src/sync/http_common.c src/sync/update.c)
 target_include_directories(oraclessync PUBLIC src)
 if(WIN32)
@@ -471,13 +472,6 @@ if(ORACLES_SDL OR ANDROID)
   endif()
 endif()
 
-add_library(oraclesmods STATIC src/mods/overlay.c src/mods/mods.c src/mods/api.c src/mods/sandbox.c src/mods/treasures.c)
-target_include_directories(oraclesmods PUBLIC src PRIVATE third_party/lua)
-target_link_libraries(oraclesmods PUBLIC oraclesui oraclesitem oracleslua)
-if(NOT WIN32)
-  target_compile_definitions(oraclesmods PRIVATE LUA_USE_POSIX)
-endif()
-
 # The Android app: SDL3 from source, linked statically into libmain.so with the engine and the UI.
 if(ANDROID)
   enable_language(CXX)   # SDL's Android HIDAPI is C++, so libmain links the C++ runtime
@@ -485,7 +479,7 @@ if(ANDROID)
   add_library(main SHARED src/platform/app.c src/platform/window.c src/platform/sync_client.c src/platform/haptic.c)
   target_link_libraries(oraclessync PUBLIC ${ORACLES_SDL_TARGET})
   target_link_libraries(oraclesgui PUBLIC ${ORACLES_SDL_TARGET})
-  target_link_libraries(main oraclesnative oraclesgui oraclessync oracleswide oraclesmods ${ORACLES_SDL_TARGET} log)
+  target_link_libraries(main oraclesnative oraclesgui oraclessync oracleswide oraclesmodsbridge ${ORACLES_SDL_TARGET} log)
   target_compile_definitions(main PRIVATE ${ORACLES_APP_DEFS})
   set_target_properties(main PROPERTIES LINKER_LANGUAGE CXX)
   return()
@@ -669,17 +663,16 @@ add_test(NAME mods COMMAND test_mods)
 # any alarm() call blocks before it's even set. As of this writing there are 21 such alarm()
 # sites, 5-20s each, summing to 305s if every single one somehow fired in sequence (which would
 # mean nearly everything in the file hung at once -- astronomically unlikely, but the number this
-# TIMEOUT must stay above regardless). 400s leaves headroom above that worst case for the rest of
-# the suite's own (sub-second-to-low-single-digit-second) running time and ordinary scheduling
-# overhead between tests, while still catching, in well under ctest's 1500s default, a hang that
-# happens to land before any alarm() call is reached at all.
+# TIMEOUT must stay above regardless). The full suite measured 368s locally and exceeded
+# 400s while SDK builds and the full TAS shared the CPU. Keep a 600s process backstop;
+# the individual 5-20s alarms and production 2s/4ms Lua deadlines stay unchanged.
 #
 # Deliberately NOT labelled "rom": this file carries no ROM-dependent test any more (the two that
 # needed it moved to test_mods_rom, below) precisely so `ctest -LE rom` -- the fast gate, and what
 # CI runs -- actually exercises this whole suite instead of skipping it outright. SKIP_RETURN_CODE
 # 77 stays, because several tests here still skip for unrelated environment reasons (no root, no
 # mkfifo, an unwritable path), via the same RUN_SKIPPABLE mechanism the ROM tests used to share.
-set_tests_properties(mods PROPERTIES SKIP_RETURN_CODE 77 TIMEOUT 400)
+set_tests_properties(mods PROPERTIES SKIP_RETURN_CODE 77 TIMEOUT 600)
 # The two mod tests that need the real ROM, split out so `mods` above can stay unlabelled (see its
 # own comment). Kept to the same SKIP_RETURN_CODE/LABELS convention as test_wide/test_room/etc.
 add_executable(test_mods_rom tests/test_mods_rom.c)
@@ -699,6 +692,12 @@ target_link_libraries(test_native_tas oraclesnative)
 target_compile_definitions(test_native_tas PRIVATE GAME_ROM_DIR="${GAME_ROM_DIR}" TAS_DIR="${ORACLES_TAS_DIR}")
 add_test(NAME native_tas COMMAND test_native_tas)
 # Run the supplied Ages ROM independently of the optional Seasons fixtures.
+add_executable(test_native_seasons tests/test_native_tas.c)
+target_link_libraries(test_native_seasons PRIVATE oraclesnative)
+target_compile_definitions(test_native_seasons PRIVATE ORACLES_TEST_SEASONS_ONLY=1
+  GAME_ROM_DIR="${GAME_ROM_DIR}" TAS_DIR="${ORACLES_TAS_DIR}")
+add_test(NAME native_seasons COMMAND test_native_seasons --frames 20000 --run both)
+set_tests_properties(native_seasons PROPERTIES SKIP_RETURN_CODE 77 LABELS "rom" TIMEOUT 600)
 add_executable(test_native_ages tests/test_native_tas.c)
 target_link_libraries(test_native_ages oraclesnative)
 target_compile_definitions(test_native_ages PRIVATE ORACLES_TEST_AGES_ONLY=1
@@ -810,6 +809,17 @@ endif()
 
 # Switch SD replacement regression, exercised on host with non-overwriting rename.
 if(NOT WIN32 AND NOT ANDROID)
+  add_executable(test_switch_game tests/test_switch_game.c src/platform/switch_game.c src/core/sha1.c)
+  target_include_directories(test_switch_game PRIVATE src)
+  add_test(NAME switch_game COMMAND test_switch_game)
+  add_executable(test_switch_session tests/test_switch_session.c src/platform/switch_game.c src/platform/switch_session.c src/platform/switch_storage.c)
+  target_link_libraries(test_switch_session PRIVATE oraclesnative)
+  add_test(NAME switch_session COMMAND test_switch_session)
+  add_executable(test_switch_session_rom tests/test_switch_session_rom.c src/platform/switch_game.c src/platform/switch_session.c src/platform/switch_storage.c src/platform/switch_menu_boot.c)
+  target_link_libraries(test_switch_session_rom PRIVATE oraclesnative)
+  target_compile_definitions(test_switch_session_rom PRIVATE GAME_ROM_DIR="${GAME_ROM_DIR}")
+  add_test(NAME switch_session_rom COMMAND test_switch_session_rom)
+  set_tests_properties(switch_session_rom PROPERTIES SKIP_RETURN_CODE 77 LABELS "rom" TIMEOUT 120)
   add_executable(test_switch_menu tests/test_switch_menu.c src/platform/switch_menu.c src/platform/switch_menu_state.c)
   target_link_libraries(test_switch_menu PRIVATE oraclesnative)
   add_test(NAME switch_menu COMMAND test_switch_menu)
@@ -820,6 +830,11 @@ if(NOT WIN32 AND NOT ANDROID)
   add_executable(test_switch_quicksave tests/test_switch_quicksave.c src/platform/switch_storage.c src/platform/switch_menu_boot.c)
   target_link_libraries(test_switch_quicksave PRIVATE oraclesnative)
   target_compile_definitions(test_switch_quicksave PRIVATE GAME_ROM_DIR="${GAME_ROM_DIR}" TAS_DIR="${ORACLES_TAS_DIR}")
+  add_executable(test_switch_seasons_save tests/test_switch_quicksave.c src/platform/switch_storage.c src/platform/switch_menu_boot.c)
+  target_link_libraries(test_switch_seasons_save PRIVATE oraclesnative)
+  target_compile_definitions(test_switch_seasons_save PRIVATE ORACLES_TEST_SEASONS_ONLY=1 GAME_ROM_DIR="${GAME_ROM_DIR}" TAS_DIR="${ORACLES_TAS_DIR}")
+  add_test(NAME switch_seasons_save COMMAND test_switch_seasons_save)
+  set_tests_properties(switch_seasons_save PROPERTIES SKIP_RETURN_CODE 77 LABELS "rom" TIMEOUT 300)
   add_test(NAME switch_quicksave COMMAND test_switch_quicksave)
   set_tests_properties(switch_quicksave PROPERTIES SKIP_RETURN_CODE 77 LABELS "rom")
 endif()
@@ -833,6 +848,43 @@ if(ORACLES_SWITCH_MENU_PREVIEW AND NOT ORACLES_SWITCH)
   add_executable(test_switch_menu_gui tests/test_switch_menu_gui.c src/platform/switch_menu.c)
   target_include_directories(test_switch_menu_gui PRIVATE platform/switch/compat third_party/clay)
   target_link_libraries(test_switch_menu_gui PRIVATE oraclesswitchgui m)
+  if(ORACLES_SWITCH_MODS)
+    target_compile_definitions(oraclesswitchgui PRIVATE ORACLES_SWITCH_MODS=1)
+    target_compile_definitions(test_switch_menu_gui PRIVATE ORACLES_SWITCH_MODS=1)
+    target_sources(test_switch_menu_gui PRIVATE src/platform/switch_mods.c src/platform/switch_storage.c)
+    target_link_libraries(oraclesswitchgui PUBLIC oraclesmods)
+    target_link_libraries(test_switch_menu_gui PRIVATE oraclesmodsbridge)
+  endif()
   file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/switch-menu-preview")
   add_test(NAME switch_menu_gui COMMAND test_switch_menu_gui "${CMAKE_BINARY_DIR}/switch-menu-preview")
 endif()
+
+if(UNIX AND NOT ANDROID)
+  add_executable(test_switch_mods tests/test_switch_mods.c src/platform/switch_mods.c
+    src/platform/switch_storage.c src/platform/switch_menu.c)
+  target_compile_definitions(test_switch_mods PRIVATE ORACLES_SWITCH_MODS=1)
+  target_include_directories(test_switch_mods PRIVATE tests)
+  target_link_libraries(test_switch_mods PRIVATE oraclesmodsbridge)
+  add_test(NAME switch_mods COMMAND test_switch_mods)
+  add_executable(test_switch_mods_rom tests/test_switch_mods_rom.c src/platform/switch_mods.c src/platform/switch_storage.c)
+  target_include_directories(test_switch_mods_rom PRIVATE tests)
+  target_compile_definitions(test_switch_mods_rom PRIVATE GAME_ROM_DIR="${GAME_ROM_DIR}")
+  target_link_libraries(test_switch_mods_rom PRIVATE oraclesmodsbridge)
+  add_executable(test_switch_seasons_mods_rom tests/test_switch_mods_rom.c src/platform/switch_mods.c src/platform/switch_storage.c)
+  target_include_directories(test_switch_seasons_mods_rom PRIVATE tests)
+  target_compile_definitions(test_switch_seasons_mods_rom PRIVATE ORACLES_TEST_SEASONS_ONLY=1 GAME_ROM_DIR="${GAME_ROM_DIR}")
+  target_link_libraries(test_switch_seasons_mods_rom PRIVATE oraclesmodsbridge)
+  add_test(NAME switch_seasons_mods_rom COMMAND test_switch_seasons_mods_rom)
+  set_tests_properties(switch_seasons_mods_rom PROPERTIES SKIP_RETURN_CODE 77 LABELS "rom")
+  add_test(NAME switch_mods_rom COMMAND test_switch_mods_rom)
+  set_tests_properties(switch_mods_rom PROPERTIES SKIP_RETURN_CODE 77 LABELS "rom")
+  add_executable(benchmark-switch-mods tools/benchmark_switch_mods.c src/platform/switch_mods.c src/platform/switch_storage.c)
+  target_include_directories(benchmark-switch-mods PRIVATE tests)
+  target_link_libraries(benchmark-switch-mods PRIVATE oraclesmodsbridge oraclesnative)
+endif()
+
+add_executable(test_mods_clock tests/test_mods_clock.c src/mods/sandbox.c)
+target_compile_definitions(test_mods_clock PRIVATE ORACLES_MODS_TEST_CLOCK=1)
+target_include_directories(test_mods_clock PRIVATE src tests third_party/lua)
+target_link_libraries(test_mods_clock PRIVATE oracleslua)
+add_test(NAME mods_clock_failure COMMAND test_mods_clock)

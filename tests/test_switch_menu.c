@@ -31,7 +31,7 @@ int main(void) {
   switch_menu_press(m,UI_DOWN,false);
   ASSERT_EQ(switch_menu_press(m,UI_ACCEPT,false),SWITCH_MENU_TITLE);
   switch_menu_press(m,UI_RIGHT,false); ASSERT_EQ(m->tab,1);
-  ASSERT_EQ(switch_menu_press(m,UI_ACCEPT,false),SWITCH_MENU_NONE);
+  ASSERT_EQ(switch_menu_press(m,UI_ACCEPT,false),SWITCH_MENU_CHANGE_GAME);
   switch_menu_press(m,UI_RIGHT,false); ASSERT_EQ(m->tab,2);
   ASSERT_EQ(switch_menu_press(m,UI_ACCEPT,true),SWITCH_MENU_NONE);
   for (int i=0;i<30;++i) switch_menu_press(m,UI_LEFT,false);
@@ -42,6 +42,15 @@ int main(void) {
   switch_menu_press(m,UI_ACCEPT,false); ASSERT(m->integer_scale!=scale);
   switch_menu_press(m,UI_DOWN,false);
   ASSERT_EQ(switch_menu_press(m,UI_ACCEPT,false),SWITCH_MENU_EXIT);
+  ASSERT_EQ(switch_menu_press(m,UI_BACK,false),SWITCH_MENU_RESUME);
+
+  m->game=1; switch_menu_open(m,true); ASSERT_EQ(m->tab,1);
+  m->row=1; m->states[1].used=true;
+  ASSERT_EQ(switch_menu_press(m,UI_ACCEPT,true),SWITCH_MENU_SAVE);
+  ASSERT_EQ(switch_menu_press(m,UI_ACCEPT,false),SWITCH_MENU_LOAD);
+  switch_menu_press(m,UI_LEFT,false); ASSERT_EQ(m->tab,0);
+  ASSERT_EQ(switch_menu_press(m,UI_ACCEPT,true),SWITCH_MENU_NONE);
+  ASSERT_EQ(switch_menu_press(m,UI_ACCEPT,false),SWITCH_MENU_CHANGE_GAME);
   ASSERT_EQ(switch_menu_press(m,UI_BACK,false),SWITCH_MENU_RESUME);
 
   // Slot previews must validate an entire state and never follow its pointers.

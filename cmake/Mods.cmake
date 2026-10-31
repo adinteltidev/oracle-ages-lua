@@ -1,0 +1,17 @@
+# Platform-neutral font/icon resources and external mod host. No SDL or engine linkage.
+add_library(oraclesmodresources STATIC src/ui/ui.c src/ui/font_builtin.c)
+target_include_directories(oraclesmodresources PUBLIC src)
+add_library(oraclesitem STATIC src/wide/item.c)
+target_include_directories(oraclesitem PUBLIC src)
+add_library(oraclesmods STATIC src/mods/overlay.c src/mods/mods.c src/mods/api.c
+  src/mods/sandbox.c src/mods/treasures.c)
+target_include_directories(oraclesmods PUBLIC src PRIVATE third_party/lua)
+target_link_libraries(oraclesmods PUBLIC oraclesmodresources oraclesitem oracleslua)
+if(NOT WIN32)
+  target_compile_definitions(oraclesmods PRIVATE LUA_USE_POSIX)
+endif()
+add_library(oraclesorigin STATIC src/wide/origin.c)
+target_include_directories(oraclesorigin PUBLIC src)
+add_library(oraclesmodsbridge STATIC src/mods/bridge.c)
+target_include_directories(oraclesmodsbridge PUBLIC src)
+target_link_libraries(oraclesmodsbridge PUBLIC oraclesmods oraclesorigin)

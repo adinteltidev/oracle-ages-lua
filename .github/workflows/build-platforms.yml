@@ -8,10 +8,14 @@ on:
       retention-days:
         type: number
         default: 7
+      switch-mods:
+        type: boolean
+        default: false
       lua-gameplay:
         type: boolean
         default: false
 env:
+  ORACLES_SWITCH_MODS: ${{ inputs.switch-mods && 'ON' || 'OFF' }}
   ORACLES_LUA_GAMEPLAY: ${{ inputs.lua-gameplay && 'ON' || 'OFF' }}
   ORACLES_LUA_BLOCK_PUZZLES: ${{ inputs.lua-gameplay && 'ON' || 'OFF' }}
   ORACLES_LUA_COLORED_CUBE: ${{ inputs.lua-gameplay && 'ON' || 'OFF' }}

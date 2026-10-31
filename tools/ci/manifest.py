@@ -46,17 +46,21 @@ def main():
         raise ValueError('Cannot package failed tests')
     if evidence and evidence.get('passed') is not True:
         raise ValueError('Failed evidence')
+    seasons=a.platform.startswith('switch') and b'switch-games-v1:ages,seasons-us,seasons-eu' in binary
     data = {'schema_version': 1, 'platform': a.platform, 'commit': sha,
             'source_dirty': bool(subprocess.check_output(['git', 'status', '--porcelain', '--untracked-files=no'], text=True).strip()),
             'run_id': os.getenv('GITHUB_RUN_ID'), 'run_attempt': os.getenv('GITHUB_RUN_ATTEMPT'),
             'repository': os.getenv('GITHUB_REPOSITORY'),
-            'features': {key: os.getenv(env, 'OFF') == 'ON' for key, env in
-                         [('lua_gameplay', 'ORACLES_LUA_GAMEPLAY'), ('lua_block_puzzles', 'ORACLES_LUA_BLOCK_PUZZLES'), ('lua_colored_cube', 'ORACLES_LUA_COLORED_CUBE'), ('lua_levers_lava', 'ORACLES_LUA_LEVERS_LAVA'), ('lua_doors', 'ORACLES_LUA_DOORS'), ('lua_items_shops', 'ORACLES_LUA_ITEMS_SHOPS'), ('lua_npcs_events', 'ORACLES_LUA_NPCS_EVENTS'), ('lua_enemies', 'ORACLES_LUA_ENEMIES')]},
+            'features': {key: os.getenv(env, 'OFF') == 'ON' and (key != 'switch_mods' or a.platform.startswith('switch')) for key, env in
+                         [('lua_gameplay', 'ORACLES_LUA_GAMEPLAY'), ('lua_block_puzzles', 'ORACLES_LUA_BLOCK_PUZZLES'), ('lua_colored_cube', 'ORACLES_LUA_COLORED_CUBE'), ('lua_levers_lava', 'ORACLES_LUA_LEVERS_LAVA'), ('lua_doors', 'ORACLES_LUA_DOORS'), ('lua_items_shops', 'ORACLES_LUA_ITEMS_SHOPS'), ('lua_npcs_events', 'ORACLES_LUA_NPCS_EVENTS'), ('lua_enemies', 'ORACLES_LUA_ENEMIES'), ('switch_mods', 'ORACLES_SWITCH_MODS')]},
+            'mod_host': {'api': 2, 'version': 1} if os.getenv('ORACLES_SWITCH_MODS') == 'ON' and a.platform.startswith('switch') else None,
             'compiler': a.compiler, 'host': platform.platform(),
             'binary': {'name': a.binary.name, 'bytes': len(binary), 'sha256': digest},
             'audit': audit, 'tests': tests, 'evidence': evidence,
             'rom_supplied': False, 'rom_replay_executed': False, 'hardware_tested': False,
             'toolchain': json.loads(a.toolchain.read_text()) if a.toolchain else None}
+    data['features']['switch_seasons']=seasons
+    data['switch_games']=['ages-us','seasons-us','seasons-eu'] if seasons else None
     if os.getenv('GITHUB_ACTIONS') == 'true' and data['source_dirty']:
         raise ValueError('Tracked sources changed during the CI build')
     a.output.parent.mkdir(parents=True, exist_ok=True)

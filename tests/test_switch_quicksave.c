@@ -23,12 +23,18 @@ static void save(GB *gb, const char *tmp, const char *path) {
 }
 int main(void) {
   size_t n;
-  uint8_t *rom = oracles_read_file(GAME_ROM_DIR "/Legend of Zelda, The - Oracle of Ages (USA, Australia).gbc", &n);
-  if (!rom) SKIP("Ages ROM missing");
-  Tas tas; ASSERT(tas_load(&tas, TAS_DIR "/ages-consoleverified.inputs"));
+#ifdef ORACLES_TEST_SEASONS_ONLY
+  const char *rom_path=GAME_ROM_DIR "/Legend of Zelda, The - Oracle of Seasons (USA, Australia).gbc";
+  const char *input_path=TAS_DIR "/seasons-consoleverified.inputs",*boot_path=TAS_DIR "/seasons-consoleverified-boot.state";
+#else
+  const char *rom_path=GAME_ROM_DIR "/Legend of Zelda, The - Oracle of Ages (USA, Australia).gbc";
+  const char *input_path=TAS_DIR "/ages-consoleverified.inputs",*boot_path=TAS_DIR "/ages-boot.state";
+#endif
+  uint8_t *rom=oracles_read_file(rom_path,&n); if(!rom) SKIP("selected game ROM missing");
+  Tas tas; ASSERT(tas_load(&tas,input_path));
   GB *gb = calloc(1, sizeof *gb); ASSERT(gb); gb_init(gb); ASSERT(gb_load_rom(gb, rom, n));
   gb->cyctab = cyctab_alloc(rom, n); gb->code_bits = assets_code_bits(rom, n); assets_zero_code(rom, n);
-  gb_reset(gb); ASSERT(oracles_load_boot_state(gb, TAS_DIR "/ages-boot.state"));
+  gb_reset(gb); ASSERT(oracles_load_boot_state(gb,boot_path));
   gb->input_at = input; gb->input_ctx = &tas;
   advance(gb, 20000);
   char dir[] = "/tmp/oracles-switch-quicksave-XXXXXX"; ASSERT(mkdtemp(dir));

@@ -107,6 +107,14 @@ static bool host_seasons;
 // ever run -- gets a real answer instead of width 0 (a lie no mod author would expect) or
 // seasons false (which could just as easily be wrong as right); mods_init sets both explicitly
 // from its own `seasons` argument, which is the one place that actually knows.
+static bool (*store_recover)(const char *);
+static bool (*store_write)(const char *, const void *, size_t);
+void mods_store_backend(bool (*recover)(const char *), bool (*write)(const char *, const void *, size_t)) {
+  store_recover=recover; store_write=write;
+}
+static size_t aggregate_heap, aggregate_limit, aggregate_peak;
+static uint64_t handler_calls;
+void mods_heap_limit(size_t bytes) { aggregate_limit=bytes; }
 static ModOverlay overlay;
 static ModsFrame frame = { .width = 160 };
 // The room mods_frame last saw, so on_room_change fires only on an actual change -- -1 (no real
@@ -288,6 +296,7 @@ const ModsFrame *mods_current_frame(void) { return &frame; }
 // forever -- not a disabled mod, a permanently wedged game.
 static void call_handler(Mod *m, int ref, bool has_arg, int arg) {
   if (!m->L || ref == LUA_NOREF) return;
+  ++handler_calls;
   active_mod = m;
   lua_State *runner = lua_newthread(m->L);
   lua_rawgeti(runner, LUA_REGISTRYINDEX, ref);
@@ -536,6 +545,8 @@ typedef struct {
 
 static ModSetting settings[MODS_MAX_SETTINGS];
 static int setting_count;
+static ModsSettingPolicy setting_policy;
+void mods_settings_policy(ModsSettingPolicy policy) { setting_policy=policy; }
 
 int mods_setting_count(void) { return setting_count; }
 const char *mods_setting_name(int i) { return i >= 0 && i < setting_count ? settings[i].name : ""; }
@@ -601,8 +612,10 @@ static int setting_add_common(const char *name, size_t name_len, ModSettingKind 
   snprintf(s->name, sizeof s->name, "%s", escaped);
   snprintf(s->mod_id, sizeof s->mod_id, "%s", active_mod->id);
   s->kind = kind;
-  s->bvalue = bvalue;
-  s->ivalue = ivalue;
+  int restored=kind==MOD_SETTING_BOOL ? bvalue : ivalue;
+  if(setting_policy) restored=setting_policy(active_mod->id,escaped,restored);
+  s->bvalue = kind==MOD_SETTING_BOOL ? !!restored : bvalue;
+  s->ivalue = kind==MOD_SETTING_NUMBER ? (restored<imin ? imin : restored>imax ? imax : restored) : ivalue;
   s->imin = imin;
   s->imax = imax;
   return setting_count++;
@@ -825,6 +838,7 @@ bool mods_store_set(const char *key, size_t key_len, const ModValue *value) {
   char file_path[1024];
   mods_store_path(id, file_path, sizeof file_path);
   if (!file_path[0]) return false;
+  if (store_recover && !store_recover(file_path)) return false;
 
   char *keep = malloc(MOD_STORE_FILE_MAX);
   if (!keep) return false;
@@ -843,6 +857,7 @@ bool mods_store_set(const char *key, size_t key_len, const ModValue *value) {
       return false;
     }
     FILE *in = fopen(file_path, "rb");
+    if (!in && store_write) { free(keep); return false; }
     if (in) {
       if (contains_nul(in)) {
         fclose(in);
@@ -851,7 +866,7 @@ bool mods_store_set(const char *key, size_t key_len, const ModValue *value) {
         return false;
       }
       rewind(in);
-      bool ok = rewrite_store_without_key(in, keybuf, keep, MOD_STORE_FILE_MAX);
+      bool ok = rewrite_store_without_key(in, keybuf, keep, MOD_STORE_FILE_MAX) && !ferror(in);
       fclose(in);
       if (!ok) {
         fprintf(stderr, "mods: '%s/store.ini' is too large to add another key; refusing\n", id);
@@ -869,6 +884,9 @@ bool mods_store_set(const char *key, size_t key_len, const ModValue *value) {
     return false;
   }
 
+  if (store_write) {
+    bool ok=store_write(file_path,keep,strlen(keep)); free(keep); return ok;
+  }
   FILE *out = open_store_for_rewrite(file_path);
   if (!out) {
     fprintf(stderr, "mods: could not write '%s/store.ini' (symlinked path, or another error)\n", id);
@@ -893,6 +911,7 @@ bool mods_store_get(const char *key, size_t key_len, ModValue *out) {
   char file_path[1024];
   mods_store_path(id, file_path, sizeof file_path);
   if (!file_path[0]) return false;
+  if (store_recover && !store_recover(file_path)) return false;
 
   // Deliberately NOT mod_dir_is_safe_to_write here -- see mods_store_get's own comment in
   // mods.h for why reading through a symlinked mod directory stays allowed.
@@ -1132,8 +1151,7 @@ static bool run_main_lua(const char *dir, const char *name, Mod *m) {
     snprintf(m->error, sizeof m->error, "out of memory");
     return false;
   }
-  a->used = 0;
-  a->cap = MOD_MEM_CAP;
+  *a=(ModAlloc){.used=0,.cap=MOD_MEM_CAP,.aggregate=&aggregate_heap,.aggregate_cap=aggregate_limit ? aggregate_limit : SIZE_MAX,.aggregate_peak=&aggregate_peak};
 
   // lua_newstate, not luaL_newstate: every byte this mod's Lua allocates -- its own strings and
   // tables as well as the interpreter's internal objects -- is counted against that mod's own
@@ -1274,9 +1292,10 @@ static int cmp_name(const void *a, const void *b) {
   return strcmp(*(const char *const *)a, *(const char *const *)b);
 }
 
-bool mods_init(const char *dir, bool seasons) {
+bool mods_init(const char *dir, bool seasons) { return mods_init_filtered(dir,seasons,NULL,NULL); }
+bool mods_init_filtered(const char *dir, bool seasons, ModsLoadPolicy policy, void *context) {
   mods_shutdown();
-  host_seasons = seasons;
+  host_seasons = seasons; aggregate_peak=0; handler_calls=0;
   // Task 8 correction: oracles.screen()/oracles.game() must not lie to a mod that calls them
   // from main.lua's own top-level body, before mods_frame has ever run once. mods_init is the
   // one place that actually knows which game this session is -- plumb it through now, with a
@@ -1348,7 +1367,9 @@ bool mods_init(const char *dir, bool seasons) {
     // regardless of what happens next: a failure past this point disables the mod rather than
     // dropping it, so a player can see it listed with a reason instead of concluding their
     // install silently failed. See mods.h's mods_init comment for the full rationale.
-    if (m.api > MODS_API_VERSION) {
+    if (policy && !policy(m.id,context)) {
+      snprintf(m.error,sizeof m.error,"disabled by player");
+    } else if (m.api > MODS_API_VERSION) {
       // A well-formed, validly-declared api= this build is simply too old for -- unlike every
       // refusal inside load_one, this is not a malformed package, so it is listed disabled
       // rather than dropped (see load_one's comment on its api= branch).
@@ -1419,3 +1440,18 @@ const char *mods_id(int i) { return i >= 0 && i < count ? mods[i].id : ""; }
 const char *mods_name(int i) { return i >= 0 && i < count ? mods[i].name : ""; }
 bool mods_enabled(int i) { return i >= 0 && i < count && mods[i].enabled; }
 const char *mods_error(int i) { return i >= 0 && i < count ? mods[i].error : ""; }
+
+void mods_reset_picture(void) {
+  frame=(ModsFrame){.seasons=host_seasons,.width=160};
+  write_count=0; last_room=-1; overlay_begin(&overlay,160);
+}
+size_t mods_heap_bytes(void) {
+  size_t total=0;
+  for(int i=0;i<count;++i) if(mods[i].L) {
+    void *ud=NULL; lua_getallocf(mods[i].L,&ud); total+=((ModAlloc*)ud)->used;
+  }
+  return total;
+}
+
+uint64_t mods_handler_calls(void) { return handler_calls; }
+size_t mods_heap_peak(void) { return aggregate_peak; }

@@ -1,6 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 platform=${1:?Usage: build.sh windows|macos|switch}
+export ORACLES_SWITCH_MODS=${ORACLES_SWITCH_MODS:-OFF}
 export ORACLES_VERSION=${ORACLES_VERSION:-}
 export ORACLES_RELEASES=${GITHUB_REPOSITORY:-adinteltidev/oracle-ages-native}
 export ORACLES_LUA_ITEMS_SHOPS=${ORACLES_LUA_ITEMS_SHOPS:-OFF}
@@ -93,7 +94,9 @@ PY
     python3 tools/ci/manifest.py --platform switch-arm64 --binary build-switch-llvm/oracles-switch.nro \
       --audit reports/switch-audit.json --toolchain platform/switch/sdk-lock.json \
       --compiler "$("$ORACLES_LLVM/clang" --version | head -1)" --output dist/switch/switch-BUILD.json
-    python3 tools/package_switch.py build-switch-llvm dist/switch/Oracles-Switch.zip \
+    switch_package=Oracles-Switch
+    if [ "$ORACLES_SWITCH_MODS" = ON ]; then switch_package=Oracles-Switch-Mods; fi
+    python3 tools/package_switch.py build-switch-llvm "dist/switch/$switch_package.zip" \
       --audit reports/switch-audit.json --verification dist/switch/switch-BUILD.json
     cp build-switch-llvm/oracles-switch.nro dist/switch/
     ;;

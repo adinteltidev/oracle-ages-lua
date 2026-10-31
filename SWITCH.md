@@ -172,7 +172,7 @@ nos builds locais, inclusive para a versão dos metadados NACP.
   `slot2.state`, `slot3.state`, `slot4.state`. O protocolo `.tmp`/`.bak` é o mesmo.
 - Resume continua a partida em memória. Save files reinicia preservando a SRAM
   e navega à seleção original no arquivo escolhido; Title screen reinicia no título.
-- Seasons informa a indisponibilidade: esta build continua aceitando somente Ages.
+- Seasons está disponível na seleção inicial e na aba do menu; usa ROM própria e dados separados. Veja [SWITCH-SEASONS.md](SWITCH-SEASONS.md).
 
 A abertura busca fibras estacionadas por no máximo 600 frames, com entrada
 neutra. Se atingir o limite, abre com save desabilitado. Enquanto o menu está
@@ -198,3 +198,19 @@ ctest --test-dir build-switch-menu-preview -R '^switch_menu_gui$' --output-on-fa
 O teste usa o driver de vídeo dummy, grava prévias BMP em `switch-menu-preview/`
 e verifica a seleção visível depois da rolagem. Esse alvo é opcional; o build
 normal do Switch continua usando somente o SDL2 do SDK.
+
+## External mods on Nintendo Switch
+
+Experimental builds with `ORACLES_SWITCH_MODS=ON` share the desktop API 1/2 host.
+Install packages under the active DATA profile's `mods/` folder. Open
+**L + R → Settings → Mods**; choices apply on the next play session.
+See [SWITCH-MODS.md](SWITCH-MODS.md) for installation, storage, limits, build
+options and hardware validation still required for this new NRO.
+
+## Ages e Seasons no mesmo NRO
+
+A integração atual permite escolher o jogo com Left/Right e A na abertura, ou
+trocá-lo pelo menu L+R. Ages mantém seus arquivos; Seasons usa `seasons/` e a
+edição europeia usa `seasons-eu/` no perfil atual. As ROMs ficam na raiz do
+perfil como `ages.gbc` e `seasons.gbc`. Instruções, hashes e limites de validação
+em [SWITCH-SEASONS.md](SWITCH-SEASONS.md).
