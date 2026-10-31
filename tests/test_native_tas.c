@@ -135,6 +135,7 @@ static void native_run_reloading(const char *rom_path, const char *inputs, const
   printf("checkpoint diagnostics: skipped=%llu reloads=%u\n", (unsigned long long)rc.skipped, reloads);
   printf("sample interval: first=%llu last=%llu samples=%llu\n",
     (unsigned long long)rc.first_sample, (unsigned long long)rc.last_sample, (unsigned long long)rc.samples);
+#ifdef ORACLES_LUA_GAMEPLAY
   for(int i=0;i<GAMEPLAY_DOOR_RULE_COUNT;++i)
     printf("Lua rule %s: %llu\n",gameplay_door_rule_name(i),(unsigned long long)(gameplay_door_calls(i)-doors_before[i]));
   for(int i=0;i<GAMEPLAY_NPCS_COUNT;++i)printf("Lua rule %s: %llu\n",gameplay_npc_rule_name(i),(unsigned long long)(gameplay_npc_calls(i)-npcs_before[i]));
@@ -145,7 +146,6 @@ static void native_run_reloading(const char *rom_path, const char *inputs, const
   for(int i=0;i<GAMEPLAY_ITEMS_COUNT;++i)printf("Lua rule %s: %llu\n",gameplay_item_rule_name(i),(unsigned long long)(gameplay_item_calls(i)-items_before[i]));
   for(int i=0;i<GAMEPLAY_SHOPS_COUNT;++i)printf("Lua rule %s: %llu\n",gameplay_shop_rule_name(i),(unsigned long long)(gameplay_shop_calls(i)-shops_before[i]));
   fflush(stdout);
-#ifdef ORACLES_LUA_GAMEPLAY
   printf("Lua cumulative block coverage: %llu/%llu/%llu/%llu\n",
     (unsigned long long)gameplay_block_calls(0), (unsigned long long)gameplay_block_calls(1),
     (unsigned long long)gameplay_block_calls(2), (unsigned long long)gameplay_block_calls(3));
