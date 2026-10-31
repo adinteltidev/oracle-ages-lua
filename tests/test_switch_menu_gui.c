@@ -1,6 +1,35 @@
+#ifdef NDEBUG
+#undef NDEBUG
+#endif
+#include <assert.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 // Optional offscreen SDL2 check of the same GUI compiled into the NRO.
 #include "platform/switch_menu.h"
 #include "gui/widgets.h"
+#ifdef ORACLES_SWITCH_MODS
+#include "platform/switch_mods.h"
+#include "game/features.h"
+#include <sys/stat.h>
+Features features;
+static char fixture[512];
+static void mods_fixture(void) {
+  char tmp[]="/tmp/oracles-mods-gui-XXXXXX"; char *root=mkdtemp(tmp); assert(root);
+  snprintf(fixture,sizeof fixture,"%s/",root);
+  char path[1024]; snprintf(path,sizeof path,"%smods",fixture); assert(!mkdir(path,0700));
+  for(int i=0;i<12;++i) {
+    char id[64]; snprintf(id,sizeof id,"example-%02d%s",i,i==0 ? "-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" : "");
+    snprintf(path,sizeof path,"%smods/%s",fixture,id); assert(!mkdir(path,0700));
+    snprintf(path,sizeof path,"%smods/%s/mod.ini",fixture,id); FILE *f=fopen(path,"wb"); assert(f);
+    fprintf(f,"id=%s\nname=Example package %d\napi=1\ngames=ages\n",id,i); assert(!fclose(f));
+    snprintf(path,sizeof path,"%smods/%s/main.lua",fixture,id); f=fopen(path,"wb"); assert(f);
+    fputs(i==0 ? "error('A deliberately invalid mod: inspect this message in the list')" : "oracles.setting('Show overlay',true)",f); assert(!fclose(f));
+  }
+  assert(switch_mods_start(fixture,NULL,0));
+}
+#endif
 #ifdef NDEBUG
 #undef NDEBUG
 #endif
@@ -51,11 +80,25 @@ int main(int argc,char **argv) {
   assert(title.boundingBox.y>=list.boundingBox.y-1);
   assert(title.boundingBox.y+title.boundingBox.height<=list.boundingBox.y+list.boundingBox.height+1);
   menu->tab=2; capture(renderer,menu,1280,720,argv[1],"settings-720p");
+#ifdef ORACLES_SWITCH_MODS
+  mods_fixture(); menu->mods_page=true; menu->mod_count=mods_count()+mods_setting_count();
+  menu->mod_row=0; capture(renderer,menu,1280,720,argv[1],"mods-720p");
+  menu->mod_row=menu->mod_count-1; capture(renderer,menu,1280,720,argv[1],"mods-scrolled-720p");
+  Clay_ElementData mr=Clay_GetElementData(CLAY_IDI("SwitchRow",menu->mod_row));
+  list=Clay_GetElementData(CLAY_ID("SwitchList")); assert(mr.found && list.found);
+  assert(mr.boundingBox.y>=list.boundingBox.y-1);
+  assert(mr.boundingBox.y+mr.boundingBox.height<=list.boundingBox.y+list.boundingBox.height+1);
+  menu->mods_page=false;
+#endif
   menu->tab=1; capture(renderer,menu,1280,720,argv[1],"seasons-720p");
   menu->tab=0; menu->files_page=true; menu->files[0].valid=true; menu->files[0].max_health=12;
   strcpy(menu->files[0].name,"LINK"); capture(renderer,menu,1280,720,argv[1],"files-720p");
   menu->files_page=false; menu->row=0; SDL_SetWindowSize(window,1920,1080);
   capture(renderer,menu,1920,1080,argv[1],"home-1080p");
+#ifdef ORACLES_SWITCH_MODS
+  menu->mods_page=true; menu->mod_row=0; capture(renderer,menu,1920,1080,argv[1],"mods-1080p");
+  switch_mods_stop(); char cmd[1024]; snprintf(cmd,sizeof cmd,"rm -rf '%s'",fixture); assert(!system(cmd));
+#endif
   free(menu); SDL_DestroyRenderer(renderer); SDL_DestroyWindow(window); SDL_Quit();
   puts("ok switch_menu_gui: shared SDL2 renderer, 720p/1080p, tabs, file list, selected-row scrolling");
   return 0;

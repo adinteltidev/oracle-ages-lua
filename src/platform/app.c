@@ -1,3 +1,4 @@
+#include "mods/bridge.h"
 // The shipped app: native engine, no interpreter, no boot ROM, no ROM code. On first launch it
 // takes the user's ROM (argument, or the launcher's ADD ROM dialog; loose or in a zip or gz, see
 // platform/archive.c), checks its SHA1 against the known ROMs (each game's USA and European
@@ -867,37 +868,6 @@ static void present_frame(SDL_Renderer *ren, const uint8_t *rgb, int pic_w) {
 
 static void present(SDL_Renderer *ren, SDL_Texture *tex, const uint8_t *rgb);
 
-// The current room, bank 0 ($c000..$cfff) at the same low-12-bit offset test_wide.c's
-// neighbour_cb and test_room.c's record_cb already read (`w[seasons ? 0xc4c : 0xc30]` there, for
-// `w = sample->wram[0]`) -- not a real-looking 4-digit $Cxxx address, but the low 12 bits of one
-// ($C000 + 0xc4c == $CC4C), which is what indexing a bank-0 array that starts at $C000 wants.
-// Kept identical to that convention on purpose: an off-by-a-bank slip here would make
-// mods_frame's on_room_change fire at the wrong moments. app.c is still not linked into test_mods
-// (the engine stays out of oraclesmods by design) and test_wide/test_room are still multi-hour ROM
-// replays that never call through app.c at all, so neither pins this particular line. The
-// `mods_room` ctest (tests/test_mods_room.py) closes that gap through the real frame path instead:
-// it drives oracles-native through the start of the known-good Seasons movie with a mod watching
-// on_room_change, and asserts the handler fires with a room other than the pre-game default.
-// Confirmed by mutation: swapping the ternary's two branches is caught by that test (it never sees
-// a second, non-zero room) while leaving ctest's fast suite and tests/test_app_menus.py unaffected.
-static int rd_room(const GBSample *sample, bool seasons) {
-  return sample->wram[0][seasons ? 0xc4c : 0xc30];
-}
-
-// The room's group, at the same low-12-bit bank-0 convention as rd_room above -- confirmed
-// against two independent existing readers of this exact address pair: tests/test_room.c's
-// record_cb (`w[r->seasons ? 0xc49 : 0xc2d]`) and this file's own write_crash_log a few hundred
-// lines down (`gb->wram[0][(ages ? 0xcc2d : 0xcc49) - 0xc000]`, i.e. the same offset written as a
-// full $Cxxx address minus $C000). All three agree, so this is not a guess.
-static int rd_room_group(const GBSample *sample, bool seasons) {
-  return sample->wram[0][seasons ? 0xc49 : 0xc2d];
-}
-
-// wRoomWidth/wRoomHeight, in 8x8 tiles -- unlike rd_room/rd_room_group above, these sit at the
-// same address in both games (see the plan's verified-facts table), so no seasons ternary.
-static int rd_room_w(const GBSample *sample) { return sample->wram[0][0xd0a]; }
-static int rd_room_h(const GBSample *sample) { return sample->wram[0][0xd0b]; }
-
 static void hud_glyphs(uint8_t g[4]) {
   InputDevice d = input_device();
   PadStyle style = pad_style();
@@ -950,32 +920,7 @@ static void present_game(SDL_Renderer *ren, const GBSample *sample, const uint8_
   // caller already dereferences it unguarded a line above), so wram[0]/wram[3] below are always
   // valid, live pointers -- never the NULL case the struct's own comment documents for "before
   // any game is running".
-  int scroll_x, scroll_y, origin_x = 0, origin_y = 0;
-  mods_picture_scroll(sample, &scroll_x, &scroll_y);
-  bool origin = wide_play_origin(sample, seasons, &origin_x, &origin_y);
-  ModsFrame mf = {
-    .wram = sample->wram[0],
-    .wram3 = sample->wram[3],
-    .wram1 = sample->wram[1],
-    .hram = sample->hram,
-    .seasons = seasons,
-    .width = settings.widescreen ? WIDE_W : FB_W,
-    .room = rd_room(sample, seasons),
-    .room_w = rd_room_w(sample),
-    .room_h = rd_room_h(sample),
-    .room_group = rd_room_group(sample, seasons),
-    .bg_pal = mods_picture_bg_pal(sample),
-    .oam = mods_picture_oam(sample),
-    .scroll = true,
-    .scroll_x = scroll_x,
-    .scroll_y = scroll_y,
-    .origin = origin,
-    .origin_x = origin_x,
-    .origin_y = origin_y,
-    .rom = rom,
-    .rom_size = rom_size,
-    .font = &mod_font,
-  };
+  ModsFrame mf=mods_snapshot(sample,seasons,settings.widescreen ? WIDE_W : FB_W,rom,rom_size,&mod_font);
   mods_frame(&mf);
   show_game(ren, sample, rgb, seasons, rom, rom_size);
 }

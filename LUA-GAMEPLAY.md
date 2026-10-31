@@ -104,3 +104,10 @@ Validação posterior do jogador, em 30/10/2026: as versões Windows e Switch fo
 relatadas como funcionando e estáveis. A pendência manual dessas plataformas
 está atendida; falta a regressão completa de Seasons. Veja o
 [registro da confirmação](LUA-PHASE-4-PLAYER-VALIDATION.md).
+
+## Experimental external mods on Switch
+
+`ORACLES_SWITCH_MODS=ON` adds the API 1/2 external host to the Switch frontend,
+independently of the embedded gameplay migration flags. See [SWITCH-MODS.md](SWITCH-MODS.md).
+The phase-7 migration package/evidence stays a separate baseline; build mod-enabled
+NRO packages with `tools/package_switch.py` and a fresh feature manifest.

@@ -198,3 +198,11 @@ ctest --test-dir build-switch-menu-preview -R '^switch_menu_gui$' --output-on-fa
 O teste usa o driver de vídeo dummy, grava prévias BMP em `switch-menu-preview/`
 e verifica a seleção visível depois da rolagem. Esse alvo é opcional; o build
 normal do Switch continua usando somente o SDL2 do SDK.
+
+## External mods on Nintendo Switch
+
+Experimental builds with `ORACLES_SWITCH_MODS=ON` share the desktop API 1/2 host.
+Install packages under the active DATA profile's `mods/` folder. Open
+**L + R → Settings → Mods**; choices apply on the next play session.
+See [SWITCH-MODS.md](SWITCH-MODS.md) for installation, storage, limits, build
+options and hardware validation still required for this new NRO.

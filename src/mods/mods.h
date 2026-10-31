@@ -409,3 +409,22 @@ const char *mods_queue_write(int addr, int value);
 int mods_take_writes(ModWrite *out, int cap);
 // For api.c: the running mod's declared api, or 0 when no mod's Lua is running.
 int mods_active_api(void);
+
+// Frontend session policy. NULL callbacks preserve the desktop defaults.
+typedef bool (*ModsLoadPolicy)(const char *id, void *context);
+bool mods_init_filtered(const char *dir, bool seasons, ModsLoadPolicy policy, void *context);
+void mods_store_backend(bool (*recover)(const char *), bool (*write)(const char *, const void *, size_t));
+// Clear transient snapshot/queued writes after loading a GB save; keep the mod VMs.
+void mods_reset_picture(void);
+size_t mods_heap_bytes(void);
+
+// Configure before opening a session. Zero restores the desktop per-VM-only limit.
+void mods_heap_limit(size_t bytes);
+
+uint64_t mods_handler_calls(void);
+size_t mods_heap_peak(void);
+
+
+// Restore a frontend option at registration, before the Lua getter is returned.
+typedef int (*ModsSettingPolicy)(const char *id, const char *name, int initial);
+void mods_settings_policy(ModsSettingPolicy policy);

@@ -20,6 +20,9 @@ struct lua_State;
 typedef struct {
   size_t used;
   size_t cap;
+  size_t *aggregate;
+  size_t aggregate_cap;
+  size_t *aggregate_peak;
 } ModAlloc;
 
 // How much Lua heap one mod's main.lua may use at once (and, from Task 8 on, its per-frame

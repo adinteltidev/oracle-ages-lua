@@ -21,6 +21,7 @@ def main():
     modules=['switch_tiles','block_puzzles','block_rules','colored_cube','levers_lava','doors','items','shops','npcs/rules','events/flow','enemies/ai']
     revision=sha(''.join(f'{m}:{sha((root/"gameplay/ages"/(m+".lua")).read_bytes())};' for m in modules).encode())
     exe=(a.windows_build/'Oracles.exe').read_bytes(); nro=(a.switch_build/'oracles-switch.nro').read_bytes()
+    if b'mods: Switch host API' in nro: raise ValueError('Mod-enabled NRO: use tools/package_switch.py with a fresh mod-host manifest; phase-7 migration evidence is a separate baseline')
     win=json.loads(a.windows_audit.read_text()); switch=json.loads(a.switch_audit.read_text())
     assert win['sha256']==sha(exe) and win['utf8_manifest'] and not win['private_dlls_required'] and not win['clr_header']
     assert switch['nro_sha256']==sha(nro) and not switch['interpreter_object'] and not switch['rom_header_embedded']

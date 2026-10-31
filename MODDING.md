@@ -756,3 +756,11 @@ every call, which is not something to do sixty times a second.
   `adb logcat -s oracles`. Every refusal says which mod and why.
 - **A value is always 0.** Check the address is inside `$c000`-`$cfff` or `$ff80`-`$fffe`, and that
   you used the right game's address.
+
+## External mods on Nintendo Switch
+
+Experimental builds with `ORACLES_SWITCH_MODS=ON` share the desktop API 1/2 host.
+Install packages under the active DATA profile's `mods/` folder. Open
+**L + R → Settings → Mods**; choices apply on the next play session.
+See [SWITCH-MODS.md](SWITCH-MODS.md) for installation, storage, limits, build
+options and hardware validation still required for this new NRO.

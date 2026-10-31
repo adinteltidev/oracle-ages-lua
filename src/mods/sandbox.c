@@ -16,8 +16,13 @@
 // succeeded locally. QueryPerformanceCounter needs nothing but kernel32, is monotonic, and is what
 // winpthreads would have called anyway. Returns 0 on success, like clock_gettime, so both callers
 // keep their fail-closed handling of a clock that did not answer.
+#ifdef ORACLES_MODS_TEST_CLOCK
+extern int oracles_mods_test_clock(struct timespec *);
+#endif
 static int mono_now(struct timespec *ts) {
-#ifdef _WIN32
+#ifdef ORACLES_MODS_TEST_CLOCK
+  return oracles_mods_test_clock(ts);
+#elif defined(_WIN32)
   LARGE_INTEGER freq, now;
   if (!QueryPerformanceFrequency(&freq) || !QueryPerformanceCounter(&now) || freq.QuadPart <= 0) return -1;
   ts->tv_sec = (time_t)(now.QuadPart / freq.QuadPart);
@@ -38,8 +43,8 @@ static int mono_now(struct timespec *ts) {
 // `local t={} while true do t[#t+1]=string.rep('x',1e6) end` allocates a megabyte-sized string
 // per iteration, so it trips after roughly 8 of them. MODS_MAX (32) mods can all be loaded at
 // once, each with its own state capped at this: 32 * 8 MiB = 256 MiB of host memory a full mods
-// folder can hold resident simultaneously -- nothing enforces a total across mods today, this is
-// the number that total could reach, recorded here because nothing else currently records it.
+// folder can hold resident simultaneously in the default desktop profile. Frontends may also
+// supply an aggregate ceiling; the experimental Switch profile currently uses 16 MiB.
 //
 // Lua's custom-allocator contract (see third_party/lua/lmem.c's comment on frealloc): ptr == NULL
 // means "create a new block of size nsize, no matter what osize says" -- osize is not reliably a
@@ -50,7 +55,7 @@ static int mono_now(struct timespec *ts) {
 // out-of-memory realloc looks to Lua, which already knows how to turn that into a clean LUA_ERRMEM
 // error -- so the memory cap needs no Lua-side cooperation at all, unlike the instruction budget
 // below, which has to raise that error itself.
-void *mod_lua_alloc(void *ud, void *ptr, size_t osize, size_t nsize) {
+static void *local_lua_alloc(void *ud, void *ptr, size_t osize, size_t nsize) {
   ModAlloc *a = (ModAlloc *)ud;
   if (ptr == NULL) {
     if (nsize == 0) return NULL;                    // frealloc(ud, NULL, x, 0) is defined as a no-op
@@ -89,6 +94,18 @@ void *mod_lua_alloc(void *ud, void *ptr, size_t osize, size_t nsize) {
   a->used += nsize - osize;
   return p;
 }
+void *mod_lua_alloc(void *ud, void *ptr, size_t osize, size_t nsize) {
+  ModAlloc *a=ud; size_t old=ptr ? osize : 0;
+  if(a->aggregate && nsize>old &&
+     (nsize-old>a->aggregate_cap || *a->aggregate>a->aggregate_cap-(nsize-old))) return NULL;
+  void *p=local_lua_alloc(ud,ptr,osize,nsize);
+  if(a->aggregate && (p || nsize==0)) {
+    *a->aggregate=*a->aggregate-old+nsize;
+    if(a->aggregate_peak && *a->aggregate>*a->aggregate_peak) *a->aggregate_peak=*a->aggregate;
+  }
+  return p;
+}
+
 
 // A first implementation of this budget raised a Lua error from the count hook, on the
 // reasoning that lua_error's longjmp would unwind through whatever protected call was running
@@ -364,13 +381,11 @@ static void mod_instruction_limit_hook(lua_State *L, lua_Debug *ar) {
 int mod_resume_budgeted(lua_State *thread, int nargs, long long total,
                                 double deadline_seconds, bool *exhausted, bool *deadline_hit) {
   ModBudget budget = { .remaining = total, .exhausted = false, .deadline_exceeded = false };
-  // Fail closed here too: if the clock call fails, leave budget.deadline at its zero-initialised
-  // value rather than adding an offset to uninitialised garbage -- the epoch is unspecified on
-  // both clocks behind mono_now (POSIX leaves it open, QueryPerformanceCounter counts from boot)
-  // but always non-negative and only ever increases from some point at or before process start,
-  // so a deadline of "0" reads as already-elapsed the moment the hook first checks it, same
-  // fail-closed choice as above.
-  if (mono_now(&budget.deadline) == 0) {
+  // Refuse execution immediately if the deadline clock is unavailable.
+  if (mono_now(&budget.deadline) != 0) {
+    *exhausted=false; *deadline_hit=true;
+    lua_pushliteral(thread,"monotonic clock unavailable"); return LUA_ERRRUN;
+  } else {
     long whole_secs = (long)deadline_seconds;
     long extra_nsecs = (long)((deadline_seconds - (double)whole_secs) * 1e9);
     budget.deadline.tv_sec += whole_secs;

@@ -17,6 +17,13 @@ target_compile_definitions(oracles-switch PRIVATE
 target_link_directories(oracles-switch PRIVATE
   "${SWITCH_PORTLIBS}/lib" "${SWITCH_SDK}/libnx/lib")
 target_link_libraries(oracles-switch PRIVATE oraclesnative SDL2 EGL glapi drm_nouveau stdc++ nx pthread m)
+if(ORACLES_SWITCH_MODS)
+  target_compile_definitions(oracles-switch PRIVATE ORACLES_SWITCH_MODS=1)
+  target_compile_definitions(oraclesswitchgui PRIVATE ORACLES_SWITCH_MODS=1)
+  target_sources(oracles-switch PRIVATE src/platform/switch_mods.c)
+  target_link_libraries(oracles-switch PRIVATE oraclesmodsbridge)
+  target_link_libraries(oraclesswitchgui PUBLIC oraclesmods)
+endif()
 set_target_properties(oracles-switch PROPERTIES SUFFIX ".elf")
 find_program(ORACLES_ELF2NRO elf2nro HINTS "$ENV{ORACLES_SWITCH_TOOLS}" REQUIRED NO_CMAKE_FIND_ROOT_PATH)
 find_program(ORACLES_NACPTOOL nacptool HINTS "$ENV{ORACLES_SWITCH_TOOLS}" REQUIRED NO_CMAKE_FIND_ROOT_PATH)
@@ -42,6 +49,9 @@ elseif(ORACLES_LUA_COLORED_CUBE)
   set(ORACLES_SWITCH_TITLE "Oracle of Ages - Lua phase 2")
 elseif(ORACLES_LUA_BLOCK_PUZZLES)
   set(ORACLES_SWITCH_TITLE "Oracle of Ages - Lua phase 1")
+endif()
+if(ORACLES_SWITCH_MODS)
+  string(APPEND ORACLES_SWITCH_TITLE " + Mods")
 endif()
 add_custom_command(OUTPUT "${CMAKE_BINARY_DIR}/oracles-switch.nro"
   COMMAND "${ORACLES_NACPTOOL}" --create "${ORACLES_SWITCH_TITLE}" "Native port contributors" "${SWITCH_NACP_VERSION}" "${CMAKE_BINARY_DIR}/oracles-switch.nacp"

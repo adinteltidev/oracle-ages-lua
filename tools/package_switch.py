@@ -28,12 +28,23 @@ if profile!='oracle-ages-native':
  elif profile=='oracle-ages-lua-phase1':files['LEIA-ME.txt']=(root/'LUA-PHASE-1-PLATFORM-TESTS.md').read_bytes()
  else:files['LEIA-ME.txt']=b'Piloto C + Lua. Copie switch para a raiz do SD. ROM: sdmc:/switch/oracle-ages-lua/ages.gbc. Controles e detalhes em SWITCH.md.\n'
  files['Licenses/Lua-MIT-header.txt']=(root/'third_party/lua/lua.h').read_bytes()
+mods=b'mods: Switch host API' in nro
+if mods:
+ if not a.verification: raise ValueError('Mod-enabled packages require a matching fresh manifest')
+ files['LEIA-ME.txt']=(root/'SWITCH-MODS.md').read_bytes()
+ files['MODDING.md']=(root/'MODDING.md').read_bytes()
+ files['SWITCH-MODS.md']=(root/'SWITCH-MODS.md').read_bytes()
+ files['Licenses/Lua-MIT-header.txt']=(root/'third_party/lua/lua.h').read_bytes()
+ for example in sorted((root/'examples/switch-mods').rglob('*')):
+  if example.is_file(): files['Examples/'+str(example.relative_to(root/'examples'))]=example.read_bytes()
 verification=a.verification or root/'SWITCH-VERIFICATION.json'
 if __import__('os').environ.get('GITHUB_ACTIONS')=='true' and not a.verification:raise ValueError('CI requires a fresh build manifest')
 files['SWITCH-VERIFICATION.json']=verification.read_bytes()
 if a.verification:
  manifest=json.loads(verification.read_text())
  assert manifest['binary']['sha256']==hashlib.sha256(nro).hexdigest(), 'Manifest does not match this NRO'
+ assert manifest.get('features',{}).get('switch_mods',False)==mods, 'Mod feature does not match NRO'
+ if mods: assert manifest.get('mod_host')=={'api':2,'version':1}
 for name in ['ages-boot.state','ages.ref','ages-consoleverified.inputs']:
  files['switch/'+profile+'/tests/'+name]=(root/'tas'/name).read_bytes()
 for f in sorted((root/'platform/switch/licenses').iterdir()):

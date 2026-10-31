@@ -13,6 +13,9 @@
 #include "platform/switch_menu_boot.h"
 #include "ui/savefile.h"
 #include "game/game.h"
+#ifdef ORACLES_SWITCH_MODS
+#include "platform/switch_mods.h"
+#endif
 #ifdef ORACLES_LUA_GAMEPLAY
 #include "script/gameplay.h"
 #include "script/block_rules.h"
@@ -117,6 +120,9 @@ static bool load_state(const char *path) {
   errno = 0;
   if (!oracles_load_boot_state(game, path)) { if (!errno) errno = EINVAL; return false; }
   fibers_reset(game);
+#ifdef ORACLES_SWITCH_MODS
+  mods_reset_picture();
+#endif
   return true;
 }
 static bool prepare_game(bool replay) {
@@ -309,6 +315,12 @@ static int play(void) {
   SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0");
   texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ABGR8888, SDL_TEXTUREACCESS_STREAMING, FB_W, FB_H);
   if (!texture || !gui_init(renderer)) goto done;
+#ifdef ORACLES_SWITCH_MODS
+  if(!switch_mods_start(DATA,rom,game->rom_size)) {
+    fprintf(stderr,"mods: session initialization failed: %s\n",strerror(errno));
+    show_status("FALHA AO CARREGAR MODS",true,errno);
+  }
+#endif
   SDL_AudioSpec spec = {0}; spec.freq = APU_SAMPLE_RATE; spec.format = AUDIO_S16SYS;
   spec.channels = 2; spec.samples = 1024;
   audio = SDL_OpenAudioDevice(NULL, 0, &spec, NULL, 0);
@@ -328,6 +340,7 @@ static int play(void) {
   uint64_t remainder = 0;
   while (appletMainLoop() && !game->hung) {
     if (reset_clock) { due = SDL_GetPerformanceCounter(); remainder = 0; reset_clock = false; }
+    if(appletGetFocusState()!=AppletFocusState_InFocus) { SDL_Delay(16); continue; }
     SDL_Event event; bool quit = false;
     while (SDL_PollEvent(&event)) if (event.type == SDL_QUIT) quit = true;
     padUpdate(&pad); u64 held = padGetButtons(&pad), down = padGetButtonsDown(&pad);
@@ -349,6 +362,9 @@ static int play(void) {
       SDL_PauseAudioDevice(audio,1); SDL_ClearQueuedAudio(audio);
       status_until=0;
       switch_menu_open(&menu,threads_parked(game)); refresh_menu();
+#ifdef ORACLES_SWITCH_MODS
+      menu.mod_count=mods_count()+mods_setting_count();
+#endif
       if (!save_sram()) show_status("ERRO AO SALVAR SRAM",true,errno);
 
       down=0; // The opening chord must not activate any menu item.
@@ -367,6 +383,12 @@ static int play(void) {
         const UiButton choices[]={UI_UP,UI_DOWN,UI_LEFT,UI_RIGHT,UI_ACCEPT,UI_BACK};
         for (int i=0;i<6;++i) if (down&buttons[i]) { action=switch_menu_press(&menu,choices[i],false); break; }
       }
+#ifdef ORACLES_SWITCH_MODS
+      if(action==SWITCH_MENU_MOD_CHANGE) {
+        bool ok=menu.mod_row<mods_count() ? switch_mods_toggle(menu.mod_row) : switch_mods_change_setting(menu.mod_row-mods_count(),menu.mod_delta);
+        show_status(ok ? "MODS: PROXIMA SESSAO" : "ERRO AO SALVAR MODS",!ok,ok ? 0 : errno);
+      }
+#endif
       bool resume=action==SWITCH_MENU_RESUME;
       if (action==SWITCH_MENU_EXIT) break;
       if (action==SWITCH_MENU_SAVE) {
@@ -380,6 +402,9 @@ static int play(void) {
         if (ok) { menu_boot.file=-1; resume=true; }
       } else if (action==SWITCH_MENU_TITLE || action==SWITCH_MENU_FILE) {
         switch_menu_restart(game,&menu_boot,action==SWITCH_MENU_FILE ? menu.file : -1); resume=true;
+#ifdef ORACLES_SWITCH_MODS
+        mods_reset_picture();
+#endif
       }
       if (resume) {
         menu_active=false; release_input=true; live_joy=0; reset_clock=true;
@@ -414,6 +439,10 @@ static int play(void) {
     // Release game input briefly while seeking a serializable frame, as for
     // a pause, and report a timeout instead of silently waiting forever.
     if (save_pending || menu_requested) live_joy = 0;
+#ifdef ORACLES_SWITCH_MODS
+    uint64_t frame_begin=SDL_GetPerformanceCounter();
+    uint64_t previous_underruns=underruns;
+#endif
     gb_run_frame(game);
     if (save_pending && threads_parked(game)) {
       bool ok = save_state(STATE); int error = ok ? 0 : errno;
@@ -436,6 +465,12 @@ static int play(void) {
       unsigned c = fb[i], r = c & 31, g = (c >> 5) & 31, b = (c >> 10) & 31;
       pixels[i] = 0xff000000u | ((b * 255 / 31) << 16) | ((g * 255 / 31) << 8) | (r * 255 / 31);
     }
+#ifdef ORACLES_SWITCH_MODS
+    uint64_t mods_begin=SDL_GetPerformanceCounter();
+    if(switch_mods_present(game,pixels)) show_status("MOD DESATIVADO: VEJA MODS",true,0);
+    double mods_seconds=(double)(SDL_GetPerformanceCounter()-mods_begin)/frequency;
+    double cpu_seconds=(double)(SDL_GetPerformanceCounter()-frame_begin)/frequency;
+#endif
     SDL_UpdateTexture(texture, NULL, pixels, FB_W * 4);
     int w, h; SDL_GetRendererOutputSize(renderer, &w, &h);
     int scale = w / FB_W < h / FB_H ? w / FB_W : h / FB_H;
@@ -453,6 +488,9 @@ static int play(void) {
     remainder += frequency * FRAME_CYCLES;
     due += remainder / 4194304; remainder %= 4194304;
     uint64_t now = SDL_GetPerformanceCounter();
+#ifdef ORACLES_SWITCH_MODS
+    switch_mods_measure(cpu_seconds,mods_seconds,now>due,underruns>previous_underruns);
+#endif
     if (now > due) { late++; if (now - due > frequency / 4) { due = now; SDL_ClearQueuedAudio(audio); } }
     else if (due - now > frequency / 1000) SDL_Delay((Uint32)((due - now) * 1000 / frequency));
   }
@@ -483,6 +521,9 @@ static int play(void) {
 #endif
   if (!save_sram()) { fprintf(stderr, "Final SRAM save failed\n"); result = 1; }
  done:
+#ifdef ORACLES_SWITCH_MODS
+  switch_mods_report(); switch_mods_stop();
+#endif
   if (result) fprintf(stderr, "SDL: %s; engine: %s\n", SDL_GetError(), gb_stop_reason);
   if (hooked) appletUnhook(&hook);
   active_audio = 0;
