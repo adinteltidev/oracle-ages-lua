@@ -135,7 +135,7 @@ Every pixel you draw is opaque; there is no blending. Where you draw nothing, th
 
 ## API reference
 
-Everything a mod can call lives in the `oracles` table. This is the whole of it — twenty-one functions.
+Everything a mod can call lives in the `oracles` table. This is the whole of it — twenty-three functions.
 Anything not listed here does not exist (and a test fails the build if this list and the real one
 ever disagree).
 
@@ -768,3 +768,31 @@ options and hardware validation still required for this new NRO.
 Seasons is also supported by the Switch frontend. Its packages, settings and
 stores use the region's separate profile directory. Read-only examples accept
 both games. See [SWITCH-SEASONS.md](SWITCH-SEASONS.md) for paths and controls.
+
+### `oracles.on_input(f)`
+
+Registers a sandboxed handler called before each live game frame, receiving
+`{run=boolean}`. This is an additive API-2 extension requiring a new application
+build. Use it for input decisions, not drawing or RAM writes. Reads refer to the
+last rendered snapshot, which may be empty before the first frame. The handler
+has the same budget and error-disable behavior as on_frame. It does not run while
+paused; normal playback defaults to no run request when the action is released.
+
+### `oracles.run(enabled)`
+
+Requires `api=2`, `changes_game=yes`, and an on_input callback. Requests 2x the
+normal ground-walking speed for this game frame only. `enabled` must be boolean;
+requests never override the released physical Run action. Requests from enabled
+mods combine with OR and do not multiply together. Failing handlers contribute
+nothing. Pegasus does not stack: the result is twice the terrain's ordinary
+walking speed (normal, grass, stairs/vines). Ice, underwater, side-scrolling,
+jumps, swimming, mounts, knockback, menus and transitions use original movement.
+The original directional movement/collision code handles the selected speed.
+
+Install `examples/mods/corrida` as `mods/corrida` in the active desktop profile.
+Default Run controls: **Left Shift** or **right shoulder** on desktop (remappable
+under Controls); **hold the left stick click (L3)** on Switch with external mods
+compiled in. Switch installation: copy it to the active game's `mods/corrida/`
+folder (Seasons uses its region subfolder). No seed is consumed and no run state
+is saved. Release the button to return to ordinary movement. Re-press after
+pausing/resuming on desktop. Remove the folder and restart to uninstall.

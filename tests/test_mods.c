@@ -4925,7 +4925,29 @@ static void the_treasure_list_matches_the_disassembly(void) {
   ASSERT(!mods_treasure_valid(true, 0x100, 0));
 }
 
+static void run_input_requests_are_ephemeral_and_permission_checked(void) {
+  remove_fixture_root();
+  const char *root=make_mod("run", "id=run\napi=2\ngames=ages,seasons\nchanges_game=yes\n",
+    "oracles.on_input(function(i) assert(type(i.run)=='boolean'); oracles.run(i.run) end)");
+  ASSERT(mods_init(root,false)); ASSERT(mods_input(true)); ASSERT(!mods_input(false));
+  ASSERT(mods_input(true)); mods_shutdown(); ASSERT(!mods_input(true));
+  make_mod("run", "id=run\napi=2\ngames=ages,seasons\nchanges_game=yes\n",
+    "oracles.on_input(function(i) oracles.run(true); error('fail after request') end)");
+  ASSERT(mods_init(root,true)); ASSERT(!mods_input(true)); ASSERT(!mods_enabled(0));
+  make_mod("run", "id=run\napi=2\ngames=ages,seasons\n",
+    "oracles.on_input(function(i) oracles.run(true) end)");
+  ASSERT(mods_init(root,false)); ASSERT(!mods_input(true)); ASSERT(!mods_enabled(0));
+  make_mod("run", "id=run\napi=2\ngames=ages,seasons\nchanges_game=yes\n",
+    "oracles.on_input(function(i) oracles.run(true) end)");
+  ASSERT(mods_init(root,false)); ASSERT(!mods_input(false)); ASSERT(mods_input(true));
+  make_mod("run", "id=run\napi=2\ngames=ages,seasons\nchanges_game=yes\n",
+    "oracles.on_input(function(i) oracles.wr(0xc400,3) end)");
+  ASSERT(mods_init(root,false)); ASSERT(!mods_input(true)); ASSERT(!mods_enabled(0));
+  mods_shutdown(); remove_fixture_root();
+}
+
 int main(void) {
+  RUN(run_input_requests_are_ephemeral_and_permission_checked);
   // The alarm handler's _exit(1) skips normal stdio teardown (deliberately: calling atexit
   // handlers or flushing from inside a signal handler is not safe), which means any buffered
   // "ok <test>" line not yet flushed to the terminal is simply lost on a real hang -- the

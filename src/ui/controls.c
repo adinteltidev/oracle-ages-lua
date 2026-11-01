@@ -9,9 +9,9 @@
 static const int default_keys[ACTIONS][KEYS_PER_ACTION] = {
   {82, NO_BINDING}, {81, NO_BINDING}, {80, NO_BINDING}, {79, NO_BINDING}, {27, NO_BINDING},
   {29, NO_BINDING}, {40, NO_BINDING}, {42, 229}, {41, NO_BINDING}, {43, NO_BINDING}, {6, NO_BINDING},
-  {4, NO_BINDING}, {22, NO_BINDING},
+  {4, NO_BINDING}, {22, NO_BINDING}, {225, NO_BINDING},
 };
-static const int default_pads[ACTIONS] = {11, 12, 13, 14, 0, 2, 6, 4, 5, PAD_RIGHT_TRIGGER, 9, 3, 1};
+static const int default_pads[ACTIONS] = {11, 12, 13, 14, 0, 2, 6, 4, 5, PAD_RIGHT_TRIGGER, 9, 3, 1, 10};
 
 void bindings_default(Bindings *b) {
   memcpy(b->key, default_keys, sizeof b->key);

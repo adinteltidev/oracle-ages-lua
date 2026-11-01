@@ -2,7 +2,7 @@
 #include "gui/widgets.h"
 
 static const char *const control_labels[CTRL_ROWS] = {"Up", "Down", "Left", "Right", "A", "B", "Start", "Select", "Pause",
-                                                      "Fast forward", "Swap A/B", "Item X", "Item Y", "Reset to defaults"};
+                                                      "Fast forward", "Swap A/B", "Item X", "Item Y", "Run (mod)", "Reset to defaults"};
 static const char *const page_labels[2] = {"Keyboard", "Gamepad"};
 
 static const char *section_before(int r) {

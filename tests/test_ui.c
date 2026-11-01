@@ -353,6 +353,8 @@ static void a_tap_between_frames_reaches_the_game(void) {
 static void bindings_remap_and_persist(void) {
   Settings s, back;
   settings_default(&s);
+  ASSERT_EQ(bindings_key_action(&s.bindings, 225), ACT_RUN);
+  ASSERT_EQ(bindings_pad_action(&s.bindings, 10), ACT_RUN);
   ASSERT_EQ(bindings_key_action(&s.bindings, 27), ACT_A);        // X
   ASSERT_EQ(bindings_key_action(&s.bindings, 229), ACT_SELECT);  // right shift, a second key
   ASSERT_EQ(bindings_pad_action(&s.bindings, 5), ACT_PAUSE);     // guide
@@ -488,7 +490,7 @@ static void touch_hits_each_control(void) {
   float x, y;
   for (int a = 0; a < ACTIONS; a++) {
     bool shown = touch_point(&l, (Action)a, &x, &y);
-    ASSERT_EQ(shown, a != ACT_SWAP);
+    ASSERT_EQ(shown, a != ACT_SWAP && a != ACT_RUN);
     if (shown) ASSERT_EQ(touch_hit(&l, x, y), 1u << a);
   }
   float r = l.dpad.w / 2.0f, cx = l.dpad.x + r, cy = l.dpad.y + r;

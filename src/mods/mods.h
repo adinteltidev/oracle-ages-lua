@@ -428,3 +428,9 @@ size_t mods_heap_peak(void);
 // Restore a frontend option at registration, before the Lua getter is returned.
 typedef int (*ModsSettingPolicy)(const char *id, const char *name, int initial);
 void mods_settings_policy(ModsSettingPolicy policy);
+
+// Input handlers run under the usual sandbox before each live game frame.
+// Requests are ephemeral, permission-checked and gated by the held physical action.
+bool mods_input(bool run_held);
+void mods_set_on_input_ref(struct lua_State *state, int ref);
+const char *mods_request_run(bool enabled);

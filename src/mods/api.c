@@ -51,6 +51,18 @@ static int clamp_int(lua_Integer v) {
 
 static int check_int(lua_State *L, int arg) { return clamp_int(luaL_checkinteger(L, arg)); }
 
+static int l_on_input(lua_State *L) {
+  luaL_checktype(L,1,LUA_TFUNCTION);
+  int ref=luaL_ref(L,LUA_REGISTRYINDEX);
+  mods_set_on_input_ref(L,ref); return 0;
+}
+static int l_run(lua_State *L) {
+  luaL_checktype(L,1,LUA_TBOOLEAN);
+  const char *why=mods_request_run(lua_toboolean(L,1));
+  if(why) return luaL_error(L,"oracles.run: %s",why);
+  return 0;
+}
+
 static int l_on_frame(lua_State *L) {
   luaL_checktype(L, 1, LUA_TFUNCTION);
   // luaL_ref pops the function off L's stack and stores it in the registry (shared across every
@@ -525,9 +537,11 @@ static const luaL_Reg api[] = {
   {"log", l_log},
   {"metatile", l_metatile},
   {"on_frame", l_on_frame},
+  {"on_input", l_on_input},
   {"on_room_change", l_on_room_change},
   {"rd", l_rd},
   {"room", l_room},
+  {"run", l_run},
   {"screen", l_screen},
   {"setting", l_setting},
   {"solidity", l_solidity},

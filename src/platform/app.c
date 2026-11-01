@@ -1008,7 +1008,7 @@ static bool test_key_tick(const char *p, unsigned long long *at, char name[32], 
 
 // "#A", "#UP", ... in ORACLES_TEST_KEYS touch that control of the overlay (one finger).
 static void test_touch(const char *name, bool down) {
-  static const char *const names[ACTIONS] = {"UP", "DOWN", "LEFT", "RIGHT", "A", "B", "START", "SELECT", "PAUSE", "FAST", "SWAP", "X", "Y"};
+  static const char *const names[ACTIONS] = {"UP", "DOWN", "LEFT", "RIGHT", "A", "B", "START", "SELECT", "PAUSE", "FAST", "SWAP", "X", "Y", "RUN"};
   float x, y;
   for (int a = 0; a < ACTIONS; a++) {
     if (strcmp(name, names[a]) || !touch_point(&layout, (Action)a, &x, &y)) continue;
@@ -1892,7 +1892,7 @@ static GameEnd run_game(SDL_Window *win, SDL_Renderer *ren, SDL_Texture *tex, co
   for (int i = 0; i < mod_count; i++) mod_was_enabled[i] = mods_enabled(i);
   for (int i = 0; i < mod_count; i++) if (!mod_was_enabled[i]) { show_status("Mod disabled"); break; }
   uint64_t frames = 0, save_from = NO_SAVE, park_from = 0, ff_due = 0;
-  bool muted = false, parked = false, fast = false;
+  bool muted = false, parked = false, fast = false, run_held = false;
   GameMode mode = MODE_PLAY;
   GameEnd end = GAME_QUIT;
   BootDriver boot = {gs->start_file >= 0 ? BOOT_TO_FILE_SELECT : BOOT_OFF, gs->start_file, gs->open_file, 0};
@@ -1998,24 +1998,27 @@ static GameEnd run_game(SDL_Window *win, SDL_Renderer *ren, SDL_Texture *tex, co
         release |= action_bit(bindings_pad_action(&settings.bindings, ev.gbutton.button));
         break;
       }
-      if (press >> ACT_PAUSE & 1) { mode = MODE_PAUSING; park_from = frames; live_joy = 0; boot.phase = BOOT_OFF; continue; }
+      if (press >> ACT_PAUSE & 1) { run_held=false; features.run_requested=false; mode = MODE_PAUSING; park_from = frames; live_joy = 0; boot.phase = BOOT_OFF; continue; }
       if (press && boot.phase != BOOT_OFF && boot.phase != BOOT_LANGUAGE) { boot.phase = BOOT_OFF; live_joy = 0; }
       for (int a = 0; a < ACTIONS; a++) {
         bool item = a == ACT_ITEM_X || a == ACT_ITEM_Y;
         if (press >> a & 1) {
-          if (a == ACT_FAST) fast = true;
+          if (a == ACT_RUN) run_held = true;
+          else if (a == ACT_FAST) fast = true;
           else if (a == ACT_SWAP) features_quick_swap(gb);
           else if (item) item_button(gb, dir, a == ACT_ITEM_Y, true);
           else live_joy = tap_press(&taps, live_joy, joy_of((Action)a));
         }
         if (release >> a & 1) {
-          if (a == ACT_FAST) fast = false;
+          if (a == ACT_RUN) run_held = false;
+          else if (a == ACT_FAST) fast = false;
           else if (item) item_button(gb, dir, a == ACT_ITEM_Y, false);
           else live_joy = tap_release(&taps, live_joy, joy_of((Action)a));
         }
       }
     }
     if (session.backgrounded) {
+      run_held=false; features.run_requested=false;
       session.backgrounded = false;
       mode = MODE_PAUSED;
       boot.phase = BOOT_OFF;
@@ -2043,6 +2046,8 @@ static GameEnd run_game(SDL_Window *win, SDL_Renderer *ren, SDL_Texture *tex, co
       continue;
     }
 
+    features.run_requested=false;
+
     if (boot.phase == BOOT_LANGUAGE && FS_MODE(gb) != FS_MODE_LANGUAGE) {
       boot.phase = BOOT_MOVE;             // a language was picked: on to the file
       boot.since = frames;
@@ -2065,6 +2070,7 @@ static GameEnd run_game(SDL_Window *win, SDL_Renderer *ren, SDL_Texture *tex, co
       oracles_frame_wait();
     } else {
       if (mode == MODE_PLAY && audio && SDL_GetAudioStreamQueued(audio) > AUDIO_TARGET_BYTES) { SDL_Delay(1); continue; }
+      if (mode==MODE_PLAY && boot.phase==BOOT_OFF) features.run_requested=mods_input(run_held);
       features_frame(gb); gb_run_frame(gb);
       frames++;
     }
@@ -2121,6 +2127,7 @@ static GameEnd run_game(SDL_Window *win, SDL_Renderer *ren, SDL_Texture *tex, co
   // against this game) for as long as the launcher happens to sit idle, or for a different game
   // entirely if the player picks one next. main()'s loop re-scans game-agnostically before the
   // launcher is shown again, and the next run_game re-inits for whichever game is actually picked.
+  features.run_requested = false;
   features.treasure_swap = NULL;
   mods_shutdown();
   paused_game.gb = NULL;

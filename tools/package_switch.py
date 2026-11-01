@@ -37,6 +37,10 @@ if mods:
  files['Licenses/Lua-MIT-header.txt']=(root/'third_party/lua/lua.h').read_bytes()
  for example in sorted((root/'examples/switch-mods').rglob('*')):
   if example.is_file(): files['Examples/'+str(example.relative_to(root/'examples'))]=example.read_bytes()
+if mods:
+ files['RUN-MOD.md']=(root/'RUN-MOD.md').read_bytes()
+ for example in sorted((root/'examples/mods/corrida').iterdir()):
+  if example.is_file(): files['Examples/mods/corrida/'+example.name]=example.read_bytes()
 seasons=b'switch-games-v1:ages,seasons-us,seasons-eu' in nro
 if seasons:
  if not a.verification: raise ValueError('Dual-game packages require a fresh capability manifest')

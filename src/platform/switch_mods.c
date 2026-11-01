@@ -163,6 +163,7 @@ bool switch_mods_start(const char *data,const uint8_t *rom,size_t size) {
   return ok;
 }
 void switch_mods_stop(void) {
+  features.run_requested=false;
   features.treasure_swap=NULL; mods_shutdown(); mods_reset_picture(); mods_store_backend(NULL,NULL); mods_heap_limit(0); mods_settings_policy(NULL);
 }
 bool switch_mods_present(GB *game,uint32_t *pixels) {

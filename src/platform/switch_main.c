@@ -13,6 +13,7 @@
 #include "platform/switch_menu_boot.h"
 #include "ui/savefile.h"
 #include "game/game.h"
+#include "game/features.h"
 #ifdef ORACLES_SWITCH_MODS
 #include "platform/switch_mods.h"
 #endif
@@ -124,6 +125,7 @@ static bool load_state(const char *path) {
   return true;
 }
 static void install_game(SwitchPreparedGame *next) {
+  features.run_requested=false;
   switch_session_commit(&game,&rom,&paths,next);
   selected_game=paths.id;
   menu.game=(int)paths.id;
@@ -351,6 +353,7 @@ static int play(void) {
       }
     }
     if (menu_requested && (threads_parked(game) || frames-save_from>=600)) {
+      features.run_requested=false;
       menu_requested=false; menu_active=true; live_joy=0;
       SDL_PauseAudioDevice(audio,1); SDL_ClearQueuedAudio(audio);
       status_until=0;
@@ -463,6 +466,13 @@ static int play(void) {
     uint64_t frame_begin=SDL_GetPerformanceCounter();
     uint64_t previous_underruns=underruns;
 #endif
+    features.run_requested=false;
+#ifdef ORACLES_SWITCH_MODS
+    uint64_t input_begin=SDL_GetPerformanceCounter();
+    features.run_requested=mods_input(!release_input && !menu_requested && !save_pending &&
+      (held & HidNpadButton_StickL));
+    double input_seconds=(double)(SDL_GetPerformanceCounter()-input_begin)/frequency;
+#endif
     gb_run_frame(game);
     if (save_pending && threads_parked(game)) {
       bool ok = save_state(paths.slots[0]); int error = ok ? 0 : errno;
@@ -488,7 +498,7 @@ static int play(void) {
 #ifdef ORACLES_SWITCH_MODS
     uint64_t mods_begin=SDL_GetPerformanceCounter();
     if(switch_mods_present(game,pixels)) show_status("MOD DESATIVADO: VEJA MODS",true,0);
-    double mods_seconds=(double)(SDL_GetPerformanceCounter()-mods_begin)/frequency;
+    double mods_seconds=input_seconds+(double)(SDL_GetPerformanceCounter()-mods_begin)/frequency;
     double cpu_seconds=(double)(SDL_GetPerformanceCounter()-frame_begin)/frequency;
 #endif
     SDL_UpdateTexture(texture, NULL, pixels, FB_W * 4);

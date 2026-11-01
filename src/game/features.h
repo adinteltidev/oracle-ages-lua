@@ -5,6 +5,7 @@
 #include <stdint.h>
 
 typedef struct {
+  bool run_requested;          // transient, supplied by the mod host before every game frame
   bool fast_text;               // each line of a text box appears at once
   bool quick_swap;              // a button swaps the A and B items
   bool fast_menus;              // the fades into and out of the inventory and map take 4 frames
@@ -35,3 +36,6 @@ void features_treasure_object(struct GB *gb, uint8_t id, uint8_t subid, uint8_t 
 // Called by interactionLoadTreasureData with the treasure object: applies treasure_swap, keeping
 // the object's spawn mode and room-flag bit (the location's) and taking the rest from the new item.
 void features_treasure_loaded(struct GB *gb, uint16_t obj);
+
+// Ground walking only; called after the original speed selection, before collision movement.
+uint8_t features_link_speed(struct GB *gb, uint8_t original, uint8_t terrain);

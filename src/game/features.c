@@ -125,3 +125,19 @@ void features_treasure_loaded(GB *gb, uint16_t obj) {
   mem_wr(gb, (uint16_t)(obj + OBJ_SUBID), t[3]);
   mem_wr(gb, (uint16_t)(obj + OBJ_VAR38), 0);
 }
+
+uint8_t features_link_speed(GB *gb, uint8_t original, uint8_t terrain) {
+  if (!features.run_requested || terrain ||
+      W8(w1Link_state) != 1 || W8(wLinkObjectIndex) != 0xd0 ||
+      W8(wOpenedMenuType) || W8(wTextIsActive) || W8(wDisableLinkCollisionsAndMenu) ||
+      (W8(wDisabledObjects) & 0x81) || W8(wLinkInAir) || W8(wLinkSwimmingState) ||
+      W8(wLinkImmobilized) || W8(wLinkPlayingInstrument) || W8(wLinkDeathTrigger) ||
+      W8(w1Link_knockbackCounter) || (W8(wScrollMode) & 0x0e) ||
+      W8(wPaletteThread_mode) || (W8(wTilesetFlags) & 0x60)) return original;
+  switch (W8(wActiveTileType)) {
+  case 1: case 2: return original; // holes: preserve original handling
+  case 5: return 0x3c;            // grass: SPEED_c0 -> SPEED_180
+  case 4: case 6: return 0x28;    // vines/stairs: SPEED_80 -> SPEED_100
+  default: return 0x50;           // SPEED_100 -> SPEED_200; no Pegasus stacking
+  }
+}

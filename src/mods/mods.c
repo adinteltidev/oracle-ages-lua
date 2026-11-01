@@ -82,6 +82,8 @@ typedef struct {
                         // ever leaving that invariant visible to anything else -- see
                         // mods_shutdown's own comment for why that invariant is what keeps it
                         // from double-closing, and call_handler below for the frame-time case.
+  int on_input_ref;
+  bool run_requested;
   int on_frame_ref;     // A registry reference (luaL_ref(L, LUA_REGISTRYINDEX)) to this mod's
   int on_room_change_ref; // on_frame/on_room_change handler, or LUA_NOREF if never registered.
                         // Deliberately not a Lua global (`__on_frame`): a global the host sets
@@ -134,6 +136,14 @@ static int last_room = -1;
 // class the comment on `last_room` above just finished describing, so this one is built reset
 // from the start rather than retrofitted later the way Task 9's own sketch needed to be.
 static Mod *active_mod;
+static bool input_phase;
+
+void mods_set_on_input_ref(lua_State *L, int ref) {
+  if (!active_mod) return;
+  if (active_mod->on_input_ref != LUA_NOREF)
+    luaL_unref(L, LUA_REGISTRYINDEX, active_mod->on_input_ref);
+  active_mod->on_input_ref=ref;
+}
 
 void mods_set_on_frame_ref(lua_State *L, int ref) {
   if (!active_mod) return;      // no mod's Lua is running: should not happen (a mod has no other
@@ -162,6 +172,13 @@ static int swap_count;
 static char swap_owner[MOD_FIELD_LEN];
 
 static bool may_change_game(void) { return active_mod && active_mod->api >= 2 && active_mod->changes_game; }
+
+const char *mods_request_run(bool enabled) {
+  if (!may_change_game()) return "needs api=2 and changes_game=yes in mod.ini";
+  if (!input_phase) return "only inside on_input";
+  active_mod->run_requested=enabled;
+  return NULL;
+}
 
 // A switched-off mod has no effect on the game any more.
 static void drop_effects(const char *id) {
@@ -194,7 +211,7 @@ int mods_active_api(void) { return active_mod ? active_mod->api : 0; }
 
 const char *mods_queue_write(int addr, int value) {
   if (!may_change_game()) return "needs api=2 and changes_game=yes in mod.ini";
-  if (!in_handler) return "only inside on_frame or on_room_change";
+  if (!in_handler || input_phase) return "only inside on_frame or on_room_change";
   if (addr < 0xc000 || addr > 0xdfff) return "the address is outside $c000-$dfff";
   if (addr >= 0xc0b0 && addr <= 0xc2ff) return "$c0b0-$c2ff holds the stacks and thread state";
   if (value < 0 || value > 255) return "the value is outside 0-255";
@@ -301,7 +318,12 @@ static void call_handler(Mod *m, int ref, bool has_arg, int arg) {
   lua_State *runner = lua_newthread(m->L);
   lua_rawgeti(runner, LUA_REGISTRYINDEX, ref);
   int argc = 0;
-  if (has_arg) { lua_pushinteger(runner, arg); argc = 1; }
+  if (has_arg) {
+    if (input_phase) {
+      lua_createtable(runner,0,1); lua_pushboolean(runner,arg); lua_setfield(runner,-2,"run");
+    } else lua_pushinteger(runner,arg);
+    argc=1;
+  }
   bool exhausted = false, deadline_hit = false;
   int staged = write_count;
   in_handler = true;
@@ -354,6 +376,18 @@ static void call_handler(Mod *m, int ref, bool has_arg, int arg) {
 // a NULL `f` would be exactly the same class of bug l_rd/l_draw_icon below guard against for
 // f->wram/f->rom -- a NULL that only shows up once no ROM is loaded, easy to never hit in a
 // quick manual test.
+bool mods_input(bool run_held) {
+  bool requested=false;
+  input_phase=true;
+  for(int i=0;i<count;++i) {
+    mods[i].run_requested=false;
+    if(mods[i].enabled) call_handler(&mods[i],mods[i].on_input_ref,true,run_held);
+    if(mods[i].enabled && mods[i].run_requested && run_held) requested=true;
+  }
+  input_phase=false;
+  return requested;
+}
+
 void mods_frame(const ModsFrame *f) {
   if (!f) return;
   frame = *f;
@@ -1352,6 +1386,7 @@ bool mods_init_filtered(const char *dir, bool seasons, ModsLoadPolicy policy, vo
     const char *name = names[i];
     Mod m = {0};                                          // enabled starts false; set true below
                                                             // only once this mod actually succeeds
+    m.on_input_ref = LUA_NOREF;
     m.on_frame_ref = LUA_NOREF;                            // NOT 0 -- {0} would zero-init these to
     m.on_room_change_ref = LUA_NOREF;                      // 0, a real (if unlikely) ref value,
                                                             // not "unregistered"; LUA_NOREF is -2.

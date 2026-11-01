@@ -710,6 +710,13 @@ target_compile_definitions(test_native_movement PRIVATE
   GAME_ROM_DIR="${GAME_ROM_DIR}" TAS_DIR="${ORACLES_TAS_DIR}")
 add_test(NAME native_movement COMMAND test_native_movement)
 set_tests_properties(native_movement PROPERTIES SKIP_RETURN_CODE 77 LABELS "rom")
+add_executable(test_run_speed tests/test_run_speed.c)
+target_link_libraries(test_run_speed PRIVATE oraclesnative)
+target_compile_definitions(test_run_speed PRIVATE GAME_ROM_DIR="${GAME_ROM_DIR}" TAS_DIR="${ORACLES_TAS_DIR}")
+add_test(NAME run_speed_ages COMMAND test_run_speed ages)
+add_test(NAME run_speed_seasons COMMAND test_run_speed seasons)
+set_tests_properties(run_speed_ages run_speed_seasons PROPERTIES SKIP_RETURN_CODE 77 LABELS "rom" TIMEOUT 300)
+
 add_executable(test_treasure_swap tests/test_treasure_swap.c)
 target_link_libraries(test_treasure_swap oraclesnative oraclesmods)
 target_compile_definitions(test_treasure_swap PRIVATE GAME_ROM_DIR="${GAME_ROM_DIR}" TAS_DIR="${ORACLES_TAS_DIR}")
@@ -743,6 +750,9 @@ set_tests_properties(native_tas PROPERTIES SKIP_RETURN_CODE 77 LABELS "rom")
 set(NATIVE_BINARIES $<TARGET_FILE:oracles-native-run> $<TARGET_FILE:test_native_tas>)
 if(ORACLES_SDL)
   list(APPEND NATIVE_BINARIES $<TARGET_FILE:oracles-native>)
+  add_test(NAME run_input COMMAND python3 ${CMAKE_SOURCE_DIR}/tests/test_run_input.py $<TARGET_FILE:oracles-native>
+    "${GAME_ROM_DIR}/Legend of Zelda, The - Oracle of Ages (USA, Australia).gbc")
+  set_tests_properties(run_input PROPERTIES SKIP_RETURN_CODE 77 LABELS "rom" TIMEOUT 200)
   add_test(NAME app_menus COMMAND python3 ${CMAKE_SOURCE_DIR}/tests/test_app_menus.py $<TARGET_FILE:oracles-native>
     "${GAME_ROM_DIR}/Legend of Zelda, The - Oracle of Seasons (USA, Australia).gbc")
   set_tests_properties(app_menus PROPERTIES SKIP_RETURN_CODE 77 LABELS "rom")
